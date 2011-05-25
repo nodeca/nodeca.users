@@ -1,0 +1,9 @@
+---
+  debug: false
+  routes:
+    -
+      match: "/login"
+      to: users#login
+    -
+      match: "/logout"
+      to: users#logout
