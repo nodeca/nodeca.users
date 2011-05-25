@@ -1,0 +1,16 @@
+{
+  "name":           "nodeca-users",
+  "description":    "Core nodeca application for work with users",
+  "version":        "0.0.1",
+  "author":         "Aleksey V Zapparov <ixti@member.fsf.org>",
+  "repository":     "git://github.com/nodeca/nodeca-users",
+  "main":           "index.js",
+  "dependencies":
+  {
+    "nodeca-lib": ">= 0.0.1"
+  },
+  "dev-dependencies":
+  {
+    "vows": ">= 0.5.8"
+  }
+}
