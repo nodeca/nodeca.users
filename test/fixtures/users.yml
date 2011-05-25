@@ -1,0 +1,9 @@
+---
+  -
+    username: admin
+    password: admin
+    is_admin: true
+  -
+    username: user
+    password: user
+    is_admin: false
