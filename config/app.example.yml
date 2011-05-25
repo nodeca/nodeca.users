@@ -1,8 +1,7 @@
 ---
   general:
     title: 'Nodeca Users'
-    assets:
-      path: '/static'
+    home_url: '/'
   ## PER-ENVIRONMENT CONFIGS ###################################################
   production:
     database:
