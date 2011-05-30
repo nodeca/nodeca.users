@@ -1,10 +1,12 @@
 var mongoose   = require('mongoose'),
-    User       = mongoose.model('User'),
     Controller = require('express-railer').Controller;
 
 
 var UsersController = function UsersController(app) {
   Controller.apply(this);
+
+
+  var User = app.model('user');
 
 
   this.login = function login_action(req, res, next) {

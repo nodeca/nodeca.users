@@ -1,6 +1,5 @@
-var nodeca  = require('nodeca-lib'),
-    app     = module.exports = new (nodeca.App)(__dirname);
+var app = module.exports = new (require('nodeca-lib').App)(__dirname);
 
-if (undefined === module.parent) {
-  nodeca.start(app);
+if (!module.parent) {
+  app.start();
 }
