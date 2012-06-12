@@ -1,4 +1,7 @@
 router:
   map:
+    users.profile:
+      "/profile": ~
+
     admin.users.index:
       "/users": ~

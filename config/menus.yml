@@ -1,4 +1,9 @@
 menus:
+  common:
+    topnav:
+      profile:
+        to: users.profile
+        priority: 10
   admin:
     topnav:
       users:
