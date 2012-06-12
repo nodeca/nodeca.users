@@ -1,0 +1,4 @@
+router:
+  map:
+    admin.user.index:
+      "/users": ~

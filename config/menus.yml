@@ -1,0 +1,5 @@
+menus:
+  admin:
+    topnav:
+      user:
+        to: admin.user.index
