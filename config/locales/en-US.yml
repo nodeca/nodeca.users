@@ -3,4 +3,4 @@ i18n:
     menus:
       admin:
         topnav:
-          user: Members
+          users: Members
