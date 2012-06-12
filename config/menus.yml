@@ -1,5 +1,5 @@
 menus:
   admin:
     topnav:
-      user:
-        to: admin.user.index
+      users:
+        to: admin.users.index

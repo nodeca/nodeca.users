@@ -1,4 +1,4 @@
 router:
   map:
-    admin.user.index:
+    admin.users.index:
       "/users": ~
