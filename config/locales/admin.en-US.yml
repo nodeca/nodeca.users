@@ -1,6 +1,6 @@
 i18n:
   en-US:
-    menus:
-      admin:
+    admin:
+      menus:
         topnav:
           users: Members
