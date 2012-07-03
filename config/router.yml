@@ -3,5 +3,9 @@ router:
     users.profile:
       "/profile": ~
 
+    users.member:
+      "/member{id}":
+        id: /\d+/
+
     admin.users.index:
       "/users": ~
