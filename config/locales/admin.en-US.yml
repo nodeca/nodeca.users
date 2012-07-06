@@ -2,7 +2,7 @@ i18n:
   en-US:
     admin:
       users:
-        acp_box_title: Acp Members
+        title: Acp Members
       menus:
         navbar:
           users: Members
