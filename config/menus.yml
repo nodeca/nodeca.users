@@ -1,10 +1,10 @@
 menus:
   common:
-    topnav:
+    navbar:
       profile:
         to: users.profile
         priority: 10
   admin:
-    topnav:
+    navbar:
       users:
         to: admin.users.index

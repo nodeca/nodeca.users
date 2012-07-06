@@ -2,7 +2,7 @@ i18n:
   en-US:
     common:
       menus:
-        topnav:
+        navbar:
           profile: Profile
     users:
       profile:

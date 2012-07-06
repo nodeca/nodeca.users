@@ -2,5 +2,5 @@ i18n:
   en-US:
     admin:
       menus:
-        topnav:
+        navbar:
           users: Members
