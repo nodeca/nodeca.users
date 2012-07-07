@@ -18,7 +18,7 @@ nodeca.filters.after('', function (params, next) {
       user_list.forEach(function(user){
         users[user._id] = {
           id          : user.id,
-          login       : user.login,
+          nickname       : user.nickname,
         };
       });
       next(err);
