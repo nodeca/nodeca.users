@@ -38,7 +38,7 @@ var User = module.exports.User = new mongoose.Schema({
   , cache             : cache
 });
 
-User.statics.fitchByIdList = function (id_list, callback) {
+User.statics.fetchByIdList = function (id_list, callback) {
   this.find({_id:{$in:id_list}}, callback);
 };
 
