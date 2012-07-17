@@ -38,9 +38,6 @@ var User = module.exports.User = new mongoose.Schema({
   , cache             : cache
 });
 
-User.statics.fetchByIdList = function (id_list, callback) {
-  this.find({_id:{$in:id_list}}, callback);
-};
 
 var hash = function(password, salt) {
   return Crypto.createHmac('sha256', salt).update(password).digest('hex');
