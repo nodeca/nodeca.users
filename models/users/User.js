@@ -26,7 +26,7 @@ var User = module.exports.User = new mongoose.Schema({
 
   , first_name        : String
   , last_name         : String
-  , nickname          : String
+  , nick              : String
   , password          : String
   , email             : String
 
