@@ -6,12 +6,15 @@ var User = nodeca.models.users.User;
 
 // fetch all, but this
 var users_in_fields = {
-  'password': 0,
-  '_last_viset_ip': 0
+  '_id': 1,
+  'id': 1,
+  'nick': 1,
+  '_post_count': 1,
+  '_last_viset_ts': 1
 };
 
 
-// fetch user info (realtime only)
+// fetch user info (rpc only)
 //
 // FIXME reject for guests
 //
