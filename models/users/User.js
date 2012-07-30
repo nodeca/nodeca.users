@@ -6,18 +6,6 @@ var Crypto = require('crypto');
 var mongoose = nodeca.runtime.mongoose;
 var Schema = mongoose.Schema;
 
-var cache = {
-    post_count        : { type: Number, default: 0 }
-
-  , last_visit_ts     : Date
-  , last_viset_ip     : String
-
-  , warning_points    : { type: Number, default: 0 }
-  , banned_till_ts    : Date
-
-  , userpic_version   : { type: Number, default: 0 }
-  , avatar_version    : { type: Number, default: 0 }
-};
 
 var User = module.exports.User = new mongoose.Schema({
 
@@ -35,7 +23,16 @@ var User = module.exports.User = new mongoose.Schema({
   , primary_group     : Schema.ObjectId
   , secondary_groups  : [Schema.ObjectId]
 
-  , cache             : cache
+  , _uname            : String
+  , _uname_short      : String
+
+  , _post_count       : { type: Number, default: 0 }
+
+  , _last_visit_ts    : Date
+  , _last_viset_ip    : String
+
+  , _warning_points   : { type: Number, default: 0 }
+  , _banned_till_ts   : Date
 });
 
 
