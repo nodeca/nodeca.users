@@ -4,8 +4,10 @@
 
 var User = nodeca.models.users.User;
 
+// fetch all, but this
 var users_in_fields = {
-  'password': 0, // fetch all, but password
+  'password': 0,
+  '_last_viset_ip': 0
 };
 
 
