@@ -4,7 +4,6 @@
 
 var User = nodeca.models.users.User;
 
-// fetch all, but this
 var users_in_fields = {
   '_id': 1,
   'id': 1,
