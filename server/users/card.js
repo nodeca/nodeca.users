@@ -25,7 +25,7 @@ module.exports = function (params, next) {
   var env = this;
   var query = { _id: params.id };
   User.findOne(query).select(user_in_fields.join(' ')).
-      setOptions({lean:true}).exec(function(err, user){
+      setOptions({ lean: true }).exec(function(err, user){
     if (err) {
       next(err);
       return;
