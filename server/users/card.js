@@ -12,6 +12,16 @@ var user_in_fields = [
   '_last_viset_ts'
 ];
 
+// Validate input parameters
+//
+var params_schema = {
+  id: {
+    type: 'string',
+    required: true
+  }
+}
+nodeca.validate(params_schema);
+
 
 // fetch user info (rpc only)
 //
