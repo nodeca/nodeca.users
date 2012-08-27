@@ -47,7 +47,7 @@ function getUserInfo(id, callback) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-$.fn.powerTip.smartPlacementLists.usercard = [ 'ne-nodeca', 'se-nodeca', 'nw-nodeca', 'sw-nodeca' ];
+$.fn.powerTip.smartPlacementLists.usercard = [ 'nw-sw', 'sw-nw', 'ne-se', 'se-ne' ];
 
 
 ////////////////////////////////////////////////////////////////////////////////
