@@ -47,7 +47,7 @@ function getUserInfo(id, callback) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-$.fn.powerTip.smartPlacementLists.usercard = [ 'nw', 'sw', 'ne', 'se' ];
+$.fn.powerTip.smartPlacementLists.usercard = [ 'ne-nodeca', 'se-nodeca', 'nw-nodeca', 'sw-nodeca' ];
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,9 @@ module.exports = function active_profiles() {
           intentPollInterval: POPOVER_INTENT
         });
 
-        $.powerTip.showTip($this);
+        setTimeout(function () {
+          $.powerTip.showTip($this);
+        }, POPOVER_INTENT);
       }
     });
   });
