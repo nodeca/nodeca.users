@@ -7,7 +7,9 @@ var User = nodeca.models.users.User;
 var user_in_fields = [
   '_id',
   'id',
-  'nick',
+  'joined_ts',
+  '_uname',
+  '_uname_short',
   '_post_count',
   '_last_viset_ts'
 ];
@@ -32,15 +34,16 @@ nodeca.validate(params_schema);
 // - `id`   User._id
 //
 module.exports = function (params, next) {
-  var env = this;
-  var query = { _id: params.id };
-  User.findOne(query).select(user_in_fields.join(' ')).
-      setOptions({ lean: true }).exec(function(err, user){
+  var data  = this.data;
+  var query = User.findOne({ _id: params.id }).setOptions({ lean: true });
+
+  query.select(user_in_fields.join(' ')).exec(function (err, user) {
     if (err) {
       next(err);
       return;
     }
-    env.data.user = user;
+
+    data.user = user;
     next();
   });
 };
