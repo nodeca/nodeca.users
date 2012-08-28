@@ -1,2 +1,6 @@
-h1 #{self._uname}
-p Member since #{self.date(self.joined_ts, 'date')}
+div(id=self.popover_id)
+  - if (self.loading)
+    h1 Loading...
+  - else 
+    h1 #{self._uname}
+    p Member since #{self.date(self.joined_ts, 'date')}

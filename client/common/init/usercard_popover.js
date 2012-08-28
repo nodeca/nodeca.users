@@ -1,47 +1,25 @@
 'use strict';
 
 
-//
-// Cache user profiles for 5 minutes
-//
-
-var CACHE     = {};
-var CACHE_TTL = 5 * 60 * 1000; // time in ms
-
-//
-// Time in milliseconds before showing an info card
-//
-
-var DELAY   = 750;
-var TIMEOUT = null; // timout id
+var DELAY       = 750;  // Time in ms before showing an info card
+var TIMEOUT     = null; // Timeout ID used to interrupt previous timeout if any
+var POPOVER_IDX = 0;    // Popover counters used to generate unique IDs
 
 
-//
-// Cross-browser Date.now()
-//
-
-function now() {
-  return (new Date()).getTime();
-}
-
-
-//
 // Returns user info card from cache.
 // Request from server if it's not yet cahed or cache outdated.
 //
-
 function getUserInfo(id, callback) {
-  if (CACHE[id] && CACHE_TTL > (CACHE[id].ts - now())) {
-    callback(CACHE[id]);
-    return;
-  }
-
   nodeca.io.apiTree('users.usercard_popover', { id: id }, function (err, resp) {
-    callback(CACHE[id] = {
-      ts:   now(),
-      user: (err ? null : (resp.data || {}).user)
-    });
+    callback(err ? null : (resp.data || {}).user);
   });
+}
+
+
+// Dummy helper to render usercard_popover view with given data
+//
+function render(data) {
+  return nodeca.client.common.render('common.widgets.usercard_popover', data);
 }
 
 
@@ -58,35 +36,48 @@ module.exports = function active_profiles() {
   $('body').on('hover.nodeca.data-api', 'a.usercard-popover', function (event) {
     var $this = $(this),
         id    = $this.data('user-id'),
-        card  = $this.data('usercard');
+        card  = $this.data('powertip');
 
     clearTimeout(TIMEOUT);
 
-    if (!id || 'mouseleave' === event.type) {
+    if (!id || 'mouseleave' === event.type || card) {
       return;
     }
 
     TIMEOUT = setTimeout(function () {
+      var popover_id = 'usercard_popover_' + POPOVER_IDX++;
+
+      $this.data('powertip', render({ popover_id: popover_id, loading: true }));
+
+      // assign powertip handlers
+      $this.powerTip({
+        placement:          'usercard',
+        smartPlacement:     true,
+        mouseOnToPopup:     true,
+        intentPollInterval: DELAY
+      });
+
+      // show popover
+      $.powerTip.showTip($this);
+
+      // fetch data
       getUserInfo(id, function (data) {
-        if (!data.user) {
-          // no user -- do not do anything
+        var html;
+
+        if (!data) {
+          // no user -- destroy powertip and set powertip data attribute
+          // to not reinitiate it next time
+          $this.powerTip('destroy').data('powertip', true);
           return;
         }
 
-        if (card !== data.ts) {
-          $this.data('usercard', data.ts);
-          $this.data('powertip', nodeca.client.common.render('common.widgets.usercard_popover', data.user));
-        }
+        html = render($.extend(data, { popover_id: popover_id }));
 
-        if (!card) {
-          $this.powerTip({
-            placement:      'usercard',
-            smartPlacement: true,
-            mouseOnToPopup: true
-          });
+        // set powertip contents
+        $this.data('powertip', html);
 
-          $.powerTip.showTip($this);
-        }
+        // try to replace already shown "loading" stub
+        $('#' + popover_id).replaceWith(html);
       });
     }, DELAY);
   });
