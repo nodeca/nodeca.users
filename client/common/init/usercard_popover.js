@@ -54,7 +54,6 @@ module.exports = function active_profiles() {
         placement:          'usercard',
         smartPlacement:     true,
         mouseOnToPopup:     true,
-        fadeOutTime:        150,
         intentPollInterval: DELAY
       });
 
@@ -63,29 +62,22 @@ module.exports = function active_profiles() {
 
       // fetch data
       getUserInfo(id, function (data) {
-        $.powerTip.closeTip();
-        $this.powerTip('destroy');
+        var html;
 
         if (!data) {
           // no user -- destroy powertip and set powertip data attribute
           // to not reinitiate it next time
-          $this.data('powertip', true);
+          $this.powerTip('destroy').data('powertip', true);
           return;
         }
 
+        html = render($.extend(data, { popover_id: popover_id }));
+
         // set powertip contents
-        $this.data('powertip', render($.extend(data, { popover_id: popover_id })));
+        $this.data('powertip', html);
 
-        // assign powertip handlers
-        $this.powerTip({
-          placement:          'usercard',
-          smartPlacement:     true,
-          mouseOnToPopup:     true,
-          fadeInTime:         150,
-          intentPollInterval: DELAY
-        });
-
-        $.powerTip.showTip($this);
+        // try to replace already shown "loading" stub
+        $('#' + popover_id).replaceWith(html);
       });
     }, DELAY);
   });
