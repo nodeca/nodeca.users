@@ -78,6 +78,8 @@ module.exports = function active_profiles() {
 
         // try to replace already shown "loading" stub
         $('#' + popover_id).replaceWith(html);
+
+        $.powerTip.resetPosition($this);
       });
     }, DELAY);
   });
