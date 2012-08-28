@@ -9,10 +9,11 @@ var CACHE     = {};
 var CACHE_TTL = 5 * 60 * 1000; // time in ms
 
 //
-// Time in milliseconds before showing a popover
+// Time in milliseconds before showing an info card
 //
 
-var POPOVER_INTENT = 500;
+var DELAY   = 750;
+var TIMEOUT = null; // timout id
 
 
 //
@@ -54,38 +55,39 @@ $.fn.powerTip.smartPlacementLists.usercard = [ 'nw-sw', 'sw-nw', 'ne-se', 'se-ne
 
 
 module.exports = function active_profiles() {
-  $('body').on('mouseenter.nodeca.data-api', 'a.usercard-popover', function (event) {
+  $('body').on('hover.nodeca.data-api', 'a.usercard-popover', function (event) {
     var $this = $(this),
         id    = $this.data('user-id'),
         card  = $this.data('usercard');
 
-    if (!id) {
+    clearTimeout(TIMEOUT);
+
+    if (!id || 'mouseleave' === event.type) {
       return;
     }
 
-    getUserInfo(id, function (data) {
-      if (!data.user) {
-        // no user -- do not do anything
-        return;
-      }
+    TIMEOUT = setTimeout(function () {
+      getUserInfo(id, function (data) {
+        if (!data.user) {
+          // no user -- do not do anything
+          return;
+        }
 
-      if (card !== data.ts) {
-        $this.data('usercard', data.ts);
-        $this.data('powertip', nodeca.client.common.render('common.widgets.usercard_popover', data.user));
-      }
+        if (card !== data.ts) {
+          $this.data('usercard', data.ts);
+          $this.data('powertip', nodeca.client.common.render('common.widgets.usercard_popover', data.user));
+        }
 
-      if (!card) {
-        $this.powerTip({
-          placement:          'usercard',
-          smartPlacement:     true,
-          mouseOnToPopup:     true,
-          intentPollInterval: POPOVER_INTENT
-        });
+        if (!card) {
+          $this.powerTip({
+            placement:      'usercard',
+            smartPlacement: true,
+            mouseOnToPopup: true
+          });
 
-        setTimeout(function () {
           $.powerTip.showTip($this);
-        }, POPOVER_INTENT);
-      }
-    });
+        }
+      });
+    }, DELAY);
   });
 };
