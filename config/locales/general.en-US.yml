@@ -4,6 +4,11 @@ i18n:
       menus:
         navbar:
           profile: Profile
+
+      usercard:
+        loading: Loading...
+        find_posts: Find posts
+        send_message: Send message
     users:
       profile:
         title: Your profile

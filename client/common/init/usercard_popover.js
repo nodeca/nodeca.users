@@ -54,6 +54,9 @@ module.exports = function active_profiles() {
         placement:          'usercard',
         smartPlacement:     true,
         mouseOnToPopup:     true,
+        popupId:            'ucard-popover',
+        offset:             15,
+        closeDelay:         500,
         intentPollInterval: DELAY
       });
 

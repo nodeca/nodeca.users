@@ -1,6 +1,23 @@
-div(id=self.popover_id)
+div.ucard-inner(id=self.popover_id)
   - if (self.loading)
-    h1 Loading...
+    .progress: span= self.t('common.usercard.loading')
   - else 
-    h1 #{self._uname}
-    p Member since #{self.date(self.joined_ts, 'date')}
+    .ucard-head.cleafix #{self._uname}
+    aside.ucard-sidebar
+      a(href='#')
+        img.ucard-avatar.av-xl(alt='#{self._uname}',src='http://lorempixel.com/150/150/sports/a' + '#{self.id}')
+
+      a.btn.btn-small.btn-block= self.t('common.usercard.find_posts')  
+      a.btn.btn-small.btn-block= self.t('common.usercard.send_message')  
+
+    .ucard-info
+      dl.dl-horizontal
+
+        dt Member since
+        dd #{self.date(self.joined_ts, 'date')}
+
+        dt Total posts
+        dd 678
+
+        dt Last active
+        dd Now
