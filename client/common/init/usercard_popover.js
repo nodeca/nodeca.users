@@ -26,7 +26,9 @@ function render(data) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-$.fn.powerTip.smartPlacementLists.usercard = [ 'nw-alt', 'sw-alt', 'ne-alt', 'se-alt' ];
+$.fn.powerTip.smartPlacementLists.usercard = [
+  'nw-alt', 'sw-alt', 'ne-alt', 'se-alt', 'nw-alt'
+];
 
 
 ////////////////////////////////////////////////////////////////////////////////
