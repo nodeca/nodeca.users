@@ -10,5 +10,7 @@ i18n:
         find_posts: Find posts
         send_message: Send message
     users:
+      member:
+        title: User profile
       profile:
         title: Your profile
