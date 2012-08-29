@@ -1,7 +1,7 @@
 'use strict';
 
 
-var DELAY       = 750;  // Time in ms before showing an info card
+var DELAY       = 500;  // Time in ms before showing an info card
 var TIMEOUT     = null; // Timeout ID used to interrupt previous timeout if any
 var POPOVER_IDX = 0;    // Popover counters used to generate unique IDs
 
