@@ -35,7 +35,7 @@ $.fn.powerTip.smartPlacementLists.usercard = [
 
 
 module.exports = function active_profiles() {
-  $('body').on('hover.nodeca.data-api', 'a.usercard-popover', function (event) {
+  $('body').on('hover.nodeca.data-api', '.usercard-popover', function (event) {
     var $this = $(this),
         id    = $this.data('user-id'),
         card  = $this.data('powertip');
