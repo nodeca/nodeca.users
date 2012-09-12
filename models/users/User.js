@@ -34,21 +34,12 @@ var User = module.exports.User = new mongoose.Schema({
 });
 
 
-User.statics.new_session = function(user_id, ts, ip, callback) {
-  this.findOne({ _id: user_id })
-      .exec(function(err, user) {
-    if (err) {
-      callback(err);
-      return;
-    }
-    user._last_visit_ts = ts;
-    user._last_visit_ip = ip;
-    user.save(function(err) {
-      callback(err, user);
-    });
-  });
-};
-
+User.pre('save', function (next) {
+  this._uname = this.first_name +
+      ' (' + this.nick + ') ' + this.last_name;
+  this._uname_short = this.nick;
+  next();
+});
 
 module.exports.__init__ = function __init__() {
   return mongoose.model('users.User', User);
