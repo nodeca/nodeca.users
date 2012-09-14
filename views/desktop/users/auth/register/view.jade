@@ -3,7 +3,7 @@
 
     form.form-horizontal(data-on-submit='users.auth.register')
       legend #{self.t('users.auth.reg_form.title')}
-        a.pull-right(href=self.link_to('users.auth.login.view')) #{self.t('common.auth.login')}
+        small.pull-right: a(href=self.link_to('users.auth.login.view')) #{self.t('common.auth.login')}
 
       .control-group
         label.control-label(for='reg_eml') #{self.t('users.auth.reg_form.email')}
