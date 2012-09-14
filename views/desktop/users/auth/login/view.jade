@@ -1,13 +1,33 @@
-ul
-  li
-    form(data-on-submit='common.auth.login')
-      label.pgn-jump.input(for='email') #{self.t('common.auth.email')}
-      input.input-small(
-        id='email', name='email', type='text', min='4')
-      label.pgn-jump.input(for='pass') #{self.t('common.auth.pass')}
-      input.input-small(
-        id='pass', name='pass', type='password', min='6')
-      button.btn.btn-inverse(
-        type='submit') #{self.t('common.auth.login')}
+.row
+  .span6.offset3.form-outline
 
-  li: a(href=self.link_to('common.auth.register.view'))= self.t('common.auth.register')
+    form.form-horizontal(data-on-submit='users.auth.login')
+      legend #{self.t('users.auth.login_form.title')}
+        a.pull-right(href=self.link_to('users.auth.register.view')) #{self.t('common.auth.register')}
+
+      .control-group
+        label.control-label(for='lgn_eml') #{self.t('users.auth.login_form.email')}
+        .controls
+          .row-fluid
+            input.span12(id='lgn_eml', name='email', type='email')
+
+      .control-group
+        label.control-label(for='lgn_pass') #{self.t('users.auth.login_form.password')}
+        .controls
+          .row-fluid
+            input.span12(id='lgn_pass', name='password', type='password')
+
+      .control-group
+        .controls
+          button.btn.btn-primary(type='submit') #{self.t('users.auth.login_form.enter')}
+          button.btn.btn-link(href=self.link_to('users.auth.login.eml.forgot'))
+            | #{self.t('users.auth.login_form.forgot')}
+
+      //- no oauth now
+      //-
+        legend #{self.t('users.login_form.title_social')}
+        .control-group
+          .controls
+              span 123
+              span sfgdg123
+              span hjlk

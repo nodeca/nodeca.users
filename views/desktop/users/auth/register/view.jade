@@ -1,24 +1,29 @@
-H1= self.t('common.registration.form')
+.row
+  .span8.offset2.form-outline
 
-form(data-on-submit='common.auth.register')
-  label.pgn-jump.input(for='email') #{self.t('common.registration.email')}
-  input.input-small(
-    id='email', name='email', type='text', min='5')
-  label.pgn-jump.input(for='pass') #{self.t('common.registration.pass')}
-  input.input-small(
-    id='pass', name='pass', type='password', min='6')
+    form.form-horizontal(data-on-submit='users.auth.register')
+      legend #{self.t('users.auth.reg_form.title')}
+        a.pull-right(href=self.link_to('users.auth.login.view')) #{self.t('common.auth.login')}
 
-  label.pgn-jump.input(for='nick') #{self.t('common.registration.nick')}
-  input.input-small(
-    id='nick', name='nick', type='text', min='4')
+      .control-group
+        label.control-label(for='reg_eml') #{self.t('users.auth.reg_form.email')}
+        .controls
+          .row-fluid
+            input.span12(id='reg_eml', name='email', type='email')
 
-  label.pgn-jump.input(for='first_name') #{self.t('common.registration.first_name')}
-  input.input-small(
-    id='first_name', name='first_name', type='text', min='2')
+      .control-group
+        label.control-label(for='reg_pass') #{self.t('users.auth.reg_form.password')}
+        .controls
+          .row-fluid
+            input.span12(id='reg_pass', name='password', type='password')
+            span.help-block #{self.t('users.auth.reg_form.password_help')}
 
-  label.pgn-jump.input(for='last_name') #{self.t('common.registration.last_name')}
-  input.input-small(
-    id='last_name', name='last_name', type='text', min='2')
+      .control-group
+        label.control-label(for='reg_nick') #{self.t('users.auth.reg_form.nick')}
+        .controls
+          .row-fluid
+            input.span12(id='reg_nick', name='nick', type='text')
 
-  button.btn.btn-inverse(
-    type='submit') #{self.t('common.registration.register')}
+      .control-group
+        .controls
+          button.btn.btn-primary(type='submit') #{self.t('users.auth.reg_form.register')}

@@ -3,7 +3,8 @@
 /*global nodeca, _*/
 
 
-nodeca.validate();
+var params_schema = {};
+nodeca.validate(params_schema);
 
 
 /**

@@ -9,8 +9,31 @@ i18n:
         loading: Loading...
         find_posts: Find posts
         send_message: Send message
+
+      auth:
+        login: login
+        register: register
+        logout: Exit
+
     users:
       member:
         title: User profile
       profile:
         title: Your profile
+
+      auth:      
+
+        login_form:
+          title: Login
+          email: "Email (or nickname)"
+          password: Password
+          enter: Login
+          forgot: forgot?
+
+        reg_form:
+          title: Registration
+          email: Email
+          password: Password
+          nick: Nickname
+          password_help: "Should be > 8 symbols, must contain digits & letters."
+          register: Register

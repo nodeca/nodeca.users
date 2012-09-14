@@ -22,10 +22,16 @@ nodeca.validate(params_schema);
  * Render registration form
  **/
 module.exports = function (params, next) {
-  this.response.data.predefined = {};
+  var env = this;
+  var data = env.response.data;
+  
+  data.head.title = env.helpers.t('users.auth.reg_form.title');
+
+  data.predefined = {};
   if (this.session.auth_data) {
     // set predefined data from session
-    this.response.data.predefined = _.pick(this.session.auth_data, profile_in_fields);
+    data.predefined = _.pick(this.session.auth_data, profile_in_fields);
   }
+
   next();
 };

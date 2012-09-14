@@ -2,8 +2,7 @@
 
 /*global nodeca, _*/
 
-var params_schema = [
-];
+var params_schema = {};
 nodeca.validate(params_schema);
 
 
@@ -13,5 +12,10 @@ nodeca.validate(params_schema);
  * Render registration form
  **/
 module.exports = function (params, next) {
+  var env = this;
+  var head = env.response.data.head;
+  
+  head.title = env.helpers.t('users.auth.login_form.title');
+
   next();
 };
