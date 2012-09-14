@@ -9,3 +9,18 @@ router:
 
     admin.users.index:
       "/users": ~
+
+    users.auth.register.view:
+      "/auth/reg": ~
+
+    users.auth.register.exec:
+      "/auth/reg/register": ~
+
+    users.auth.login.view:
+      "/auth/login": ~
+
+    users.auth.login.email:
+      "/auth/login/email": ~
+
+    users.auth.logout:
+      "/auth/logout": ~
