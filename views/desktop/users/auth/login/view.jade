@@ -2,8 +2,9 @@
   .span6.offset3.well.well-form
 
     form.form-horizontal(data-on-submit='users.auth.login')
-      legend #{self.t('users.auth.login_form.title')}
+      legend
         small.pull-right: a(href=self.link_to('users.auth.register.view')) #{self.t('common.auth.register')}
+        | #{self.t('users.auth.login_form.title')}
 
       .control-group
         label.control-label(for='lgn_eml') #{self.t('users.auth.login_form.email')}
