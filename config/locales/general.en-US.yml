@@ -33,7 +33,9 @@ i18n:
         reg_form:
           title: Registration
           email: Email
+          email_help: "Should be valid, you will get confirmation email there, to activate your account."
           password: Password
-          nick: Nickname
           password_help: "Should be > 8 symbols, must contain digits & letters."
+          nick: Nickname
+          nick_help: How to show you on forum
           register: Register

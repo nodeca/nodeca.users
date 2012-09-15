@@ -11,6 +11,7 @@
         .controls
           .row-fluid
             input.span12(id='reg_eml', name='email', type='email')
+            span.help-block #{self.t('users.auth.reg_form.email_help')}
 
       .control-group
         label.control-label(for='reg_pass') #{self.t('users.auth.reg_form.password')}
@@ -24,6 +25,7 @@
         .controls
           .row-fluid
             input.span12(id='reg_nick', name='nick', type='text')
+            span.help-block #{self.t('users.auth.reg_form.nick_help')}
 
       .control-group
         .controls
