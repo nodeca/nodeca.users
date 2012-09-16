@@ -19,8 +19,8 @@ nodeca.validate(params_schema);
  **/
 module.exports = function (params, next) {
   this.session = null;
-  this.skip.push('renderer');
-  this.response.statusCode = 302;
-  this.response.headers.Location = nodeca.runtime.router.linkTo('forum.index');
-  next();
+  next({
+    statusCode: 302,
+    headers: { Location: nodeca.runtime.router.linkTo('forum.index') }
+  });
 };
