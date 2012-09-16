@@ -16,21 +16,14 @@ var params_schema = {
   },
   pass: {
     type: "string",
-    minLenght: 8,
+    minLength: 8,
     required: true
   },
   nick: {
     type: "string",
+    minLength: 4,
     required: true
   },
-  first_name: {
-    type: "string",
-    required: true
-  },
-  last_name: {
-    type: "string",
-    required: true
-  }
 };
 nodeca.validate(params_schema);
 
@@ -41,8 +34,6 @@ nodeca.validate(params_schema);
  * - email(String):       Email
  * - pass(String):        Password
  * - nick(String):        Nickname
- * - first_name(String):  First name
- * - last_name(String):   Last name
  *
  * Register new user
  *
@@ -66,7 +57,7 @@ module.exports = function (params, next) {
     // is email uniq?
     if (docs.length !== 0) {
       // FIXME check statusCode
-      next({ statusCode: 401, message: 'This email already exists' });
+      next({ statusCode: 401, body: 'This email already exists' });
       return;
     }
     user = new User(params);

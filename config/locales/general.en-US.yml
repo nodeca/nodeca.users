@@ -42,3 +42,4 @@ i18n:
           nick: Nickname
           nick_help: How to show you on forum
           register: Register
+          success: Сongratulations. Registration was successful.
