@@ -18,7 +18,7 @@ nodeca.validate(params_schema);
  * login by email provider
  **/
 module.exports = function (params, next) {
-  this.session['profile'] = null;
+  this.session = null;
   this.skip.push('renderer');
   this.response.statusCode = 302;
   this.response.headers.Location = nodeca.runtime.router.linkTo('forum.index');
