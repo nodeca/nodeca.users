@@ -39,8 +39,10 @@ module.exports = function (params, next) {
 
   var ip = env.request.ip;
 
-  env.session['profile'] =  null;
+  env.session['me'] =  null;
 
+  console.dir(params);
+  console.dir('--------');
   // try find user by email or nick
   AuthLink.findOne().or([{'email': params.email}, {'auth_data.nick': params.email}])
       .exec(function(err, link) {
@@ -48,14 +50,16 @@ module.exports = function (params, next) {
       next(err);
       return;
     }
+    console.dir(link);
     if (!!link && link.checkPass(params.pass)) {
       // user found and say correct password
-      User.findOne({ '_id': link.user_id }).exec(function(err, user) {
+      User.findOne({ '_id': link.user_id }).setOptions({ lean: true })
+          .select('_id').exec(function(err, user) {
         if (err){
           next(err);
           return;
         }
-        env.session['profile'] = user;
+        env.session['me'] = user._id;
         env.skip.push('renderer');
         env.response.statusCode = 302;
         env.response.headers.Location = back_url;
