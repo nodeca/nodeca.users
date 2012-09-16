@@ -41,8 +41,6 @@ module.exports = function (params, next) {
 
   env.session['me'] =  null;
 
-  console.dir(params);
-  console.dir('--------');
   // try find user by email or nick
   AuthLink.findOne().or([{'email': params.email}, {'auth_data.nick': params.email}])
       .exec(function(err, link) {
@@ -50,7 +48,6 @@ module.exports = function (params, next) {
       next(err);
       return;
     }
-    console.dir(link);
     if (!!link && link.checkPass(params.pass)) {
       // user found and say correct password
       User.findOne({ '_id': link.user_id }).setOptions({ lean: true })
