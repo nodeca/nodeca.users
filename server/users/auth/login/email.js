@@ -2,7 +2,7 @@
 
 /*global nodeca, _*/
 
-var AuthLink = nodeca.models.core.AuthLink;
+var AuthLink = nodeca.models.users.AuthLink;
 var User = nodeca.models.users.User;
 
 // Validate input parameters
