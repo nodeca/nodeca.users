@@ -22,16 +22,14 @@
  *  send login request
  **/
 module.exports.login = function ($form, event) {
-  loadAssets('users', function () {
-    var params = nodeca.client.common.form.getData($form);
-    // FIXME validate data and strengthen password
-    nodeca.server.users.auth.login.plain.exec(params, function (err) {
-      if (err) {
-        $form.find('.text-error').removeClass('hidden').fadeIn();
-        return;
-      }
-      window.location.reload();
-    });
+  var params = nodeca.client.common.form.getData($form);
+  // FIXME validate data and strengthen password
+  nodeca.server.users.auth.login.plain.exec(params, function (err) {
+    if (err) {
+      $form.find('.text-error').removeClass('hidden').fadeIn();
+      return;
+    }
+    window.location.reload();
   });
   return false;
 };
@@ -42,25 +40,21 @@ module.exports.login = function ($form, event) {
  *  send registration data on server
  **/
 module.exports.register = function ($form, event) {
-  loadAssets('users', function () {
-    var params = nodeca.client.common.form.getData($form);
-    // FIXME validate data and strengthen password
-    nodeca.server.users.auth.register.exec(params, function(err, request){
-      if (err) {
-        if (err.statusCode === 401) {
-          //FIXME duplicate email err
-        }
-        else {
-          //FIXME parse error message and set errors by field
-        }
-        return;
+  var params = nodeca.client.common.form.getData($form);
+  // FIXME validate data and strengthen password
+  nodeca.server.users.auth.register.exec(params, function(err, request){
+    if (err) {
+      if (err.statusCode === 401) {
+        //FIXME duplicate email err
       }
-      loadAssets('users', function () {
-        $form.replaceWith(
-          nodeca.client.common.render('users.auth.register.success')
-        ).fadeIn();
-      });
-    });
+      else {
+        //FIXME parse error message and set errors by field
+      }
+      return;
+    }
+    $form.replaceWith(
+      nodeca.client.common.render('users.auth.register.success')
+    ).fadeIn();
   });
   return false;
 };
