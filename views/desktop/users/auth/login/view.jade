@@ -7,6 +7,9 @@
         | #{self.t('users.auth.login_form.title')}
 
       .control-group
+        p.text-error #{self.t('users.auth.login_form.error')}
+
+      .control-group
         label.control-label(for='lgn_eml') #{self.t('users.auth.login_form.email')}
         .controls
           .row-fluid

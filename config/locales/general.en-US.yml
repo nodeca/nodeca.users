@@ -29,6 +29,9 @@ i18n:
           password: Password
           enter: Login
           forgot: forgot?
+          error: |
+            Can't login. Check, that your email and password are correct and try again.
+            Or use link below to reset your password.
 
         reg_form:
           title: Registration
