@@ -21,8 +21,6 @@ i18n:
       profile:
         title: Your profile
 
-      guest: Guest
-
       auth:      
 
         login_form:
