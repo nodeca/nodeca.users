@@ -26,10 +26,12 @@ module.exports.login = function ($form, event) {
   // FIXME validate data and strengthen password
   nodeca.server.users.auth.login.plain.exec(params, function (err) {
     if (err) {
-      $form.find('.text-error').removeClass('hidden').fadeIn();
+      $form.replaceWith(
+        nodeca.client.common.render('users.auth.login.view', {error: err.message})
+      ).fadeIn();
       return;
     }
-    window.location.reload();
+    nodeca.client.common.history.navigateTo('users.profile');
   });
   return false;
 };

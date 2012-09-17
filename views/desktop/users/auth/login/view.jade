@@ -1,13 +1,14 @@
-.row
-  .span6.offset3.well.well-form
+form.form-horizontal(data-on-submit='users.auth.login')
+  .row
+    .span6.offset3.well.well-form
 
-    form.form-horizontal(data-on-submit='users.auth.login')
       legend
         small.pull-right: a(href=self.link_to('users.auth.register.view')) #{self.t('common.auth.register')}
         | #{self.t('users.auth.login_form.title')}
 
-      .control-group
-        p.text-error.hidden #{self.t('users.auth.login_form.error')}
+      - if(self.error)
+        .control-group
+          p.text-error #{self.error}
 
       .control-group
         label.control-label(for='lgn_eml') #{self.t('users.auth.login_form.email')}

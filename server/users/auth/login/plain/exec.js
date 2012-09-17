@@ -10,11 +10,12 @@ var User = nodeca.models.users.User;
 var params_schema = {
   email: {
     type: "string",
+    minLength: 4,
     required: true
   },
   pass: {
     type: "string",
-    minLenght: 8,
+    minLength: 8,
     required: true
   }
 };
@@ -46,7 +47,7 @@ module.exports = function (params, next) {
       // user not found or wrong password
       next({
         statusCode: 401,
-        message: 'Authentication failed'
+        body: env.helpers.t('users.auth.login_form.error')
       });
     }
 
@@ -60,11 +61,7 @@ module.exports = function (params, next) {
 
       env.session.me = user._id;
 
-      next({
-        statusCode: 302,
-        // FIXME: get real back url
-        headers: { Location: nodeca.runtime.router.linkTo('forum.index') }
-      });
+      next();
     });
   });
 };
