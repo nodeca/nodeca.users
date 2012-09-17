@@ -59,7 +59,7 @@ module.exports = function (params, next) {
         return;
       }
 
-      env.session.me = user._id;
+      env.session.user_id = user._id;
 
       next();
     });
