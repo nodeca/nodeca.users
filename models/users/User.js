@@ -20,6 +20,7 @@ var User = module.exports.User = new mongoose.Schema({
 
   , primary_group     : Schema.ObjectId
   , secondary_groups  : [Schema.ObjectId]
+  , locale            : String
 
   , _uname            : String
   , _uname_short      : String

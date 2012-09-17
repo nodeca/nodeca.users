@@ -64,6 +64,7 @@ module.exports = function (params, next) {
     user._last_visit_ts = user.joined_ts = new Date();
     user._last_visit_ip = env.request.ip;
     user.joined_ts = new Date();
+    user.locale = nodeca.config.locales['default'];
     // FIXME set groups
     user.save(function(err, user) {
       if (err) {
