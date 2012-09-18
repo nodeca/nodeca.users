@@ -24,6 +24,10 @@ form.form-horizontal(data-on-submit='users.auth.login')
 
       .control-group
         .controls
+          include ../../../common/recaptcha
+
+      .control-group
+        .controls
           button.btn.btn-primary.btn-large(type='submit') #{self.t('users.auth.login_form.enter')}
           button.btn.btn-link(href=self.link_to('users.auth.login.eml.forgot'))
             | #{self.t('users.auth.login_form.forgot')}
