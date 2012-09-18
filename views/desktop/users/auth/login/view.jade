@@ -1,6 +1,6 @@
 form.form-horizontal(data-on-submit='users.auth.login')
   .row
-    .span6.offset3.well.well-form
+    .span8.offset2.well.well-form
 
       legend
         small.pull-right: a(href=self.link_to('users.auth.register.view')) #{self.t('common.auth.register')}
@@ -22,9 +22,7 @@ form.form-horizontal(data-on-submit='users.auth.login')
           .row-fluid
             input.span12(id='lgn_pass', name='pass', type='password')
 
-      .control-group
-        .controls
-          include ../../../common/recaptcha
+      include ../../../common/recaptcha
 
       .control-group
         .controls
