@@ -21,7 +21,9 @@ var params_schema = {
     type: 'string',
     required: true
   }
-}
+};
+
+
 nodeca.validate(params_schema);
 
 
@@ -34,7 +36,7 @@ nodeca.validate(params_schema);
 // - `id`   User._id
 //
 module.exports = function (params, next) {
-  var data  = this.data;
+  var data  = this.response.data;
   var query = User.findOne({ _id: params.id }).setOptions({ lean: true });
 
   query.select(user_in_fields.join(' ')).exec(function (err, user) {
@@ -47,10 +49,3 @@ module.exports = function (params, next) {
     next();
   });
 };
-
-
-// Build response
-nodeca.filters.after('@', function (params, next) {
-  this.response.data.user = this.data.user;
-  next();
-});
