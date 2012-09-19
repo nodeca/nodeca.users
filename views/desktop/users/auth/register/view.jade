@@ -27,6 +27,8 @@
             input.span12(id='reg_nick', name='nick', type='text')
             span.help-block #{self.t('users.auth.reg_form.nick_help')}
 
+      include ../../../common/recaptcha
+
       .control-group
         .controls
           button.btn.btn-primary.btn-large(type='submit') #{self.t('users.auth.reg_form.register')}
