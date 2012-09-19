@@ -16,25 +16,54 @@
 
 /*global $, _, nodeca, window*/
 
+
+// rebuild_login_form(elem, params) -> Void
+// - elem (Object): form DOM element
+// - params (Object): render template params
+//
+// rebuild form after some error
+//
+function rebuild_login_form(elem, params) {
+  elem.replaceWith(
+    nodeca.client.common.render('users.auth.login.view', params)
+  ).fadeIn();
+}
+
+
 /**
  *  client.common.auth.login($form, event)
  *
  *  send login request
  **/
 module.exports.login = function ($form, event) {
+  var message;
   var params = nodeca.client.common.form.getData($form);
+
+  var is_empty_fields = _.any(['email', 'pass', 'recaptcha_response_field'], function(field) {
+    return _.isEmpty(params[field]);
+  });
+  if (is_empty_fields) {
+    message = nodeca.runtime.t('users.auth.login_form.empty_fields');
+    rebuild_login_form($form, {email: params.email, error: message});
+    return false;
+  }
+
   // FIXME validate data and strengthen password
   nodeca.server.users.auth.login.plain.exec(params, function (err) {
-    if (err) {
-      $form.replaceWith(
-        nodeca.client.common.render('users.auth.login.view', {error: err.message})
-      ).fadeIn();
+    if (!!err) {
+      // auth errors
+      if (err.statusCode === 401) {
+        rebuild_login_form($form, {email: params.email, error: err.message});
+        return;
+      }
+      // FIXME push message to notification system
       return;
     }
     nodeca.client.common.history.navigateTo('users.profile');
   });
   return false;
 };
+
 
 /**
  *  client.common.auth.register($form, event)

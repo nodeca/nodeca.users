@@ -19,14 +19,42 @@ var params_schema = {
   },
   recaptcha_challenge_field: {
     type: "string",
-    required: true
   },
   recaptcha_response_field: {
     type: "string",
-    required: true
   }
 };
 nodeca.validate(params_schema);
+
+
+
+// find_user(email, callback) -> Void
+// - email (String): email or nick
+// - callback(function): callback function with params err and link(AuthLink)
+//
+// find user by email or nick
+function find_user(email, callback) {
+  AuthLink.findOne({'email': email})
+      .exec(function(err, link) {
+    if (err) {
+      callback(err);
+      return;
+    }
+    if (!!link) {
+      callback(err, link);
+      return;
+    }
+    // try find by nickname
+    User.findOne({ 'nick': email }).setOptions({ lean: true })
+      .select('_id').exec(function(err, user) {
+      if (err || !user) {
+        callback(err);
+        return;
+      }
+      AuthLink.findOne({'user_id': user._id}).exec(callback);
+    });
+  });
+}
 
 
 /**
@@ -47,38 +75,35 @@ module.exports = function (params, next) {
   var challenge = params.recaptcha_challenge_field;
   var response = params.recaptcha_response_field;
 
-  NLib.ReCaptcha.verify(private_key, user_ip, challenge, response, function(err){
+  NLib.ReCaptcha.verify(private_key, user_ip, challenge, response, function(err, result){
     if (err) {
       next(err);
+      return;
     }
-    // try find user by email or nick
-    AuthLink.findOne().or([{'email': params.email}, {'auth_data.nick': params.email}])
-        .exec(function(err, link) {
-      if (err) {
-        next(err);
-        return;
-      }
 
+    // user send wrong captcha code
+    if (!result) {
+      next({
+        statusCode: 401,
+        body: env.helpers.t('common.recaptcha.fail')
+      });
+      return;
+    }
+
+    // try find user by email or nick
+    find_user(params.email, function(err, link) {
+      // user not found or wrong password
       if (!link || !link.checkPass(params.pass)) {
-        // user not found or wrong password
         next({
           statusCode: 401,
           body: env.helpers.t('users.auth.login_form.error')
         });
+        return;
       }
 
-      // user found and say correct password
-      User.findOne({ '_id': link.user_id }).setOptions({ lean: true })
-          .select('_id').exec(function(err, user) {
-        if (err){
-          next(err);
-          return;
-        }
-
-        env.session.user_id = user._id;
-
-        next();
-      });
+      // all ok, write user to session
+      env.session.user_id = link.user_id;
+      next();
     });
   });
 };

@@ -32,6 +32,7 @@ i18n:
           error: |
             Can't login. Check, that your email and password are correct and try again.
             Or use link below to reset your password.
+          empty_fields: Please, fill all fields.
 
         reg_form:
           title: Registration
