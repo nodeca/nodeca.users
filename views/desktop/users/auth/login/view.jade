@@ -8,7 +8,8 @@ form.form-horizontal(data-on-submit='users.auth.login')
 
       - if(self.error)
         .control-group
-          p.text-error #{self.error}
+          .controls
+            p.text-error #{self.error}
 
       .control-group
         label.control-label(for='lgn_eml') #{self.t('users.auth.login_form.email')}
