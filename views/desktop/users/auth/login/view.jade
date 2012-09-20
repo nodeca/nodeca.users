@@ -15,7 +15,7 @@ form.form-horizontal(data-on-submit='users.auth.login')
         label.control-label(for='lgn_eml') #{self.t('users.auth.login_form.email')}
         .controls
           .row-fluid
-            input.span12(id='lgn_eml', name='email', type='text', autofocus=true, value=self.email)
+            input.span12(id='lgn_eml', name='email', type='text', value=self.email)
 
       .control-group
         label.control-label(for='lgn_pass') #{self.t('users.auth.login_form.password')}
