@@ -36,9 +36,14 @@ var User = module.exports.User = new mongoose.Schema({
 
 
 User.pre('save', function (next) {
-  this._uname = this.first_name +
-      ' (' + this.nick + ') ' + this.last_name;
   this._uname_short = this.nick;
+  if (!!this.first_name && !!this.last_name) {
+    this._uname = this.first_name +
+      ' (' + this.nick + ') ' + this.last_name;
+  }
+  else {
+    this._uname = this._uname_short;
+  }
   next();
 });
 
