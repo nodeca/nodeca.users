@@ -34,7 +34,7 @@ nodeca.validate(params_schema);
 //
 // find user by email or nick
 function find_user(email, callback) {
-  AuthLink.findOne({'email': email})
+  AuthLink.findOne({ 'providers.provider': 'email', 'providers.email': email })
       .exec(function(err, link) {
     if (err) {
       callback(err);
@@ -92,8 +92,14 @@ module.exports = function (params, next) {
 
     // try find user by email or nick
     find_user(params.email, function(err, link) {
+      var provider;
+      if (!!link) {
+        provider = _.find(link.providers, function(el) {
+          return el.provider === 'email';
+        });
+      }
       // user not found or wrong password
-      if (!link || !link.checkPass(params.pass)) {
+      if (!provider || !provider.checkPass(params.pass)) {
         next({
           statusCode: 401,
           body: env.helpers.t('users.auth.login_form.error')
