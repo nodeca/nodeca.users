@@ -35,6 +35,7 @@ var AuthChangeLog= new Schema({
   action: String,
   date: Date,
   ip:  String,
+  browser_agent: String,
   data: Schema.Types.Mixed
 });
 
