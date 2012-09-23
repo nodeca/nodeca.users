@@ -16,6 +16,12 @@
 
 /*global $, _, nodeca, window*/
 
+var login_in_fields = [
+  'email',
+  'pass',
+  'recaptcha_response_field'
+];
+
 
 // rebuild_login_form(elem, params) -> Void
 // - elem (Object): form DOM element
@@ -39,7 +45,7 @@ module.exports.login = function ($form, event) {
   var message;
   var params = nodeca.client.common.form.getData($form);
 
-  var is_empty_fields = _.any(['email', 'pass', 'recaptcha_response_field'], function(field) {
+  var is_empty_fields = _.any(login_in_fields, function(field) {
     return _.isEmpty(params[field]);
   });
   if (is_empty_fields) {
