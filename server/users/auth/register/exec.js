@@ -85,7 +85,7 @@ module.exports = function (params, next) {
           callback(err);
           return;
         }
-        if (_.isEmpty(doc)) {
+        if (!_.isEmpty(doc)) {
           errors['email'] = env.helpers.t('users.auth.reg_form.errors.email_exists');
         }
         callback();
@@ -99,7 +99,7 @@ module.exports = function (params, next) {
           callback(err);
           return;
         }
-        if (_.isEmpty(doc)) {
+        if (!_.isEmpty(doc)) {
           errors['nick'] = env.helpers.t('users.auth.reg_form.errors.nick_exists');
         }
       
