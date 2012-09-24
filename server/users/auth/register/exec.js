@@ -147,6 +147,7 @@ module.exports = function (params, next) {
           next(err);
           return;
         }
+        // FIXME put confirm mail to queue
         next();
       });
     });
