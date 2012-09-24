@@ -82,11 +82,15 @@ module.exports.register = function ($form, event) {
   nodeca.server.users.auth.register.exec(params, function(err, request){
     if (err) {
       if (err.statusCode === 401) {
-        //FIXME duplicate email err
+        // clear pass
+        params.pass = '';
+        // add errors
+        params.errors = err.message;
+        $form.replaceWith(
+          nodeca.client.common.render('users.auth.register.view', params)
+        ).fadeIn();
       }
-      else {
-        //FIXME parse error message and set errors by field
-      }
+      // FIXME push message to notification system
       return;
     }
     $form.replaceWith(

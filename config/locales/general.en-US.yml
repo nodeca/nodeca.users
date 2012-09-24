@@ -44,3 +44,6 @@ i18n:
           nick_help: How to show you on forum
           register: Register
           success: Сongratulations. Registration was successful.
+          errors:
+            email_exists: This email already exists
+            nick_exists: This nick already exists
