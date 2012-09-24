@@ -1,7 +1,7 @@
 "use strict";
 
 /*global nodeca, _*/
-var NLib = require('nlib');
+var ReCaptcha = require('nlib').ReCaptcha;
 var AuthLink = nodeca.models.users.AuthLink;
 var User = nodeca.models.users.User;
 
@@ -75,7 +75,7 @@ module.exports = function (params, next) {
   var challenge = params.recaptcha_challenge_field;
   var response = params.recaptcha_response_field;
 
-  NLib.ReCaptcha.verify(private_key, user_ip, challenge, response, function(err, result){
+  ReCaptcha.verify(private_key, user_ip, challenge, response, function(err, result){
     if (err) {
       next(err);
       return;
