@@ -2,7 +2,9 @@
 
 /*global nodeca, _*/
 var ReCaptcha = require('nlib').ReCaptcha;
+
 var AuthLink = nodeca.models.users.AuthLink;
+var AuthChangeLog= nodeca.models.users.AuthChangeLog;
 var User = nodeca.models.users.User;
 
 
@@ -94,7 +96,8 @@ module.exports = function (params, next) {
 
     // try find user by email or nick
     find_user(params.email, function(err, link) {
-      var provider;
+      var provider,
+          log;
       if (!!link) {
         provider = _.find(link.providers, function(el) {
           return el.provider === 'email';
@@ -110,6 +113,16 @@ module.exports = function (params, next) {
         });
         return;
       }
+
+      log = new AuthChangeLog({
+        user_id: link.user_id,
+        action: 'login',
+        provider: link.provider,
+        date: new Date(),
+        ip: env.request.ip,
+        user_agent: env.request.user_agent
+      });
+      log.save(function(){ });
 
       // all ok, write user to session
       env.session.user_id = link.user_id;

@@ -4,7 +4,9 @@
 var NLib = require('nlib');
 var Async = NLib.Vendor.Async;
 var ReCaptcha = NLib.ReCaptcha;
+
 var AuthLink = nodeca.models.users.AuthLink;
+var AuthChangeLog= nodeca.models.users.AuthChangeLog;
 var User = nodeca.models.users.User;
 
 
@@ -143,10 +145,22 @@ module.exports = function (params, next) {
       link.providers.push(provider);
 
       link.save(function(err, link){
+        var log;
         if (err) {
           next(err);
           return;
         }
+
+        log = new AuthChangeLog({
+          user_id: link.user_id,
+          action: 'create',
+          provider: link.provider,
+          date: new Date(),
+          ip: env.request.ip,
+          user_agent: env.request.user_agent
+        });
+        log.save(function() { });
+
         // FIXME put confirm mail to queue
         next();
       });

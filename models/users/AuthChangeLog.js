@@ -40,6 +40,12 @@ var AuthChangeLog= new Schema({
   data: Schema.Types.Mixed
 });
 
+// Fetch users action
+AuthChangeLog.index({
+  user_id:  1,
+  action:   1,
+  date:     -1
+});
 
 module.exports.__init__ = function __init__() {
   return mongoose.model('users.AuthChangeLog', AuthChangeLog);
