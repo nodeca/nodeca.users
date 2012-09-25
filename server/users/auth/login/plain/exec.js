@@ -85,7 +85,7 @@ module.exports = function (params, next) {
     if (!result) {
       next({
         statusCode: 401,
-        body: env.helpers.t('common.recaptcha.fail')
+        body: env.helpers.t('common.recaptcha.code_incorrect')
       });
       return;
     }
