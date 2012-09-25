@@ -33,9 +33,10 @@ var Schema = mongoose.Schema;
 var AuthChangeLog= new Schema({
   user_id: Schema.ObjectId,
   action: String,
+  provider: String,
   date: Date,
   ip:  String,
-  browser_agent: String,
+  user_agent: String,
   data: Schema.Types.Mixed
 });
 
