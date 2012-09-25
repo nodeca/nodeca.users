@@ -62,7 +62,8 @@ module.exports.login = function ($form, event) {
         rebuild_login_form($form, {email: params.email, error: message});
         return;
       }
-      // FIXME push message to notification system
+      message = nodeca.runtime.t('common.notice.internal_server_error');
+      nodeca.client.common.notice.show(message);
       return;
     }
     nodeca.client.common.history.navigateTo('users.profile');
@@ -80,6 +81,7 @@ module.exports.register = function ($form, event) {
   var params = nodeca.client.common.form.getData($form);
   // FIXME validate data and strengthen password
   nodeca.server.users.auth.register.exec(params, function(err, request){
+    var message;
     if (err) {
       if (err.statusCode === 401) {
         // clear pass
@@ -90,7 +92,8 @@ module.exports.register = function ($form, event) {
           nodeca.client.common.render('users.auth.register.view', params)
         ).fadeIn();
       }
-      // FIXME push message to notification system
+      message = nodeca.runtime.t('common.notice.internal_server_error');
+      nodeca.client.common.notice.show(message);
       return;
     }
     $form.replaceWith(
