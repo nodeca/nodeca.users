@@ -83,7 +83,7 @@ module.exports.register = function ($form, event) {
   nodeca.server.users.auth.register.exec(params, function(err, request){
     var message;
     if (err) {
-      if (err.statusCode === 401) {
+      if (err.statusCode === 409) {
         // clear pass
         params.pass = '';
         // add errors
@@ -91,6 +91,7 @@ module.exports.register = function ($form, event) {
         $form.replaceWith(
           nodeca.client.common.render('users.auth.register.view', params)
         ).fadeIn();
+        return;
       }
       message = nodeca.runtime.t('common.notice.internal_server_error');
       nodeca.client.common.notice.show(message);

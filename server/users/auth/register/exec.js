@@ -113,7 +113,7 @@ module.exports = function (params, next) {
     }
     if (!_.isEmpty(errors)) {
       next({
-        statusCode: 401,
+        statusCode: 409,
         body: errors
       });
       return;
