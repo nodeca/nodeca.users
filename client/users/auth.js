@@ -54,7 +54,6 @@ module.exports.login = function ($form, event) {
     return false;
   }
 
-  // FIXME validate data and strengthen password
   nodeca.server.users.auth.login.plain.exec(params, function (err) {
     if (!!err) {
       message = _.values(err.message)[0];
@@ -79,7 +78,6 @@ module.exports.login = function ($form, event) {
  **/
 module.exports.register = function ($form, event) {
   var params = nodeca.client.common.form.getData($form);
-  // FIXME validate data and strengthen password
   nodeca.server.users.auth.register.exec(params, function(err, request){
     var message;
     if (err) {

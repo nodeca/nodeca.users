@@ -13,9 +13,10 @@ form.form-horizontal(data-on-submit='users.auth.register')
         .controls
           .row-fluid
             input.span12(id='reg_eml', name='email', type='email', value=self.email)
-            span.help-block #{self.t('users.auth.reg_form.email_help')}
             - if (err_class !== '')
               span.help-block #{self.errors.email}
+            - else
+              span.help-block #{self.t('users.auth.reg_form.email_help')}
 
       - err_class = (!!self.errors && !!self.errors.pass) ? 'error': ''
       .control-group(class=err_class)
@@ -23,9 +24,10 @@ form.form-horizontal(data-on-submit='users.auth.register')
         .controls
           .row-fluid
             input.span12(id='reg_pass', name='pass', type='password')
-            span.help-block #{self.t('users.auth.reg_form.password_help')}
             - if (err_class !== '')
               span.help-block #{self.errors.pass}
+            - else
+              span.help-block #{self.t('users.auth.reg_form.password_help')}
 
       - err_class = (!!self.errors && !!self.errors.nick) ? 'error': ''
       .control-group(class=err_class)
@@ -33,9 +35,11 @@ form.form-horizontal(data-on-submit='users.auth.register')
         .controls
           .row-fluid
             input.span12(id='reg_nick', name='nick', type='text', value=self.nick)
-            span.help-block #{self.t('users.auth.reg_form.nick_help')}
             - if (err_class !== '')
               span.help-block #{self.errors.nick}
+            -else
+              span.help-block #{self.t('users.auth.reg_form.nick_help')}
+              
 
       include ../../../common/recaptcha
 
