@@ -85,7 +85,9 @@ module.exports = function (params, next) {
     if (!result) {
       next({
         statusCode: 401,
-        body: env.helpers.t('common.recaptcha.code_incorrect')
+        body: {
+          recaptcha: env.helpers.t('common.recaptcha.code_incorrect')
+        }
       });
       return;
     }
@@ -102,7 +104,9 @@ module.exports = function (params, next) {
       if (!provider || !provider.checkPass(params.pass)) {
         next({
           statusCode: 401,
-          body: env.helpers.t('users.auth.login_form.error')
+          body: {
+            auth: env.helpers.t('users.auth.login_form.error')
+          }
         });
         return;
       }

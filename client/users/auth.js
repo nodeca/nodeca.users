@@ -57,9 +57,9 @@ module.exports.login = function ($form, event) {
   // FIXME validate data and strengthen password
   nodeca.server.users.auth.login.plain.exec(params, function (err) {
     if (!!err) {
-      // auth errors
+      message = _.values(err.message)[0];
       if (err.statusCode === 401) {
-        rebuild_login_form($form, {email: params.email, error: err.message});
+        rebuild_login_form($form, {email: params.email, error: message});
         return;
       }
       // FIXME push message to notification system
