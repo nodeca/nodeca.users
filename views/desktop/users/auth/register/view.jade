@@ -34,7 +34,7 @@ form.form-horizontal(data-on-submit='users.auth.register')
         label.control-label(for='reg_nick') #{self.t('users.auth.reg_form.nick')}
         .controls
           .row-fluid
-            input.span12(id='reg_nick', name='nick', type='text', value=self.nick)
+            input.span12(id='reg_nick', name='nick', type='text', value=self.nick, data-on-change='users.auth.check_nick')
             - if (err_class !== '')
               span.help-block #{self.errors.nick}
             -else
