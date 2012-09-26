@@ -49,7 +49,7 @@ module.exports.login = function ($form, event) {
     return _.isEmpty(params[field]);
   });
   if (is_empty_fields) {
-    message = nodeca.runtime.t('users.auth.login_form.empty_fields');
+    message = nodeca.runtime.t('users.auth.login_form.error.not_filled');
     rebuild_login_form($form, {email: params.email, error: message});
     return false;
   }
@@ -61,12 +61,14 @@ module.exports.login = function ($form, event) {
         rebuild_login_form($form, {email: params.email, error: message});
         return;
       }
-      message = nodeca.runtime.t('common.notice.internal_server_error');
+      message = nodeca.runtime.t('common.error.server_internal');
       nodeca.client.common.notice.show(message);
       return;
     }
     nodeca.client.common.history.navigateTo('users.profile');
   });
+
+  // Disable regular click
   return false;
 };
 
@@ -78,8 +80,10 @@ module.exports.login = function ($form, event) {
  **/
 module.exports.register = function ($form, event) {
   var params = nodeca.client.common.form.getData($form);
-  nodeca.server.users.auth.register.exec(params, function(err, request){
+
+  nodeca.server.users.auth.register.exec(params, function(err){
     var message;
+
     if (err) {
       if (err.statusCode === 409) {
         // clear pass
@@ -91,14 +95,17 @@ module.exports.register = function ($form, event) {
         ).fadeIn();
         return;
       }
-      message = nodeca.runtime.t('common.notice.internal_server_error');
+      message = nodeca.runtime.t('common.error.server_internal');
       nodeca.client.common.notice.show(message);
       return;
     }
+
     $form.replaceWith(
       nodeca.client.common.render('users.auth.register.success')
     ).fadeIn();
   });
+
+  // Disable regular click
   return false;
 };
 
@@ -114,6 +121,7 @@ module.exports.check_nick = function($elem, event) {
   nodeca.server.users.auth.register.check_nick({nick: nick}, function(err, request){
     var $group = $elem.parents('.control-group:first');
     var message;
+
     if (err) {
       if (err.statusCode === 409) {
         $group.addClass('error');
@@ -126,6 +134,7 @@ module.exports.check_nick = function($elem, event) {
       nodeca.client.common.notice.show(message);
       return;
     }
+
     if ($group.hasClass('error')) {
       $group.removeClass('error');
 
