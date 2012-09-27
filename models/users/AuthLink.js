@@ -42,14 +42,34 @@ var SHA_ITERATIONS = 1000;
  * Create provider sub-document
  **/
 var AuthProvider = module.exports.AuthProviders = new Schema({
-  provider:  { type: String, required: true },  // provider type (email, yandex ...)
-  email:     String,  // user email
-  pass:      String,  // password, only for email provider
-  salt:      String,  // password salt, only for email provider
-  state:     Number,  // link state
-  ext_id:    String   // provider internal id, need for oauth providers
-  // FIXME add specail fields for oauth providers
-}, { _id: false, strict: true });
+
+  // Provider types. We plan to support:
+  //
+  // - `email` - just email/password pair
+  // - `yandex`, `facebook`, `vkontakte`, `twitter` - different oauth (not supported now)
+  provider:  { type: String, required: true },
+
+  // Provider state
+  // FIXME: define states (active/validating)
+  state:    Number,
+
+  // Email is mandatory to `email` provider
+  // We also will require it everywhere, when possible (twitter don't have it)
+  email:    String,  // user email
+
+  // Password/Salt - for email provider only
+  pass:     String,
+  salt:     String,
+
+  // For oauth providers only, external user id
+  ext_id:   String,
+
+  // metadata, if we like to extract extended info from oauth providers
+  meta:     {}
+
+});
+
+
 
 // to_hash(password, salt) -> String
 // - password(string): user pasword
@@ -97,25 +117,22 @@ AuthProvider.methods.checkPass = function(password) {
   return this.pass === to_hash(password, this.salt);
 };
 
+//
+// Subdocument indexes
+//
 
-// Email provider. Fetch link by email
-// Action: login by email
+// used in:
+// - login by email
+// - check that email is unique
 AuthProvider.index({
-  provider: 1,
-  email: 1
+  email: 1,
+  provider: 1
 });
 
-// Oauth providers. Fetch link by ixternal user id
-// Action: login by oauth2
+// used in login via oauth
 AuthProvider.index({
-  provider: 1,
-  ext_id: 1
-});
-
-// Check all links for email exists
-// Action: user registration
-AuthProvider.index({
-  email: 1
+  ext_id: 1,
+  provider: 1
 });
 
 
@@ -130,6 +147,9 @@ var AuthLink = module.exports.AuthLink = new Schema({
   providers:          [ AuthProvider ]
 }, { strict: true });
 
+// used in:
+// - login via nickname
+// - extract auth info in other cases
 AuthLink.index({
   user_id: 1
 });

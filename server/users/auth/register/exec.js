@@ -151,16 +151,6 @@ module.exports = function (params, next) {
           return;
         }
 
-        log = new AuthChangeLog({
-          user_id: link.user_id,
-          action: 'create',
-          provider: link.provider,
-          date: new Date(),
-          ip: env.request.ip,
-          user_agent: env.request.user_agent
-        });
-        log.save(function() { });
-
         // FIXME put confirm mail to queue
         next();
       });
