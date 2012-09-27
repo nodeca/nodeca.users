@@ -1,43 +1,47 @@
 .row
   .span8.offset2.well.well-form
     form.form-horizontal(data-on-submit='users.auth.register')
+
       legend
         small.pull-right: a(href=self.link_to('users.auth.login.view')) #{self.t('common.auth.login')}
         | #{self.t('users.auth.reg_form.title')}
 
-      - var err_class
-      - err_class = (!!self.errors && !!self.errors.email) ? 'error' : ''
-      .control-group(class=err_class)
+
+      - self.errors = self.errors || {}
+      - var _group_class, _input_help_text
+
+
+      - _group_class = !!self.errors.email ? 'error' : ''
+      - _input_help_text = (_group_class !== '') ? self.errors.email : self.t('users.auth.reg_form.email_help')
+
+      .control-group(class=_group_class)
         label.control-label(for='reg_eml') #{self.t('users.auth.reg_form.email')}
         .controls
           .row-fluid
             input.span12(id='reg_eml', name='email', type='email', value=self.email)
-            - if (err_class !== '')
-              span.help-block #{self.errors.email}
-            - else
-              span.help-block #{self.t('users.auth.reg_form.email_help')}
+            span.help-block #{_input_help_text}
 
-      - err_class = (!!self.errors && !!self.errors.pass) ? 'error': ''
-      .control-group(class=err_class)
+
+      - _group_class = !!self.errors.pass ? 'error' : ''
+      - _input_help_text = (_group_class !== '') ? self.errors.pass : self.t('users.auth.reg_form.password_help')
+
+      .control-group(class=_group_class)
         label.control-label(for='reg_pass') #{self.t('users.auth.reg_form.password')}
         .controls
           .row-fluid
             input.span12(id='reg_pass', name='pass', type='password')
-            - if (err_class !== '')
-              span.help-block #{self.errors.pass}
-            - else
-              span.help-block #{self.t('users.auth.reg_form.password_help')}
+            span.help-block #{_input_help_text}
 
-      - err_class = (!!self.errors && !!self.errors.nick) ? 'error': ''
-      .control-group(class=err_class)
+
+      - _group_class = !!self.errors.nick ? 'error' : ''
+      - _input_help_text = (_group_class !== '') ? self.errors.nick : self.t('users.auth.reg_form.nick_help')
+
+      .control-group(class=_group_class)
         label.control-label(for='reg_nick') #{self.t('users.auth.reg_form.nick')}
         .controls
           .row-fluid
             input.span12(id='reg_nick', name='nick', type='text', value=self.nick, data-on-change='users.auth.check_nick')
-            - if (err_class !== '')
-              span.help-block #{self.errors.nick}
-            -else
-              span.help-block #{self.t('users.auth.reg_form.nick_help')}
+            span.help-block #{_input_help_text}
               
 
       include ../../../common/recaptcha
