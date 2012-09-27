@@ -13,6 +13,10 @@
 
   "main"            : "./index.js",
 
+  "dependencies"    : {
+                        "bcrypt"       : "~ 0.7.2"
+                      },
+
   "devDependencies" : { "vows": "~ 0.6.0" },
   "engines"         : { "node": ">= 0.6.0" }
 }

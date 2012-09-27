@@ -32,7 +32,11 @@ var Schema = mongoose.Schema;
 
 var Crypto = require('crypto');
 
-var SHA_ITERATIONS = 1000;
+/* 3rd-paty modules */
+
+var bcrypt = require('bcrypt');
+
+
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -59,7 +63,7 @@ var AuthProvider = module.exports.AuthProviders = new Schema({
 
   // Password/Salt - for email provider only
   pass:     String,
-  salt:     String,
+  //salt:     String, // Bcrypt store salt right in hash string
 
   // For oauth providers only, external user id
   ext_id:   String,
@@ -69,25 +73,6 @@ var AuthProvider = module.exports.AuthProviders = new Schema({
 
 });
 
-
-
-// to_hash(password, salt) -> String
-// - password(string): user pasword
-// - salt(string):     hash salt
-var to_hash = function(password, salt) {
-  var hash = Crypto.createHmac('sha256', salt).update(password).digest('hex');
-  for (var i=0; i < SHA_ITERATIONS; i++) {
-    hash = Crypto.createHash('sha256').update(hash).digest('hex');
-  }
-  return hash;
-};
-
-// unique_salt() -> String
-//
-// Generate unique salt
-function unique_salt() {
-  return Crypto.randomBytes(22).toString('hex');
-}
 
 /**
  * models.users.AuthLink#providers.AuthProvider#setPass(password) -> void
@@ -99,8 +84,7 @@ AuthProvider.methods.setPass = function(password) {
   if (this.provider !== 'email') {
     return false;
   }
-  this.salt = unique_salt();
-  this.pass = to_hash(password, this.salt);
+  this.pass = bcrypt.hashSync(password, 10);
 };
 
 
@@ -114,7 +98,7 @@ AuthProvider.methods.checkPass = function(password) {
   if (this.provider !== 'email') {
     return false;
   }
-  return this.pass === to_hash(password, this.salt);
+  return bcrypt.compareSync(password, this.pass);
 };
 
 //
