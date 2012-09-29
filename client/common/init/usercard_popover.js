@@ -19,7 +19,7 @@ function getUserInfo(id, callback) {
 // Dummy helper to render usercard_popover view with given data
 //
 function render(data) {
-  return nodeca.client.common.render('common.widgets.usercard_popover', data);
+  return nodeca.client.common.render.template('common.widgets.usercard_popover', data);
 }
 
 
