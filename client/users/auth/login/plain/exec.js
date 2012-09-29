@@ -70,7 +70,7 @@ module.exports = function ($form, event) {
       return;
     }
 
-    nodeca.client.common.history.navigateTo('users.profile');
+    window.location = nodeca.runtime.router.linkTo('users.profile');
   });
 
   // Disable regular click
