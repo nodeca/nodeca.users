@@ -38,7 +38,7 @@ module.exports.check_nick = function($elem, event) {
         return;
       }
       message = nodeca.runtime.t('common.notice.internal_server_error');
-      nodeca.client.common.notice.show(message);
+      nodeca.client.common.notice({type: 'error', text: message});
       return;
     }
 

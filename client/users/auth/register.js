@@ -40,7 +40,7 @@ module.exports = function ($form, event) {
         return;
       }
       message = nodeca.runtime.t('common.error.server_internal');
-      nodeca.client.common.notice.show(message);
+      nodeca.client.common.notice({type: 'error', text: message});
       return;
     }
 

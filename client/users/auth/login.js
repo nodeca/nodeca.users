@@ -45,10 +45,11 @@ module.exports = function ($form, event) {
   var message;
   var params = nodeca.client.common.form.getData($form);
 
-  var is_empty_fields = _.any(login_in_fields, function(field) {
+  var has_empty_fields = _.any(login_in_fields, function(field) {
     return _.isEmpty(params[field]);
   });
-  if (is_empty_fields) {
+
+  if (has_empty_fields) {
     message = nodeca.runtime.t('users.auth.login_form.error.not_filled');
     rebuild_login_form($form, {email: params.email, error: message});
     return false;
@@ -57,14 +58,17 @@ module.exports = function ($form, event) {
   nodeca.server.users.auth.login.plain.exec(params, function (err) {
     if (!!err) {
       message = _.values(err.message)[0];
+
       if (err.statusCode === 401) {
         rebuild_login_form($form, {email: params.email, error: message});
         return;
       }
+
       message = nodeca.runtime.t('common.error.server_internal');
-      nodeca.client.common.notice.show(message);
+      nodeca.client.common.notice({type: 'error', text: message});
       return;
     }
+
     nodeca.client.common.history.navigateTo('users.profile');
   });
 
