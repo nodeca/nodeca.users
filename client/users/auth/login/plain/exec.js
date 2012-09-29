@@ -13,6 +13,14 @@
  *  client.common.auth
  **/
 
+/**
+ *  client.common.auth.login
+ **/
+
+/**
+ *  client.common.auth.login.plain
+ **/
+
 
 /*global $, _, nodeca, window*/
 
@@ -37,7 +45,7 @@ function rebuild_login_form(elem, params) {
 
 
 /**
- *  client.common.auth.login($form, event)
+ *  client.common.auth.login.plain.exec($form, event)
  *
  *  send login request
  **/

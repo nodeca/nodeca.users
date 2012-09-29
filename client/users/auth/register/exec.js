@@ -13,12 +13,16 @@
  *  client.common.auth
  **/
 
+/**
+ *  client.common.auth.register
+ **/
+
 
 /*global $, _, nodeca, window*/
 
 
 /**
- *  client.common.auth.register($form, event)
+ *  client.common.auth.register.exec($form, event)
  *
  *  send registration data on server
  **/

@@ -13,17 +13,21 @@
  *  client.common.auth
  **/
 
+/**
+ *  client.common.auth.register
+ **/
+
 
 /*global $, _, nodeca, window*/
 
 
 /**
- *  client.common.auth.check_nick($elem, event)
+ *  client.common.auth.register.check_nick($elem, event)
  *
  *  send nick value on server
  *  and show error if nick exists
  **/
-module.exports.check_nick = function ($elem, event) {
+module.exports = function ($elem, event) {
   var nick = $elem.val();
 
   nodeca.server.users.auth.register.check_nick({nick: nick}, function(err, request){
