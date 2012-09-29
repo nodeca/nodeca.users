@@ -38,9 +38,7 @@ module.exports = function ($form, event) {
         params.pass = '';
         // add errors
         params.errors = err.message;
-        $form.replaceWith(
-          nodeca.client.common.render('users.auth.register.view', params)
-        ).fadeIn();
+        nodeca.client.common.render.page('users.auth.register.view', params);
         return;
       }
       message = nodeca.runtime.t('common.error.server_internal');
@@ -48,9 +46,7 @@ module.exports = function ($form, event) {
       return;
     }
 
-    $form.replaceWith(
-      nodeca.client.common.render('users.auth.register.success')
-    ).fadeIn();
+    nodeca.client.common.render.page('users.auth.register.success');
   });
 
   // Disable regular click
