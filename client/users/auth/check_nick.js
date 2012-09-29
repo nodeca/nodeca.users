@@ -23,8 +23,9 @@
  *  send nick value on server
  *  and show error if nick exists
  **/
-module.exports.check_nick = function($elem, event) {
+module.exports.check_nick = function ($elem, event) {
   var nick = $elem.val();
+
   nodeca.server.users.auth.register.check_nick({nick: nick}, function(err, request){
     var $group = $elem.parents('.control-group:first');
     var message;
@@ -38,7 +39,7 @@ module.exports.check_nick = function($elem, event) {
         return;
       }
       message = nodeca.runtime.t('common.notice.internal_server_error');
-      nodeca.client.common.notice({type: 'error', text: message});
+      nodeca.client.common.notice('error', message);
       return;
     }
 
