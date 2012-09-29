@@ -31,19 +31,6 @@ var login_in_fields = [
 ];
 
 
-// rebuild_login_form(elem, params) -> Void
-// - elem (Object): form DOM element
-// - params (Object): render template params
-//
-// rebuild form after some error
-//
-function rebuild_login_form(elem, params) {
-  elem.replaceWith(
-    nodeca.client.common.render('users.auth.login.view', params)
-  ).fadeIn();
-}
-
-
 /**
  *  client.common.auth.login.plain.exec($form, event)
  *
@@ -59,7 +46,10 @@ module.exports = function ($form, event) {
 
   if (has_empty_fields) {
     message = nodeca.runtime.t('users.auth.login_form.error.not_filled');
-    rebuild_login_form($form, {email: params.email, error: message});
+    nodeca.client.common.render.page('users.auth.login.view', {
+      email: params.email,
+      error: message
+    });
     return false;
   }
 
@@ -68,7 +58,10 @@ module.exports = function ($form, event) {
       message = _.values(err.message)[0];
 
       if (err.statusCode === 401) {
-        rebuild_login_form($form, {email: params.email, error: message});
+        nodeca.common.client.render.page('users.auth.login.view', {
+          email: params.email,
+          error: message
+        });
         return;
       }
 
