@@ -34,8 +34,6 @@ module.exports = function ($form, event) {
 
     if (err) {
       if (err.statusCode === 409) {
-        // clear pass
-        params.pass = '';
         // add errors
         params.errors = err.message;
         nodeca.client.common.render.page('users.auth.register.view', params);

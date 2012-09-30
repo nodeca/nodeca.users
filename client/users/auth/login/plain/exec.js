@@ -48,6 +48,7 @@ module.exports = function ($form, event) {
     message = nodeca.runtime.t('users.auth.login_form.error.not_filled');
     nodeca.client.common.render.page('users.auth.login.view', {
       email: params.email,
+      pass:  params.pass,
       error: message
     });
     return false;
@@ -60,6 +61,7 @@ module.exports = function ($form, event) {
       if (err.statusCode === 401) {
         nodeca.common.client.render.page('users.auth.login.view', {
           email: params.email,
+          pass:  params.pass,
           error: message
         });
         return;
