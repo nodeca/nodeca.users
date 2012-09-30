@@ -29,7 +29,7 @@
         label.control-label(for='reg_pass') #{self.t('users.auth.reg_form.password')}
         .controls
           .row-fluid
-            input.span12(id='reg_pass', name='pass', type='password')
+            input.span12(id='reg_pass', name='pass', type='password', value=self.pass)
             span.help-block #{_input_help_text}
 
 
