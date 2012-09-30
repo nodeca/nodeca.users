@@ -35,7 +35,7 @@ module.exports = function (params, next) {
     if (!_.isEmpty(doc)) {
       next({
         statusCode: 409,
-        body: { nick: env.helpers.t('users.auth.reg_form.errors.nick_exists')}
+        body: { nick: env.helpers.t('users.auth.reg_form.error.nick_busy')}
       });
       return;
     }
