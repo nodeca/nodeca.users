@@ -31,12 +31,12 @@ module.exports = function ($elem, event) {
   var nick = $elem.val();
 
   nodeca.server.users.auth.register.check_nick({nick: nick}, function(err, request){
-    var $group = $elem.parents('.control-group:first');
+    var $controll_group = $elem.parents('.control-group:first');
     var message;
 
     if (err) {
       if (err.statusCode === 409) {
-        $group.addClass('error');
+        $controll_group.addClass('error');
 
         message = err.message['nick'];
         $elem.parent().find('.help-block').text(message);
@@ -47,8 +47,8 @@ module.exports = function ($elem, event) {
       return;
     }
 
-    if ($group.hasClass('error')) {
-      $group.removeClass('error');
+    if ($controll_group.hasClass('error')) {
+      $controll_group.removeClass('error');
 
       message = nodeca.runtime.t('users.auth.reg_form.nick_help');
       $elem.parent().find('.help-block').text(message);
