@@ -24,7 +24,7 @@
 
 /*global $, _, nodeca, window*/
 
-var login_in_fields = [
+var login_required_fields = [
   'email',
   'pass',
   'recaptcha_response_field'
@@ -40,10 +40,12 @@ module.exports = function ($form, event) {
   var message;
   var params = nodeca.client.common.form.getData($form);
 
-  var has_empty_fields = _.any(login_in_fields, function(field) {
+  var has_empty_fields = _.any(login_required_fields, function(field) {
     return _.isEmpty(params[field]);
   });
 
+  // do minimal check prior to send data to server
+  // all required fields must be filled
   if (has_empty_fields) {
     message = nodeca.runtime.t('users.auth.login_form.error.not_filled');
     nodeca.client.common.render.page('users.auth.login.view', {
@@ -57,7 +59,9 @@ module.exports = function ($form, event) {
   }
 
   nodeca.server.users.auth.login.plain.exec(params, function (err) {
-    if (!!err) {
+
+    if (err) {
+      // failed login/password or captcha
       if (err.statusCode === 401) {
         nodeca.client.common.render.page('users.auth.login.view', {
           email: params.email,
@@ -67,6 +71,7 @@ module.exports = function ($form, event) {
         return;
       }
 
+      // something unexpected
       message = nodeca.runtime.t('common.io.error.server_internal');
       nodeca.client.common.notice('error', message);
       return;

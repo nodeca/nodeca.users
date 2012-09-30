@@ -6,7 +6,6 @@ var Async = NLib.Vendor.Async;
 var ReCaptcha = NLib.ReCaptcha;
 
 var AuthLink = nodeca.models.users.AuthLink;
-var AuthChangeLog= nodeca.models.users.AuthChangeLog;
 var User = nodeca.models.users.User;
 
 
@@ -29,10 +28,10 @@ var params_schema = {
     required: true
   },
   recaptcha_challenge_field: {
-    type: "string",
+    type: "string"
   },
   recaptcha_response_field: {
-    type: "string",
+    type: "string"
   }
 };
 nodeca.validate(params_schema);
@@ -55,9 +54,6 @@ module.exports = function (params, next) {
 
   var errors = {};
 
-  // FIXME get real back url
-  var back_url = nodeca.runtime.router.linkTo('forum.index');
-
   Async.series([
     // recaptcha validation
     function(callback) {
@@ -73,13 +69,15 @@ module.exports = function (params, next) {
         }
 
         // user send wrong captcha code
+        // don't customize form text, just highlight field
         if (!result) {
-          errors['recaptcha'] = env.helpers.t('common.recaptcha.code_incorrect');
+          errors['recaptcha'] = '';
         }
         callback();
       });
     },
-    // is email uniq?
+
+    // is email unique?
     function(callback) {
       AuthLink.findOne({ 'providers.email': params.email }).setOptions({ lean: true })
           .exec(function(err, doc){
@@ -87,12 +85,16 @@ module.exports = function (params, next) {
           callback(err);
           return;
         }
-        if (!_.isEmpty(doc)) {
+
+        // Accumulate error and continue check next params
+        if (doc) {
           errors['email'] = env.helpers.t('users.auth.reg_form.error.email_busy');
         }
+
         callback();
       });
     },
+
     // is nick unque?
     function(callback) {
       User.findOne({ 'nick': params.nick}).setOptions({ lean: true })
@@ -101,7 +103,9 @@ module.exports = function (params, next) {
           callback(err);
           return;
         }
-        if (!_.isEmpty(doc)) {
+
+        // Accumulate error and continue check next params
+        if (doc) {
           errors['nick'] = env.helpers.t('users.auth.reg_form.error.nick_busy');
         }
       
@@ -113,6 +117,8 @@ module.exports = function (params, next) {
     if (err) {
       next(err);
     }
+
+    // if problem with params - return error
     if (!_.isEmpty(errors)) {
       next({
         statusCode: 409,
@@ -121,14 +127,15 @@ module.exports = function (params, next) {
       return;
     }
 
+    // Start creating user.
+
     user = new User(params);
-    user._last_visit_ts = user.joined_ts = new Date();
-    user._last_visit_ip = env.request.ip;
-    user.locale = nodeca.config.locales['default'];
+    user.joined_ts = new Date();
+    user.joined_ip = env.request.ip;
     // FIXME set groups
 
     user.save(function(err, user) {
-      var link,
+      var auth,
           provider;
 
       if (err) {
@@ -136,24 +143,17 @@ module.exports = function (params, next) {
         return;
       }
 
-      link = new AuthLink({ 'user_id': user._id });
-      provider = link.providers.create({
+      auth = new AuthLink({ 'user_id': user._id });
+
+      provider = auth.providers.create({
         'provider': 'email',
         'email': params.email
       });
       provider.setPass(params.pass);
-      link.providers.push(provider);
 
-      link.save(function(err, link){
-        var log;
-        if (err) {
-          next(err);
-          return;
-        }
+      auth.providers.push(provider);
 
-        // FIXME put confirm mail to queue
-        next();
-      });
+      auth.save(next());
     });
   });
 };

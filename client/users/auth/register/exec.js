@@ -33,12 +33,15 @@ module.exports = function ($form, event) {
     var message;
 
     if (err) {
+      // Wrong form params - regenerate page with hightlighted errors
       if (err.statusCode === 409) {
         // add errors
         params.errors = err.message;
         nodeca.client.common.render.page('users.auth.register.view', params);
         return;
       }
+
+      // something fatal
       message = nodeca.runtime.t('common.io.error.server_internal');
       nodeca.client.common.notice('error', message);
       return;

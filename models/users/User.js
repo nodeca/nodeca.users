@@ -17,9 +17,8 @@ var User = module.exports.User = new mongoose.Schema({
   , nick              : String
 
   , joined_ts         : Date
+  , joined_ip         : String
 
-  , primary_group     : Schema.ObjectId
-  , secondary_groups  : [Schema.ObjectId]
   , locale            : String
 
   , _uname            : String
@@ -27,14 +26,11 @@ var User = module.exports.User = new mongoose.Schema({
 
   , _post_count       : { type: Number, default: 0 }
 
-  , _last_visit_ts    : Date
-  , _last_visit_ip    : String
-
   , _warning_points   : { type: Number, default: 0 }
-  , _banned_till_ts   : Date
+
 });
 
-
+// FIXME: make denormalisation customizeable
 User.pre('save', function (next) {
   this._uname_short = this.nick;
   if (!!this.first_name && !!this.last_name) {

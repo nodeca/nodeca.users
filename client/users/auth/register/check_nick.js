@@ -31,28 +31,33 @@ module.exports = function ($elem, event) {
   var nick = $elem.val();
 
   nodeca.server.users.auth.register.check_nick({nick: nick}, function(err, request){
-    var $controll_group = $elem.parents('.control-group:first');
-    var message;
+    var $control_group = $elem.parents('.control-group:first');
 
     if (err) {
+      // Problems with nick
       if (err.statusCode === 409) {
-        $controll_group.addClass('error');
+        $control_group.addClass('error');
 
-        message = err.message['nick'];
-        $elem.parent().find('.help-block').text(message);
+        $control_group.find('.help-block').text(
+          err.message['nick']
+        );
         return;
       }
-      message = nodeca.runtime.t('common.io.error.server_internal');
-      nodeca.client.common.notice('error', message);
+
+      // something fatal
+      nodeca.client.common.notice('error',
+        nodeca.runtime.t('common.io.error.server_internal')
+      );
       return;
     }
 
-    if ($controll_group.hasClass('error')) {
-      $controll_group.removeClass('error');
+    // no errors -> restore defaults
 
-      message = nodeca.runtime.t('users.auth.reg_form.nick_help');
-      $elem.parent().find('.help-block').text(message);
-    }
+    $control_group.removeClass('error');
+    $control_group.find('.help-block').text(
+      nodeca.runtime.t('users.auth.reg_form.nick_help')
+    );
+
   });
   return false;
 };

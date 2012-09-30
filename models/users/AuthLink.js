@@ -61,9 +61,9 @@ var AuthProvider = module.exports.AuthProviders = new Schema({
   // We also will require it everywhere, when possible (twitter don't have it)
   email:    String,  // user email
 
-  // Password/Salt - for email provider only
+  // Password/Salt hash - for email provider only
+  // Salt is stored right in hash string
   pass:     String,
-  //salt:     String, // Bcrypt store salt right in hash string
 
   // For oauth providers only, external user id
   ext_id:   String,
@@ -126,8 +126,7 @@ AuthProvider.index({
  *  Create new odm object
  **/
 var AuthLink = module.exports.AuthLink = new Schema({
-  //user_id:            Schema.ObjectId,
-  user_id:            String,
+  user_id:            Schema.ObjectId,
   providers:          [ AuthProvider ]
 }, { strict: true });
 
