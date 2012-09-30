@@ -42,7 +42,7 @@ module.exports = function ($elem, event) {
         $elem.parent().find('.help-block').text(message);
         return;
       }
-      message = nodeca.runtime.t('common.error.server_internal');
+      message = nodeca.runtime.t('common.io.error.server_internal');
       nodeca.client.common.notice('error', message);
       return;
     }

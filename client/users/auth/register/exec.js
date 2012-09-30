@@ -39,7 +39,7 @@ module.exports = function ($form, event) {
         nodeca.client.common.render.page('users.auth.register.view', params);
         return;
       }
-      message = nodeca.runtime.t('common.error.server_internal');
+      message = nodeca.runtime.t('common.io.error.server_internal');
       nodeca.client.common.notice('error', message);
       return;
     }
