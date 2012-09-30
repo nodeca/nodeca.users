@@ -6,10 +6,11 @@
         small.pull-right: a(href=self.link_to('users.auth.register.view')) #{self.t('common.auth.register')}
         | #{self.t('users.auth.login_form.title')}
 
-      - if(self.error)
+      - self.errors = self.errors || {}
+      - if(!!self.errors.common)
         .control-group
           .controls
-            p.text-error #{self.error}
+            p.text-error #{self.errors.common}
 
       .control-group
         label.control-label(for='lgn_eml') #{self.t('users.auth.login_form.email')}

@@ -60,7 +60,7 @@ function find_user(email, callback) {
 
 
 /**
- * users.auth.login.email(params, next) -> Void
+ * users.auth.login.plain.exec(params, next) -> Void
  *
  * ##### params
  *
@@ -108,7 +108,7 @@ module.exports = function (params, next) {
         next({
           statusCode: 401,
           body: {
-            auth: env.helpers.t('users.auth.login_form.error')
+            common: env.helpers.t('users.auth.login_form.error')
           }
         });
         return;

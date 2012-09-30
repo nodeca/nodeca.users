@@ -49,20 +49,20 @@ module.exports = function ($form, event) {
     nodeca.client.common.render.page('users.auth.login.view', {
       email: params.email,
       pass:  params.pass,
-      error: message
+      errors: {
+        common: message
+      }
     });
     return false;
   }
 
   nodeca.server.users.auth.login.plain.exec(params, function (err) {
     if (!!err) {
-      message = _.values(err.message)[0];
-
       if (err.statusCode === 401) {
-        nodeca.common.client.render.page('users.auth.login.view', {
+        nodeca.client.common.render.page('users.auth.login.view', {
           email: params.email,
           pass:  params.pass,
-          error: message
+          errors: err.message
         });
         return;
       }
