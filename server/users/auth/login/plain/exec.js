@@ -108,7 +108,7 @@ module.exports = function (params, next) {
         next({
           statusCode: 401,
           body: {
-            common: env.helpers.t('users.auth.login_form.error')
+            common: env.helpers.t('users.auth.login_form.error.login_failed')
           }
         });
         return;
