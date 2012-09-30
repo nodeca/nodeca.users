@@ -74,7 +74,7 @@ module.exports = function (params, next) {
 
         // user send wrong captcha code
         if (!result) {
-          errors['recaptcha'] = env.helpers.t('common.recaptcha.fail');
+          errors['recaptcha'] = env.helpers.t('common.recaptcha.code_incorrect');
         }
         callback();
       });
@@ -88,7 +88,7 @@ module.exports = function (params, next) {
           return;
         }
         if (!_.isEmpty(doc)) {
-          errors['email'] = env.helpers.t('users.auth.reg_form.errors.email_exists');
+          errors['email'] = env.helpers.t('users.auth.reg_form.error.email_busy');
         }
         callback();
       });
@@ -102,7 +102,7 @@ module.exports = function (params, next) {
           return;
         }
         if (!_.isEmpty(doc)) {
-          errors['nick'] = env.helpers.t('users.auth.reg_form.errors.nick_exists');
+          errors['nick'] = env.helpers.t('users.auth.reg_form.error.nick_busy');
         }
       
         callback();
