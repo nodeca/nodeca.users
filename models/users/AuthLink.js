@@ -51,7 +51,7 @@ var AuthProvider = module.exports.AuthProviders = new Schema({
   //
   // - `email` - just email/password pair
   // - `yandex`, `facebook`, `vkontakte`, `twitter` - different oauth (not supported now)
-  provider:  { type: String, required: true },
+  type:  { type: String, required: true },
 
   // Provider state
   // FIXME: define states (active/validating)
@@ -81,7 +81,7 @@ var AuthProvider = module.exports.AuthProviders = new Schema({
  * Generate password hash and put in property
  **/
 AuthProvider.methods.setPass = function(password) {
-  if (this.provider !== 'email') {
+  if (this.type !== 'email') {
     return false;
   }
   this.pass = bcrypt.hashSync(password, 10);
@@ -95,7 +95,7 @@ AuthProvider.methods.setPass = function(password) {
  * Compare word with stored password
  **/
 AuthProvider.methods.checkPass = function(password) {
-  if (this.provider !== 'email') {
+  if (this.type !== 'email') {
     return false;
   }
   return bcrypt.compareSync(password, this.pass);

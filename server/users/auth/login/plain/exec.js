@@ -36,7 +36,7 @@ nodeca.validate(params_schema);
 // find authentication info by user email or nickname
 //
 function find_auth(email, callback) {
-  AuthLink.findOne({ 'providers.provider': 'email', 'providers.email': email })
+  AuthLink.findOne({ 'providers.type': 'email', 'providers.email': email })
       .exec(function(err, link) {
     if (err) {
       callback(err);
@@ -126,7 +126,7 @@ module.exports = function (params, next) {
 
       // extract found provider subdoc
       provider = _.find(auth.providers, function(el) {
-        return el.provider === 'email';
+        return el.type === 'email';
       });
 
       // check password
