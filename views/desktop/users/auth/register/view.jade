@@ -11,8 +11,8 @@
       - var _group_class, _input_help_text
 
 
-      - _group_class = !!self.errors.email ? 'error' : ''
-      - _input_help_text = (_group_class !== '') ? self.errors.email : self.t('users.auth.reg_form.email_help')
+      - _group_class = ('email' in self.errors) ? 'error' : ''
+      - _input_help_text = (self.errors.email) ? self.errors.email : self.t('users.auth.reg_form.email_help')
 
       .control-group(class=_group_class)
         label.control-label(for='reg_eml') #{self.t('users.auth.reg_form.email')}
@@ -22,8 +22,8 @@
             span.help-block #{_input_help_text}
 
 
-      - _group_class = !!self.errors.pass ? 'error' : ''
-      - _input_help_text = (_group_class !== '') ? self.errors.pass : self.t('users.auth.reg_form.password_help')
+      - _group_class = ('pass' in self.errors) ? 'error' : ''
+      - _input_help_text = (self.errors.pass) ? self.errors.pass : self.t('users.auth.reg_form.password_help')
 
       .control-group(class=_group_class)
         label.control-label(for='reg_pass') #{self.t('users.auth.reg_form.password')}
@@ -33,8 +33,8 @@
             span.help-block #{_input_help_text}
 
 
-      - _group_class = !!self.errors.nick ? 'error' : ''
-      - _input_help_text = (_group_class !== '') ? self.errors.nick : self.t('users.auth.reg_form.nick_help')
+      - _group_class = ('nick' in self.errors) ? 'error' : ''
+      - _input_help_text = (self.errors.nick) ? self.errors.nick : self.t('users.auth.reg_form.nick_help')
 
       .control-group(class=_group_class)
         label.control-label(for='reg_nick') #{self.t('users.auth.reg_form.nick')}
