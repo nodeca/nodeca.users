@@ -121,7 +121,7 @@ module.exports = function (params, next) {
     // if problem with params - return error
     if (!_.isEmpty(errors)) {
       next({
-        statusCode: nodeca.io.CONFLICT,
+        statusCode: nodeca.io.BAD_REQUEST,
         body: errors
       });
       return;

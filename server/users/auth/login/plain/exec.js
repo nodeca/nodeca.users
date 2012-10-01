@@ -111,7 +111,7 @@ module.exports = function (params, next) {
     // Bad captcha code -> return error to client
     if (!result) {
       next({
-        statusCode: nodeca.io.UNAUTHORIZED,
+        statusCode: nodeca.io.BAD_REQUEST,
         body: {
           recaptcha: '' // don't customize form text, just highlight field
         }
@@ -123,7 +123,7 @@ module.exports = function (params, next) {
     find_auth(env, params.email, function(err, auth) {
       var provider;
       var login_error = {
-            statusCode: nodeca.io.UNAUTHORIZED,
+            statusCode: nodeca.io.BAD_REQUEST,
             body: {
               common: env.helpers.t('users.auth.login_form.error.login_failed')
             }
