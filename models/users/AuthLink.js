@@ -49,7 +49,7 @@ var AuthProvider = module.exports.AuthProviders = new Schema({
 
   // Provider types. We plan to support:
   //
-  // - `email` - just email/password pair
+  // - `plain` - just email/password pair
   // - `yandex`, `facebook`, `vkontakte`, `twitter` - different oauth (not supported now)
   type:  { type: String, required: true },
 
@@ -81,7 +81,7 @@ var AuthProvider = module.exports.AuthProviders = new Schema({
  * Generate password hash and put in property
  **/
 AuthProvider.methods.setPass = function(password) {
-  if (this.type !== 'email') {
+  if (this.type !== 'plain') {
     return false;
   }
   this.pass = bcrypt.hashSync(password, 10);
@@ -95,7 +95,7 @@ AuthProvider.methods.setPass = function(password) {
  * Compare word with stored password
  **/
 AuthProvider.methods.checkPass = function(password) {
-  if (this.type !== 'email') {
+  if (this.type !== 'plain') {
     return false;
   }
   return bcrypt.compareSync(password, this.pass);

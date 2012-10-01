@@ -146,7 +146,7 @@ module.exports = function (params, next) {
       auth = new AuthLink({ 'user_id': user._id });
 
       provider = auth.providers.create({
-        'type': 'email',
+        'type': 'plain',
         'email': params.email
       });
       provider.setPass(params.pass);
