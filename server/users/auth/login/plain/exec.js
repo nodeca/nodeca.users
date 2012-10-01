@@ -118,7 +118,7 @@ module.exports = function (params, next) {
     }
 
     // try find auth info by email or nick
-    find_auth(params.email, function(this, err, auth) {
+    find_auth(env, params.email, function(err, auth) {
       var provider;
       var login_error = {
             statusCode: 401,
