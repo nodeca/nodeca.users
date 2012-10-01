@@ -45,9 +45,7 @@ module.exports = function ($elem, event) {
       }
 
       // something fatal
-      nodeca.client.common.notice('error',
-        nodeca.runtime.t('common.io.error.server_internal')
-      );
+      nodeca.client.common.notice('error', err.message);
       return;
     }
 

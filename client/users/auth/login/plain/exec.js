@@ -72,8 +72,7 @@ module.exports = function ($form, event) {
       }
 
       // something unexpected
-      message = nodeca.runtime.t('common.io.error.server_internal');
-      nodeca.client.common.notice('error', message);
+      nodeca.client.common.notice('error', err.message);
       return;
     }
 
