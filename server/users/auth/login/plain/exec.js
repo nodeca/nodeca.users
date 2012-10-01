@@ -62,7 +62,7 @@ function find_auth(email, callback) {
         callback(null, null);
       }
 
-      AuthLink.findOne({'user_id': user._id}).exec(callback);
+      AuthLink.findOne({ 'providers.type': 'plain', 'user_id': user._id }).exec(callback);
 
     });
   });
