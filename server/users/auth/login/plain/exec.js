@@ -53,7 +53,7 @@ function find_auth(env, email, callback) {
         }
         if (!user) {
           callback({
-            statusCode: 500,
+            statusCode: nodeca.io.APP_ERROR,
             body: env.helpers.t('users.auth.login_form.error.auth_user_broken')
           });
           return;
@@ -111,7 +111,7 @@ module.exports = function (params, next) {
     // Bad captcha code -> return error to client
     if (!result) {
       next({
-        statusCode: 401,
+        statusCode: nodeca.io.UNAUTHORIZED,
         body: {
           recaptcha: '' // don't customize form text, just highlight field
         }
@@ -123,7 +123,7 @@ module.exports = function (params, next) {
     find_auth(env, params.email, function(err, auth) {
       var provider;
       var login_error = {
-            statusCode: 401,
+            statusCode: nodeca.io.UNAUTHORIZED,
             body: {
               common: env.helpers.t('users.auth.login_form.error.login_failed')
             }

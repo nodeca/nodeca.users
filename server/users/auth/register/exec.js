@@ -121,7 +121,7 @@ module.exports = function (params, next) {
     // if problem with params - return error
     if (!_.isEmpty(errors)) {
       next({
-        statusCode: 409,
+        statusCode: nodeca.io.CONFLICT,
         body: errors
       });
       return;

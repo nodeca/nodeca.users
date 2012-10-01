@@ -20,7 +20,7 @@ nodeca.validate(params_schema);
 module.exports = function (params, next) {
   this.session = null;
   next({
-    statusCode: 302,
+    statusCode: nodeca.io.FOUND,
     headers: { Location: nodeca.runtime.router.linkTo('forum.index') }
   });
 };
