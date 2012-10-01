@@ -38,4 +38,4 @@ i18n:
           error:
             email_busy: This email already exists
             nick_busy: This nick already exists
-            link_without_user: Email exists, but user not found, please contact with administrator
+            auth_user_broken: User info broken. Please, contact admin.

@@ -54,7 +54,7 @@ function find_auth(env, email, callback) {
         if (!user) {
           callback({
             statusCode: 500,
-            body: env.helpers.t('users.auth.login_form.error.link_without_user')
+            body: env.helpers.t('users.auth.login_form.error.auth_user_broken')
           });
           return;
         }

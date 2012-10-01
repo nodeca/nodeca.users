@@ -21,4 +21,4 @@ router:
       "/auth/reg": ~
 
     users.auth.register.success:
-      "/auth/reg/success": ~
+      "/auth/reg/done": ~
