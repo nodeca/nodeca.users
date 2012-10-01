@@ -72,7 +72,7 @@ module.exports = function ($form, event) {
       }
 
       // something unexpected
-      nodeca.client.common.notice('error', err.message);
+      nodeca.client.common.notify('error', err.message);
       return;
     }
 
