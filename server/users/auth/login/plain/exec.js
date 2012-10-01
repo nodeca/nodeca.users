@@ -93,9 +93,6 @@ function find_auth(env, email, callback) {
  * login by email provider
  **/
 module.exports = function (params, next) {
-  next('asdasd');
-      return;
-
   var env = this;
   
   var private_key = nodeca.config.recaptcha.private_key;
