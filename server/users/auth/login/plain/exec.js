@@ -35,17 +35,30 @@ nodeca.validate(params_schema);
 //
 // find authentication info by user email or nickname
 //
-function find_auth(email, callback) {
+function find_auth(env, email, callback) {
   AuthLink.findOne({ 'providers.type': 'plain', 'providers.email': email })
-      .exec(function(err, link) {
+      .exec(function(err, auth) {
     if (err) {
       callback(err);
       return;
     }
 
     // email found -> OK
-    if (link) {
-      callback(null, link);
+    if (auth) {
+      User.findOne({ '_id': auth.user_id }).setOptions({ lean: true })
+          .exec(function(err, user) {
+        if (err) {
+          callback(err);
+        }
+        if (!user) {
+          callback({
+            statusCode: 500,
+            body: env.helpers.t('users.auth.login_form.error.link_without_user')
+          });
+        }
+        callback(null, auth);
+        return;
+      });
       return;
     }
 
@@ -80,6 +93,9 @@ function find_auth(email, callback) {
  * login by email provider
  **/
 module.exports = function (params, next) {
+  next('asdasd');
+      return;
+
   var env = this;
   
   var private_key = nodeca.config.recaptcha.private_key;
@@ -105,7 +121,7 @@ module.exports = function (params, next) {
     }
 
     // try find auth info by email or nick
-    find_auth(params.email, function(err, auth) {
+    find_auth(params.email, function(this, err, auth) {
       var provider;
       var login_error = {
             statusCode: 401,
