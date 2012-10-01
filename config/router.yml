@@ -19,3 +19,6 @@ router:
 
     users.auth.register.view:
       "/auth/reg": ~
+
+    users.auth.register.success:
+      "/auth/reg/success": ~

@@ -46,7 +46,7 @@ module.exports = function ($form, event) {
       return;
     }
 
-    nodeca.client.common.render.page('users.auth.register.success');
+    window.location = nodeca.runtime.router.linkTo('users.auth.register.success');
   });
 
   // Disable regular click
