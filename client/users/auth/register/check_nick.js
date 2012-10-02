@@ -35,7 +35,7 @@ module.exports = function ($elem /*, event*/) {
 
     if (err) {
       // Problems with nick
-      if (err.statusCode === 409) {
+      if (err.statusCode === nodeca.io.BAD_REQUEST) {
         $control_group.addClass('error');
 
         $control_group.find('.help-block').text(

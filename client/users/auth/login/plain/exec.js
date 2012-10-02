@@ -62,7 +62,7 @@ module.exports = function ($form/*, event*/) {
 
     if (err) {
       // failed login/password or captcha
-      if (err.statusCode === 401) {
+      if (err.statusCode === nodeca.io.BAD_REQUEST) {
         nodeca.client.common.render.page('users.auth.login.view', {
           email: params.email,
           pass:  params.pass,
