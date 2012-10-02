@@ -2,12 +2,11 @@
 
 /*global nodeca*/
 
-var Crypto = require('crypto');
 var mongoose = nodeca.runtime.mongoose;
 var Schema = mongoose.Schema;
 
 
-var User = module.exports.User = new mongoose.Schema({
+var User = module.exports.User = new Schema({
 
     // user-friendly id (autoincremented)
     id                : { type: Number, min: 1, index: true }

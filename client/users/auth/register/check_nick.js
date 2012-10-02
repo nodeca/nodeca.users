@@ -18,7 +18,7 @@
  **/
 
 
-/*global $, _, nodeca, window*/
+/*global nodeca*/
 
 
 /**
@@ -27,10 +27,10 @@
  *  send nick value on server
  *  and show error if nick exists
  **/
-module.exports = function ($elem, event) {
+module.exports = function ($elem /*, event*/) {
   var nick = $elem.val();
 
-  nodeca.server.users.auth.register.check_nick({nick: nick}, function(err, request){
+  nodeca.server.users.auth.register.check_nick({ nick: nick }, function(err){
     var $control_group = $elem.parents('.control-group:first');
 
     if (err) {

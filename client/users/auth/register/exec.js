@@ -18,7 +18,7 @@
  **/
 
 
-/*global $, _, nodeca, window*/
+/*global nodeca, window*/
 
 
 /**
@@ -26,12 +26,10 @@
  *
  *  send registration data on server
  **/
-module.exports = function ($form, event) {
+module.exports = function ($form/*, event*/) {
   var params = nodeca.client.common.form.getData($form);
 
   nodeca.server.users.auth.register.exec(params, function(err){
-    var message;
-
     if (err) {
       // Wrong form params - regenerate page with hightlighted errors
       if (err.statusCode === 409) {

@@ -1,6 +1,6 @@
 "use strict";
 
-/*global nodeca, _*/
+/*global nodeca*/
 
 var params_schema = {};
 nodeca.validate(params_schema);

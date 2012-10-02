@@ -1,6 +1,6 @@
 "use strict";
 
-/*global nodeca, _*/
+/*global nodeca*/
 
 var User = nodeca.models.users.User;
 

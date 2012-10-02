@@ -30,8 +30,6 @@
 var mongoose = nodeca.runtime.mongoose;
 var Schema = mongoose.Schema;
 
-var Crypto = require('crypto');
-
 /* 3rd-paty modules */
 
 var bcrypt = require('bcrypt');
