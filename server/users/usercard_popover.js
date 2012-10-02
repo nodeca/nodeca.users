@@ -10,8 +10,7 @@ var user_in_fields = [
   'joined_ts',
   '_uname',
   '_uname_short',
-  '_post_count',
-  '_last_viset_ts'
+  'post_count'
 ];
 
 // Validate input parameters

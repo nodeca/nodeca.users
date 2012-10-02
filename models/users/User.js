@@ -23,9 +23,9 @@ var User = module.exports.User = new Schema({
   , _uname            : String
   , _uname_short      : String
 
-  , _post_count       : { type: Number, default: 0 }
+  , post_count       : { type: Number, default: 0 }
 
-  , _warning_points   : { type: Number, default: 0 }
+  , warning_points   : { type: Number, default: 0 }
 
 });
 
