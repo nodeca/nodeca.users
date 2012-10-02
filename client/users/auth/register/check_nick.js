@@ -22,7 +22,7 @@
 
 var DELAY = 500;
 
-var start_point;
+var timeout;
 
 /**
  *  client.common.auth.register.check_nick($elem, event)
@@ -31,21 +31,11 @@ var start_point;
  *  and show error if nick exists
  **/
 module.exports = function ($elem, event) {
-  // update start point each time
-  start_point = new Date();
+  // make sure previous timeout was cleared
+  clearTimeout(timeout);
 
   // delay request
-  setTimeout(function() {
-
-    // time is not come
-    // new event(s) update start point
-    if (DELAY > new Date() - start_point) {
-      return;
-    }
-
-    // reset time
-    start_point = null;
-
+  timeout = setTimeout(function() {
     var nick = $elem.val();
     nodeca.server.users.auth.register.check_nick({ nick: nick }, function(err){
       var $control_group = $elem.parents('.control-group:first');
