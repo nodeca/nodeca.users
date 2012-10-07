@@ -27,7 +27,7 @@
 /*global nodeca*/
 
 
-var mongoose = nodeca.runtime.mongoose;
+var mongoose = nodeca.components.mongoose;
 var Schema = mongoose.Schema;
 
 /* 3rd-paty modules */
