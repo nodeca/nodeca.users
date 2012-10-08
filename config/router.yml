@@ -23,12 +23,12 @@ router:
     users.auth.register.success:
       "/auth/reg/done": ~
 
-    admin.usergroups.index:
+    admin.users.usergroups.index:
       "/usergroups": ~
 
-    admin.usergroups.new:
+    admin.users.usergroups.new:
       "/usergroups/new": ~
 
-    admin.usergroups.show:
+    admin.users.usergroups.show:
       "/usergroups/show/{_id}":
         _id: /\w+/

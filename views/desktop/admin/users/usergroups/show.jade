@@ -2,10 +2,10 @@ include ./partials/_display_value
 
 .row
   .span8.offset2.well.well-form
-    form.form-horizontal(data-on-submit='admin.usergroups.create')
+    form.form-horizontal(data-on-submit='admin.users.usergroups.create')
       input(type="hidden", name='_id', id='_id', value=self.usergroup_id)
       H1= self.usergroup_id
-      - var handler = 'admin.usergroups.update'
+      - var handler = 'admin.users.usergroups.update'
       -each group, group_name in self.item_groups
         | #{group_name}
         legend
@@ -20,9 +20,9 @@ include ./partials/_display_value
                     - item.value = item.default
 
                   mixin display_value(item_name, item.value, item.type, handler)
-                  span.help-block #{self.t('admin.settings.usergroups.'+ item_name + '_description')}
+                  span.help-block #{self.t('admin.settings.usergroups.'+ item_name + '_help')}
 
 
       .control-group
         .controls
-          button.btn.btn-primary.btn-large(type='submit') #{self.t('admin.usergroups.form_submit_button')}
+          button.btn.btn-primary.btn-large(type='submit') #{self.t('admin.users.usergroups.form_submit_button')}
