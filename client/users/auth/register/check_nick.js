@@ -30,7 +30,7 @@ var timeout;
  *  send nick value on server
  *  and show error if nick exists
  **/
-module.exports = function ($elem, event) {
+module.exports = function ($elem) {
   // make sure previous timeout was cleared
   clearTimeout(timeout);
 

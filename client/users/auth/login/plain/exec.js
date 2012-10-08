@@ -35,7 +35,7 @@ var login_required_fields = [
  *
  *  send login request
  **/
-module.exports = function ($form, event) {
+module.exports = function ($form) {
   var message;
   var params = nodeca.client.common.form.getData($form);
 
