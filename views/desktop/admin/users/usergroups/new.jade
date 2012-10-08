@@ -15,23 +15,22 @@ include ./partials/_display_value
           .row-fluid
             input.span12(type="text", name='_id')
             span.help-block #{_input_help_text}
-      legend
+
       -each group, group_name in self.item_groups
-        | #{group_name}
-        legend
 
-          -each item, item_name in group
-            - _group_class = (item_name in self.errors) ? 'error' : ''
-            - _input_help_text = (self.errors[item_name]) ? self.errors[item_name] : self.t('admin.users.usergroups.form.'+ item_name + '_help')
+        legend #{group_name}
+        -each item, item_name in group
+          - _group_class = (item_name in self.errors) ? 'error' : ''
+          - _input_help_text = (self.errors[item_name]) ? self.errors[item_name] : self.t('admin.users.usergroups.form.'+ item_name + '_help')
 
-            .control-group(class=_group_class)
-              label.control-label(for=item_name) #{self.t('admin.users.usergroups.form.' + item_name + '_title')}
-              .controls
-                .row-fluid
-                  - if (!('value' in item))
-                    - item.value = item.default
-                  mixin display_value(item_name, item.value, item.type)
-                  span.help-block #{_input_help_text}
+          .control-group(class=_group_class)
+            label.control-label(for=item_name) #{self.t('admin.users.usergroups.form.' + item_name + '_title')}
+            .controls
+              .row-fluid
+                - if (!('value' in item))
+                  - item.value = item.default
+                mixin display_value(item_name, item.value, item.type)
+                span.help-block #{_input_help_text}
 
       .control-group
         .controls
