@@ -1,0 +1,28 @@
+mixin display_number(name, value, handler)
+  - if (handler)
+    input.span12(type="text", name=name, value=value, data-on-input=handler)
+  - else
+    input.span12(type="text", name=name, value=value)
+
+mixin dispay_sting(name, value, handler)
+  - if (handler)
+    input.span12(type="text", name=name, value=value, data-on-input=handler)
+  - else
+    input.span12(type="text", name=name, value=value)
+
+mixin display_boolean(name, value, handler)
+  - if (handler)
+    input.span12(type='checkbox', name=name, value='true', checked=value, data-on-click=handler)
+  - else
+    input.span12(type='checkbox', name=name, value='true', checked=value)
+
+mixin display_value(name, value, type, handler)
+  case type
+    when 'number'
+      mixin display_number(name, value, handler)
+    when 'string'
+      mixin dispay_sting(name, value, handler)
+    when 'boolean'
+      mixin display_boolean(name, value, handler)
+    default
+      mixin dispay_sting(name, value, handler)

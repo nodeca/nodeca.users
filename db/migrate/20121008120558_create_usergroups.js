@@ -1,0 +1,19 @@
+"use strict";
+
+/*global nodeca, _*/
+
+var NLib = require('nlib');
+
+var Async = NLib.Vendor.Async;
+
+var models = nodeca.models;
+
+module.exports.up = function (cb) {
+  // FIXME implement sets of real froup items
+  Async.forEachSeries(['administrators','members','guests'],
+    function(current_group, next_group) {
+      var usergroup = new models.users.UserGroup({_id: current_group});
+      usergroup.save(next_group);
+    }
+  , cb);
+};

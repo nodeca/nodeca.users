@@ -6,3 +6,16 @@ i18n:
       menus:
         navbar:
           users: Members
+
+      usergroups:
+        new_group_button: New group
+        delete_group_button: Delete group
+
+        form:
+          submit_button: Save group
+
+          _id_help: Unique text id souch as administrators
+          _id_title: Group text id
+
+          error:
+            _id_busy: This group already exists

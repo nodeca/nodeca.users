@@ -1,0 +1,11 @@
+h1 Settings
+
+ul
+  -each group_name in self.usergroups
+    li
+      a(href=self.link_to('admin.usergroups.show', { _id:group_name}))= group_name
+      button.btn.btn-primary.btn-mini(id=group_name, type='button', data-on-click='admin.usergroups.delete') #{self.t('admin.usergroups.delete_group_button')}
+
+button.btn.btn-primary.btn-large(
+  type='button',
+  onclick="window.location = nodeca.runtime.router.linkTo('admin.usergroups.new'); return false;") #{self.t('admin.usergroups.new_group_button')}
