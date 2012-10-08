@@ -39,7 +39,7 @@ module.exports = function ($elem) {
       _id: $elem.parents('form').find('input#_id').val()
     };
     params[$elem.attr('name')] = $elem.val();
-    nodeca.server.admin.usergroups.update(params, function(err){
+    nodeca.server.admin.users.usergroups.update(params, function(err){
       if (err) {
         // something fatal
         // FIXME highlight red

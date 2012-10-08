@@ -28,13 +28,13 @@
  **/
 module.exports = function ($form) {
   var params = nodeca.client.admin.form.getData($form);
-  nodeca.server.admin.usergroups.create(params, function(err){
+  nodeca.server.admin.users.usergroups.create(params, function(err){
     if (err) {
       // Wrong form params - regenerate page with hightlighted errors
       if (err.statusCode === nodeca.io.BAD_REQUEST) {
         // add errors
         params.errors = err.message;
-        nodeca.client.admin.render.page('admin.usergroups.create', params);
+        nodeca.client.admin.render.page('admin.users.usergroups.create', params);
         return;
       }
 
@@ -43,7 +43,7 @@ module.exports = function ($form) {
       return;
     }
 
-    window.location = nodeca.runtime.router.linkTo('admin.usergroups.index');
+    window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.index');
   });
 
   // Disable regular click
