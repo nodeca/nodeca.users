@@ -26,8 +26,7 @@
 
 var login_required_fields = [
   'email',
-  'pass',
-  'recaptcha_response_field'
+  'pass'
 ];
 
 

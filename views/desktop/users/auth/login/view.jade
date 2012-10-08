@@ -26,7 +26,9 @@
           .row-fluid
             input.span12(id='lgn_pass', name='pass', type='password', value=self.pass)
 
-      include ../../../common/recaptcha
+      //- show captcha only when rate limit reached or captcha error in previous request
+      - if (self.captcha_required || (self.errors && ('recaptcha' in self.errors)))
+        include ../../../common/recaptcha
 
       .control-group
         .controls

@@ -10,7 +10,7 @@ var redback = nodeca.components.redback;
 // Global invalid login attempts, trace 60 attempts / 60 seconds.
 // Used to avoid CPU overload by bcrypt: just force user to enter captcha
 var limit_total = redback.createRateLimit('limit:login', {
-  bucket_span: 60,
+  bucket_span: 60 + 20,
   bucket_interval: 10,
   subject_expiry: 2 * 60
 });
@@ -18,7 +18,7 @@ var limit_total = redback.createRateLimit('limit:login', {
 // Track invalid login attempts for single IP. Don't allow
 // more than 5 attempts in 5 minutes
 var limit_ip = redback.createRateLimit('block:login:ip', {
-  bucket_span: 5 * 60,
+  bucket_span: (5 + 1) * 60,
   bucket_interval: 60,
   subject_expiry: 10 * 60
 });
