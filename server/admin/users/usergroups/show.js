@@ -27,7 +27,7 @@ module.exports = function (params, next) {
   var env = this;
 
 
-  UserGroup.findOne({_id: params._id}).setOptions({ lean: true }).exec(function(err, group) {
+  UserGroup.findOne({_id: params._id}).exec(function(err, group) {
     if (err) {
       next(err);
       return;
@@ -47,7 +47,7 @@ module.exports = function (params, next) {
       if (name in group.items) {
         item.value = group.items[name];
       }
-      
+
       var group_name = item['group'];
       if (!item_groups[group_name]) {
         item_groups[group_name] = {};
