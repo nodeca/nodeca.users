@@ -87,84 +87,12 @@ function find_auth(env, email, callback) {
 }
 
 
-// Check captcha, but only when needed (too many total login attempts)
+// Check big request count from single IP. That can be brute force attempt.
 //
-function check_captcha(env, params, callback) {
-
-  // check big requests count first
-  rate.total.count(function (err, high) {
-    if (err) {
-      callback(err);
-      return;
-    }
-
-    // no high load - skip captcha
-    if (!high) {
-      callback();
-      return;
-    }
-
-    // high load - need to check captcha.
-    //
-    // !!! That will cause error, when system switched from "no captcha"
-    // to "protected" mode !!!
-    // (if ddos started exactly between form get and submit)
-    //
-    // But since this situation in very rare (only on DDoS start), we consider
-    // it as acceptable tradeoff for significant algorythm simplification
-    // (no need to track captcha state in each session)
-
-    var private_key = nodeca.config.recaptcha.private_key;
-    var user_ip = env.request.ip;
-    var challenge = params.recaptcha_challenge_field;
-    var response = params.recaptcha_response_field;
-
-    ReCaptcha.verify(private_key, user_ip, challenge, response, function (err, result) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      // Bad captcha code -> return error to client
-      if (!result) {
-        callback({
-          statusCode: nodeca.io.BAD_REQUEST,
-          body: {
-            recaptcha: '' // don't customize form text, just highlight field
-          }
-        });
-        return;
-      }
-
-      callback();
-    });
-  });
-}
-
-/**
- * users.auth.login.plain.exec(params, next) -> Void
- *
- * ##### params
- *
- * - `email`      user email or nick
- * - `pass`       user password
- *
- * login by email provider
- **/
-module.exports = function (params, next) {
+nodeca.filters.before('@', function login_ip_rate_limit(params, next) {
   var env = this,
       user_ip = env.request.ip;
-  
-  // We should protect login in 2 ways:
-  //
-  // 1. Too many total logins (60 attempts / 60 seconds).
-  //    That can cause too hight CPU use in bcrypt.
-  //    Do soft limit - ask user to enter captcha, to make shure,
-  //    he is not bot.
-  //
-  // 2. Too many invalid ligins (5 attempts / 300 seconds) from single IP
-  //    Do hard limit - ask user to wait 5 minutes
-
+ 
   rate.ip.count(user_ip, function (err, high) {
     if (err) {
       next(err);
@@ -185,54 +113,134 @@ module.exports = function (params, next) {
       return;
     }
 
-    check_captcha(env, params, function (err) {
+    next();
+  });
+});
+
+
+// Check captcha, but only when needed (too many total login attempts)
+//
+nodeca.filters.before('@', function login_check_captcha(params, next) {
+  var env = this;
+
+  // check big requests count first
+  rate.total.count(function (err, high) {
+    if (err) {
+      next(err);
+      return;
+    }
+
+    // no high load - skip captcha
+    if (!high) {
+      next();
+      return;
+    }
+
+    // high load - need to check captcha.
+    //
+    // !!! That will cause error, when system switched from "no captcha"
+    // to "protected" mode !!!
+    // (if ddos started exactly between form get and submit)
+    //
+    // But since this situation in very rare (only on DDoS start), we consider
+    // it as acceptable tradeoff for significant algorythm simplification
+    // (no need to track captcha state in each session)
+
+    var private_key = nodeca.config.recaptcha.private_key;
+    var user_ip = env.request.ip;
+    var challenge = params.recaptcha_challenge_field;
+    var response = params.recaptcha_response_field;
+
+    ReCaptcha.verify(private_key, user_ip, challenge, response, function (err, result) {
       if (err) {
         next(err);
         return;
       }
 
-      // try find auth info by email or nick
-      find_auth(env, params.email, function (err, auth) {
-        var provider;
-        var login_error = {
+      // Bad captcha code -> return error to client
+      if (!result) {
+        next({
           statusCode: nodeca.io.BAD_REQUEST,
-          body: { common: env.helpers.t('users.auth.login_form.error.login_failed') }
-        };
-
-        if (err) {
-          next(err);
-          return;
-        }
-
-        // No auth info
-        if (!auth) {
-          // update fail counters in lazy style - don't wait callback
-          rate.ip.update(user_ip);
-          rate.total.update();
-
-          next(login_error);
-          return;
-        }
-
-        // extract found provider subdoc
-        provider = _.find(auth.providers, function (el) {
-          return el.type === 'plain';
+          body: {
+            recaptcha: '' // don't customize form text, just highlight field
+          }
         });
+        return;
+      }
 
-        // check password
-        if (!provider.checkPass(params.pass)) {
-          // update fail counters in lazy style - don't wait callback
-          rate.ip.update(user_ip);
-          rate.total.update();
-
-          next(login_error);
-          return;
-        }
-
-        // all ok -> write user to session
-        env.session.user_id = auth.user_id;
-        next();
-      });
+      next();
     });
+  });
+});
+
+
+/**
+ * users.auth.login.plain.exec(params, next) -> Void
+ *
+ * ##### params
+ *
+ * - `email`      user email or nick
+ * - `pass`       user password
+ *
+ * login by email provider
+ **/
+module.exports = function (params, next) {
+  var env = this,
+      user_ip = env.request.ip;
+  
+  // We should protect login in 2 ways:
+  //
+  // 1. Too many invalid logins (5 attempts / 300 seconds) from single IP
+  //    Do hard limit - ask user to wait 5 minutes
+  //
+  // 2. Too many total logins (60 attempts / 60 seconds).
+  //    That can cause too hight CPU use in bcrypt.
+  //    Do soft limit - ask user to enter captcha, to make shure,
+  //    he is not bot.
+  //
+  // Both done on filters
+
+
+  // try find auth info by email or nick
+  find_auth(env, params.email, function (err, auth) {
+    var provider;
+    var login_error = {
+      statusCode: nodeca.io.BAD_REQUEST,
+      body: { common: env.helpers.t('users.auth.login_form.error.login_failed') }
+    };
+
+    if (err) {
+      next(err);
+      return;
+    }
+
+    // No auth info
+    if (!auth) {
+      // update fail counters in lazy style - don't wait callback
+      rate.ip.update(user_ip);
+      rate.total.update();
+
+      next(login_error);
+      return;
+    }
+
+    // extract found provider subdoc
+    provider = _.find(auth.providers, function (el) {
+      return el.type === 'plain';
+    });
+
+    // check password
+    if (!provider.checkPass(params.pass)) {
+      // update fail counters in lazy style - don't wait callback
+      rate.ip.update(user_ip);
+      rate.total.update();
+
+      next(login_error);
+      return;
+    }
+
+    // all ok -> write user to session
+    env.session.user_id = auth.user_id;
+    next();
   });
 };

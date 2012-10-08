@@ -3,7 +3,7 @@
 
 "use strict";
 
-/*global nodeca, _*/
+/*global nodeca*/
 
 var redback = nodeca.components.redback;
 

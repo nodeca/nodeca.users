@@ -26,8 +26,7 @@ var User = module.exports.User = new Schema({
   , post_count       : { type: Number, default: 0 }
 
   , warning_points   : { type: Number, default: 0 }
-
-});
+  });
 
 // FIXME: make denormalisation customizeable
 User.pre('save', function (next) {
