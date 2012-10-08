@@ -77,6 +77,7 @@ function find_auth(env, email, callback) {
       // no user -> no auth data
       if (!user) {
         callback(null, null);
+        return;
       }
 
       AuthLink.findOne({ 'providers.type': 'plain', 'user_id': user._id }).exec(callback);
