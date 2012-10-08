@@ -27,7 +27,7 @@ nodeca.validate(params_schema);
 module.exports = function (params, next) {
   var env = this;
   User.findOne({ 'nick': params.nick}).setOptions({ lean: true })
-      .exec(function(err, doc){
+      .exec(function (err, doc) {
     if (err) {
       next(err);
       return;

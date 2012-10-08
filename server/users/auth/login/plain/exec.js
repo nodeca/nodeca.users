@@ -48,7 +48,7 @@ function find_auth(env, email, callback) {
     // email found -> OK
     if (auth) {
       User.findOne({ '_id': auth.user_id }).setOptions({ lean: true })
-          .exec(function(err, user) {
+          .exec(function (err, user) {
         if (err) {
           callback(err);
           return;
@@ -68,7 +68,7 @@ function find_auth(env, email, callback) {
 
     // email not found -> try to find by nickname
     User.findOne({ 'nick': email }).setOptions({ lean: true })
-      .select('_id').exec(function(err, user) {
+      .select('_id').exec(function (err, user) {
       if (err) {
         callback(err);
         return;
@@ -194,11 +194,9 @@ module.exports = function (params, next) {
       find_auth(env, params.email, function (err, auth) {
         var provider;
         var login_error = {
-              statusCode: nodeca.io.BAD_REQUEST,
-              body: {
-                common: env.helpers.t('users.auth.login_form.error.login_failed')
-              }
-            };
+          statusCode: nodeca.io.BAD_REQUEST,
+          body: { common: env.helpers.t('users.auth.login_form.error.login_failed') }
+        };
 
         if (err) {
           next(err);
@@ -216,7 +214,7 @@ module.exports = function (params, next) {
         }
 
         // extract found provider subdoc
-        provider = _.find(auth.providers, function(el) {
+        provider = _.find(auth.providers, function (el) {
           return el.type === 'plain';
         });
 

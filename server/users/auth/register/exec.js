@@ -56,13 +56,13 @@ module.exports = function (params, next) {
 
   Async.series([
     // recaptcha validation
-    function(callback) {
+    function (callback) {
       var private_key = nodeca.config.recaptcha.private_key;
       var user_ip = env.request.ip;
       var challenge = params.recaptcha_challenge_field;
       var response = params.recaptcha_response_field;
 
-      ReCaptcha.verify(private_key, user_ip, challenge, response, function(err, result){
+      ReCaptcha.verify(private_key, user_ip, challenge, response, function (err, result) {
         if (err) {
           callback(err);
           return;
@@ -78,9 +78,9 @@ module.exports = function (params, next) {
     },
 
     // is email unique?
-    function(callback) {
+    function (callback) {
       AuthLink.findOne({ 'providers.email': params.email }).setOptions({ lean: true })
-          .exec(function(err, doc){
+          .exec(function (err, doc) {
         if (err) {
           callback(err);
           return;
@@ -96,9 +96,9 @@ module.exports = function (params, next) {
     },
 
     // is nick unque?
-    function(callback) {
+    function (callback) {
       User.findOne({ 'nick': params.nick}).setOptions({ lean: true })
-          .exec(function(err, doc){
+          .exec(function (err, doc) {
         if (err) {
           callback(err);
           return;
@@ -113,7 +113,7 @@ module.exports = function (params, next) {
       });
     }
   
-  ], function(err) {
+  ], function (err) {
     if (err) {
       next(err);
     }
@@ -134,7 +134,7 @@ module.exports = function (params, next) {
     user.joined_ip = env.request.ip;
     // FIXME set groups
 
-    user.save(function(err, user) {
+    user.save(function (err, user) {
       var auth,
           provider;
 

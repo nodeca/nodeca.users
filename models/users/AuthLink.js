@@ -78,7 +78,7 @@ var AuthProvider = module.exports.AuthProviders = new Schema({
  *
  * Generate password hash and put in property
  **/
-AuthProvider.methods.setPass = function(password) {
+AuthProvider.methods.setPass = function (password) {
   if (this.type !== 'plain') {
     return false;
   }
@@ -92,7 +92,7 @@ AuthProvider.methods.setPass = function(password) {
  *
  * Compare word with stored password
  **/
-AuthProvider.methods.checkPass = function(password) {
+AuthProvider.methods.checkPass = function (password) {
   if (this.type !== 'plain') {
     return false;
   }

@@ -35,9 +35,9 @@ module.exports = function ($elem, event) {
   clearTimeout(timeout);
 
   // delay request
-  timeout = setTimeout(function() {
+  timeout = setTimeout(function () {
     var nick = $elem.val();
-    nodeca.server.users.auth.register.check_nick({ nick: nick }, function(err){
+    nodeca.server.users.auth.register.check_nick({ nick: nick }, function (err) {
       var $control_group = $elem.parents('.control-group:first');
 
       if (err) {

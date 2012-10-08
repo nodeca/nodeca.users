@@ -40,7 +40,7 @@ module.exports = function ($form, event) {
   var message;
   var params = nodeca.client.common.form.getData($form);
 
-  var has_empty_fields = _.any(login_required_fields, function(field) {
+  var has_empty_fields = _.any(login_required_fields, function (field) {
     return _.isEmpty(params[field]);
   });
 

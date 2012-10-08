@@ -29,7 +29,7 @@
 module.exports = function ($form, event) {
   var params = nodeca.client.common.form.getData($form);
 
-  nodeca.server.users.auth.register.exec(params, function(err){
+  nodeca.server.users.auth.register.exec(params, function (err) {
     if (err) {
       // Wrong form params - regenerate page with hightlighted errors
       if (err.statusCode === nodeca.io.BAD_REQUEST) {
