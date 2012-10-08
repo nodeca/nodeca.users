@@ -18,14 +18,11 @@
  **/
 
 
-/*global nodeca, window, _*/
-
-
 /**
  *  client.admin.usergroups.delete($elem, event)
  *
  **/
-module.exports = function ($elem, event) {
+module.exports = function () {
   // FIXME Implement me
 
   // Disable regular click

@@ -18,7 +18,7 @@
  **/
 
 
-/*global nodeca, window, _*/
+/*global nodeca*/
 
 var DELAY = 500;
 
@@ -29,7 +29,7 @@ var timeout;
  *
  * Update single field value.
  **/
-module.exports = function ($elem, event) {
+module.exports = function ($elem) {
   // make sure previous timeout was cleared
   clearTimeout(timeout);
 

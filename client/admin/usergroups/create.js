@@ -18,7 +18,7 @@
  **/
 
 
-/*global nodeca, window, _*/
+/*global nodeca, window*/
 
 
 /**
@@ -26,7 +26,7 @@
  *
  * collect new group data from form and send on server
  **/
-module.exports = function ($form, event) {
+module.exports = function ($form) {
   var params = nodeca.client.admin.form.getData($form);
   nodeca.server.admin.usergroups.create(params, function(err){
     if (err) {

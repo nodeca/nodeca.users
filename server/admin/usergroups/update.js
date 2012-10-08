@@ -56,12 +56,6 @@ module.exports = function (params, next) {
       group.items[name] = items[name];
     });
 
-    group.save(function(err, group) {
-      if (err) {
-        next(err);
-        return;
-      }
-      next();
-    });
+    group.save(next);
   });
 };

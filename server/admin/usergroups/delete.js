@@ -1,10 +1,8 @@
 "use strict";
 
-/*global nodeca, _*/
+/*global nodeca*/
 
 var UserGroup = nodeca.models.users.UserGroup;
-
-var usergroup_schema = nodeca.config.setting_schemas['usergroup'];
 
 // Validate input parameters
 //

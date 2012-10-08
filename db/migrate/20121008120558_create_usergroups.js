@@ -1,6 +1,6 @@
 "use strict";
 
-/*global nodeca, _*/
+/*global nodeca*/
 
 var NLib = require('nlib');
 

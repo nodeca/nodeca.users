@@ -1,6 +1,6 @@
 "use strict";
 
-/*global nodeca, _*/
+/*global nodeca*/
 
 var UserGroup = nodeca.models.users.UserGroup;
 
