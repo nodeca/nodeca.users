@@ -2,7 +2,7 @@
 
 /*global nodeca, _*/
 
-var ReCaptcha = require('nlib').ReCaptcha;
+var ReCaptcha = nodeca.components.ReCaptcha;
 
 var AuthLink = nodeca.models.users.AuthLink;
 var User = nodeca.models.users.User;

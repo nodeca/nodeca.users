@@ -3,7 +3,7 @@
 /*global nodeca, _*/
 var NLib = require('nlib');
 var Async = NLib.Vendor.Async;
-var ReCaptcha = NLib.ReCaptcha;
+var ReCaptcha = nodeca.components.ReCaptcha;
 
 var AuthLink = nodeca.models.users.AuthLink;
 var User = nodeca.models.users.User;
