@@ -27,7 +27,7 @@ var limit_ip = redback.createRateLimit('block:login:ip', {
 module.exports = {
 
   total: {
-    count : function (callback) {
+    count: function (callback) {
       limit_total.count('all', 60, function (err, count) {
         if (err) {
           callback(err);
@@ -36,13 +36,13 @@ module.exports = {
         callback(null, (count > 60) ? true : false);
       });
     },
-    update : function (callback) {
+    update: function (callback) {
       limit_total.add('all', callback);
     }
   },
 
   ip: {
-    count : function (ip, callback) {
+    count: function (ip, callback) {
       limit_ip.count(ip, 5 * 60, function (err, count) {
         if (err) {
           callback(err);
@@ -51,7 +51,7 @@ module.exports = {
         callback(null, (count > 5) ? true : false);
       });
     },
-    update : function (ip, callback) {
+    update: function (ip, callback) {
       limit_ip.add(ip, callback);
     }
   }
