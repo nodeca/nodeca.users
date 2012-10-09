@@ -10,11 +10,16 @@
  **/
 
 /**
- *  client.admin.usergroups
+ *  client.admin.users
+ **/
+
+
+/**
+ *  client.admin.users.usergroups
  **/
 
 /**
- *  client.admin.usergroups.update
+ *  client.admin.users.usergroups.update
  **/
 
 
@@ -25,7 +30,7 @@ var DELAY = 500;
 var timeout;
 
 /**
- *  client.admin.usergroups.update($elem, event)
+ *  client.admin.users.usergroups.update($elem, event)
  *
  * Update single field value.
  **/

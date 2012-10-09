@@ -10,17 +10,21 @@
  **/
 
 /**
- *  client.admin.usergroups
+ *  client.admin.users
  **/
 
 /**
- *  client.admin.usergroups.delete
+ *  client.admin.users.usergroups
+ **/
+
+/**
+ *  client.admin.users.usergroups.delete
  **/
 
 /*global nodeca, window*/
 
 /**
- *  client.admin.usergroups.delete($elem, event)
+ *  client.admin.users.usergroups.delete($elem, event)
  *
  **/
 module.exports = function ($elem) {
@@ -33,7 +37,7 @@ module.exports = function ($elem) {
     }
   });
 
-  window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.index');
+  //window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.index');
 
   // Disable regular click
   return false;
