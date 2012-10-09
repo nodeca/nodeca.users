@@ -8,3 +8,5 @@ menus:
     navbar:
       users:
         to: admin.users.index
+      usersgroups:
+        to: admin.users.usergroups.index
