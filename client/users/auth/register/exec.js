@@ -35,7 +35,7 @@ module.exports = function ($form) {
       if (err.statusCode === nodeca.io.BAD_REQUEST) {
         // add errors
         params.errors = err.message;
-        nodeca.client.common.render.page('users.auth.register.view', params);
+        nodeca.client.common.render.page('users.auth.register.show', params);
         return;
       }
 

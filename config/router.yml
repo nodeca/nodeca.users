@@ -11,13 +11,13 @@ router:
       "/users": ~
 
 
-    users.auth.login.view:
+    users.auth.login.show:
       "/auth/login": ~
 
     users.auth.logout:
       "/auth/logout": ~
 
-    users.auth.register.view:
+    users.auth.register.show:
       "/auth/reg": ~
 
     users.auth.register.success:

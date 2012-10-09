@@ -47,7 +47,7 @@ module.exports = function ($form) {
   // all required fields must be filled
   if (has_empty_fields) {
     message = nodeca.runtime.t('users.auth.login_form.error.not_filled');
-    nodeca.client.common.render.page('users.auth.login.view', {
+    nodeca.client.common.render.page('users.auth.login.show', {
       email: params.email,
       pass:  params.pass,
       errors: {
@@ -62,7 +62,7 @@ module.exports = function ($form) {
     if (err) {
       // failed login/password or captcha
       if (err.statusCode === nodeca.io.BAD_REQUEST) {
-        nodeca.client.common.render.page('users.auth.login.view', {
+        nodeca.client.common.render.page('users.auth.login.show', {
           email: params.email,
           pass:  params.pass,
           errors: err.message

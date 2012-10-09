@@ -9,7 +9,7 @@ nodeca.validate(params_schema);
 
 
 /**
- * users.auth.register.view(params, callback) -> Void
+ * users.auth.register.show(params, callback) -> Void
  *
  * Render registration form
  **/

@@ -7,7 +7,7 @@ nodeca.validate(params_schema);
 
 
 /**
- * users.auth.login.plain/restore_view(params, callback) -> Void
+ * users.auth.login.plain/restore_show(params, callback) -> Void
  *
  * Render restore password form
  **/
