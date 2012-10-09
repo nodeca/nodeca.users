@@ -30,7 +30,7 @@ nodeca.filters.before('@', function login_inject_captcha(params, next) {
 
 
 /**
- * users.auth.login.view(params, callback) -> Void
+ * users.auth.login.show(params, callback) -> Void
  *
  * Render registration form
  **/

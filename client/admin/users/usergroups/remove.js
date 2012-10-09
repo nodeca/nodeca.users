@@ -18,18 +18,18 @@
  **/
 
 /**
- *  client.admin.users.usergroups.delete
+ *  client.admin.users.usergroups.remove
  **/
 
 /*global nodeca, window*/
 
 /**
- *  client.admin.users.usergroups.delete($elem, event)
+ *  client.admin.users.usergroups.remove($elem, event)
  *
  **/
 module.exports = function ($elem) {
   var params = { short_name: $elem.attr('id') };
-  nodeca.server.admin.users.usergroups.delete(params, function(err){
+  nodeca.server.admin.users.usergroups.remove(params, function(err){
     if (err) {
       // something wrong
       nodeca.client.admin.notify('error', err.message);
@@ -37,7 +37,7 @@ module.exports = function ($elem) {
     }
   });
 
-  //window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.index');
+  window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.index');
 
   // Disable regular click
   return false;

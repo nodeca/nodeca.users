@@ -17,12 +17,12 @@ nodeca.validate(params_schema);
 
 
 /**
- * admin.usergroups.delete(params, callback) -> Void
+ * admin.usergroups.remove(params, callback) -> Void
  *
  * ##### Params
  * - short_name(String):        group id
  *
- * Delete user group
+ * Remove user group
  *
  **/
 module.exports = function (params, next) {

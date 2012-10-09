@@ -6,13 +6,13 @@ i18n:
 
         usergroups:
           index_title: Acp. User groups
-          new_title: Acp. new user group
-          show_title: "Acp. #{short_name} group"
+          add_title: Acp. add user group
+          edit_title: "Acp. #{short_name} group"
 
-          new_group_breadcrumb: New
+          add_group_breadcrumb: Add
 
-          new_group_button: New group
-          delete_group_button: Delete group
+          add_group_button: Add group
+          remove_group_button: Remove group
 
           form:
             submit_button: Save group
