@@ -30,5 +30,5 @@ router:
       "/usergroups/new": ~
 
     admin.users.usergroups.show:
-      "/usergroups/show/{_id}":
-        _id: /\w+/
+      "/usergroups/show/{short_name}":
+        short_name: /\w+/

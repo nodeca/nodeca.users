@@ -9,7 +9,7 @@ var usergroup_schema = nodeca.config.setting_schemas['usergroup'];
 // Validate input parameters
 //
 var params_schema = {
-  _id: {
+  short_name: {
     type: 'string',
     required: true
   }
@@ -41,11 +41,11 @@ module.exports = function (params, next) {
   var usergroup;
 
   var items = _.clone(params);
-  // remove _id
-  delete items['_id'];
+  // remove short_name
+  delete items['short_name'];
 
   // Check if group already exists
-  UserGroup.findById(params._id).exec(function(err, group) {
+  UserGroup.findById(params.short_name).exec(function(err, group) {
     if (err) {
       next(err);
       return;
@@ -56,7 +56,7 @@ module.exports = function (params, next) {
       next({
         statusCode: nodeca.io.BAD_REQUEST,
         body: {
-          _id: env.helpers.t('admin.usergroups.form.error._id_busy')
+          short_name: env.helpers.t('admin.usergroups.form.error.short_name_busy')
         }
       });
       return;
@@ -70,7 +70,7 @@ module.exports = function (params, next) {
       // FIXME eval before_save code
     });
 
-    usergroup = new UserGroup({ '_id': params._id, items: items });
+    usergroup = new UserGroup({ short_name: params.short_name, items: items });
     usergroup.save(next);
   });
 };

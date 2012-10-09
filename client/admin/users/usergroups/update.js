@@ -10,11 +10,16 @@
  **/
 
 /**
- *  client.admin.usergroups
+ *  client.admin.users
+ **/
+
+
+/**
+ *  client.admin.users.usergroups
  **/
 
 /**
- *  client.admin.usergroups.update
+ *  client.admin.users.usergroups.update
  **/
 
 
@@ -25,7 +30,7 @@ var DELAY = 500;
 var timeout;
 
 /**
- *  client.admin.usergroups.update($elem, event)
+ *  client.admin.users.usergroups.update($elem, event)
  *
  * Update single field value.
  **/
@@ -36,7 +41,7 @@ module.exports = function ($elem) {
   // delay request
   timeout = setTimeout(function() {
     var params = {
-      _id: $elem.parents('form').find('input#_id').val()
+      short_name: $elem.parents('form').find('input#short_name').val()
     };
     params[$elem.attr('name')] = $elem.val();
     nodeca.server.admin.users.usergroups.update(params, function(err){

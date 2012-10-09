@@ -8,7 +8,7 @@ var UserGroup = nodeca.models.users.UserGroup;
 // Validate input parameters
 //
 var params_schema = {
-  _id: {
+  short_name: {
     type: 'string',
     required: true
   }
@@ -27,7 +27,7 @@ module.exports = function (params, next) {
   var env = this;
 
 
-  UserGroup.findOne({_id: params._id}).exec(function(err, group) {
+  UserGroup.findOne({short_name: params.short_name}).exec(function(err, group) {
     if (err) {
       next(err);
       return;
@@ -65,8 +65,33 @@ module.exports = function (params, next) {
 // Put usergroups items into response data
 //
 nodeca.filters.after('@', function (params, next) {
-  this.response.data.usergroup_id = this.data.usergroup._id;
+  this.response.data.short_name = this.data.usergroup.short_name;
   this.response.data.item_groups = this.data.item_groups;
 
+  next();
+});
+
+
+//
+// Fill breadcrumbs and head meta
+//
+nodeca.filters.after('@', function set_forum_index_breadcrumbs(params, next) {
+  this.response.data.head.title = this.helpers.t(
+    'admin.users.usergroups.show_title',
+    { short_name: this.data.usergroup.short_name }
+  );
+  this.response.data.widgets.breadcrumbs = [
+    {
+      text: this.helpers.t('admin.menus.navbar.system'),
+      route: 'admin.dashboard'
+    },
+    {
+      text: this.helpers.t('admin.menus.navbar.usergroups'),
+      route: 'admin.users.usergroups.index'
+    },
+    {
+      text: this.data.usergroup.short_name
+    }
+  ];
   next();
 });

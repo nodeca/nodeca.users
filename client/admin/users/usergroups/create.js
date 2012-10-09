@@ -10,11 +10,15 @@
  **/
 
 /**
- *  client.admin.usergroups
+ *  client.admin.users
  **/
 
 /**
- *  client.admin.usergroups.create
+ *  client.admin.users.usergroups
+ **/
+
+/**
+ *  client.admin.users.usergroups.create
  **/
 
 
@@ -22,7 +26,7 @@
 
 
 /**
- *  client.admin.usergroups.create($form, event)
+ *  client.admin.users.usergroups.create($form, event)
  *
  * collect new group data from form and send on server
  **/
