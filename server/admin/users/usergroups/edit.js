@@ -17,7 +17,7 @@ nodeca.validate(params_schema);
 
 
 /**
- * admin.usergroups.show(params, callback) -> Void
+ * admin.usergroups.edit(params, callback) -> Void
  *
  *
  * Display usergrroup
@@ -77,7 +77,7 @@ nodeca.filters.after('@', function (params, next) {
 //
 nodeca.filters.after('@', function set_forum_index_breadcrumbs(params, next) {
   this.response.data.head.title = this.helpers.t(
-    'admin.users.usergroups.show_title',
+    'admin.users.usergroups.edit_title',
     { short_name: this.data.usergroup.short_name }
   );
   this.response.data.widgets.breadcrumbs = [

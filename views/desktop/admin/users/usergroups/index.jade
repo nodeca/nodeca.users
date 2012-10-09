@@ -6,9 +6,9 @@ article
   ul
     -each group_name in self.usergroups
       li
-        a(href=self.link_to('admin.users.usergroups.show', { short_name:group_name}))= group_name
-        button.btn.btn-primary.btn-mini(id=group_name, type='button', data-on-click='admin.users.usergroups.delete') #{self.t('admin.users.usergroups.delete_group_button')}
+        a(href=self.link_to('admin.users.usergroups.edit', { short_name:group_name}))= group_name
+        button.btn.btn-primary.btn-mini(id=group_name, type='button', data-on-click='admin.users.usergroups.remove') #{self.t('admin.users.usergroups.remove_group_button')}
 
   button.btn.btn-primary.btn-large(
     type='button',
-    onclick="window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.new'); return false;") #{self.t('admin.users.usergroups.new_group_button')}
+    onclick="window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.add'); return false;") #{self.t('admin.users.usergroups.add_group_button')}

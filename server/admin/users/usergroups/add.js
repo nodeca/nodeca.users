@@ -11,10 +11,10 @@ nodeca.validate(params_schema);
 
 
 /**
- * admin.usergroups.new(params, callback) -> Void
+ * admin.usergroups.add(params, callback) -> Void
  *
  *
- * Display new group form
+ * Display add group form
  *
  **/
 module.exports = function (params, next) {
@@ -49,7 +49,7 @@ nodeca.filters.after('@', function (params, next) {
 // Fill breadcrumbs and head meta
 //
 nodeca.filters.after('@', function set_forum_index_breadcrumbs(params, next) {
-  this.response.data.head.title = this.helpers.t('admin.users.usergroups.new_title');
+  this.response.data.head.title = this.helpers.t('admin.users.usergroups.add_title');
   this.response.data.widgets.breadcrumbs = [
     {
       text: this.helpers.t('admin.menus.navbar.system'),
@@ -60,7 +60,7 @@ nodeca.filters.after('@', function set_forum_index_breadcrumbs(params, next) {
       route: 'admin.users.usergroups.index'
     },
     {
-      text: this.helpers.t('admin.users.usergroups.new_group_breadcrumb')
+      text: this.helpers.t('admin.users.usergroups.add_group_breadcrumb')
     }
   ];
   next();

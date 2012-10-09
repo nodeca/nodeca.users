@@ -26,9 +26,9 @@ router:
     admin.users.usergroups.index:
       "/usergroups": ~
 
-    admin.users.usergroups.new:
-      "/usergroups/new": ~
+    admin.users.usergroups.add:
+      "/usergroups/add": ~
 
-    admin.users.usergroups.show:
-      "/usergroups/show/{short_name}":
+    admin.users.usergroups.edit:
+      "/usergroups/edit/{short_name}":
         short_name: /\w+/
