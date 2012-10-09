@@ -24,10 +24,10 @@ article
           legend #{group_name}
           -each item, item_name in group
             - _group_class = (item_name in self.errors) ? 'error' : ''
-            - _input_help_text = (self.errors[item_name]) ? self.errors[item_name] : self.t('admin.users.usergroups.form.'+ item_name + '_help')
+            - _input_help_text = (self.errors[item_name]) ? self.errors[item_name] : self.t('admin.settings.usergroups.' + item_name + '_help')
 
             .control-group(class=_group_class)
-              label.control-label(for=item_name) #{self.t('admin.users.usergroups.form.' + item_name + '_title')}
+              label.control-label(for=item_name) #{self.t('admin.settings.usergroups.' + item_name + '_title')}
               .controls
                 .row-fluid
                   - if (!('value' in item))
