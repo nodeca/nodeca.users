@@ -6,14 +6,14 @@ include ./partials/_display_value
       - self.errors = self.errors || {}
       - var _group_class, _input_help_text
 
-      - _group_class = ('_id' in self.errors) ? 'error' : ''
-      - _input_help_text = (self.errors['_id']) ? self.errors['_id'] : self.t('admin.users.usergroups.form._id_help')
+      - _group_class = ('short_name' in self.errors) ? 'error' : ''
+      - _input_help_text = (self.errors['short_name']) ? self.errors['short_name'] : self.t('admin.users.usergroups.form.short_name_help')
 
       .control-group(class=_group_class)
-        label.control-label(for='_id') #{self.t('admin.users.usergroups.form._id_title')}
+        label.control-label(for='short_name') #{self.t('admin.users.usergroups.form.short_name_title')}
         .controls
           .row-fluid
-            input.span12(type="text", name='_id')
+            input.span12(type="text", name='short_name')
             span.help-block #{_input_help_text}
 
       -each group, group_name in self.item_groups

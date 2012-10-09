@@ -7,7 +7,7 @@ var UserGroup = nodeca.models.users.UserGroup;
 // Validate input parameters
 //
 var params_schema = {
-  _id: {
+  short_name: {
     type: 'string',
     required: true
   }
@@ -20,13 +20,13 @@ nodeca.validate(params_schema);
  * admin.usergroups.delete(params, callback) -> Void
  *
  * ##### Params
- * - _id(String):        group id
+ * - short_name(String):        group id
  *
  * Delete user group
  *
  **/
 module.exports = function (params, next) {
-  UserGroup.findOne({_id: params.group_id}).exec(function(err, group) {
+  UserGroup.findOne({short_name: params.short_name}).exec(function(err, group) {
     if (err) {
       next(err);
       return;

@@ -3,7 +3,7 @@ h1 Settings
 ul
   -each group_name in self.usergroups
     li
-      a(href=self.link_to('admin.users.usergroups.show', { _id:group_name}))= group_name
+      a(href=self.link_to('admin.users.usergroups.show', { short_name:group_name}))= group_name
       button.btn.btn-primary.btn-mini(id=group_name, type='button', data-on-click='admin.users.usergroups.delete') #{self.t('admin.users.usergroups.delete_group_button')}
 
 button.btn.btn-primary.btn-large(

@@ -9,7 +9,7 @@ var usergroup_schema = nodeca.config.setting_schemas['usergroup'];
 // Validate input parameters
 //
 var params_schema = {
-  _id: {
+  short_name: {
     type: 'string',
     required: true
   }
@@ -33,9 +33,9 @@ nodeca.validate(params_schema);
  **/
 module.exports = function (params, next) {
   var items = _.clone(params);
-  // remove _id from property list
-  delete items['_id'];
-  UserGroup.findOne({ _id: params._id }).exec(function(err, group) {
+  // remove short_name from property list
+  delete items['short_name'];
+  UserGroup.findOne({ short_name: params.short_name }).exec(function(err, group) {
     if (err) {
       next(err);
       return;

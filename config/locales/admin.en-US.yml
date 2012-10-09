@@ -11,11 +11,11 @@ i18n:
           form:
             submit_button: Save group
 
-            _id_help: Unique text id souch as administrators
-            _id_title: Group text id
+            short_name_help: Unique text id souch as administrators
+            short_name_title: Group text id
 
             error:
-              _id_busy: This group already exists
+              short_name_busy: This group already exists
       menus:
         navbar:
           users: Members

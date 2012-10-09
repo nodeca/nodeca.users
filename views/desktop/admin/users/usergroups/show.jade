@@ -3,8 +3,8 @@ include ./partials/_display_value
 .row
   .span8.offset2.well.well-form
     form.form-horizontal(data-on-submit='admin.users.usergroups.create')
-      input(type="hidden", name='_id', id='_id', value=self.usergroup_id)
-      H1= self.usergroup_id
+      input(type="hidden", name='short_name', id='short_name', value=self.short_name)
+      H1= self.short_name
 
       - var handler = 'admin.users.usergroups.update'
       -each group, group_name in self.item_groups

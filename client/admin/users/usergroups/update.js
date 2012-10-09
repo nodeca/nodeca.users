@@ -36,7 +36,7 @@ module.exports = function ($elem) {
   // delay request
   timeout = setTimeout(function() {
     var params = {
-      _id: $elem.parents('form').find('input#_id').val()
+      short_name: $elem.parents('form').find('input#short_name').val()
     };
     params[$elem.attr('name')] = $elem.val();
     nodeca.server.admin.users.usergroups.update(params, function(err){
