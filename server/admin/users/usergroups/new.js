@@ -36,9 +36,32 @@ module.exports = function (params, next) {
   next();
 };
 
+
 // Put usergroups items into response data
 //
 nodeca.filters.after('@', function (params, next) {
   this.response.data.item_groups = this.data.item_groups;
+  next();
+});
+
+
+//
+// Fill breadcrumbs and head meta
+//
+nodeca.filters.after('@', function set_forum_index_breadcrumbs(params, next) {
+  this.response.data.head.title = this.helpers.t('admin.users.usergroups.new_title');
+  this.response.data.widgets.breadcrumbs = [
+    {
+      text: this.helpers.t('admin.menus.navbar.system'),
+      route: 'admin.dashboard'
+    },
+    {
+      text: this.helpers.t('admin.menus.navbar.usergroups'),
+      route: 'admin.users.usergroups.index'
+    },
+    {
+      text: this.helpers.t('admin.users.usergroups.new_group_breadcrumb')
+    }
+  ];
   next();
 });

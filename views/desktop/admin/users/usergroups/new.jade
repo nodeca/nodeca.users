@@ -1,37 +1,40 @@
 include ./partials/_display_value
 
-.row
-  .span8.offset2.well.well-form
-    form.form-horizontal(data-on-submit='admin.users.usergroups.create')
-      - self.errors = self.errors || {}
-      - var _group_class, _input_help_text
+article
+  include ../../../common/widgets/breadcrumbs
 
-      - _group_class = ('short_name' in self.errors) ? 'error' : ''
-      - _input_help_text = (self.errors['short_name']) ? self.errors['short_name'] : self.t('admin.users.usergroups.form.short_name_help')
+  .row
+    .span8.offset2.well.well-form
+      form.form-horizontal(data-on-submit='admin.users.usergroups.create')
+        - self.errors = self.errors || {}
+        - var _group_class, _input_help_text
 
-      .control-group(class=_group_class)
-        label.control-label(for='short_name') #{self.t('admin.users.usergroups.form.short_name_title')}
-        .controls
-          .row-fluid
-            input.span12(type="text", name='short_name')
-            span.help-block #{_input_help_text}
+        - _group_class = ('short_name' in self.errors) ? 'error' : ''
+        - _input_help_text = (self.errors['short_name']) ? self.errors['short_name'] : self.t('admin.users.usergroups.form.short_name_help')
 
-      -each group, group_name in self.item_groups
+        .control-group(class=_group_class)
+          label.control-label(for='short_name') #{self.t('admin.users.usergroups.form.short_name_title')}
+          .controls
+            .row-fluid
+              input.span12(type="text", name='short_name')
+              span.help-block #{_input_help_text}
 
-        legend #{group_name}
-        -each item, item_name in group
-          - _group_class = (item_name in self.errors) ? 'error' : ''
-          - _input_help_text = (self.errors[item_name]) ? self.errors[item_name] : self.t('admin.users.usergroups.form.'+ item_name + '_help')
+        -each group, group_name in self.item_groups
 
-          .control-group(class=_group_class)
-            label.control-label(for=item_name) #{self.t('admin.users.usergroups.form.' + item_name + '_title')}
-            .controls
-              .row-fluid
-                - if (!('value' in item))
-                  - item.value = item.default
-                mixin display_value(item_name, item.value, item.type)
-                span.help-block #{_input_help_text}
+          legend #{group_name}
+          -each item, item_name in group
+            - _group_class = (item_name in self.errors) ? 'error' : ''
+            - _input_help_text = (self.errors[item_name]) ? self.errors[item_name] : self.t('admin.users.usergroups.form.'+ item_name + '_help')
 
-      .control-group
-        .controls
-          button.btn.btn-primary.btn-large(type='submit') #{self.t('admin.users.usergroups.form.submit_button')}
+            .control-group(class=_group_class)
+              label.control-label(for=item_name) #{self.t('admin.users.usergroups.form.' + item_name + '_title')}
+              .controls
+                .row-fluid
+                  - if (!('value' in item))
+                    - item.value = item.default
+                  mixin display_value(item_name, item.value, item.type)
+                  span.help-block #{_input_help_text}
+
+        .control-group
+          .controls
+            button.btn.btn-primary.btn-large(type='submit') #{self.t('admin.users.usergroups.form.submit_button')}

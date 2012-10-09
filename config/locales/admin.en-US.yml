@@ -5,7 +5,12 @@ i18n:
         title: Acp Members
 
         usergroups:
-          index_title: Acp User groups
+          index_title: Acp. User groups
+          new_title: Acp. new user group
+          show_title: "Acp. #{short_name} group"
+
+          new_group_breadcrumb: New
+
           new_group_button: New group
           delete_group_button: Delete group
 
