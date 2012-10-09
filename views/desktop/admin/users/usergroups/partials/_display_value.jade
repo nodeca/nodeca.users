@@ -12,7 +12,7 @@ mixin dispay_sting(name, value, handler)
 
 mixin display_boolean(name, value, handler)
   - if (handler)
-    input.span12(type='checkbox', name=name, value='true', checked=value, data-on-click=handler)
+    input.span12(type='checkbox', name=name, value='true', checked=value, data-on-change=handler)
   - else
     input.span12(type='checkbox', name=name, value='true', checked=value)
 
