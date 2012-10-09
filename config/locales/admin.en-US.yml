@@ -5,6 +5,7 @@ i18n:
         title: Acp Members
 
         usergroups:
+          index_title: Acp User groups
           new_group_button: New group
           delete_group_button: Delete group
 

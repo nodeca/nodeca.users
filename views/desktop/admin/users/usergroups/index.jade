@@ -1,11 +1,14 @@
-h1 Settings
+article
+  include ../../../common/widgets/breadcrumbs
 
-ul
-  -each group_name in self.usergroups
-    li
-      a(href=self.link_to('admin.users.usergroups.show', { short_name:group_name}))= group_name
-      button.btn.btn-primary.btn-mini(id=group_name, type='button', data-on-click='admin.users.usergroups.delete') #{self.t('admin.users.usergroups.delete_group_button')}
+  h1= self.t('admin.users.usergroups.index_title')
 
-button.btn.btn-primary.btn-large(
-  type='button',
-  onclick="window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.new'); return false;") #{self.t('admin.users.usergroups.new_group_button')}
+  ul
+    -each group_name in self.usergroups
+      li
+        a(href=self.link_to('admin.users.usergroups.show', { short_name:group_name}))= group_name
+        button.btn.btn-primary.btn-mini(id=group_name, type='button', data-on-click='admin.users.usergroups.delete') #{self.t('admin.users.usergroups.delete_group_button')}
+
+  button.btn.btn-primary.btn-large(
+    type='button',
+    onclick="window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.new'); return false;") #{self.t('admin.users.usergroups.new_group_button')}

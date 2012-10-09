@@ -34,9 +34,28 @@ module.exports = function (params, next) {
   });
 };
 
+
 // Put usergroups into response data
 //
 nodeca.filters.after('@', function (params, next) {
   this.response.data.usergroups = this.data.usergroups;
+  next();
+});
+
+
+//
+// Fill breadcrumbs and head meta
+//
+nodeca.filters.after('@', function set_forum_index_breadcrumbs(params, next) {
+  this.response.data.head.title = this.helpers.t('admin.users.usergroups.index_title');
+  this.response.data.widgets.breadcrumbs = [
+    {
+      text: this.helpers.t('admin.menus.navbar.system'),
+      route: 'admin.dashboard'
+    },
+    {
+      text: this.helpers.t('admin.menus.navbar.usergroups')
+    }
+  ];
   next();
 });
