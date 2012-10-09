@@ -33,7 +33,7 @@ module.exports = function (params, next) {
       return;
     }
     if (!group) {
-      next({ statusCode: nodeca.io.NOT_FOUND });
+      next(nodeca.io.NOT_FOUND);
       return;
     }
 

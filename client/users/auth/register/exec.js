@@ -32,7 +32,7 @@ module.exports = function ($form) {
   nodeca.server.users.auth.register.exec(params, function (err) {
     if (err) {
       // Wrong form params - regenerate page with hightlighted errors
-      if (err.statusCode === nodeca.io.BAD_REQUEST) {
+      if (err.code === nodeca.io.BAD_REQUEST) {
         // add errors
         params.errors = err.message;
         nodeca.client.common.render.page('users.auth.register.show', params);
