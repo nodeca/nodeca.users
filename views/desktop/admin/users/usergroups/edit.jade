@@ -10,10 +10,10 @@ article
         H1= self.short_name
 
         - var handler = 'admin.users.usergroups.update'
-        -each group, group_name in self.item_groups
+        -each category, category_name in self.item_categories
 
-          legend #{group_name}
-          -each item, item_name in group
+          legend #{category_name}
+          -each item, item_name in category
             .control-group
               label.control-label(for=item_name) #{self.t('admin.settings.usergroups.'+ item_name + '_title')}
               .controls
