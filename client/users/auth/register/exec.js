@@ -34,13 +34,13 @@ module.exports = function ($form) {
       // Wrong form params - regenerate page with hightlighted errors
       if (err.code === nodeca.io.BAD_REQUEST) {
         // add errors
-        params.errors = err.message;
+        params.errors = err.data;
         nodeca.client.common.render.page('users.auth.register.show', params);
         return;
       }
 
-      // something fatal
-      nodeca.client.common.notify('error', err.message);
+      // no need for fatal errors notifications as it's done by io automagically
+      nodeca.console.error(err);
       return;
     }
 

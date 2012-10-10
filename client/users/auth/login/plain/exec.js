@@ -46,32 +46,25 @@ module.exports = function ($form) {
   // do minimal check prior to send data to server
   // all required fields must be filled
   if (has_empty_fields) {
-    message = nodeca.runtime.t('users.auth.login_form.error.not_filled');
-    nodeca.client.common.render.page('users.auth.login.show', {
-      email: params.email,
-      pass:  params.pass,
-      errors: {
-        common: message
-      }
-    });
+    params.errors = {
+      common: nodeca.runtime.t('users.auth.login_form.error.not_filled')
+    };
+
+    nodeca.client.common.render.page('users.auth.login.show', params);
     return false;
   }
 
   nodeca.server.users.auth.login.plain.exec(params, function (err) {
-
     if (err) {
       // failed login/password or captcha
       if (err.code === nodeca.io.BAD_REQUEST) {
-        nodeca.client.common.render.page('users.auth.login.show', {
-          email: params.email,
-          pass:  params.pass,
-          errors: err.data
-        });
+        params.errors = err.data;
+        nodeca.client.common.render.page('users.auth.login.show', params);
         return;
       }
 
-      // something unexpected
-      nodeca.client.common.notify('error', err.message);
+      // no need for fatal errors notifications as it's done by io automagically
+      nodeca.console.error(err);
       return;
     }
 
