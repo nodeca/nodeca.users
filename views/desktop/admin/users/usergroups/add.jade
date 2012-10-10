@@ -21,13 +21,13 @@ article
 
         -each category, category_name in self.item_categories
 
-          legend #{category_name}
+          legend #{self.t('admin.setting.category.' + category_name)}
           -each item, item_name in category
             - _group_class = (item_name in self.errors) ? 'error' : ''
-            - _input_help_text = (self.errors[item_name]) ? self.errors[item_name] : self.t('admin.settings.usergroups.' + item_name + '_help')
+            - _input_help_text = (self.errors[item_name]) ? self.errors[item_name] : self.t('admin.setting.' + item_name + '_help')
 
             .control-group(class=_group_class)
-              label.control-label(for=item_name) #{self.t('admin.settings.usergroups.' + item_name + '_title')}
+              label.control-label(for=item_name) #{self.t('admin.setting.' + item_name)}
               .controls
                 .row-fluid
                   - if (!('value' in item))
