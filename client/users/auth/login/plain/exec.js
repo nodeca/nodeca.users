@@ -65,7 +65,7 @@ module.exports = function ($form) {
         nodeca.client.common.render.page('users.auth.login.show', {
           email: params.email,
           pass:  params.pass,
-          errors: err.message
+          errors: err.data
         });
         return;
       }

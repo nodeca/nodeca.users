@@ -107,8 +107,10 @@ nodeca.filters.before('@', function login_ip_rate_limit(params, next) {
       rate.total.update();
 
       next({
-        code: nodeca.io.APP_ERROR,
-        data: env.helpers.t('users.auth.login_form.error.too_many_attempts')
+        code: nodeca.io.BAD_REQUEST,
+        data: {
+          common: env.helpers.t('users.auth.login_form.error.too_many_attempts')
+        }
       });
       return;
     }
@@ -187,7 +189,7 @@ nodeca.filters.before('@', function login_check_captcha(params, next) {
 module.exports = function (params, next) {
   var env = this,
       user_ip = env.request.ip;
-  
+
   // We should protect login in 2 ways:
   //
   // 1. Too many invalid logins (5 attempts / 300 seconds) from single IP
