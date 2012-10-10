@@ -19,15 +19,15 @@ article
               input.span12(type="text", name='short_name')
               span.help-block #{_input_help_text}
 
-        -each group, group_name in self.item_groups
+        -each category, category_name in self.item_categories
 
-          legend #{group_name}
-          -each item, item_name in group
+          legend #{self.t('admin.setting.category.' + category_name)}
+          -each item, item_name in category
             - _group_class = (item_name in self.errors) ? 'error' : ''
-            - _input_help_text = (self.errors[item_name]) ? self.errors[item_name] : self.t('admin.settings.usergroups.' + item_name + '_help')
+            - _input_help_text = (self.errors[item_name]) ? self.errors[item_name] : self.t('admin.setting.' + item_name + '_help')
 
             .control-group(class=_group_class)
-              label.control-label(for=item_name) #{self.t('admin.settings.usergroups.' + item_name + '_title')}
+              label.control-label(for=item_name) #{self.t('admin.setting.' + item_name)}
               .controls
                 .row-fluid
                   - if (!('value' in item))

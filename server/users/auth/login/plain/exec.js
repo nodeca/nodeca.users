@@ -55,8 +55,8 @@ function find_auth(env, email, callback) {
         }
         if (!user) {
           callback({
-            statusCode: nodeca.io.APP_ERROR,
-            body: env.helpers.t('users.auth.login_form.error.auth_user_broken')
+            code: nodeca.io.APP_ERROR,
+            data: env.helpers.t('users.auth.login_form.error.auth_user_broken')
           });
           return;
         }
@@ -107,8 +107,8 @@ nodeca.filters.before('@', function login_ip_rate_limit(params, next) {
       rate.total.update();
 
       next({
-        statusCode: nodeca.io.APP_ERROR,
-        message: env.helpers.t('users.auth.login_form.error.too_many_attempts')
+        code: nodeca.io.APP_ERROR,
+        data: env.helpers.t('users.auth.login_form.error.too_many_attempts')
       });
       return;
     }
@@ -160,8 +160,8 @@ nodeca.filters.before('@', function login_check_captcha(params, next) {
       // Bad captcha code -> return error to client
       if (!result) {
         next({
-          statusCode: nodeca.io.BAD_REQUEST,
-          body: {
+          code: nodeca.io.BAD_REQUEST,
+          data: {
             recaptcha: '' // don't customize form text, just highlight field
           }
         });
@@ -205,8 +205,8 @@ module.exports = function (params, next) {
   find_auth(env, params.email, function (err, auth) {
     var provider;
     var login_error = {
-      statusCode: nodeca.io.BAD_REQUEST,
-      body: { common: env.helpers.t('users.auth.login_form.error.login_failed') }
+      code: nodeca.io.BAD_REQUEST,
+      data: { common: env.helpers.t('users.auth.login_form.error.login_failed') }
     };
 
     if (err) {

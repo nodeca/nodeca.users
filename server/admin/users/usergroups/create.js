@@ -54,8 +54,8 @@ module.exports = function (params, next) {
     // group already exists
     if (group) {
       next({
-        statusCode: nodeca.io.BAD_REQUEST,
-        body: {
+        code: nodeca.io.BAD_REQUEST,
+        data: {
           short_name: env.helpers.t('admin.usergroups.form.error.short_name_busy')
         }
       });

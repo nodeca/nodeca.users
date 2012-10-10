@@ -35,7 +35,7 @@ module.exports = function ($form) {
   nodeca.server.admin.users.usergroups.create(params, function(err){
     if (err) {
       // Wrong form params - regenerate page with hightlighted errors
-      if (err.statusCode === nodeca.io.BAD_REQUEST) {
+      if (err.code === nodeca.io.BAD_REQUEST) {
         // add errors
         params.errors = err.message;
         nodeca.client.admin.render.page('admin.users.usergroups.create', params);

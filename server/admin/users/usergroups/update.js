@@ -42,7 +42,7 @@ module.exports = function (params, next) {
     }
     // group not found
     if (!group) {
-      next({ statusCode: nodeca.io.NOT_FOUND });
+      next(nodeca.io.NOT_FOUND);
       return;
     }
 

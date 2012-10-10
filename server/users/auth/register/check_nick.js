@@ -34,8 +34,8 @@ module.exports = function (params, next) {
     }
     if (!_.isEmpty(doc)) {
       next({
-        statusCode: nodeca.io.BAD_REQUEST,
-        body: { nick: env.helpers.t('users.auth.reg_form.error.nick_busy')}
+        code: nodeca.io.BAD_REQUEST,
+        data: { nick: env.helpers.t('users.auth.reg_form.error.nick_busy')}
       });
       return;
     }
