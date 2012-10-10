@@ -26,7 +26,24 @@ var User = module.exports.User = new Schema({
   , post_count       : { type: Number, default: 0 }
 
   , warning_points   : { type: Number, default: 0 }
-  });
+});
+
+
+var NICK_RE = nodeca.components.XRegExp('^[\\p{L}\\p{N}\\-]+$');
+
+
+User.statics.validateNick = function validateNick(str) {
+  return NICK_RE.test(str);
+};
+
+
+var PASSWORD_RE = nodeca.components.XRegExp('\\p{L}');
+
+
+User.statics.validatePassword = function validatePassword(str) {
+  return 8 <= str.length && /\d/.test(str) && PASSWORD_RE.test(str);
+};
+
 
 // FIXME: make denormalisation customizeable
 User.pre('save', function (next) {
@@ -40,6 +57,7 @@ User.pre('save', function (next) {
   }
   next();
 });
+
 
 module.exports.__init__ = function __init__() {
   return mongoose.model('users.User', User);
