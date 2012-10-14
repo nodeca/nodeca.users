@@ -43,12 +43,13 @@ module.exports = function ($elem) {
     var params = {
       short_name: $elem.parents('form').find('input#short_name').val()
     };
+
     params[$elem.attr('name')] = $elem.val();
-    nodeca.server.admin.users.usergroups.update(params, function(err){
+    nodeca.server.admin.users.usergroups.update(params, function (err) {
       if (err) {
-        // something fatal
         // FIXME highlight red
-        nodeca.client.admin.notify('error', err.message);
+        // no need for fatal errors notifications as it's done by io automagically
+        nodeca.console.error(err);
         return;
       }
 

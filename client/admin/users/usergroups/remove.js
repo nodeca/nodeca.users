@@ -29,15 +29,15 @@
  **/
 module.exports = function ($elem) {
   var params = { short_name: $elem.attr('id') };
-  nodeca.server.admin.users.usergroups.remove(params, function(err){
-    if (err) {
-      // something wrong
-      nodeca.client.admin.notify('error', err.message);
-      return;
-    }
-  });
 
-  window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.index');
+  nodeca.server.admin.users.usergroups.remove(params, function (err) {
+    if (err) {
+      // no need for fatal errors notifications as it's done by io automagically
+      nodeca.console.error(err);
+    }
+
+    window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.index');
+  });
 
   // Disable regular click
   return false;
