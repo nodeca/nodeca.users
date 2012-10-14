@@ -19,4 +19,19 @@ describe('User', function () {
       User.validateNick('-O_0-').should.equal(true);
     });
   });
+
+  describe('.validatePassword()', function () {
+    it('should require password to be at least 8 characters', function () {
+      User.validatePassword('abcd123').should.equal(false);
+      User.validatePassword('abcd1234').should.equal(true);
+    });
+
+    it('should require password to have at least one digit and one letter', function () {
+      User.validatePassword('abcdefgh').should.equal(false);
+      User.validatePassword('abcdefg8').should.equal(true);
+
+      User.validatePassword('12345678').should.equal(false);
+      User.validatePassword('1234567h').should.equal(true);
+    });
+  });
 });
