@@ -16,6 +16,7 @@ help:
 	echo "make help       - Print this help"
 	echo "make lint       - Lint sources with JSHint"
 	echo "make test       - Lint sources and run all tests"
+	echo "make test-ci    - Run continuous integration"
 	echo "make doc        - Build API docs"
 	echo "make dev-deps   - Install developer dependencies"
 	echo "make gh-pages   - Build and push API docs into gh-pages branch"
@@ -45,11 +46,10 @@ test-ci: lint test
 	rm -rf tmp/nodeca-ci
 	mkdir -p tmp
 	git clone git://github.com/nodeca/nodeca.git tmp/nodeca-ci
-	cd tmp/nodeca-ci && npm install && \
-		cp config/database.yml.example config/database.yml && \
-		cp config/application.yml.example config/application.yml
+	cd tmp/nodeca-ci && npm install
+	cd tmp/nodeca-ci && cp config/application.yml.example config/application.yml
 	cd tmp/nodeca-ci && node nodeca.js migrate --all
-	cd tmp/nodeca-ci && node nodeca.js test "${NPM_PACKAGE}"
+	cd tmp/nodeca-ci && node nodeca.js test ${NPM_PACKAGE}
 
 
 doc:
