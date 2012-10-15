@@ -7,6 +7,19 @@ menus:
   admin:
     navbar:
       users:
-        to: admin.users.index
-      usergroups:
-        to: admin.users.usergroups.index
+        to: admin.users.users.index
+        submenu:
+          users:
+            to: admin.users.users.index
+            submenu:
+              manage: 
+                to: admin.users.users.index
+              add:
+                to: admin.users.users.index # FIXME
+          usergroups:
+            to: admin.users.usergroups.index
+            submenu:
+              manage:
+                to: admin.users.usergroups.index
+              add:
+                to: admin.users.usergroups.add

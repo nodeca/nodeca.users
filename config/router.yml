@@ -7,8 +7,18 @@ router:
       "/member{id}":
         id: /\d+/
 
-    admin.users.index:
+    admin.users.users.index:
       "/users": ~
+
+    admin.users.usergroups.index:
+      "/usergroups": ~
+
+    admin.users.usergroups.add:
+      "/usergroups/add": ~
+
+    admin.users.usergroups.edit:
+      "/usergroups/edit/{short_name}":
+        short_name: /\w+/
 
 
     users.auth.login.show:
@@ -22,13 +32,3 @@ router:
 
     users.auth.register.success:
       "/auth/reg/done": ~
-
-    admin.users.usergroups.index:
-      "/usergroups": ~
-
-    admin.users.usergroups.add:
-      "/usergroups/add": ~
-
-    admin.users.usergroups.edit:
-      "/usergroups/edit/{short_name}":
-        short_name: /\w+/

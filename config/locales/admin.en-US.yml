@@ -25,4 +25,11 @@ i18n:
       menus:
         navbar:
           users: Members
-          usergroups: User groups
+
+          users.users: Members
+          users.users.manage: Manage Users
+          users.users.add: Add user
+
+          users.usergroups: User groups
+          users.usergroups.manage: Manage User group
+          users.usergroups.add: Add User group

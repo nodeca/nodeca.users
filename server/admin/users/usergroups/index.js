@@ -54,7 +54,7 @@ nodeca.filters.after('@', function set_forum_index_breadcrumbs(params, next) {
       route: 'admin.dashboard'
     },
     {
-      text: this.helpers.t('admin.menus.navbar.usergroups')
+      text: this.helpers.t('admin.menus.navbar.users.usergroups')
     }
   ];
   next();
