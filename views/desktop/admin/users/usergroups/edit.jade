@@ -19,13 +19,4 @@ article
 
           legend #{self.t('admin.setting.category.' + category_name)}
           -each item, item_name in category
-            .control-group
-              label.control-label(for=item_name) #{self.t('admin.setting.'+ item_name)}
-              .controls
-                .row-fluid
-                  - if (!('value' in item))
-                    - item.value = item.default
-
-                  mixin display_value(item_name, item.value, item.type, handler)
-                  - if (self.t.exists('admin.setting.' + item_name + '_help'))
-                    span.help-block #{self.t('admin.setting.'+ item_name + '_help')}
+            mixin display_value(item_name, item, handler)

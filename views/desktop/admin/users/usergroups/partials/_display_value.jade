@@ -16,13 +16,36 @@ mixin display_boolean(name, value, handler)
   - else
     input.span12(type='checkbox', name=name, value='true', checked=value)
 
-mixin display_value(name, value, type, handler)
-  case type
-    when 'number'
-      mixin display_number(name, value, handler)
-    when 'string'
-      mixin dispay_sting(name, value, handler)
-    when 'boolean'
-      mixin display_boolean(name, value, handler)
-    default
-      mixin dispay_sting(name, value, handler)
+mixin display_value(name, item, handler)
+  - _group_class = (name in self.errors) ? 'error' : ''
+
+  - if (self.errors[name])
+  - _input_help_text = self.errors[name]
+  - else if (self.t.exists('admin.setting.' + name + '_help'))
+  - _input_help_text = self.t('admin.setting.' + name + '_help')
+  - else
+  - _input_help_text = null
+
+  - if (!('value' in item))
+    - value = item.default
+  - else
+    - value = item.value
+
+  .control-group(class=_group_class)
+    label.control-label(for=name) #{self.t('admin.setting.' + name)}
+    .controls
+      .row-fluid
+        case item.type
+          when 'number'
+            mixin display_number(name, value, handler)
+          when 'string'
+            mixin dispay_sting(name, value, handler)
+          when 'boolean'
+            mixin display_boolean(name, value, handler)
+          default
+            mixin dispay_sting(name, value, handler)
+
+        label.checkbox.inline #{self.t('admin.users.usergroups.form.override')}
+          input(type="checkbox", id=name + '_override', checked=('value' in item))
+        - if (_input_help_text)
+          span.help-block #{_input_help_text}

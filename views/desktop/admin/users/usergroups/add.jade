@@ -25,23 +25,7 @@ article
 
           legend #{self.t('admin.setting.category.' + category_name)}
           -each item, item_name in category
-            - _group_class = (item_name in self.errors) ? 'error' : ''
-            - if (self.errors[item_name])
-            - _input_help_text = self.errors[item_name]
-            - else if (self.t.exists('admin.setting.' + item_name + '_help'))
-            - _input_help_text = self.t('admin.setting.' + item_name + '_help')
-            - else
-            - _input_help_text = null
-
-            .control-group(class=_group_class)
-              label.control-label(for=item_name) #{self.t('admin.setting.' + item_name)}
-              .controls
-                .row-fluid
-                  - if (!('value' in item))
-                    - item.value = item.default
-                  mixin display_value(item_name, item.value, item.type)
-                  - if (_input_help_text)
-                    span.help-block #{_input_help_text}
+            mixin display_value(item_name, item)
 
         .control-group
           .controls
