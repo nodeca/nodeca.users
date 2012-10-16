@@ -23,8 +23,6 @@ i18n:
             parent_group_help: All settings will be inheritance, unless overridden
             parent_group_title: Parent group
 
-            override: Override
-
             error:
               short_name_busy: This group already exists
       menus:

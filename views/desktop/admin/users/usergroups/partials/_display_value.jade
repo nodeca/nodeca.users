@@ -45,7 +45,7 @@ mixin display_value(name, item, handler)
           default
             mixin dispay_sting(name, value, handler)
 
-        label.checkbox.inline #{self.t('admin.users.usergroups.form.override')}
-          input(type="checkbox", id=name + '_override', checked=('value' in item))
         - if (_input_help_text)
           span.help-block #{_input_help_text}
+      .row-fluid
+        input.pull-right(type="checkbox", id=name + '_override', checked=('value' in item))
