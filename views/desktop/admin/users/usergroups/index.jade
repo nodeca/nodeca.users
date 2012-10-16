@@ -4,7 +4,7 @@ article
   h1= self.t('admin.users.usergroups.index_title')
 
   ul
-    -each group_name in self.usergroups
+    - each group_name in self.usergroups
       li
         a(href=self.link_to('admin.users.usergroups.edit', { short_name:group_name}))= group_name
         button.btn.btn-primary.btn-mini(id=group_name, type='button', data-on-click='admin.users.usergroups.remove') #{self.t('admin.users.usergroups.remove_group_button')}

@@ -15,8 +15,8 @@ article
         include ./partials/_parent_group_select
 
         - var handler = 'admin.users.usergroups.update'
-        -each category, category_name in self.item_categories
+        - each category, category_name in self.item_categories
 
           legend #{self.t('admin.setting.category.' + category_name)}
-          -each item, item_name in category
+          - each item, item_name in category
             mixin display_value(item_name, item, handler)

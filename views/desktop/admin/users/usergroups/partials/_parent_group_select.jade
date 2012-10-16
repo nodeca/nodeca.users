@@ -8,7 +8,7 @@
       select(id="parent_group", name="parent_group")
         option(selected=!self.parent_group)
         - if (self.usergroups)
-          -each group in self.usergroups
+          - each group in self.usergroups
             group_selected = (self.parent_group && self.parent_group === group._id)
             option(value=group._id, selected=group_selected) #{group.short_name}
       span.help-block #{_input_help_text}
