@@ -24,11 +24,7 @@ i18n:
               short_name_busy: This group already exists
       menus:
         navbar:
-          users: Members
-
-          users.users: Members
-          users.users.manage: Manage Users
-          users.users.add: Add user
+          users: Users
 
           users.usergroups: User groups
           users.usergroups.manage: Manage User group

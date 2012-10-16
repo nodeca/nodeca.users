@@ -7,9 +7,6 @@ router:
       "/member{id}":
         id: /\d+/
 
-    admin.users.users.index:
-      "/users": ~
-
     admin.users.usergroups.index:
       "/usergroups": ~
 
