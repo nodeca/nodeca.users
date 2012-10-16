@@ -2,6 +2,7 @@
 
 /*global nodeca, _*/
 
+var UserGroup = nodeca.models.users.UserGroup;
 
 // Validate input parameters
 //
@@ -33,7 +34,19 @@ module.exports = function (params, next) {
   });
 
   env.data.item_categories = item_categories;
-  next();
+
+  // collect existing usergroups for `parent group` select
+  env.data.usergroups = [];
+  UserGroup.find().select({ '_id':1, 'short_name': 1 }).setOptions({ lean: true }).exec(function(err, usergroups) {
+    if (err) {
+      next(err);
+      return;
+    }
+    usergroups.forEach(function(group) {
+      env.data.usergroups.push(group);
+    });
+    next();
+  });
 };
 
 
@@ -41,6 +54,7 @@ module.exports = function (params, next) {
 //
 nodeca.filters.after('@', function (params, next) {
   this.response.data.item_categories = this.data.item_categories;
+  this.response.data.usergroups = this.data.usergroups;
   next();
 });
 

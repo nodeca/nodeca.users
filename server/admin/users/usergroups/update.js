@@ -12,6 +12,9 @@ var params_schema = {
   short_name: {
     type: 'string',
     required: true
+  },
+  parent_group: {
+    type: 'string',
   }
 };
 _.keys(usergroup_schema).forEach(function(name) {
@@ -35,6 +38,7 @@ module.exports = function (params, next) {
   var items = _.clone(params);
   // remove short_name from property list
   delete items['short_name'];
+  delete items['parent_group'];
   UserGroup.findOne({ short_name: params.short_name }).exec(function(err, group) {
     if (err) {
       next(err);
@@ -44,6 +48,11 @@ module.exports = function (params, next) {
     if (!group) {
       next(nodeca.io.NOT_FOUND);
       return;
+    }
+
+    // update parent
+    if (!_.isUndefined (params.parent_group)) {
+      group.parent_group = params.parent_group;
     }
 
     // update group items one by one

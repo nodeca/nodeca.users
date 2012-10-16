@@ -29,6 +29,7 @@ var Schema = mongoose.Schema;
  **/
 var UserGroup = module.exports.UserGroup = new Schema({
     short_name        : { type: String, unique: true }
+  , parent_group      : Schema.Types.ObjectId
   , items             : { type: Schema.Types.Mixed, default: {}}
 });
 

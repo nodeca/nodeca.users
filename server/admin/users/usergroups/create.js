@@ -12,6 +12,9 @@ var params_schema = {
   short_name: {
     type: 'string',
     required: true
+  },
+  parent_group: {
+    type: 'string',
   }
 };
 
@@ -41,8 +44,10 @@ module.exports = function (params, next) {
   var usergroup;
 
   var items = _.clone(params);
-  // remove short_name
+
+  // remove short_name and parent group from items set
   delete items['short_name'];
+  delete items['parent_group'];
 
   // Check if group already exists
   UserGroup.findById(params.short_name).exec(function(err, group) {
@@ -70,7 +75,11 @@ module.exports = function (params, next) {
       // FIXME eval before_save code
     });
 
-    usergroup = new UserGroup({ short_name: params.short_name, items: items });
+    usergroup = new UserGroup({
+      short_name: params.short_name,
+      parent_group: params.parent_group,
+      items: items
+    });
     usergroup.save(next);
   });
 };

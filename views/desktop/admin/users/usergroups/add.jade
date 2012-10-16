@@ -19,6 +19,11 @@ article
               input.span12(type="text", name='short_name')
               span.help-block #{_input_help_text}
 
+        - _group_class = ('parent_group' in self.errors) ? 'error' : ''
+        - _input_help_text = (self.errors['parent_group']) ? self.errors['parent_group'] : self.t('admin.users.usergroups.form.parent_group_help')
+
+        include ./partials/_parent_group_select
+
         -each category, category_name in self.item_categories
 
           legend #{self.t('admin.setting.category.' + category_name)}
