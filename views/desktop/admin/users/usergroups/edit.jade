@@ -27,4 +27,5 @@ article
                     - item.value = item.default
 
                   mixin display_value(item_name, item.value, item.type, handler)
-                  span.help-block #{self.t('admin.setting.'+ item_name + '_help')}
+                  - if (self.t.exists('admin.setting.' + item_name + '_help'))
+                    span.help-block #{self.t('admin.setting.'+ item_name + '_help')}
