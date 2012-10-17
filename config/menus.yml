@@ -10,7 +10,7 @@ menus:
         to: admin.users.usergroups.index
         submenu:
           usergroups:
-            to: admin.users.usergroups.index
+            #to: admin.users.usergroups.index
             submenu:
               manage:
                 to: admin.users.usergroups.index
