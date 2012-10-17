@@ -89,9 +89,6 @@ nodeca.filters.after('@', function (params, next) {
 // Fill head meta
 //
 nodeca.filters.after('@', function set_forum_index_breadcrumbs(params, next) {
-  this.response.data.head.title = this.helpers.t(
-    'admin.users.usergroups.edit_title',
-    { short_name: this.data.usergroup.short_name }
-  );
+  this.response.data.head.title = this.helpers.t('admin.users.usergroups.edit_title');
   next();
 });

@@ -5,9 +5,9 @@ i18n:
         title: Acp Members
 
         usergroups:
-          index_title: Acp. User groups
-          add_title: Acp. add user group
-          edit_title: "Acp. #{short_name} group"
+          index_title: Manage Member groups
+          add_title: Add Member group
+          edit_title: Edir Member group
 
           add_group_breadcrumb: Add
 
@@ -29,6 +29,6 @@ i18n:
         navbar:
           users: Users
 
-          users.usergroups: User groups
-          users.usergroups.manage: Manage User group
-          users.usergroups.add: Add User group
+          users.usergroups: Member groups
+          users.usergroups.manage: Manage Member groups
+          users.usergroups.add: Add Member group
