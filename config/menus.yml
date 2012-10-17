@@ -11,7 +11,7 @@ menus:
         submenu:
           usergroups:
             submenu:
-              manage:
+              index:
                 to: admin.users.usergroups.index
               add:
                 to: admin.users.usergroups.add
