@@ -7,7 +7,7 @@ i18n:
         usergroups:
           index_title: Manage Member groups
           add_title: Add Member group
-          edit_title: Edir Member group
+          edit_title: Edit Member group
 
           add_group_breadcrumb: Add
 
