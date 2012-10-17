@@ -1,32 +1,31 @@
 include ./partials/_display_value
 
-article
+include ../../widgets/sidebar_menu
+.span10
   include ../../widgets/breadcrumbs
 
-  .row
-    .span8.offset2.well.well-form
-      form.form-horizontal(data-on-submit='admin.users.usergroups.create')
-        - self.errors = self.errors || {}
-        - var _group_class, _input_help_text
+  form.form-horizontal(data-on-submit='admin.users.usergroups.create')
+    - self.errors = self.errors || {}
+    - var _group_class, _input_help_text
 
-        - _group_class = ('short_name' in self.errors) ? 'error' : ''
-        - _input_help_text = (self.errors['short_name']) ? self.errors['short_name'] : self.t('admin.users.usergroups.form.short_name_help')
+    - _group_class = ('short_name' in self.errors) ? 'error' : ''
+    - _input_help_text = (self.errors['short_name']) ? self.errors['short_name'] : self.t('admin.users.usergroups.form.short_name_help')
 
-        .control-group(class=_group_class)
-          label.control-label(for='short_name') #{self.t('admin.users.usergroups.form.short_name_title')}
-          .controls
-            .row-fluid
-              input.span12(type="text", name='short_name')
-              span.help-block #{_input_help_text}
+    .control-group(class=_group_class)
+      label.control-label(for='short_name') #{self.t('admin.users.usergroups.form.short_name_title')}
+      .controls
+        .row-fluid
+          input.span12(type="text", name='short_name')
+          span.help-block #{_input_help_text}
 
-        include ./partials/_parent_group_select
+    include ./partials/_parent_group_select
 
-        - each category, category_name in self.item_categories
+    - each category, category_name in self.item_categories
 
-          legend #{self.t('admin.setting.category.' + category_name)}
-          - each item, item_name in category
-            mixin display_value(item_name, item)
+      legend #{self.t('admin.setting.category.' + category_name)}
+      - each item, item_name in category
+        mixin display_value(item_name, item)
 
-        .control-group
-          .controls
-            button.btn.btn-primary.btn-large(type='submit') #{self.t('admin.users.usergroups.form.submit_button')}
+    .control-group
+      .controls
+        button.btn.btn-primary.btn-large(type='submit') #{self.t('admin.users.usergroups.form.submit_button')}
