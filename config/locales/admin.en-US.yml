@@ -5,13 +5,13 @@ i18n:
         title: Acp Members
 
         usergroups:
-          index_title: Manage Member groups
-          add_title: Add Member group
-          edit_title: Edit Member group
+          index_title: Manage user groups
+          add_title: Create new group
+          edit_title: Edit group
 
           add_group_breadcrumb: Add
 
-          add_group_button: Add group
+          add_group_button: Create new
           remove_group_button: Remove group
 
           form:
@@ -29,6 +29,6 @@ i18n:
         navbar:
           users: Users
 
-          users.usergroups: Member groups
-          users.usergroups.index: Manage Member groups
-          users.usergroups.add: Add Member group
+          users.usergroups: User groups
+          users.usergroups.index: Edit
+          users.usergroups.add: Add new

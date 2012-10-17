@@ -1,6 +1,7 @@
 include ./partials/_display_value
 
-include ../../widgets/sidebar_menu
+.span2
+  include ../../widgets/sidebar_menu
 
 .span10
   include ../../widgets/breadcrumbs
@@ -10,7 +11,9 @@ include ../../widgets/sidebar_menu
     - var _group_class, _input_help_text
 
     input(type="hidden", name='short_name', id='short_name', value=self.short_name)
-    H1= self.short_name
+
+    legend
+      h1= self.short_name
 
     include ./partials/_parent_group_select
 
