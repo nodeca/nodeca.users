@@ -60,22 +60,9 @@ nodeca.filters.after('@', function (params, next) {
 
 
 //
-// Fill breadcrumbs and head meta
+// Fill head meta
 //
 nodeca.filters.after('@', function set_forum_index_breadcrumbs(params, next) {
   this.response.data.head.title = this.helpers.t('admin.users.usergroups.add_title');
-  this.response.data.widgets.breadcrumbs = [
-    {
-      text: this.helpers.t('admin.menus.navbar.system'),
-      route: 'admin.dashboard'
-    },
-    {
-      text: this.helpers.t('admin.menus.navbar.users.usergroups'),
-      route: 'admin.users.usergroups.index'
-    },
-    {
-      text: this.helpers.t('admin.users.usergroups.add_group_breadcrumb')
-    }
-  ];
   next();
 });
