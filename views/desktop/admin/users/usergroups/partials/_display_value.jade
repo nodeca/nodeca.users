@@ -1,20 +1,6 @@
-mixin display_number(name, value, handler)
-  - if (handler)
-    input.span12(type="text", name=name, value=value, data-on-input=handler)
-  - else
-    input.span12(type="text", name=name, value=value)
-
-mixin dispay_sting(name, value, handler)
-  - if (handler)
-    input.span12(type="text", name=name, value=value, data-on-input=handler)
-  - else
-    input.span12(type="text", name=name, value=value)
-
-mixin display_boolean(name, value, handler)
-  - if (handler)
-    input.span12(type='checkbox', name=name, value='true', checked=value, data-on-change=handler)
-  - else
-    input.span12(type='checkbox', name=name, value='true', checked=value)
+include ../../../settings/partials/display_number
+include ../../../settings/partials/display_string
+include ../../../settings/partials/display_boolean
 
 mixin display_value(name, item, handler)
   - _status_class = (name in self.errors) ? 'error' : ''
@@ -34,18 +20,14 @@ mixin display_value(name, item, handler)
   .control-group(class=_status_class)
     label.control-label(for=name) #{self.t('admin.setting.' + name)}
     .controls
-      .row-fluid
-        case item.type
-          when 'number'
-            mixin display_number(name, value, handler)
-          when 'string'
-            mixin dispay_sting(name, value, handler)
-          when 'boolean'
-            mixin display_boolean(name, value, handler)
-          default
-            mixin dispay_sting(name, value, handler)
-
-        - if (_input_help_text)
-          span.help-block #{_input_help_text}
+      case item.type
+        when 'number'
+          mixin display_number(name, value, handler, _input_help_text)
+        when 'string'
+          mixin dispay_sting(name, value, handler, _input_help_text)
+        when 'boolean'
+          mixin display_boolean(name, value, handler)
+        default
+          mixin dispay_sting(name, value, handler, _input_help_text)
       .row-fluid
         input.pull-right(type="checkbox", id=name + '_override', checked=('value' in item))
