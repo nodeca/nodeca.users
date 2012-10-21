@@ -1,6 +1,6 @@
-include ../../../settings/partials/display_number
-include ../../../settings/partials/display_string
-include ../../../settings/partials/display_boolean
+include ../../../partials/settings/_number
+include ../../../partials/settings/_string
+include ../../../partials/settings/_boolean
 
 mixin display_value(name, item, handler)
   - _status_class = (name in self.errors) ? 'error' : ''
