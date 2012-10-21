@@ -1,7 +1,7 @@
-- _group_class = ('parent_group' in self.errors) ? 'error' : ''
+- _status_class = ('parent_group' in self.errors) ? 'error' : ''
 - _input_help_text = (self.errors['parent_group']) ? self.errors['parent_group'] : self.t('admin.users.usergroups.form.parent_group_help')
 
-.control-group(class=_group_class)
+.control-group(class=_status_class)
   label.control-label(for='parent_group') #{self.t('admin.users.usergroups.form.parent_group_title')}
   .controls
     .row-fluid

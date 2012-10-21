@@ -17,7 +17,7 @@ mixin display_boolean(name, value, handler)
     input.span12(type='checkbox', name=name, value='true', checked=value)
 
 mixin display_value(name, item, handler)
-  - _group_class = (name in self.errors) ? 'error' : ''
+  - _status_class = (name in self.errors) ? 'error' : ''
 
   - if (self.errors[name])
   - _input_help_text = self.errors[name]
@@ -31,7 +31,7 @@ mixin display_value(name, item, handler)
   - else
     - value = item.value
 
-  .control-group(class=_group_class)
+  .control-group(class=_status_class)
     label.control-label(for=name) #{self.t('admin.setting.' + name)}
     .controls
       .row-fluid

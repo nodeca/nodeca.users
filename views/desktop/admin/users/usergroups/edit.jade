@@ -8,7 +8,7 @@ include ./partials/_display_value
 
   form.form-horizontal(data-on-submit='admin.users.usergroups.create')
     - self.errors = self.errors || {}
-    - var _group_class, _input_help_text
+    - var _status_class, _input_help_text
 
     input(type="hidden", name='short_name', id='short_name', value=self.short_name)
 

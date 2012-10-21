@@ -8,13 +8,13 @@
 
 
       - self.errors = self.errors || {}
-      - var _group_class, _input_help_text
+      - var _status_class, _input_help_text
 
 
-      - _group_class = ('email' in self.errors) ? 'error' : ''
+      - _status_class = ('email' in self.errors) ? 'error' : ''
       - _input_help_text = (self.errors.email) ? self.errors.email : self.t('users.auth.reg_form.email_help')
 
-      .control-group(class=_group_class)
+      .control-group(class=_status_class)
         label.control-label(for='reg_eml') #{self.t('users.auth.reg_form.email')}
         .controls
           .row-fluid
@@ -22,10 +22,10 @@
             span.help-block #{_input_help_text}
 
 
-      - _group_class = ('pass' in self.errors) ? 'error' : ''
+      - _status_class = ('pass' in self.errors) ? 'error' : ''
       - _input_help_text = (self.errors.pass) ? self.errors.pass : self.t('users.auth.reg_form.password_help')
 
-      .control-group(class=_group_class)
+      .control-group(class=_status_class)
         label.control-label(for='reg_pass') #{self.t('users.auth.reg_form.password')}
         .controls
           .row-fluid
@@ -33,10 +33,10 @@
             span.help-block #{_input_help_text}
 
 
-      - _group_class = ('nick' in self.errors) ? 'error' : ''
+      - _status_class = ('nick' in self.errors) ? 'error' : ''
       - _input_help_text = (self.errors.nick) ? self.errors.nick : self.t('users.auth.reg_form.nick_help')
 
-      .control-group(class=_group_class)
+      .control-group(class=_status_class)
         label.control-label(for='reg_nick') #{self.t('users.auth.reg_form.nick')}
         .controls
           .row-fluid
