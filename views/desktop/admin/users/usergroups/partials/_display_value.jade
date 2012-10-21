@@ -26,7 +26,7 @@ mixin display_value(name, item, handler)
         when 'string'
           mixin dispay_sting(name, value, handler, _input_help_text)
         when 'boolean'
-          mixin display_boolean(name, value, handler)
+          mixin display_boolean(name, value, handler, _input_help_text)
         default
           mixin dispay_sting(name, value, handler, _input_help_text)
       .row-fluid
