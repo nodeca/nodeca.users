@@ -13,6 +13,7 @@ i18n:
           remove_group_button: Remove group
 
           form:
+            no_parent: None
             submit_button: Save group
 
             short_name_help: Unique text id souch as administrators
