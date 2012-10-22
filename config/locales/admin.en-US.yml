@@ -4,27 +4,6 @@ i18n:
       users:
         title: Acp Members
 
-        usergroups:
-          index_title: Manage user groups
-          add_title: Create new group
-          edit_title: Edit group
-
-          add_group_breadcrumb: Add
-
-          add_group_button: Create new
-          remove_group_button: Remove group
-
-          form:
-            submit_button: Save group
-
-            short_name_help: Unique text id souch as administrators
-            short_name_title: Group text id
-
-            parent_group_help: All settings will be inheritance, unless overridden
-            parent_group_title: Parent group
-
-            error:
-              short_name_busy: This group already exists
       menus:
         navbar:
           users: Users
