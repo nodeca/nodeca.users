@@ -29,6 +29,8 @@ var User = module.exports.User = new Schema({
   , last_name         : String
   , nick              : String
 
+  , usergroups        : [Schema.Types.ObjectId]
+
   , joined_ts         : Date
   , joined_ip         : String
 
