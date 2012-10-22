@@ -43,7 +43,10 @@ module.exports = function (params, next) {
       next(err);
       return;
     }
-    env.data.usergroups = usergroups;
+    usergroups.forEach(function(group) {
+        group._id = group._id.toString();
+        env.data.usergroups.push(group);
+      });
     next();
   });
 };

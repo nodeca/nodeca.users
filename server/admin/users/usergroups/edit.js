@@ -28,7 +28,7 @@ module.exports = function (params, next) {
   env.data.usergroups = [];
 
   UserGroup.findOne({ short_name: params.short_name })
-      .exec(function(err, group) {
+      .setOptions({ lean: true }).exec(function(err, group) {
     if (err) {
       next(err);
       return;
@@ -59,23 +59,30 @@ module.exports = function (params, next) {
     });
     env.data.settings_categories = settings_categories;
 
-    env.data.usergroup = group;
+    group._id = group._id.toString();
+    env.data.current = group;
 
     // fetch other groups need for parent selected
     UserGroup.find().select({ '_id':1, 'short_name': 1 })
         .setOptions({ lean: true }).exec(function(err, usergroups) {
-      env.data.usergroups = usergroups;
+      usergroups.forEach(function(group) {
+        group._id = group._id.toString();
+        // group can't be parent of him self
+        if (group._id === env.data.current._id) {
+          return;
+        }
+        env.data.usergroups.push(group);
+      });
       next();
     });
   });
 };
 
 
-// Put usergroups items into response data
+// Put currents items into response data
 //
 nodeca.filters.after('@', function (params, next) {
-  this.response.data.short_name = this.data.usergroup.short_name;
-  this.response.data.parent_group = this.data.usergroup.parent_group;
+  this.response.data.current = this.data.current;
   this.response.data.usergroups = this.data.usergroups;
   this.response.data.settings_categories = this.data.settings_categories;
 
