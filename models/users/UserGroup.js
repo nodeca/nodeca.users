@@ -36,7 +36,7 @@ var UserGroup = module.exports.UserGroup = new Schema({
   , parent            : Schema.Types.ObjectId
 
     // can by deleted?
-  , protected         : { type: Boolean, default: false }
+  , is_protected         : { type: Boolean, default: false }
 
     // belong to only this group settings (overriden)
   , raw_settings      : { type: Schema.Types.Mixed, default: {}}
