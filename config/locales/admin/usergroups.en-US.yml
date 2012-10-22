@@ -12,6 +12,11 @@ i18n:
           add_group_button: Create new
           remove_group_button: Remove group
 
+          remove:
+            error:
+              protecred: This group can't be removed.
+              not_empty: Some users associated with group.
+
           form:
             no_parent: None
             submit_button: Save group

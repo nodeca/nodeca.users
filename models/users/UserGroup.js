@@ -13,7 +13,7 @@
 /**
  *  class models.users.UserGroup
  *
- *  Store links beetween user and auth providers.
+ *  Store usergroup settings
  **/
 
 /*global nodeca*/
@@ -28,9 +28,22 @@ var Schema = mongoose.Schema;
  *  Create new odm object
  **/
 var UserGroup = module.exports.UserGroup = new Schema({
-    short_name        : { type: String, unique: true }
-  , parent_group      : Schema.Types.ObjectId
-  , items             : { type: Schema.Types.Mixed, default: {}}
+    // user group name used in ACP and migrations
+    short_name        : String
+
+    // parent group, all none overriden settings
+    //will be inherited from parent
+  , parent            : Schema.Types.ObjectId
+
+    // can by deleted?
+  , protected         : Boolean
+
+    // belong to only this group settings (overriden)
+  , raw_settings      : { type: Schema.Types.Mixed, default: {}}
+
+    // result setting(considering inherited and defaults)
+    // Note: only store can write to this property
+  , settings          : { type: Schema.Types.Mixed, default: {}}
 });
 
 module.exports.__init__ = function __init__() {

@@ -25,7 +25,7 @@ include ./partials/_display_value
 
     include ./partials/_parent_group_select
 
-    - each category, category_name in self.item_categories
+    - each category, category_name in self.settings_categories
 
       legend #{self.t('admin.setting.category.' + category_name)}
       - each item, item_name in category

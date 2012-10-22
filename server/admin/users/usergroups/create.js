@@ -18,7 +18,7 @@ var params_schema = {
   }
 };
 
-// Add usergroup items as input params to validate schema
+// Add usergroup settings as input params to validate schema
 //
 _.keys(usergroup_schema).forEach(function(name) {
   var item_type = usergroup_schema[name]['type'];
@@ -43,11 +43,11 @@ module.exports = function (params, next) {
   var env = this;
   var usergroup;
 
-  var items = _.clone(params);
+  var raw_settings = _.clone(params);
 
-  // remove short_name and parent group from items set
-  delete items['short_name'];
-  delete items['parent_group'];
+  // remove short_name and parent group from settings set
+  delete raw_settings['short_name'];
+  delete raw_settings['parent_group'];
 
   // Check if group already exists
   UserGroup.findById(params.short_name).exec(function(err, group) {
@@ -69,8 +69,8 @@ module.exports = function (params, next) {
 
     // set default values
     _.keys(usergroup_schema).forEach(function(key) {
-      if (_.isNull(items[key])) {
-        items[key] = usergroup_schema[key]['default'];
+      if (_.isNull(raw_settings[key])) {
+        raw_settings[key] = usergroup_schema[key]['default'];
       }
       // FIXME eval before_save code
     });
@@ -78,8 +78,15 @@ module.exports = function (params, next) {
     usergroup = new UserGroup({
       short_name: params.short_name,
       parent_group: params.parent_group,
-      items: items
+      raw_settings: raw_settings
     });
-    usergroup.save(next);
+    usergroup.save(function(err){
+      if (err) {
+        next(err);
+        return;
+      }
+      // FIXME calculate and save settings in store
+      next();
+    });
   });
 };

@@ -27,48 +27,46 @@ module.exports = function (params, next) {
   var env = this;
   env.data.usergroups = [];
 
-  UserGroup.find().exec(function(err, usergroups) {
+  UserGroup.findOne({ short_name: params.short_name })
+      .exec(function(err, group) {
     if (err) {
       next(err);
       return;
     }
-    if (!usergroups) {
+    if (!group) {
       next(nodeca.io.NOT_FOUND);
       return;
     }
 
+    // FIXME fetch settings from store
     var settings = nodeca.config.setting_schemas['usergroup'];
 
-    usergroups.forEach(function(group) {
-      if (group.short_name === params.short_name) {
-        // collect  usergroups items and group it by setting group
-        var item_categories = {};
-        _.keys(settings).forEach(function(name) {
-          var item = settings[name];
-          // get value from model if exists
-          if (name in group.items) {
-            item.value = group.items[name];
-          }
+    // collect  usergroups items and group it by setting group
+    var settings_categories = {};
+    _.keys(settings).forEach(function(name) {
+      var item = settings[name];
 
-          var category_name = item['category'];
-          if (!item_categories[category_name]) {
-            item_categories[category_name] = {};
-          }
-          item_categories[category_name][name] = item;
-        });
-        env.data.item_categories = item_categories;
+      // mark setting as overriden
+      if (name in group.raw_settings) {
+        item.overriden = true;
+      }
 
-        env.data.usergroup = group;
+      var category_name = item['category'];
+      if (!settings_categories[category_name]) {
+        settings_categories[category_name] = {};
       }
-      else {
-        env.data.usergroups.push({ '_id': group._id, 'short_name': group.short_name });
-      }
+      settings_categories[category_name][name] = item;
     });
-    if (!env.data.usergroup) {
-      next(nodeca.io.NOT_FOUND);
-      return;
-    }
-    next();
+    env.data.settings_categories = settings_categories;
+
+    env.data.usergroup = group;
+
+    // fetch other groups need for parent selected
+    UserGroup.find().select({ '_id':1, 'short_name': 1 })
+        .setOptions({ lean: true }).exec(function(err, usergroups) {
+      env.data.usergroups = usergroups;
+      next();
+    });
   });
 };
 
@@ -79,7 +77,7 @@ nodeca.filters.after('@', function (params, next) {
   this.response.data.short_name = this.data.usergroup.short_name;
   this.response.data.parent_group = this.data.usergroup.parent_group;
   this.response.data.usergroups = this.data.usergroups;
-  this.response.data.item_categories = this.data.item_categories;
+  this.response.data.settings_categories = this.data.settings_categories;
 
   next();
 });

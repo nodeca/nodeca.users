@@ -23,28 +23,27 @@ module.exports = function (params, next) {
   var settings = nodeca.config.setting_schemas['usergroup'];
 
   // collect usergroups items and group it by setting category
-  var item_categories = {};
+  var settings_categories = {};
   _.keys(settings).forEach(function(name) {
     var item = settings[name];
     var category_name = item['category'];
-    if (!item_categories[category_name]) {
-      item_categories[category_name] = {};
+    if (!settings_categories[category_name]) {
+      settings_categories[category_name] = {};
     }
-    item_categories[category_name][name] = item;
+    settings_categories[category_name][name] = item;
   });
 
-  env.data.item_categories = item_categories;
+  env.data.settings_categories = settings_categories;
 
   // collect existing usergroups for `parent group` select
   env.data.usergroups = [];
-  UserGroup.find().select({ '_id':1, 'short_name': 1 }).setOptions({ lean: true }).exec(function(err, usergroups) {
+  UserGroup.find().select({ '_id':1, 'short_name': 1 })
+      .setOptions({ lean: true }).exec(function(err, usergroups) {
     if (err) {
       next(err);
       return;
     }
-    usergroups.forEach(function(group) {
-      env.data.usergroups.push(group);
-    });
+    env.data.usergroups = usergroups;
     next();
   });
 };
@@ -53,7 +52,7 @@ module.exports = function (params, next) {
 // Put usergroups items into response data
 //
 nodeca.filters.after('@', function (params, next) {
-  this.response.data.item_categories = this.data.item_categories;
+  this.response.data.settings_categories = this.data.settings_categories;
   this.response.data.usergroups = this.data.usergroups;
   next();
 });
