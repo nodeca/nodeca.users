@@ -47,7 +47,7 @@ module.exports = function (params, next) {
       var item = settings[name];
 
       // mark setting as overriden
-      if (name in group.raw_settings) {
+      if (group.raw_settings && name in group.raw_settings) {
         item.overriden = true;
       }
 
