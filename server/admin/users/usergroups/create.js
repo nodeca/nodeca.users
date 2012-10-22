@@ -50,7 +50,7 @@ module.exports = function (params, next) {
   delete raw_settings['parent_group'];
 
   // Check if group already exists
-  UserGroup.findById(params.short_name).exec(function(err, group) {
+  UserGroup.findOne({ short_name: params.short_name }).exec(function(err, group) {
     if (err) {
       next(err);
       return;
@@ -77,9 +77,10 @@ module.exports = function (params, next) {
 
     usergroup = new UserGroup({
       short_name: params.short_name,
-      parent_group: params.parent_group,
+      parent: params.parent_group,
       raw_settings: raw_settings
     });
+
     usergroup.save(function(err){
       if (err) {
         next(err);
