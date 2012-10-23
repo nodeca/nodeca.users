@@ -15,6 +15,7 @@ var params_schema = {
   },
   parent_group: {
     type: 'string',
+    default: null
   }
 };
 

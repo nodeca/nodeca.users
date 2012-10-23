@@ -9,7 +9,7 @@
   .controls
     .row-fluid
       select(id="parent_group", name="parent_group")
-        option(selected=!self.current.parent_group) #{self.t('admin.users.usergroups.form.no_parent')}
+        option(value='', selected=!self.current.parent_group) #{self.t('admin.users.usergroups.form.no_parent')}
         - if (self.usergroups)
           - each group in self.usergroups
               group_selected = (self.current.parent == group._id)

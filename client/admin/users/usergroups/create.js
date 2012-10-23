@@ -22,7 +22,7 @@
  **/
 
 
-/*global nodeca, window*/
+/*global nodeca, window, _*/
 
 
 /**
@@ -33,6 +33,9 @@
 module.exports = function ($form) {
   var params = nodeca.client.admin.form.getData($form);
 
+  if (_.isEmpty(params.parent_group)) {
+    delete(params.parent_group);
+  }
   nodeca.server.admin.users.usergroups.create(params, function (err) {
     if (err) {
       // Wrong form params - regenerate page with hightlighted errors
