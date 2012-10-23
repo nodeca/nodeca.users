@@ -14,7 +14,7 @@ i18n:
 
           remove:
             error:
-              protecred: This group can't be removed.
+              protected: This group can't be removed.
               not_empty: Some users associated with group.
 
           form:
