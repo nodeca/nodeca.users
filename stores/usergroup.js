@@ -26,7 +26,7 @@ var UserGroupStore = new Store({
 
       var values = ugs.map(function (ug) {
         // map to the list of settings key value
-        return ug.settings[key];
+        return ug.raw_settings[key] ? { value: ug.raw_settings[key]} : null;
       }).filter(function (val) {
         // leave only those who have ones
         return !!val;
