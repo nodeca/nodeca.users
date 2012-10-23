@@ -6,7 +6,7 @@ i18n:
           title:
             index: Manage user groups
             add: Create new group
-            edit: "Edit group: #{short_name}"
+            edit: "Edit group: #{name}"
 
           button:
             add: Create new
