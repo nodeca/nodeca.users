@@ -23,15 +23,15 @@ var fetch_usergroups = nodeca.components.memoizee(
 
 var UserGroupStore = new Store({
   get: function (key, params, options, callback) {
-    fetch_usergroups(params.usergroup_ids, function (err, ugs) {
+    fetch_usergroups(params.usergroup_ids, function (err, grps) {
       if (err) {
         callback(err);
         return;
       }
 
-      var values = ugs.map(function (ug) {
+      var values = grps.map(function (grp) {
         // map to the list of settings key value
-        return ug.raw_settings[key] ? { value: ug.raw_settings[key]} : null;
+        return grp.raw_settings[key] ? { value: grp.raw_settings[key]} : null;
       }).filter(function (val) {
         // leave only those who have ones
         return !!val;
