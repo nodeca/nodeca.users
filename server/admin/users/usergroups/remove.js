@@ -52,14 +52,13 @@ module.exports = function (params, next) {
     }
 
     
-    // group not empty
-    User.found({ usergroups: { $not: group._id } })
+    // find users associated with group
+    User.find({ usergroups: group._id })
         .exec(function(err, users) {
       if (err) {
         next(err);
         return;
       }
-      
       if (!_.isEmpty(users)) {
         next({
           code: nodeca.io.BAD_REQUEST,
