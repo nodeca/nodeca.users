@@ -14,7 +14,7 @@ table.table.table-hover
   - each group_name in self.usergroups
     tr
       td
-        a(href=self.link_to('admin.users.usergroups.edit', { short_name:group_name }),
+        a.icon-edit(href=self.link_to('admin.users.usergroups.edit', { short_name:group_name }),
           title=self.t('admin.users.usergroups.actions.edit')
           )= group_name
       td: a(href='') 0
