@@ -8,9 +8,14 @@
 var Store = require('nlib').Settings.Store;
 
 
-var fetch_usergroups = nodeca.components.memoizee(function (ids, callback) {
-  nodeca.models.users.UserGroup.find().where('_id').in(ids).exec(callback);
-}, { async: true, maxAge: 30000 });
+var fetch_usergroups = nodeca.components.memoizee(
+  // real handler - results are cached by memoizee
+  function (ids, callback) {
+    nodeca.models.users.UserGroup.find().where('_id').in(ids).exec(callback);
+  }, {
+    // momoizee options. revalidate cache after 30 sec
+    async: true, maxAge: 30000
+  });
 
 
 ////////////////////////////////////////////////////////////////////////////////
