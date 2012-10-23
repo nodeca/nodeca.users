@@ -5,13 +5,13 @@ form.form-horizontal(data-on-submit='admin.users.usergroups.create')
   - var _status_class, _input_help_text
 
   legend
-    h1= self.t('admin.users.usergroups.add_title')
+    h1= self.t('admin.users.usergroups.title.add')
 
   - _status_class = ('short_name' in self.errors) ? 'error' : ''
-  - _input_help_text = (self.errors['short_name']) ? self.errors['short_name'] : self.t('admin.users.usergroups.form.short_name_help')
+  - _input_help_text = (self.errors['short_name']) ? self.errors['short_name'] : self.t('admin.users.usergroups.edit.short_name_help')
 
   .control-group(class=_status_class)
-    label.control-label(for='short_name') #{self.t('admin.users.usergroups.form.short_name_title')}
+    label.control-label(for='short_name') #{self.t('admin.users.usergroups.edit.short_name_title')}
     .controls
       .row-fluid
         input.span12(type="text", name='short_name')
@@ -27,4 +27,4 @@ form.form-horizontal(data-on-submit='admin.users.usergroups.create')
 
   .control-group
     .controls
-      button.btn.btn-primary.btn-large(type='submit') #{self.t('admin.users.usergroups.form.submit_button')}
+      button.btn.btn-primary.btn-large(type='submit') #{self.t('admin.users.usergroups.edit.save')}

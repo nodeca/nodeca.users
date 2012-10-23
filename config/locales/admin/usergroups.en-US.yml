@@ -3,23 +3,23 @@ i18n:
     admin:
       users:
         usergroups:
-          index_title: Manage user groups
-          add_title: Create new group
-          edit_title: Edit group
+          title:
+            index: Manage user groups
+            add: Create new group
+            edit: "Edit group: #{short_name}"
 
-          add_group_breadcrumb: Add
-
-          add_group_button: Create new
-          remove_group_button: Remove group
+          button:
+            add: Create new
+            remove: Remove group
 
           remove:
             error:
               protected: This group can't be removed.
-              not_empty: Some users associated with group.
+              not_empty: Can't remove not empty group
 
-          form:
+          edit:
             no_parent: None
-            submit_button: Save group
+            save: Save group
 
             short_name_help: Unique text id souch as administrators
             short_name_title: Group text id

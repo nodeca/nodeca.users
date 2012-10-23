@@ -65,6 +65,6 @@ nodeca.filters.after('@', function (params, next) {
 // Fill head meta
 //
 nodeca.filters.after('@', function set_forum_index_breadcrumbs(params, next) {
-  this.response.data.head.title = this.helpers.t('admin.users.usergroups.add_title');
+  this.response.data.head.title = this.helpers.t('admin.users.usergroups.title.add');
   next();
 });

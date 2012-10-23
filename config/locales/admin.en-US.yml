@@ -9,5 +9,5 @@ i18n:
           users: Users
 
           users.usergroups: User groups
-          users.usergroups.index: Edit
+          users.usergroups.index: Manage
           users.usergroups.add: Add new
