@@ -10,4 +10,7 @@ i18n:
 
           users.usergroups: User groups
           users.usergroups.index: Manage
-          users.usergroups.add: Add new
+
+          users.members: Members
+          users.members.search: Search
+          users.members.add: Create new
