@@ -30,4 +30,4 @@ mixin display_value(name, item, handler)
         default
           mixin dispay_sting(name, value, handler, _input_help_text)
       .row-fluid
-        input.pull-right(type="checkbox", id=name + '_override', checked=('value' in item))
+        input.pull-right(type="checkbox", id=name + '_override', checked=(item.overriden))
