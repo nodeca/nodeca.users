@@ -44,7 +44,13 @@ module.exports = function ($elem) {
       short_name: $elem.parents('form').find('input#short_name').val()
     };
 
-    params[$elem.attr('name')] = $elem.val();
+    if ($elem.is("input:checkbox")) {
+      params[$elem.attr('name')] = $elem.is(':checked');
+    }
+    else {
+      params[$elem.attr('name')] = $elem.val();
+    }
+
     nodeca.server.admin.users.usergroups.update(params, function (err) {
       if (err) {
         // FIXME highlight red

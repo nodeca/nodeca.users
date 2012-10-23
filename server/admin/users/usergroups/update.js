@@ -62,9 +62,12 @@ module.exports = function (params, next) {
       }
 
       // FIXME eval before_save
-      group.items[name] = items[name];
+      group.raw_settings[name] = items[name];
     });
 
+    // this command required for update Mixed fields
+    // see Mixed in http://mongoosejs.com/docs/schematypes.html
+    group.markModified('raw_settings');
     group.save(next);
   });
 };
