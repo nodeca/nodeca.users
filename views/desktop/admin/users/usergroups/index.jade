@@ -1,11 +1,24 @@
-h1 #{self.head.title}
+div
+  .pull-right
+    a.btn.btn-large.btn-primary(href=self.link_to('admin.users.usergroups.add'))
+      | #{self.t('admin.users.usergroups.actions.add')}
+  h1 #{self.head.title}
 
-ul
+table.table.table-hover
+  thead
+    tr
+      th #{self.t('admin.users.usergroups.index.group_name')}
+      th #{self.t('admin.users.usergroups.index.members_count')}
+      th
+
   - each group_name in self.usergroups
-    li
-      a(href=self.link_to('admin.users.usergroups.edit', { short_name:group_name}))= group_name
-      button.btn.btn-primary.btn-mini(id=group_name, type='button', data-on-click='admin.users.usergroups.remove') #{self.t('admin.users.usergroups.button.remove')}
+    tr
+      td
+        a(href=self.link_to('admin.users.usergroups.edit', { short_name:group_name }),
+          title=self.t('admin.users.usergroups.actions.edit')
+          )= group_name
+      td: a(href='') 0
+      td
+        a.pull-right(href='', id=group_name, data-on-click='admin.users.usergroups.remove')
+          | #{self.t('admin.users.usergroups.actions.remove')}
 
-button.btn.btn-primary.btn-large(
-  type='button',
-  onclick="window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.add'); return false;") #{self.t('admin.users.usergroups.button.add')}

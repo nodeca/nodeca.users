@@ -8,9 +8,14 @@ i18n:
             add: Create new group
             edit: "Edit group: #{name}"
 
-          button:
-            add: Create new
-            remove: Remove group
+          actions:
+            add: Create new group
+            remove: delete
+            edit: Edit group
+
+          index:
+            group_name: Group name
+            members_count: Members
 
           remove:
             error:
