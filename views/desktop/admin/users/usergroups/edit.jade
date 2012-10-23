@@ -1,6 +1,6 @@
 include ./partials/_display_value
 
-form.form-horizontal(data-on-submit='admin.users.usergroups.create')
+form.form-horizontal(data-on-submit='admin.users.usergroups.update')
   - self.errors = self.errors || {}
   - var _status_class, _input_help_text
 
@@ -11,9 +11,12 @@ form.form-horizontal(data-on-submit='admin.users.usergroups.create')
 
   include ./partials/_parent_group_select
 
-  - var handler = 'admin.users.usergroups.update'
   - each category, category_name in self.settings_categories
 
     legend #{self.t('admin.setting.category.' + category_name)}
     - each item, item_name in category
-      mixin display_value(item_name, item, handler)
+      mixin display_value(item_name, item)
+
+  .control-group
+    .controls
+      button.btn.btn-primary.btn-large(type='submit') #{self.t('admin.users.usergroups.edit.save')}

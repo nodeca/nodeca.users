@@ -39,6 +39,9 @@ module.exports = function (params, next) {
   // remove short_name from property list
   delete items['short_name'];
   delete items['parent_group'];
+
+  console.dir(params);
+
   UserGroup.findOne({ short_name: params.short_name }).exec(function(err, group) {
     if (err) {
       next(err);
@@ -68,6 +71,7 @@ module.exports = function (params, next) {
     // this command required for update Mixed fields
     // see Mixed in http://mongoosejs.com/docs/schematypes.html
     group.markModified('raw_settings');
+console.dir(group);
     group.save(next);
   });
 };

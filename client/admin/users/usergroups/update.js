@@ -23,45 +23,40 @@
  **/
 
 
-/*global nodeca*/
+/*global nodeca, _, $*/
 
-var DELAY = 500;
 
-var timeout;
 
 /**
  *  client.admin.users.usergroups.update($elem, event)
  *
  * Update single field value.
  **/
-module.exports = function ($elem) {
-  // make sure previous timeout was cleared
-  clearTimeout(timeout);
+module.exports = function ($form) {
 
-  // delay request
-  timeout = setTimeout(function() {
-    var params = {
-      short_name: $elem.parents('form').find('input#short_name').val()
-    };
+  var params = nodeca.client.admin.form.getData($form);
 
-    if ($elem.is("input:checkbox")) {
-      params[$elem.attr('name')] = $elem.is(':checked');
-    }
-    else {
-      params[$elem.attr('name')] = $elem.val();
-    }
+  if (_.isEmpty(params.parent_group)) {
+    delete(params.parent_group);
+  }
+  // get unchecked values
+  $form.find("input:checkbox:not(:checked)").each(function() {
+    params[$(this).attr('name')] = false;
+  });
 
-    nodeca.server.admin.users.usergroups.update(params, function (err) {
-      if (err) {
-        // FIXME highlight red
-        // no need for fatal errors notifications as it's done by io automagically
-        nodeca.console.error(err);
+
+  nodeca.server.admin.users.usergroups.update(params, function (err) {
+    if (err) {
+      if (err.code === nodeca.io.BAD_REQUEST) {
+        // add errors
+        params.errors = err.data;
+        nodeca.client.admin.render.page('admin.users.usergroups.create', params);
         return;
       }
-
-      // no errors
-      // FIXME highlight green
-    });
-  }, DELAY);
+      // no need for fatal errors notifications as it's done by io automagically
+      nodeca.console.error(err);
+    }
+  });
+  // Disable regular click
   return false;
 };
