@@ -5,7 +5,7 @@ form.form-horizontal(data-on-submit='admin.users.usergroups.create')
   - var _status_class, _input_help_text
 
   legend
-    h1= self.t('admin.users.usergroups.title.add')
+    h1 #{self.head.title}
 
   - _status_class = ('short_name' in self.errors) ? 'error' : ''
   - _input_help_text = (self.errors['short_name']) ? self.errors['short_name'] : self.t('admin.users.usergroups.edit.short_name_help')
