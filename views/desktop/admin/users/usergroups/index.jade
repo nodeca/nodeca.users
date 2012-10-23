@@ -1,17 +1,11 @@
-.span2
-  include ../../widgets/sidebar_menu
+h1= self.t('admin.users.usergroups.index_title')
 
-.span10
-  include ../../widgets/breadcrumbs
+ul
+  - each group_name in self.usergroups
+    li
+      a(href=self.link_to('admin.users.usergroups.edit', { short_name:group_name}))= group_name
+      button.btn.btn-primary.btn-mini(id=group_name, type='button', data-on-click='admin.users.usergroups.remove') #{self.t('admin.users.usergroups.remove_group_button')}
 
-  h1= self.t('admin.users.usergroups.index_title')
-
-  ul
-    - each group_name in self.usergroups
-      li
-        a(href=self.link_to('admin.users.usergroups.edit', { short_name:group_name}))= group_name
-        button.btn.btn-primary.btn-mini(id=group_name, type='button', data-on-click='admin.users.usergroups.remove') #{self.t('admin.users.usergroups.remove_group_button')}
-
-  button.btn.btn-primary.btn-large(
-    type='button',
-    onclick="window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.add'); return false;") #{self.t('admin.users.usergroups.add_group_button')}
+button.btn.btn-primary.btn-large(
+  type='button',
+  onclick="window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.add'); return false;") #{self.t('admin.users.usergroups.add_group_button')}

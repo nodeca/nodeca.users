@@ -1,25 +1,19 @@
 include ./partials/_display_value
 
-.span2
-  include ../../widgets/sidebar_menu
+form.form-horizontal(data-on-submit='admin.users.usergroups.create')
+  - self.errors = self.errors || {}
+  - var _status_class, _input_help_text
 
-.span10
-  include ../../widgets/breadcrumbs
+  input(type="hidden", name='short_name', id='short_name', value=self.current.short_name)
 
-  form.form-horizontal(data-on-submit='admin.users.usergroups.create')
-    - self.errors = self.errors || {}
-    - var _status_class, _input_help_text
+  legend
+    h1= self.short_name
 
-    input(type="hidden", name='short_name', id='short_name', value=self.current.short_name)
+  include ./partials/_parent_group_select
 
-    legend
-      h1= self.short_name
+  - var handler = 'admin.users.usergroups.update'
+  - each category, category_name in self.settings_categories
 
-    include ./partials/_parent_group_select
-
-    - var handler = 'admin.users.usergroups.update'
-    - each category, category_name in self.settings_categories
-
-      legend #{self.t('admin.setting.category.' + category_name)}
-      - each item, item_name in category
-        mixin display_value(item_name, item, handler)
+    legend #{self.t('admin.setting.category.' + category_name)}
+    - each item, item_name in category
+      mixin display_value(item_name, item, handler)
