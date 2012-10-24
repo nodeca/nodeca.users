@@ -28,6 +28,52 @@ _.keys(usergroup_schema).forEach(function(name) {
 nodeca.validate(params_schema);
 
 
+// test_circular_step(groups, checked, sample) -> Boolean
+// - groups (Object): Hash of groups, { _id => parent }
+// - checked (String): checked group id
+// - sample (Stirng): target group id
+//
+// Recursive test parents
+function test_circular_step(groups, checked, sample) {
+  if (!groups[checked]) {
+    return false;
+  }
+  if (groups[checked] === sample) {
+    return true;
+  }
+  return test_circular_step(groups, groups[checked], sample);
+}
+
+// test_circular(id, parent, callback)
+// - id (Object): group id
+// - parent (Object): parent id
+// - callback(function) : callback with err and is_circular params
+//
+// Check parents for circular inheritance.
+// Fire callback with search result as second parameter
+// true if has circular and false if not
+//
+function test_circular(id, parent, callback) {
+  if (!parent) {
+    callback(null, false);
+    return;
+  }
+  UserGroup.find().select('_id parent').exec(function(err, docs) {
+    var groups = {};
+    if (err) {
+      callback(err);
+    }
+    // collect groups fo hash
+    // { _id => parent }
+    docs.forEach(function(group) {
+      groups[group._id.toString()] = group.parent ? group.parent.toString() : null;
+    });
+
+    callback(null, test_circular_step(groups, parent.toString(), id.toString()));
+  });
+}
+
+
 /**
  * admin.usergroups.update(params, callback) -> Void
  *
@@ -35,6 +81,7 @@ nodeca.validate(params_schema);
  * Update usergroup property
  **/
 module.exports = function (params, next) {
+  var env = this;
   var items = _.clone(params);
   // remove _id parent from property list
   delete items['_id'];
@@ -69,6 +116,22 @@ module.exports = function (params, next) {
     // this command required for update Mixed fields
     // see Mixed in http://mongoosejs.com/docs/schematypes.html
     group.markModified('raw_settings');
-    group.save(next);
+
+    test_circular(group._id, group.parent, function(err, is_circular) {
+      if (err) {
+        next(err);
+        return;
+      }
+      if (is_circular) {
+        next({
+          code: nodeca.io.BAD_REQUEST,
+          data: {
+            common: env.helpers.t('admin.users.usergroups.edit.error.circular_inheritance')
+          }
+        });
+        return;
+      }
+      group.save(next);
+    });
   });
 };
