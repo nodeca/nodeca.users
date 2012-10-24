@@ -11,7 +11,7 @@ table.table.table-hover
       th #{self.t('admin.users.usergroups.index.members_count')}
       th
 
-  - each group_name in self.usergroups
+  - each group, group_name in self.usergroups
     tr
       td
         a.icon-edit(href=self.link_to('admin.users.usergroups.edit', { short_name:group_name }),
@@ -19,6 +19,6 @@ table.table.table-hover
           )= group_name
       td: a(href='') 0
       td
-        a.pull-right(href='', id=group_name, data-on-click='admin.users.usergroups.remove')
-          | #{self.t('admin.users.usergroups.actions.remove')}
-
+        - if (!group.is_protected)
+          a.pull-right(href='', id=group_name, data-on-click='admin.users.usergroups.remove')
+            | #{self.t('admin.users.usergroups.actions.remove')}

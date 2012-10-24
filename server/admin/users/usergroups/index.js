@@ -21,14 +21,15 @@ nodeca.validate(params_schema);
 module.exports = function (params, next) {
   var env = this;
 
-  env.data.usergroups = [];
-  UserGroup.find().select({ 'short_name': 1 }).setOptions({ lean: true }).exec(function(err, usergroups) {
+  env.data.usergroups = {};
+  UserGroup.find().select({ 'short_name': 1, 'is_protected': 1 }).sort('_id')
+      .setOptions({ lean: true }).exec(function(err, usergroups) {
     if (err) {
       next(err);
       return;
     }
     usergroups.forEach(function(group) {
-      env.data.usergroups.push(group['short_name']);
+      env.data.usergroups[group['short_name']] = group;
     });
     next();
   });
