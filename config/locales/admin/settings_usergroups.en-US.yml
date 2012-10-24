@@ -4,5 +4,7 @@ i18n:
       setting:
         category:
           ug_common: Common
-        members_visible: Are group members visible?
-        members_visible_help: Members are searcheable and counted in site statistics.
+        members_visible: Members visible?
+        members_visible_help:
+          Members of this group will be publicaly searcheable, and counted in site statistics.
+          If disabled, you still be able to search from admin panel

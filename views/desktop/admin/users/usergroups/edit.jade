@@ -17,6 +17,5 @@ form.form-horizontal(data-on-submit='admin.users.usergroups.update')
     - each item, item_name in category
       mixin display_value(item_name, item)
 
-  .control-group
-    .controls
-      button.btn.btn-primary.btn-large(type='submit') #{self.t('admin.users.usergroups.edit.save')}
+  .form-actions
+    button.btn.btn-primary.btn-large(type='submit') #{self.t('admin.users.usergroups.edit.save')}

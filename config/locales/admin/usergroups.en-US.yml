@@ -19,18 +19,20 @@ i18n:
 
           remove:
             error:
-              protected: This group can't be removed.
-              not_empty: Can't remove not empty group
+              protected: This group can't be deleted.
+              not_empty: Can't delete not empty group
 
           edit:
             no_parent: None
-            save: Save group
+            save: Save
 
-            short_name_help: Unique text id souch as administrators
-            short_name_title: Group text id
+            short_name_title: Group name
+            short_name_help: Short unique text, will be used for translations.
 
-            parent_group_help: All settings will be inheritance, unless overridden
-            parent_group_title: Parent group
+            parent_group_title: Inherit from
+            parent_group_help:
+              You can dynamically inherit all settings, until overriden.
+              Select 'None' to make group independent. You can change this later.
 
             error:
-              short_name_busy: This group already exists
+              short_name_busy: This name is occupied, select another one.

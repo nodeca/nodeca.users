@@ -14,7 +14,7 @@ form.form-horizontal(data-on-submit='admin.users.usergroups.create')
     label.control-label(for='short_name') #{self.t('admin.users.usergroups.edit.short_name_title')}
     .controls
       .row-fluid
-        input.span12(type="text", name='short_name')
+        input(type="text", name='short_name')
         span.help-block #{_input_help_text}
 
   include ./partials/_parent_group_select
@@ -25,6 +25,5 @@ form.form-horizontal(data-on-submit='admin.users.usergroups.create')
     - each item, item_name in category
       mixin display_value(item_name, item)
 
-  .control-group
-    .controls
-      button.btn.btn-primary.btn-large(type='submit') #{self.t('admin.users.usergroups.edit.save')}
+  .form-actions
+    button.btn.btn-primary.btn-large(type='submit') #{self.t('admin.users.usergroups.edit.save')}
