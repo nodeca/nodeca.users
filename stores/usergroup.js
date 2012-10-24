@@ -6,16 +6,26 @@
 
 // 3rd-party
 var Store = require('nlib').Settings.Store;
+var async = require('nlib').Vendor.Async;
 
 
-var fetch_usergroups = nodeca.components.memoizee(
-  // real handler - results are cached by memoizee
-  function (ids, callback) {
-    nodeca.models.users.UserGroup.find().where('_id').in(ids).exec(callback);
-  }, {
-    // momoizee options. revalidate cache after 30 sec
-    async: true, maxAge: 30000
-  });
+////////////////////////////////////////////////////////////////////////////////
+
+
+// Helper to fetch usergroups by IDs
+//
+function fetchUserGroups(ids, callback) {
+  nodeca.models.users.UserGroup.find().where('_id').in(ids).exec(callback);
+}
+
+
+// Memoized version of fetchUserGroups helper
+//
+var fetchUserGroupsCached = nodeca.components.memoizee(fetchUserGroups, {
+  // momoizee options. revalidate cache after 30 sec
+  async:  true,
+  maxAge: 30000
+});
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -23,18 +33,22 @@ var fetch_usergroups = nodeca.components.memoizee(
 
 var UserGroupStore = new Store({
   get: function (key, params, options, callback) {
-    fetch_usergroups(params.usergroup_ids, function (err, grps) {
+    var func = options.skipCache ? fetchUserGroups : fetchUserGroupsCached;
+
+    func(params.usergroup_ids, function (err, grps) {
       if (err) {
         callback(err);
         return;
       }
 
       var values = grps.map(function (grp) {
+        var value = grp.settings && grp.settings[key];
+
         // map to the list of settings key value
-        return grp.raw_settings[key] ? { value: grp.raw_settings[key]} : null;
-      }).filter(function (val) {
+        return undefined === value ? null : { value: value };
+      }).filter(function (value) {
         // leave only those who have ones
-        return !!val;
+        return !!value;
       });
 
       // push default value
@@ -44,10 +58,36 @@ var UserGroupStore = new Store({
     });
   },
   set: function (values, params, callback) {
-    callback('Not implemented yet');
+    fetchUserGroups(params.usergroup_ids, function (err, groups) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      // leave only those params, that we know about
+      values = _.pick(values || {}, UserGroupStore.keys);
+
+      // set values for each usergroup
+      async.forEach(groups, function (group, next) {
+        if (!group.settings) {
+          group.settings = {};
+        }
+
+        _.each(values, function (val, key) {
+          group.settings[key] = val;
+        });
+
+        group.markModified('settings');
+        group.save(next);
+      }, callback);
+    });
   },
   params: {
-    usergroup_ids: { type: 'array', required: true }
+    usergroup_ids: {
+      type: 'array',
+      required: true,
+      minItems: 1
+    }
   }
 });
 
