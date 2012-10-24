@@ -17,7 +17,7 @@ table.table.table-hover
         a.icon-edit(href=self.link_to('admin.users.usergroups.edit', { _id: group._id }),
           title=self.t('admin.users.usergroups.actions.edit')
           )= group_name
-      td: a(href='') 0
+      td: a(href='') #{group.user_number}
       td
         - if (!group.is_protected)
           a.pull-right(href='', id=group._id, data-on-click='admin.users.usergroups.remove')

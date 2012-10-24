@@ -3,6 +3,8 @@
 /*global nodeca*/
 
 var UserGroup = nodeca.models.users.UserGroup;
+var User      = nodeca.models.users.User;
+var Async = require('nlib').Vendor.Async;
 
 // Validate input parameters
 //
@@ -33,10 +35,14 @@ module.exports = function (params, next) {
       next(err);
       return;
     }
-    usergroups.forEach(function(group) {
-      env.data.usergroups[group['short_name']] = group;
-    });
-    next();
+    Async.forEachSeries(usergroups, function(group, next_group) {
+      User.count({ usergroups: group._id }, function(err, count) {
+        group.user_number = count;
+        env.data.usergroups[group['short_name']] = group;
+
+        next_group();
+      });
+    }, next);
   });
 };
 
