@@ -41,8 +41,7 @@ module.exports = function ($form) {
       // Wrong form params - regenerate page with hightlighted errors
       if (err.code === nodeca.io.BAD_REQUEST) {
         // add errors
-        params.errors = err.data;
-        nodeca.client.admin.render.page('admin.users.usergroups.add', params);
+        nodeca.client.admin.notify('error', err.data.common);
         return;
       }
 
@@ -51,7 +50,7 @@ module.exports = function ($form) {
       return;
     }
 
-    window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.index');
+    nodeca.client.admin.notify('info', nodeca.runtime.t('admin.users.usergroups.edit.saved'));
   });
 
   // Disable regular click

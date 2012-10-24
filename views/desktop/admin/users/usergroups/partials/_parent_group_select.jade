@@ -1,10 +1,9 @@
 - if (!self.current)
   - self.current = { parent: null }
 
-- _status_class = ('parent' in self.errors) ? 'error' : ''
-- _input_help_text = (self.errors['parent']) ? self.errors['parent'] : self.t('admin.users.usergroups.edit.parent_help')
+- _input_help_text = self.t('admin.users.usergroups.edit.parent_help')
 
-.control-group(class=_status_class)
+.control-group
   label.control-label(for='parent') #{self.t('admin.users.usergroups.edit.parent_title')}
   .controls
     .row-fluid

@@ -3,13 +3,9 @@ include ../../../partials/settings/_string
 include ../../../partials/settings/_boolean
 
 mixin display_value(name, item, handler)
-  - var _status_classes = []
-  - if (name in self.errors)
-    - _status_classes.push('error')
+  - var _status_class = ''
 
-  - if (self.errors[name])
-  - _input_help_text = self.errors[name]
-  - else if (self.t.exists('admin.setting.' + name + '_help'))
+  - if (self.t.exists('admin.setting.' + name + '_help'))
   - _input_help_text = self.t('admin.setting.' + name + '_help')
   - else
   - _input_help_text = null
@@ -20,11 +16,11 @@ mixin display_value(name, item, handler)
     - value = item.value
 
   - if (item.overriden)
-    - _status_classes.push('overriden');
+    - _status_class = 'overriden';
   - else
-    - _status_classes.push('inherited');
-    
-  .control-group(class=_status_classes.join(' '), id='cg_' + name)
+    - _status_class = 'inherited';
+  
+  .control-group(class=_status_class, id='cg_' + name)
     label.control-label(for='s_'+name) #{self.t('admin.setting.' + name)}
     .controls
       case item.type

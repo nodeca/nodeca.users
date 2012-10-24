@@ -1,16 +1,14 @@
 include ./partials/_display_value
 
 form.form-horizontal(data-on-submit='admin.users.usergroups.create')
-  - self.errors = self.errors || {}
-  - var _status_class, _input_help_text
+  - var _input_help_text
 
   legend
     h1 #{self.head.title}
 
-  - _status_class = ('short_name' in self.errors) ? 'error' : ''
-  - _input_help_text = (self.errors['short_name']) ? self.errors['short_name'] : self.t('admin.users.usergroups.edit.short_name_help')
+  - _input_help_text = self.t('admin.users.usergroups.edit.short_name_help')
 
-  .control-group(class=_status_class)
+  .control-group
     label.control-label(for='short_name') #{self.t('admin.users.usergroups.edit.short_name_title')}
     .controls
       .row-fluid

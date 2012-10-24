@@ -38,3 +38,5 @@ i18n:
 
             error:
               short_name_busy: This name is occupied, select another one.
+            
+            saved: Group saved

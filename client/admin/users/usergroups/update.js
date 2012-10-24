@@ -44,15 +44,14 @@ module.exports = function ($form) {
     if (err) {
       if (err.code === nodeca.io.BAD_REQUEST) {
         // add errors
-        params.errors = err.data;
-        nodeca.client.admin.render.page('admin.users.usergroups.edit', params);
+        nodeca.client.admin.notify('error', err.data.common);
         return;
       }
       // no need for fatal errors notifications as it's done by io automagically
       nodeca.console.error(err);
+      return;
     }
-
-    window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.index');
+    nodeca.client.admin.notify('info', nodeca.runtime.t('admin.users.usergroups.edit.saved'));
   });
   // Disable regular click
   return false;
