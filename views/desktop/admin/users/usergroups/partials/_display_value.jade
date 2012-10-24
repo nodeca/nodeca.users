@@ -17,7 +17,7 @@ mixin display_value(name, item, handler)
   - else
     - value = item.value
 
-  .control-group(class=_status_class)
+  .control-group(class=_status_class, id='cg_' + name)
     label.control-label(for=name) #{self.t('admin.setting.' + name)}
     .controls
       case item.type
@@ -30,4 +30,4 @@ mixin display_value(name, item, handler)
         default
           mixin dispay_sting(name, value, handler, _input_help_text)
       .row-fluid
-        input.pull-right(type="checkbox", id=name + '_override', checked=(item.overriden))
+        input.pull-right(type="checkbox", checked=(item.overriden))
