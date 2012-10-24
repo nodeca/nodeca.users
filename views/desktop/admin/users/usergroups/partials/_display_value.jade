@@ -21,11 +21,11 @@ mixin display_value(name, item, handler)
 
   - if (item.overriden)
     - _status_classes.push('overriden');
-  -else
+  - else
     - _status_classes.push('inherited');
     
   .control-group(class=_status_classes.join(' '), id='cg_' + name)
-    label.control-label(for='cg_'+name) #{self.t('admin.setting.' + name)}
+    label.control-label(for='s_'+name) #{self.t('admin.setting.' + name)}
     .controls
       case item.type
         when 'number'
