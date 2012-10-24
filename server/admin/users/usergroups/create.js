@@ -78,9 +78,11 @@ module.exports = function (params, next) {
 
     usergroup = new UserGroup({
       short_name: params.short_name,
-      parent: params.parent,
       raw_settings: raw_settings
     });
+    if (!_.isEmpty(params.parent)) {
+      usergroup.parent = params.parent;
+    }
 
     usergroup.save(function(err){
       if (err) {
