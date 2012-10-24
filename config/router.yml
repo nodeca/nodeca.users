@@ -17,6 +17,8 @@ router:
       "/usergroups/edit/{_id}":
         _id: /\w+/
 
+    admin.users.members.search:
+      "/members/search": ~
 
     users.auth.login.show:
       "/auth/login": ~

@@ -51,7 +51,7 @@ module.exports = function (params, next) {
       return;
     }
 
-    // find chailds
+    // find children
     UserGroup.find({parent: group._id}).exec(function(err, children) {
       if (err) {
         next(err);
