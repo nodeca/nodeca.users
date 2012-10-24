@@ -52,7 +52,7 @@ module.exports = function (params, next) {
     }
 
     // update parent
-    if (!_.isUndefined (params.parent)) {
+    if (!_.isUndefined(params.parent)) {
       group.parent = params.parent;
     }
 

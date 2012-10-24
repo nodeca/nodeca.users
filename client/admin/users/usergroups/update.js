@@ -45,7 +45,7 @@ module.exports = function ($form) {
       if (err.code === nodeca.io.BAD_REQUEST) {
         // add errors
         params.errors = err.data;
-        nodeca.client.admin.render.page('admin.users.usergroups.edir', params);
+        nodeca.client.admin.render.page('admin.users.usergroups.edit', params);
         return;
       }
       // no need for fatal errors notifications as it's done by io automagically
