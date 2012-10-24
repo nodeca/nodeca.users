@@ -3,7 +3,9 @@ include ../../../partials/settings/_string
 include ../../../partials/settings/_boolean
 
 mixin display_value(name, item, handler)
-  - _status_class = (name in self.errors) ? 'error' : ''
+  - var _status_classes = []
+  - if (name in self.errors)
+    - _status_classes.push('error')
 
   - if (self.errors[name])
   - _input_help_text = self.errors[name]
@@ -17,8 +19,13 @@ mixin display_value(name, item, handler)
   - else
     - value = item.value
 
-  .control-group(class=_status_class, id='cg_' + name)
-    label.control-label(for=name) #{self.t('admin.setting.' + name)}
+  - if (item.overriden)
+    - _status_classes.push('overriden');
+  -else
+    - _status_classes.push('inherited');
+    
+  .control-group(class=_status_classes.join(' '), id='cg_' + name)
+    label.control-label(for='cg_'+name) #{self.t('admin.setting.' + name)}
     .controls
       case item.type
         when 'number'
@@ -30,4 +37,8 @@ mixin display_value(name, item, handler)
         default
           mixin dispay_sting(name, value, handler, _input_help_text)
       .row-fluid
-        input.pull-right(type="checkbox", checked=(item.overriden))
+        input.pull-right(
+          type="checkbox",
+          id='so_' + name,
+          checked=(item.overriden),
+          data-on-change='admin.users.usergroups.override_toggle')
