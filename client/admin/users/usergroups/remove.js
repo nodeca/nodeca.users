@@ -21,13 +21,16 @@
  *  client.admin.users.usergroups.remove
  **/
 
-/*global nodeca, window*/
+/*global confirm, nodeca, window*/
 
 /**
  *  client.admin.users.usergroups.remove($elem, event)
  *
  **/
 module.exports = function ($elem) {
+  if (!confirm(nodeca.runtime.t('admin.users.usergroups.remove.confirm'))) {
+    return false;
+  }
   var params = { _id: $elem.attr('id') };
 
   nodeca.server.admin.users.usergroups.remove(params, function (err) {

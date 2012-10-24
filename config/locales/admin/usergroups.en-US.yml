@@ -22,6 +22,7 @@ i18n:
               protected: This group can't be deleted.
               not_empty: Can't delete not empty group
               has_children: Some groups inherited
+            confirm: Are you sure?
 
           edit:
             no_parent: None
