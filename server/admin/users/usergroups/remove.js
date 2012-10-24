@@ -51,24 +51,42 @@ module.exports = function (params, next) {
       return;
     }
 
-    
-    // find users associated with group
-    User.find({ usergroups: group._id })
-        .exec(function(err, users) {
+    // find chailds
+    UserGroup.find({parent: group._id}).exec(function(err, children) {
       if (err) {
         next(err);
         return;
       }
-      if (!_.isEmpty(users)) {
+
+      if (!_.isEmpty(children)) {
         next({
           code: nodeca.io.BAD_REQUEST,
           data: {
-            common: env.helpers.t('admin.users.usergroups.remove.error.not_empty')
+            common: env.helpers.t('admin.users.usergroups.remove.error.has_children')
           }
         });
         return;
       }
-      group.remove(next);
+ 
+      // find users associated with group
+      User.find({ usergroups: group._id })
+          .exec(function(err, users) {
+        if (err) {
+          next(err);
+          return;
+        }
+        if (!_.isEmpty(users)) {
+          next({
+            code: nodeca.io.BAD_REQUEST,
+            data: {
+              common: env.helpers.t('admin.users.usergroups.remove.error.not_empty')
+            }
+          });
+          return;
+        }
+        group.remove(next);
+      });
+
     });
   });
 };

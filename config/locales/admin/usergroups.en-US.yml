@@ -21,6 +21,7 @@ i18n:
             error:
               protected: This group can't be deleted.
               not_empty: Can't delete not empty group
+              has_children: Some groups inherited
 
           edit:
             no_parent: None
