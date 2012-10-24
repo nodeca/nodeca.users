@@ -23,7 +23,7 @@
  **/
 
 
-/*global nodeca, _, $*/
+/*global nodeca, window, _, $*/
 
 
 
@@ -36,26 +36,23 @@ module.exports = function ($form) {
 
   var params = nodeca.client.admin.form.getData($form);
 
-  if (_.isEmpty(params.parent_group)) {
-    delete(params.parent_group);
+  if (_.isEmpty(params.parent)) {
+    delete(params.parent);
   }
-  // get unchecked values
-  $form.find("input:checkbox:not(:checked)").each(function() {
-    params[$(this).attr('name')] = false;
-  });
-
 
   nodeca.server.admin.users.usergroups.update(params, function (err) {
     if (err) {
       if (err.code === nodeca.io.BAD_REQUEST) {
         // add errors
         params.errors = err.data;
-        nodeca.client.admin.render.page('admin.users.usergroups.create', params);
+        nodeca.client.admin.render.page('admin.users.usergroups.edir', params);
         return;
       }
       // no need for fatal errors notifications as it's done by io automagically
       nodeca.console.error(err);
     }
+
+    window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.index');
   });
   // Disable regular click
   return false;

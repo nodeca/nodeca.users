@@ -14,11 +14,11 @@ table.table.table-hover
   - each group, group_name in self.usergroups
     tr
       td
-        a.icon-edit(href=self.link_to('admin.users.usergroups.edit', { short_name:group_name }),
+        a.icon-edit(href=self.link_to('admin.users.usergroups.edit', { _id: group._id }),
           title=self.t('admin.users.usergroups.actions.edit')
           )= group_name
       td: a(href='') 0
       td
         - if (!group.is_protected)
-          a.pull-right(href='', id=group_name, data-on-click='admin.users.usergroups.remove')
+          a.pull-right(href='', id=group._id, data-on-click='admin.users.usergroups.remove')
             | #{self.t('admin.users.usergroups.actions.remove')}

@@ -13,7 +13,7 @@ var params_schema = {
     type: 'string',
     required: true
   },
-  parent_group: {
+  parent: {
     type: 'string',
     default: null
   }
@@ -48,7 +48,7 @@ module.exports = function (params, next) {
 
   // remove short_name and parent group from settings set
   delete raw_settings['short_name'];
-  delete raw_settings['parent_group'];
+  delete raw_settings['parent'];
 
   // Check if group already exists
   UserGroup.findOne({ short_name: params.short_name }).exec(function(err, group) {
@@ -78,7 +78,7 @@ module.exports = function (params, next) {
 
     usergroup = new UserGroup({
       short_name: params.short_name,
-      parent: params.parent_group,
+      parent: params.parent,
       raw_settings: raw_settings
     });
 

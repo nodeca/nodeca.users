@@ -7,7 +7,7 @@ form.form-horizontal(data-on-submit='admin.users.usergroups.update')
   legend
     h1 #{self.head.title}
 
-  input(type="hidden", name='short_name', id='short_name', value=self.current.short_name)
+  input(type="hidden", name='_id', value=self.current._id)
 
   include ./partials/_parent_group_select
 

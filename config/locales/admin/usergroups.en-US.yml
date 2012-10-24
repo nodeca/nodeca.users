@@ -29,8 +29,8 @@ i18n:
             short_name_title: Group name
             short_name_help: Short unique text, will be used for translations.
 
-            parent_group_title: Inherit from
-            parent_group_help:
+            parent_title: Inherit from
+            parent_help:
               You can dynamically inherit all settings, until overriden.
               Select 'None' to make group independent. You can change this later.
 

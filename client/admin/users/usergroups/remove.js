@@ -28,7 +28,7 @@
  *
  **/
 module.exports = function ($elem) {
-  var params = { short_name: $elem.attr('id') };
+  var params = { _id: $elem.attr('id') };
 
   nodeca.server.admin.users.usergroups.remove(params, function (err) {
     if (err) {

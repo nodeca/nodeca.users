@@ -8,7 +8,7 @@ var UserGroup = nodeca.models.users.UserGroup;
 // Validate input parameters
 //
 var params_schema = {
-  short_name: {
+  _id: {
     type: 'string',
     required: true
   }
@@ -27,7 +27,7 @@ module.exports = function (params, next) {
   var env = this;
   env.data.usergroups = [];
 
-  UserGroup.findOne({ short_name: params.short_name })
+  UserGroup.findById(params._id)
       .setOptions({ lean: true }).exec(function(err, group) {
     if (err) {
       next(err);

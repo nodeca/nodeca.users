@@ -42,7 +42,7 @@ module.exports = function ($form) {
       if (err.code === nodeca.io.BAD_REQUEST) {
         // add errors
         params.errors = err.data;
-        nodeca.client.admin.render.page('admin.users.usergroups.create', params);
+        nodeca.client.admin.render.page('admin.users.usergroups.add', params);
         return;
       }
 

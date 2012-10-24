@@ -9,11 +9,11 @@ var usergroup_schema = nodeca.config.setting_schemas['usergroup'];
 // Validate input parameters
 //
 var params_schema = {
-  short_name: {
+  _id: {
     type: 'string',
     required: true
   },
-  parent_group: {
+  parent: {
     type: 'string',
   }
 };
@@ -36,13 +36,11 @@ nodeca.validate(params_schema);
  **/
 module.exports = function (params, next) {
   var items = _.clone(params);
-  // remove short_name from property list
-  delete items['short_name'];
-  delete items['parent_group'];
+  // remove _id parent from property list
+  delete items['_id'];
+  delete items['parent'];
 
-  console.dir(params);
-
-  UserGroup.findOne({ short_name: params.short_name }).exec(function(err, group) {
+  UserGroup.findById(params._id).exec(function(err, group) {
     if (err) {
       next(err);
       return;
@@ -54,8 +52,8 @@ module.exports = function (params, next) {
     }
 
     // update parent
-    if (!_.isUndefined (params.parent_group)) {
-      group.parent_group = params.parent_group;
+    if (!_.isUndefined (params.parent)) {
+      group.parent = params.parent;
     }
 
     // update group items one by one
@@ -71,7 +69,6 @@ module.exports = function (params, next) {
     // this command required for update Mixed fields
     // see Mixed in http://mongoosejs.com/docs/schematypes.html
     group.markModified('raw_settings');
-console.dir(group);
     group.save(next);
   });
 };

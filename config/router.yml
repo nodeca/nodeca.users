@@ -14,8 +14,8 @@ router:
       "/usergroups/add": ~
 
     admin.users.usergroups.edit:
-      "/usergroups/edit/{short_name}":
-        short_name: /\w+/
+      "/usergroups/edit/{_id}":
+        _id: /\w+/
 
 
     users.auth.login.show:

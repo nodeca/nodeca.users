@@ -1,15 +1,15 @@
 - if (!self.current)
-  - self.current = { parent_group: null }
+  - self.current = { parent: null }
 
-- _status_class = ('parent_group' in self.errors) ? 'error' : ''
-- _input_help_text = (self.errors['parent_group']) ? self.errors['parent_group'] : self.t('admin.users.usergroups.edit.parent_group_help')
+- _status_class = ('parent' in self.errors) ? 'error' : ''
+- _input_help_text = (self.errors['parent']) ? self.errors['parent'] : self.t('admin.users.usergroups.edit.parent_help')
 
 .control-group(class=_status_class)
-  label.control-label(for='parent_group') #{self.t('admin.users.usergroups.edit.parent_group_title')}
+  label.control-label(for='parent') #{self.t('admin.users.usergroups.edit.parent_title')}
   .controls
     .row-fluid
-      select(id="parent_group", name="parent_group")
-        option(value='', selected=!self.current.parent_group) #{self.t('admin.users.usergroups.edit.no_parent')}
+      select(name="parent")
+        option(value='', selected=!self.current.parent) #{self.t('admin.users.usergroups.edit.no_parent')}
         - if (self.usergroups)
           - each group in self.usergroups
               group_selected = (self.current.parent == group._id)

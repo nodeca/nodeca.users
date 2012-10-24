@@ -10,6 +10,11 @@ var params_schema = {
 };
 nodeca.validate(params_schema);
 
+var group_in_fields = [
+  '_id',
+  'short_name',
+  'is_protected'
+];
 
 /**
  * admin.usergroups.index(params, callback) -> Void
@@ -22,7 +27,7 @@ module.exports = function (params, next) {
   var env = this;
 
   env.data.usergroups = {};
-  UserGroup.find().select({ 'short_name': 1, 'is_protected': 1 }).sort('_id')
+  UserGroup.find().select(group_in_fields.join(' ')).sort('_id')
       .setOptions({ lean: true }).exec(function(err, usergroups) {
     if (err) {
       next(err);
