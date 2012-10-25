@@ -25,7 +25,7 @@ function fetchUsrGrpSettings(ids, callback) {
 // Memoized version of fetchUserGroups helper
 //
 var fetchUsrGrpSettingsCached = nodeca.components.memoizee(fetchUsrGrpSettings, {
-  // momoizee options. revalidate cache after 30 sec
+  // memoizee options. revalidate cache after 30 sec
   async:  true,
   maxAge: 30000
 });
@@ -35,7 +35,7 @@ var fetchUsrGrpSettingsCached = nodeca.components.memoizee(fetchUsrGrpSettings, 
 
 
 var UserGroupStore = new Store({
-  get: function (key, params, options, callback) {
+  get: function (keys, params, options, callback) {
     var func = options.skipCache ? fetchUsrGrpSettings : fetchUsrGrpSettingsCached;
 
     func(params.usergroup_ids, function (err, grps) {
@@ -44,27 +44,30 @@ var UserGroupStore = new Store({
         return;
       }
 
-      var values = [];
-
-      grps.forEach(function (grp) {
-        if (grp.settings && grp.settings[key]) {
-          values.push(grp.settings[key]);
-        }
-      });
-
-      // push default value
-      values.push({ value: UserGroupStore.getDefaultValue(key) });
-
-      var result;
+      var results = {};
 
       try {
-        result = Store.mergeValues(values);
+        keys.forEach(function (k) {
+          var values = [];
+
+          grps.forEach(function (grp) {
+            if (grp.settings && grp.settings[k]) {
+              values.push(grp.settings[k]);
+            }
+          });
+
+          // push default value
+          values.push({ value: UserGroupStore.getDefaultValue(k) });
+
+          // get merged value
+          results[k] = Store.mergeValues(values);
+        });
       } catch (err) {
         callback(err);
         return;
       }
 
-      callback(null, result);
+      callback(null, results);
     });
   },
   set: function (values, params, callback) {
@@ -92,13 +95,6 @@ var UserGroupStore = new Store({
         grp.save(next);
       }, callback);
     });
-  },
-  params: {
-    usergroup_ids: {
-      type: 'array',
-      required: true,
-      minItems: 1
-    }
   }
 });
 
