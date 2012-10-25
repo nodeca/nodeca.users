@@ -23,18 +23,21 @@ mixin display_value(name, item, handler)
   .control-group(class=_status_class, id='cg_' + name)
     label.control-label(for='s_'+name) #{self.t('admin.setting.' + name)}
     .controls
-      case item.type
-        when 'number'
-          mixin display_number(name, value, handler, _input_help_text)
-        when 'string'
-          mixin dispay_sting(name, value, handler, _input_help_text)
-        when 'boolean'
-          mixin display_boolean(name, value, handler, _input_help_text)
-        default
-          mixin dispay_sting(name, value, handler, _input_help_text)
       .row-fluid
-        input.pull-right(
-          type="checkbox",
-          id='so_' + name,
-          checked=(item.overriden),
-          data-on-change='admin.users.usergroups.override_toggle')
+        .span6.cg-control
+          case item.type
+            when 'number'
+              mixin display_number(name, value, handler, _input_help_text)
+            when 'string'
+              mixin dispay_sting(name, value, handler, _input_help_text)
+            when 'boolean'
+              mixin display_boolean(name, value, handler, _input_help_text)
+            default
+              mixin dispay_sting(name, value, handler, _input_help_text)
+        .span6.cg-ext
+          input(
+            type="checkbox",
+            id='so_' + name,
+            checked=(item.overriden),
+            data-on-change='admin.users.usergroups.override_toggle')
+          |  #{self.t('admin.phrases.override')}
