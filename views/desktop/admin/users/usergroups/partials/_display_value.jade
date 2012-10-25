@@ -35,9 +35,10 @@ mixin display_value(name, item, handler)
             default
               mixin dispay_sting(name, value, handler, _input_help_text)
         .span6.cg-ext
-          input(
-            type="checkbox",
-            id='so_' + name,
-            checked=(item.overriden),
-            data-on-change='admin.users.usergroups.override_toggle')
-          |  #{self.t('admin.phrases.setting.override')}
+          label.checkbox
+            input(
+              type="checkbox",
+              id='so_' + name,
+              checked=(item.overriden),
+              data-on-change='admin.users.usergroups.override_toggle')
+            |  #{self.t('admin.phrases.setting.override')}
