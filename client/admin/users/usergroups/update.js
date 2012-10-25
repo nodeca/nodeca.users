@@ -25,7 +25,8 @@
 
 /*global nodeca, window, _, $*/
 
-
+var white_list = ['_id','parent'];
+var params_mask = 's_';
 
 /**
  *  client.admin.users.usergroups.update($elem, event)
@@ -33,12 +34,22 @@
  * Update single field value.
  **/
 module.exports = function ($form) {
+  var data = nodeca.client.admin.form.getData($form);
+  var params = {};
 
-  var params = nodeca.client.admin.form.getData($form);
-
-  if (_.isEmpty(params.parent)) {
-    delete(params.parent);
+  if (_.isEmpty(data.parent)) {
+    delete(data.parent);
   }
+
+  _.keys(data).forEach(function(key) {
+    if (key.indexOf(params_mask) === 0) {
+      params[key.replace(params_mask, '')] = data[key];
+      return;
+    }
+    if (white_list.indexOf(key) !== -1) {
+      params[key] = data[key];
+    }
+  });
 
   nodeca.server.admin.users.usergroups.update(params, function (err) {
     if (err) {
