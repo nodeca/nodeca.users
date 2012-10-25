@@ -152,5 +152,5 @@ nodeca.filters.after('@', function update_usergroup_store(params, next) {
     values[key] = { value: val, force: false };
   });
 
-  store.set(values, { usergroup_ids: [ params._id ] }, next);
+  store.set(values, { usergroup_id: params._id }, next);
 });

@@ -49,13 +49,16 @@ module.exports = new Store({
       var results = {};
 
       keys.forEach(function (k) {
-        var values = [], defaultValue = { value: self.getDefaultValue(k) };
+        var values = [];
 
         grps.forEach(function (grp) {
           if (grp.settings && grp.settings[k]) {
             values.push(grp.settings[k]);
           } else {
-            values.push(defaultValue);
+            values.push({
+              value: self.getDefaultValue(k),
+              force: false
+            });
           }
         });
 
@@ -69,7 +72,9 @@ module.exports = new Store({
   set: function (values, params, callback) {
     var self = this;
 
-    fetchUsrGrpSettings(params.usergroup_ids, function (err, grps) {
+    nodeca.models.users.UserGroup.findOne({
+      _id: String(params.usergroup_id)
+    }).exec(function (err, grp) {
       if (err) {
         callback(err);
         return;
@@ -79,19 +84,17 @@ module.exports = new Store({
       values = _.pick(values || {}, self.keys);
 
       // set values for each usergroup
-      async.forEach(grps, function (grp, next) {
-        grp.settings = grp.settings || {};
+      grp.settings = grp.settings || {};
 
-        _.each(values, function (opts, key) {
-          grp.settings[key] = {
-            value: opts.value,
-            force: !!opts.value
-          };
-        });
+      _.each(values, function (opts, key) {
+        grp.settings[key] = {
+          value: opts.value,
+          force: !!opts.value
+        };
+      });
 
-        grp.markModified('settings');
-        grp.save(next);
-      }, callback);
+      grp.markModified('settings');
+      grp.save(callback);
     });
   }
 });
