@@ -28,9 +28,6 @@
  *
  **/
 module.exports = function ($elem) {
-  if (!confirm(nodeca.runtime.t('admin.users.usergroups.remove.confirm'))) {
-    return false;
-  }
   var params = { _id: $elem.attr('id') };
 
   nodeca.server.admin.users.usergroups.remove(params, function (err) {
