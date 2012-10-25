@@ -34,8 +34,9 @@ var fetchUsrGrpSettingsCached = nodeca.components.memoizee(fetchUsrGrpSettings, 
 ////////////////////////////////////////////////////////////////////////////////
 
 
-var UserGroupStore = new Store({
+module.exports = new Store({
   get: function (keys, params, options, callback) {
+    var self = this;
     var func = options.skipCache ? fetchUsrGrpSettings : fetchUsrGrpSettingsCached;
 
     func(params.usergroup_ids, function (err, grps) {
@@ -57,7 +58,7 @@ var UserGroupStore = new Store({
           });
 
           // push default value
-          values.push({ value: UserGroupStore.getDefaultValue(k) });
+          values.push({ value: self.getDefaultValue(k) });
 
           // get merged value
           results[k] = Store.mergeValues(values);
@@ -71,6 +72,8 @@ var UserGroupStore = new Store({
     });
   },
   set: function (values, params, callback) {
+    var self = this;
+
     fetchUsrGrpSettings(params.usergroup_ids, function (err, grps) {
       if (err) {
         callback(err);
@@ -78,7 +81,7 @@ var UserGroupStore = new Store({
       }
 
       // leave only those params, that we know about
-      values = _.pick(values || {}, UserGroupStore.keys);
+      values = _.pick(values || {}, self.keys);
 
       // set values for each usergroup
       async.forEach(grps, function (grp, next) {
@@ -97,9 +100,3 @@ var UserGroupStore = new Store({
     });
   }
 });
-
-
-////////////////////////////////////////////////////////////////////////////////
-
-
-module.exports = UserGroupStore;
