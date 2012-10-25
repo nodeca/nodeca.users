@@ -53,7 +53,9 @@ module.exports = new Store({
 
         grps.forEach(function (grp) {
           if (grp.settings && grp.settings[k]) {
-            values.push(Store.mergeValues([ grp.settings[k], defaultValue ]));
+            values.push(grp.settings[k]);
+          } else {
+            values.push(defaultValue);
           }
         });
 
