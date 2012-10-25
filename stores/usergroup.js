@@ -18,6 +18,7 @@ function fetchUsrGrpSettings(ids, callback) {
   nodeca.models.users.UserGroup.find()
     .select('settings')
     .where('_id').in(ids)
+    .setOptions({ lean: true })
     .exec(callback);
 }
 
@@ -47,26 +48,18 @@ module.exports = new Store({
 
       var results = {};
 
-      try {
-        keys.forEach(function (k) {
-          var values = [];
+      keys.forEach(function (k) {
+        var values = [], defaultValue = { value: self.getDefaultValue(k) };
 
-          grps.forEach(function (grp) {
-            if (grp.settings && grp.settings[k]) {
-              values.push(grp.settings[k]);
-            }
-          });
-
-          // push default value
-          values.push({ value: self.getDefaultValue(k) });
-
-          // get merged value
-          results[k] = Store.mergeValues(values);
+        grps.forEach(function (grp) {
+          if (grp.settings && grp.settings[k]) {
+            values.push(Store.mergeValues([ grp.settings[k], defaultValue ]));
+          }
         });
-      } catch (err) {
-        callback(err);
-        return;
-      }
+
+        // get merged value
+        results[k] = Store.mergeValues(values);
+      });
 
       callback(null, results);
     });
