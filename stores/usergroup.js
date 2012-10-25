@@ -69,27 +69,27 @@ module.exports = new Store({
       callback(null, results);
     });
   },
-  set: function (values, params, callback) {
+  set: function (settings, params, callback) {
     var self = this;
 
     nodeca.models.users.UserGroup.findOne({
-      _id: String(params.usergroup_id)
+      _id: params.usergroup_id
     }).exec(function (err, grp) {
       if (err) {
         callback(err);
         return;
       }
 
-      // leave only those params, that we know about
-      values = _.pick(values || {}, self.keys);
+      // leave only those params, that store knows about
+      settings = _.pick(settings || {}, self.keys);
 
-      // set values for each usergroup
+      // set settings for each usergroup
       grp.settings = grp.settings || {};
 
-      _.each(values, function (opts, key) {
+      _.each(settings, function (opts, key) {
         grp.settings[key] = {
           value: opts.value,
-          force: !!opts.value
+          force: !!opts.force
         };
       });
 
