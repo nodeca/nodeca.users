@@ -17,14 +17,16 @@ var params_schema = {
     type: 'string',
   }
 };
-_.keys(usergroup_schema).forEach(function(name) {
+
+_.keys(usergroup_schema).forEach(function (name) {
   var item_type = usergroup_schema[name]['type'];
   if (!_.any(['string', 'number', 'boolean'],
-      function(t){ return t === item_type; })) {
+      function (t) { return t === item_type; })) {
     item_type = 'string';
   }
   params_schema[name] = { type: item_type };
 });
+
 nodeca.validate(params_schema);
 
 
@@ -58,14 +60,14 @@ function test_circular(id, parent, callback) {
     callback(null, false);
     return;
   }
-  UserGroup.find().select('_id parent').exec(function(err, docs) {
+  UserGroup.find().select('_id parent').exec(function (err, docs) {
     var groups = {};
     if (err) {
       callback(err);
     }
     // collect groups fo hash
     // { _id => parent }
-    docs.forEach(function(group) {
+    docs.forEach(function (group) {
       groups[group._id.toString()] = group.parent ? group.parent.toString() : null;
     });
 
@@ -81,17 +83,19 @@ function test_circular(id, parent, callback) {
  * Update usergroup property
  **/
 module.exports = function (params, next) {
-  var env = this;
+  var env   = this;
   var items = _.clone(params);
+
   // remove _id parent from property list
   delete items['_id'];
   delete items['parent'];
 
-  UserGroup.findById(params._id).exec(function(err, group) {
+  UserGroup.findById(params._id).exec(function (err, group) {
     if (err) {
       next(err);
       return;
     }
+
     // group not found
     if (!group) {
       next(nodeca.io.NOT_FOUND);
@@ -104,7 +108,7 @@ module.exports = function (params, next) {
     }
 
     // update group items one by one
-    _.keys(items).forEach(function(name) {
+    _.keys(items).forEach(function (name) {
       if (_.isNull(items[name])) {
         items[name] = usergroup_schema[name]['default'];
       }
@@ -117,11 +121,12 @@ module.exports = function (params, next) {
     // see Mixed in http://mongoosejs.com/docs/schematypes.html
     group.markModified('raw_settings');
 
-    test_circular(group._id, group.parent, function(err, is_circular) {
+    test_circular(group._id, group.parent, function (err, is_circular) {
       if (err) {
         next(err);
         return;
       }
+
       if (is_circular) {
         next({
           code: nodeca.io.BAD_REQUEST,
@@ -131,7 +136,21 @@ module.exports = function (params, next) {
         });
         return;
       }
+
       group.save(next);
     });
   });
 };
+
+
+nodeca.filters.after('@', function update_usergroup_store(params, next) {
+  var store   = nodeca.settings.getStore('usergroup');
+  var values  = _.pick(params, store.keys);
+
+  // prepare values for the store
+  _.each(values, function (val, key) {
+    values[key] = { value: val, force: false };
+  });
+
+  store.set(values, { usergroup_ids: [ params._id ] }, next);
+});

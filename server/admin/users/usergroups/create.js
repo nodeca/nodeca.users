@@ -51,7 +51,7 @@ module.exports = function (params, next) {
   delete raw_settings['parent'];
 
   // Check if group already exists
-  UserGroup.findOne({ short_name: params.short_name }).exec(function(err, group) {
+  UserGroup.findOne({ short_name: params.short_name }).exec(function (err, group) {
     if (err) {
       next(err);
       return;
@@ -69,7 +69,7 @@ module.exports = function (params, next) {
     }
 
     // set default values
-    _.keys(usergroup_schema).forEach(function(key) {
+    _.keys(usergroup_schema).forEach(function (key) {
       if (_.isNull(raw_settings[key])) {
         raw_settings[key] = usergroup_schema[key]['default'];
       }
@@ -84,13 +84,21 @@ module.exports = function (params, next) {
       usergroup.parent = params.parent;
     }
 
-    usergroup.save(function(err){
+    usergroup.save(function (err) {
       if (err) {
         next(err);
         return;
       }
-      // FIXME calculate and save settings in store
-      next();
+
+      var store   = nodeca.settings.getStore('usergroup');
+      var values  = _.pick(params, store.keys);
+
+      // prepare values for the store
+      _.each(values, function (val, key) {
+        values[key] = { value: val, force: false };
+      });
+
+      store.set(values, { usergroup_ids: [ params._id ] }, next);
     });
   });
 };
