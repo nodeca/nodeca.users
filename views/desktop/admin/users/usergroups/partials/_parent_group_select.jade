@@ -6,12 +6,11 @@
 .control-group
   label.control-label(for='parent') #{self.t('admin.users.usergroups.edit.parent_title')}
   .controls
-    .row-fluid
-      select(name="parent")
-        option(value='', selected=!self.current.parent) #{self.t('admin.users.usergroups.edit.no_parent')}
-        - if (self.usergroups)
-          - each group in self.usergroups
-              group_selected = (self.current.parent == group._id)
+    select(name="parent")
+      option(value='', selected=!self.current.parent) #{self.t('admin.users.usergroups.edit.no_parent')}
+      - if (self.usergroups)
+        - each group in self.usergroups
+            group_selected = (self.current.parent == group._id)
 
-              option(value=group._id, selected=group_selected) #{group.short_name}
-      span.help-block #{_input_help_text}
+            option(value=group._id, selected=group_selected) #{group.short_name}
+    span.help-block #{_input_help_text}

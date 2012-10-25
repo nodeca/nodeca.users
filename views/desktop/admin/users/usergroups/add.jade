@@ -8,20 +8,25 @@ form.form-horizontal(data-on-submit='admin.users.usergroups.create')
 
   - _input_help_text = self.t('admin.users.usergroups.edit.short_name_help')
 
-  .control-group
-    label.control-label(for='short_name') #{self.t('admin.users.usergroups.edit.short_name_title')}
-    .controls
-      .row-fluid
-        input(type="text", name='short_name')
-        span.help-block #{_input_help_text}
+  .cg-head
 
-  include ./partials/_parent_group_select
+    .control-group
+      label.control-label(for='short_name') #{self.t('admin.users.usergroups.edit.short_name_title')}
+      .controls
+        .row-fluid
+          input(type="text", name='short_name')
+          span.help-block #{_input_help_text}
+
+    include ./partials/_parent_group_select
+    include ./partials/_settings_filter
+
 
   - each category, category_name in self.settings_categories
 
     legend #{self.t('admin.setting.category.' + category_name)}
     - each item, item_name in category
       mixin display_value(item_name, item)
+
 
   .form-actions
     button.btn.btn-primary.btn-large(type='submit') #{self.t('admin.users.usergroups.edit.create')}
