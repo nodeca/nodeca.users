@@ -50,7 +50,7 @@ module.exports = function ($form) {
       return;
     }
 
-    nodeca.client.admin.notify('info', nodeca.runtime.t('admin.users.usergroups.edit.saved'));
+    nodeca.client.admin.notify('info', nodeca.runtime.t('admin.users.usergroups.edit.created'));
   });
 
   // Disable regular click

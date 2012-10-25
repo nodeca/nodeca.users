@@ -126,7 +126,7 @@ module.exports = function (params, next) {
         next({
           code: nodeca.io.BAD_REQUEST,
           data: {
-            common: env.helpers.t('admin.users.usergroups.edit.error.circular_inheritance')
+            common: env.helpers.t('admin.users.usergroups.edit.error.circular_dependency')
           }
         });
         return;

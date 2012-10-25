@@ -25,7 +25,8 @@ i18n:
 
           edit:
             no_parent: None
-            save: Save
+            save: Save group
+            create: Create group
 
             short_name_title: Group name
             short_name_help: Short unique text, will be used for translations.
@@ -37,6 +38,7 @@ i18n:
 
             error:
               short_name_busy: This name is occupied, select another one.
-              circular_inheritance: Circular inheritance
-            
+              circular_dependency: Can't inherit this parent (circular dependency)
+
             saved: Group saved
+            created: Group created
