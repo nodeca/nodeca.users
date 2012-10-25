@@ -45,7 +45,7 @@ var UserGroupStore = new Store({
         var value = grp.settings && grp.settings[key];
 
         // map to the list of settings key value
-        return undefined === value ? null : { value: value };
+        return undefined === value ? null : value;
       }).filter(function (value) {
         // leave only those who have ones
         return !!value;
@@ -73,8 +73,8 @@ var UserGroupStore = new Store({
           group.settings = {};
         }
 
-        _.each(values, function (val, key) {
-          group.settings[key] = val;
+        _.each(values, function (opts, key) {
+          group.settings[key] = { value: opts.value, force: !!opts.value };
         });
 
         group.markModified('settings');
