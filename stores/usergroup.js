@@ -16,7 +16,7 @@ var async = require('nlib').Vendor.Async;
 //
 function fetchUsrGrpSettings(ids, callback) {
   nodeca.models.users.UserGroup.find()
-    .select('settings')
+    .select('settings.usergroup')
     .where('_id').in(ids)
     .setOptions({ lean: true })
     .exec(callback);
@@ -52,8 +52,10 @@ module.exports = new Store({
         var values = [];
 
         grps.forEach(function (grp) {
-          if (grp.settings && grp.settings[k]) {
-            values.push(grp.settings[k]);
+          var settings = (grp.settings || {}).usergroup;
+
+          if (settings && settings.usergroup[k]) {
+            values.push(settings[k]);
           } else {
             values.push({
               value: self.getDefaultValue(k),
@@ -83,17 +85,18 @@ module.exports = new Store({
       // leave only those params, that store knows about
       settings = _.pick(settings || {}, self.keys);
 
-      // set settings for each usergroup
+      // make sure we have settings storages
       grp.settings = grp.settings || {};
+      grp.settings.usergroup = grp.settings.usergroup || {};
 
       _.each(settings, function (opts, key) {
-        grp.settings[key] = {
+        grp.settings.usergroup[key] = {
           value: opts.value,
           force: !!opts.force
         };
       });
 
-      grp.markModified('settings');
+      grp.markModified('settings.usergroup');
       grp.save(callback);
     });
   }
