@@ -54,7 +54,7 @@ module.exports = new Store({
         grps.forEach(function (grp) {
           var settings = (grp.settings || {}).usergroup;
 
-          if (settings && settings.usergroup[k]) {
+          if (settings && settings[k]) {
             values.push(settings[k]);
           } else {
             values.push({
