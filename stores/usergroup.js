@@ -16,7 +16,7 @@ var async = require('nlib').Vendor.Async;
 //
 function fetchUsrGrpSettings(ids, callback) {
   nodeca.models.users.UserGroup.find()
-    .select('settings.usergroup')
+    .select('is_restrictive settings.usergroup')
     .where('_id').in(ids)
     .setOptions({ lean: true })
     .exec(callback);
@@ -60,7 +60,10 @@ module.exports = new Store({
           var settings = (grp.settings || {}).usergroup;
 
           if (settings && settings[k]) {
-            values.push(settings[k]);
+            values.push({
+              value: settings[k].value,
+              force: !!grp.is_restrictive
+            });
           } else {
             values.push({
               value: self.getDefaultValue(k),
