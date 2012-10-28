@@ -92,18 +92,12 @@ module.exports = new Store({
         return;
       }
 
-      // leave only those params, that store knows about
-      settings = _.pick(settings || {}, self.keys);
-
       // make sure we have settings storages
       grp.settings = grp.settings || {};
       grp.settings.usergroup = grp.settings.usergroup || {};
 
       _.each(settings, function (opts, key) {
-        grp.settings.usergroup[key] = {
-          value: opts.value,
-          force: !!opts.force
-        };
+        grp.settings.usergroup[key] = opts;
       });
 
       grp.markModified('settings.usergroup');
