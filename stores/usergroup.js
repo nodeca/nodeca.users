@@ -101,14 +101,18 @@ module.exports = new Store({
       grp.settings.usergroup = grp.settings.usergroup || {};
 
       _.each(settings, function (opts, key) {
-        grp.settings.usergroup[key] = {
-          value: opts.value,
-          // UserGroup store does not use force flag - it's dynamically
-          // calculated on UserGroup#is_forced property of model.
-          //
-          // RESERVED for possible future use
-          force: false
-        };
+        if (null === opts) {
+          delete grp.settings.usergroup[key];
+        } else {
+          grp.settings.usergroup[key] = {
+            value: opts.value,
+            // UserGroup store does not use force flag - it's dynamically
+            // calculated on UserGroup#is_forced property of model.
+            //
+            // RESERVED for possible future use
+            force: false
+          };
+        }
       });
 
       grp.markModified('settings.usergroup');
