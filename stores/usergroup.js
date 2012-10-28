@@ -40,13 +40,18 @@ module.exports = new Store({
     var self = this;
     var func = options.skipCache ? fetchUsrGrpSettings : fetchUsrGrpSettingsCached;
 
+    if (!_.isArray(params.usergroup_ids) || !params.usergroup_ids.length) {
+      callback("usergroup_ids param required to be non-empty array for getting settings from usergroup store");
+      return;
+    }
+
     func(params.usergroup_ids, function (err, grps) {
+      var results = {};
+
       if (err) {
         callback(err);
         return;
       }
-
-      var results = {};
 
       keys.forEach(function (k) {
         var values = [];
@@ -73,6 +78,11 @@ module.exports = new Store({
   },
   set: function (settings, params, callback) {
     var self = this;
+
+    if (!params.usergroup_id) {
+      callback("usergroup_id param is required for saving settings into usergroup store");
+      return;
+    }
 
     nodeca.models.users.UserGroup.findOne({
       _id: params.usergroup_id

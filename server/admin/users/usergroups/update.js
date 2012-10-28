@@ -144,13 +144,12 @@ module.exports = function (params, next) {
 
 
 nodeca.filters.after('@', function update_usergroup_store(params, next) {
-  var store   = nodeca.settings.getStore('usergroup');
-  var values  = _.pick(params, store.keys);
+  var values = {};
 
   // prepare values for the store
-  _.each(values, function (val, key) {
+  _.each(params, function (val, key) {
     values[key] = { value: val, force: false };
   });
 
-  store.set(values, { usergroup_id: params._id }, next);
+  nodeca.settings.set('usergroup', values, { usergroup_id: params._id }, next);
 });
