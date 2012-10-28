@@ -94,7 +94,14 @@ module.exports = function (params, next) {
 
       // prepare values for the store
       _.each(values, function (val, key) {
-        values[key] = { value: val, force: false };
+        if ('boolean' === usergroup_schema[key].type) {
+          val = (1 === +val);
+        }
+
+        values[key] = {
+          value: val,
+          force: false
+        };
       });
 
       nodeca.settings.set('usergroup', values, { usergroup_id: params._id }, next);
