@@ -16,7 +16,7 @@ var async = require('nlib').Vendor.Async;
 //
 function fetchUsrGrpSettings(ids, callback) {
   nodeca.models.users.UserGroup.find()
-    .select('is_restrictive settings.usergroup')
+    .select('is_forced settings.usergroup')
     .where('_id').in(ids)
     .setOptions({ lean: true })
     .exec(callback);
@@ -62,11 +62,12 @@ module.exports = new Store({
           if (settings && settings[k]) {
             values.push({
               value: settings[k].value,
-              force: !!grp.is_restrictive
+              force: !!grp.is_forced
             });
           } else {
             values.push({
               value: self.getDefaultValue(k),
+              // default value SHOULD NOT be forced
               force: false
             });
           }
@@ -100,7 +101,14 @@ module.exports = new Store({
       grp.settings.usergroup = grp.settings.usergroup || {};
 
       _.each(settings, function (opts, key) {
-        grp.settings.usergroup[key] = opts;
+        grp.settings.usergroup[key] = {
+          value: opts.value,
+          // UserGroup store does not use force flag - it's dynamically
+          // calculated on UserGroup#is_forced property of model.
+          //
+          // RESERVED for possible future use
+          force: false
+        };
       });
 
       grp.markModified('settings.usergroup');

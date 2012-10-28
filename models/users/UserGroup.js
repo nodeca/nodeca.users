@@ -38,8 +38,9 @@ var UserGroup = module.exports.UserGroup = new Schema({
     // can by deleted?
   , is_protected      : { type: Boolean, default: false }
 
-    // restrictive groups makes "forced" settings
-  , is_restrictive    : { type: Boolean, default: false }
+    // restrictive groups makes "forced" settings.
+    // mostly used to "remove" some rights of  group (e.g. restrict posting)
+  , is_forced         : { type: Boolean, default: false }
 
     // belong to only this group settings (overriden)
   , raw_settings      : { type: Schema.Types.Mixed, default: {}}
