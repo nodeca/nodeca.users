@@ -38,7 +38,7 @@ module.exports = function ($elem) {
         return;
       }
       // no need for fatal errors notifications as it's done by io automagically
-      nodeca.console.error(err);
+      nodeca.logger.error(err);
       return;
     }
 

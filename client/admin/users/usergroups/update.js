@@ -59,7 +59,7 @@ module.exports = function ($form) {
         return;
       }
       // no need for fatal errors notifications as it's done by io automagically
-      nodeca.console.error(err);
+      nodeca.logger.error(err);
       return;
     }
     nodeca.client.admin.notify('info', nodeca.runtime.t('admin.users.usergroups.edit.saved'));
