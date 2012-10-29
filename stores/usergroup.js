@@ -45,7 +45,7 @@ module.exports = new Store({
       return;
     }
 
-    func(params.usergroup_ids, function (err, grps) {
+    func(params.usergroup_ids.sort(), function (err, grps) {
       var results = {};
 
       if (err) {
