@@ -28,7 +28,7 @@ function fetchUsrGrpSettings(ids, callback) {
 var fetchUsrGrpSettingsCached = nodeca.components.memoizee(fetchUsrGrpSettings, {
   // memoizee options. revalidate cache after 30 sec
   async:      true,
-  maxAge:     30000,
+  maxAge:     60000,
   primitive:  true
 });
 
