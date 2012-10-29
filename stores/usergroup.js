@@ -49,7 +49,7 @@ module.exports = new Store({
       return;
     }
 
-    // Prepare usergroup ids list
+    // Convert list of Mongoose ObjectID's to sorted Array of String's
     var usergroups = params.usergroup_ids.map(function (g) {
       return String(g);
     }).sort();
