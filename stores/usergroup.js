@@ -35,6 +35,10 @@ var fetchUsrGrpSettingsCached = nodeca.components.memoizee(fetchUsrGrpSettings, 
 ////////////////////////////////////////////////////////////////////////////////
 
 
+// ##### Params
+//
+// - usergroup_ids (Array)
+//
 module.exports = new Store({
   get: function (keys, params, options, callback) {
     var self = this;
@@ -45,7 +49,12 @@ module.exports = new Store({
       return;
     }
 
-    func(params.usergroup_ids.sort(), function (err, grps) {
+    // Prepare usergroup ids list
+    var usergroups = params.usergroup_ids.map(function (g) {
+      return String(g);
+    }).sort();
+
+    func(usergroups, function (err, grps) {
       var results = {};
 
       if (err) {
@@ -80,6 +89,10 @@ module.exports = new Store({
       callback(null, results);
     });
   },
+  // ##### Params
+  //
+  // - usergroup_id (String|ObjectId)
+  //
   set: function (settings, params, callback) {
     var self = this;
 
