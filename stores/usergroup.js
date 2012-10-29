@@ -27,8 +27,9 @@ function fetchUsrGrpSettings(ids, callback) {
 //
 var fetchUsrGrpSettingsCached = nodeca.components.memoizee(fetchUsrGrpSettings, {
   // memoizee options. revalidate cache after 30 sec
-  async:  true,
-  maxAge: 30000
+  async:      true,
+  maxAge:     30000,
+  primitive:  true
 });
 
 
@@ -49,12 +50,7 @@ module.exports = new Store({
       return;
     }
 
-    // Convert list of Mongoose ObjectID's to sorted Array of String's
-    var usergroups = params.usergroup_ids.map(function (g) {
-      return String(g);
-    }).sort();
-
-    func(usergroups, function (err, grps) {
+    func(params.usergroup_ids.sort(), function (err, grps) {
       var results = {};
 
       if (err) {
