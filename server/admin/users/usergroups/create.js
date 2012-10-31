@@ -11,6 +11,7 @@ var usergroup_schema = nodeca.config.setting_schemas['usergroup'];
 var params_schema = {
   short_name: {
     type: 'string',
+    minLength: 1,
     required: true
   },
   parent: {
