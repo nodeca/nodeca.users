@@ -50,11 +50,20 @@ module.exports = function ($form) {
     }
   });
   nodeca.server.admin.users.usergroups.create(params, function (err) {
+    var err_message;
     if (err) {
       // Wrong form params - regenerate page with hightlighted errors
       if (err.code === nodeca.io.BAD_REQUEST) {
         // add errors
-        nodeca.client.admin.notify('error', err.data.common);
+        if (err.data) {
+          // error from action
+          err_message = err.data.common;
+        }
+        else {
+          // error from revalidator
+          err_message = err.message;
+        }
+        nodeca.client.admin.notify('error', err_message);
         return;
       }
 
