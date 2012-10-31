@@ -10,7 +10,9 @@ var User = nodeca.models.users.User;
 var params_schema = {
   _id: {
     type: 'string',
-    required: true
+    required: true,
+    minLength: 24,
+    maxLength: 24
   }
 };
 

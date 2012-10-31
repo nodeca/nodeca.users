@@ -11,10 +11,14 @@ var usergroup_schema = nodeca.config.setting_schemas['usergroup'];
 var params_schema = {
   _id: {
     type: 'string',
-    required: true
+    required: true,
+    minLength: 24,
+    maxLength: 24
   },
   parent: {
     type: 'string',
+    minLength: 24,
+    maxLength: 24
   }
 };
 

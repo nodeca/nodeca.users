@@ -10,7 +10,9 @@ var UserGroup = nodeca.models.users.UserGroup;
 var params_schema = {
   _id: {
     type: 'string',
-    required: true
+    required: true,
+    minLength: 24,
+    maxLength: 24
   }
 };
 nodeca.validate(params_schema);
