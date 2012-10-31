@@ -28,11 +28,11 @@
  *
  **/
 module.exports = function ($elem) {
-  var params = { _id: $elem.attr('id') };
+  var params = { _id: $elem.attr('data-usergroup-id') };
 
   nodeca.server.admin.users.usergroups.remove(params, function (err) {
     if (err) {
-      // something fatal
+      // something non fatal error
       if (err.code === nodeca.io.BAD_REQUEST) {
         nodeca.client.admin.notify('error', err.data.common);
         return;

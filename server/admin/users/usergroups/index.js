@@ -38,6 +38,7 @@ module.exports = function (params, next) {
     Async.forEachSeries(usergroups, function(group, next_group) {
       User.count({ usergroups: group._id }, function(err, count) {
         group.user_number = count;
+        group._id = group._id.toString();
         env.data.usergroups[group['short_name']] = group;
 
         next_group();

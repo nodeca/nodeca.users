@@ -20,5 +20,7 @@ table.table.table-hover
       td: a(href=self.link_to('admin.users.members.search')) #{group.user_number}
       td
         - if (!group.is_protected)
-          a.pull-right(id=group._id, data-on-click='admin.users.usergroups.remove')
+          a.pull-right(
+            data-on-click='admin.users.usergroups.remove',
+            data-usergroup-id=group._id)
             | #{self.t('admin.users.usergroups.actions.remove')}
