@@ -98,7 +98,7 @@ module.exports = function (params, next) {
         values[key] = { value: val };
       });
 
-      nodeca.settings.set('usergroup', values, { usergroup_id: params._id }, next);
+      nodeca.settings.set('usergroup', values, { usergroup_id: usergroup._id }, next);
     });
   });
 };
