@@ -148,7 +148,7 @@ nodeca.filters.before('@', function login_check_captcha(params, next) {
     // it as acceptable tradeoff for significant algorythm simplification
     // (no need to track captcha state in each session)
 
-    var private_key = nodeca.config.recaptcha.private_key;
+    var private_key = nodeca.config.options.recaptcha.private_key;
     var user_ip = env.request.ip;
     var challenge = params.recaptcha_challenge_field;
     var response = params.recaptcha_response_field;
