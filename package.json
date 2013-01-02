@@ -13,14 +13,5 @@
 
   "main"            : "./index.js",
 
-  "dependencies"    : {
-                        "bcrypt"       : "~ 0.7.2"
-                      },
-
-  "devDependencies" : {
-                        "mocha"   : "~ 1.6.0",
-                        "should"  : "~ 1.2.0",
-                        "jshint"  : "~ 0.9.1"
-                      },
   "engines"         : { "node": ">= 0.6.0" }
 }
