@@ -76,7 +76,7 @@ module.exports = function (N) {
           });
 
           // get merged value
-          results[k] = UsergroupStore.mergeValues(values);
+          results[k] = self.mergeValues(values);
         });
 
         callback(null, results);
