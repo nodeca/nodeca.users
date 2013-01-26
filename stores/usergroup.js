@@ -76,7 +76,7 @@ module.exports = function (N) {
           });
 
           // get merged value
-          results[k] = self.mergeValues(values);
+          results[k] = N.settings.mergeValues(values);
         });
 
         callback(null, results);
