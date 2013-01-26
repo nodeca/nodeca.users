@@ -1,17 +1,16 @@
+// Restore user password
+//
 "use strict";
 
-/*global nodeca*/
 
-var params_schema = {
-};
-nodeca.validate(params_schema);
+module.exports = function (N, apiPath) {
+  N.validate(apiPath, {
+  });
 
-
-/**
- * users.auth.login.plain.restore_exec(params, callback) -> Void
- *
- * Restore user password
- **/
-module.exports = function (params, next) {
-  next();
+  // Request handler
+  //
+  N.wire.on(apiPath, function (env, callback) {
+    //FIXME implement me
+    callback();
+  });
 };

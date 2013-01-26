@@ -1,16 +1,15 @@
 "use strict";
 
-/*global nodeca*/
+/*global N*/
 
-var NLib = require('nlib');
+var async = require('async');
 
-var Async = NLib.Vendor.Async;
 
-var models = nodeca.models;
+var models = N.models;
 
 module.exports.up = function (cb) {
-  // FIXME implement sets of real froup items
-  Async.forEachSeries(['administrators','members','guests'],
+  // FIXME implement sets of real group items
+  async.forEachSeries(['administrators','members','guests'],
     function(current_group, next_group) {
       var usergroup = new models.users.UserGroup({
         short_name: current_group,

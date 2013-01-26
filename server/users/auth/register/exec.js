@@ -1,156 +1,158 @@
+// Register new user
+//
 "use strict";
 
-/*global nodeca, _*/
-var NLib = require('nlib');
-var Async = NLib.Vendor.Async;
-var ReCaptcha = nodeca.components.ReCaptcha;
 
-var AuthLink = nodeca.models.users.AuthLink;
-var User = nodeca.models.users.User;
+var _ = require('lodash');
+var async = require('async');
 
 
-// Validate input parameters
-//
-var params_schema = {
-  email: {
-    type: "string",
-    format: "email",
-    required: true
-  },
-  pass: {
-    type: "string",
-    minLength: 8,
-    required: true
-  },
-  nick: {
-    type: "string",
-    minLength: 1,
-    required: true
-  },
-  recaptcha_challenge_field: {
-    type: "string"
-  },
-  recaptcha_response_field: {
-    type: "string"
-  }
-};
-nodeca.validate(params_schema);
+var ReCaptcha = require('nodeca.core/lib/recaptcha.js');
 
 
-/**
- * users.auth.register.exec(params, callback) -> Void
- *
- * ##### Params
- * - email(String):       Email
- * - pass(String):        Password
- * - nick(String):        Nickname
- *
- * Register new user
- *
- **/
-module.exports = function (params, next) {
-  var env = this;
-  var user;
-
-  var errors = {};
-
-  Async.series([
-    // recaptcha validation
-    function (callback) {
-      var private_key = nodeca.config.options.recaptcha.private_key;
-      var user_ip = env.request.ip;
-      var challenge = params.recaptcha_challenge_field;
-      var response = params.recaptcha_response_field;
-
-      ReCaptcha.verify(private_key, user_ip, challenge, response, function (err, result) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        // user send wrong captcha code
-        // don't customize form text, just highlight field
-        if (!result) {
-          errors['recaptcha'] = '';
-        }
-        callback();
-      });
+module.exports = function (N, apiPath) {
+  N.validate(apiPath, {
+    email: {
+      type: "string",
+      format: "email",
+      required: true
     },
-
-    // is email unique?
-    function (callback) {
-      AuthLink.findOne({ 'providers.email': params.email }).setOptions({ lean: true })
-          .exec(function (err, doc) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        // Accumulate error and continue check next params
-        if (doc) {
-          errors['email'] = env.helpers.t('users.auth.reg_form.error.email_busy');
-        }
-
-        callback();
-      });
+    pass: {
+      type: "string",
+      minLength: 8,
+      required: true
     },
-
-    // is nick unque?
-    function (callback) {
-      User.findOne({ 'nick': params.nick}).setOptions({ lean: true })
-          .exec(function (err, doc) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        // Accumulate error and continue check next params
-        if (doc) {
-          errors['nick'] = env.helpers.t('users.auth.reg_form.error.nick_busy');
-        }
-      
-        callback();
-      });
+    nick: {
+      type: "string",
+      minLength: 1,
+      required: true
+    },
+    recaptcha_challenge_field: {
+      type: "string"
+    },
+    recaptcha_response_field: {
+      type: "string"
     }
-  
-  ], function (err) {
-    if (err) {
-      next(err);
-    }
+  });
 
-    // if problem with params - return error
-    if (!_.isEmpty(errors)) {
-      next({ code: nodeca.io.BAD_REQUEST, data: errors });
-      return;
-    }
 
-    // Start creating user.
+  // Request handler
+  //
+  // ##### Params
+  // - email(String):       Email
+  // - pass(String):        Password
+  // - nick(String):        Nickname
+  //
+  N.wire.on(apiPath, function (env, callback) {
+    // model links
+    var AuthLink = N.models.users.AuthLink
+      , User = N.models.users.User
+      , params = env.params;
 
-    user = new User(params);
-    user.joined_ts = new Date();
-    user.joined_ip = env.request.ip;
-    // FIXME set groups
+    var errors = {};
 
-    user.save(function (err, user) {
-      var auth,
-          provider;
+    async.series([
+      // recaptcha validation
+      function (next) {
+        var private_key = N.config.options.recaptcha.private_key;
+        var user_ip = env.request.ip;
+        var challenge = params.recaptcha_challenge_field;
+        var response = params.recaptcha_response_field;
 
+        ReCaptcha.verify(private_key, user_ip, challenge, response, function (err, result) {
+          if (err) {
+            next(err);
+            return;
+          }
+
+          // user send wrong captcha code
+          // don't customize form text, just highlight field
+          if (!result) {
+            errors['recaptcha'] = '';
+          }
+          next();
+        });
+      },
+
+      // is email unique?
+      function (next) {
+        AuthLink.findOne({ 'providers.email': params.email }).setOptions({ lean: true })
+            .exec(function (err, doc) {
+          if (err) {
+            next(err);
+            return;
+          }
+
+          // Accumulate error and continue check next params
+          if (doc) {
+            errors['email'] = env.helpers.t('users.auth.reg_form.error.email_busy');
+          }
+
+          next();
+        });
+      },
+
+      // is nick unque?
+      function (next) {
+        User.findOne({ 'nick': params.nick}).setOptions({ lean: true })
+            .exec(function (err, doc) {
+          if (err) {
+            next(err);
+            return;
+          }
+
+          // Accumulate error and continue check next params
+          if (doc) {
+            errors['nick'] = env.helpers.t('users.auth.reg_form.error.nick_busy');
+          }
+        
+          next();
+        });
+      }
+    
+    ],
+
+    function (err) {
       if (err) {
-        next(err);
+        callback(err);
+      }
+
+      // if problem with params - return error
+      if (!_.isEmpty(errors)) {
+        callback({ code: N.io.BAD_REQUEST, data: errors });
         return;
       }
 
-      auth = new AuthLink({ 'user_id': user._id });
+      // Start creating user.
+      var new_user;
 
-      provider = auth.providers.create({
-        'type': 'plain',
-        'email': params.email
+      new_user = new User(params);
+      new_user.joined_ts = new Date();
+      new_user.joined_ip = env.request.ip;
+
+      // FIXME set groups
+
+      new_user.save(function (err, user) {
+        var auth,
+            provider;
+
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        auth = new AuthLink({ 'user_id': user._id });
+
+        provider = auth.providers.create({
+          'type': 'plain',
+          'email': params.email
+        });
+        provider.setPass(params.pass);
+
+        auth.providers.push(provider);
+
+        auth.save(callback);
       });
-      provider.setPass(params.pass);
-
-      auth.providers.push(provider);
-
-      auth.save(next());
     });
   });
 };

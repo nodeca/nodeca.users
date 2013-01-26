@@ -1,21 +1,16 @@
+// Render restore password form
+//
 "use strict";
 
-/*global nodeca*/
 
-var params_schema = {};
-nodeca.validate(params_schema);
+module.exports = function (N, apiPath) {
+  N.validate(apiPath, {
+  });
 
-
-/**
- * users.auth.login.plain/restore_show(params, callback) -> Void
- *
- * Render restore password form
- **/
-module.exports = function (params, next) {
-  var env = this;
-  var head = env.response.data.head;
-  
-  head.title = env.helpers.t('users.auth.restore_form.title');
-
-  next();
+  // Request handler
+  //
+  N.wire.on(apiPath, function (env, callback) {
+    env.response.data.head.title = env.helpers.t('users.auth.restore_form.title');
+    callback();
+  });
 };

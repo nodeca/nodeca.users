@@ -1,22 +1,16 @@
+// Render registration form
+//
 "use strict";
 
-/*global nodeca*/
 
+module.exports = function (N, apiPath) {
+  N.validate(apiPath, {
+  });
 
-var params_schema = {
-};
-nodeca.validate(params_schema);
-
-
-/**
- * users.auth.register.show(params, callback) -> Void
- *
- * Render registration form
- **/
-module.exports = function (params, next) {
-  var env = this;
-  var data = env.response.data;
-  
-  data.head.title = env.helpers.t('users.auth.reg_form.title');
-  next();
+  // Request handler
+  //
+  N.wire.on(apiPath, function (env, callback) {
+    env.response.data.head.title = env.helpers.t('users.auth.reg_form.title');
+    callback();
+  });
 };

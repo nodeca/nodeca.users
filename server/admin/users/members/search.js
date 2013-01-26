@@ -1,23 +1,14 @@
 "use strict";
 
-/*global nodeca, _*/
+
+module.exports = function (N, apiPath) {
+  N.validate(apiPath, {
+    // Fill when params available
+  });
 
 
-// Validate input parameters
-//
-var params_schema = {
-};
-nodeca.validate(params_schema);
-
-
-/**
- * admin.users.members.search(params, callback) -> Void
- *
- *
- * Search users
- *
- **/
-module.exports = function (params, next) {
-  //FIXME implement me
-  next();
+  N.wire.on(apiPath, function (env, callback) {
+    //FIXME implement me
+    callback();
+  });
 };

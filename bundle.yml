@@ -1,0 +1,23 @@
+bundles:
+  frontend:
+    - users
+
+
+packages:
+  admin:
+    server:
+      root:       "./server/admin"
+      include:    "*.js"
+      exclude:    "/(^|\\/)_.*/"
+
+  users:
+    server:
+      root:       "./server/users"
+      include:    "*.js"
+      exclude:    "/(^|\\/)_.*/"
+
+    views:
+      root:       "./views/desktop/layouts"
+      include:    "*.jade"
+      exclude:    "/(^|\\/)_.*/"
+      apiPrefix:  "layouts"

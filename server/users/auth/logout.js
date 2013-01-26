@@ -1,27 +1,21 @@
+// Logout
+//
 "use strict";
 
-/*global nodeca*/
 
+module.exports = function (N, apiPath) {
+  N.validate(apiPath, {
+  });
 
-var params_schema = {
-};
-nodeca.validate(params_schema);
+  // Request handler
+  //
+  N.wire.on(apiPath, function (env, callback) {
 
+    env.session = null;
 
-/**
- * login.email(params, next) -> Void
- *
- * ##### params
- *
- * - `email`      user email or nick
- * - `pass`       user password
- *
- * login by email provider
- **/
-module.exports = function (params, next) {
-  this.session = null;
-  next({
-    code: nodeca.io.REDIRECT,
-    head: { Location: nodeca.runtime.router.linkTo('forum.index') }
+    callback({
+      code: N.io.REDIRECT,
+      head: { Location: N.runtime.router.linkTo('forum.index') }
+    });
   });
 };

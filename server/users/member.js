@@ -1,21 +1,17 @@
 "use strict";
 
-/*global nodeca*/
 
+module.exports = function (N, apiPath) {
+  N.validate(apiPath, {
+    id: {
+      type: "integer",
+      minimum: 1,
+      required: true
+    }
+  });
 
-// Validate input parameters
-//
-var params_schema = {
-  id: {
-    type: "integer",
-    minimum: 1,
-    required: true
-  }
-};
-
-nodeca.validate(params_schema);
-
-
-module.exports = function (params, next) {
-  next();
+  N.wire.on(apiPath, function (env, callback) {
+    //FIXME implement me
+    callback();
+  });
 };

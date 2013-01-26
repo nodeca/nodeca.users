@@ -1,8 +1,7 @@
+// fetch user info, for popover (rpc only)
+//
 "use strict";
 
-/*global nodeca*/
-
-var User = nodeca.models.users.User;
 
 var user_in_fields = [
   '_id',
@@ -13,38 +12,36 @@ var user_in_fields = [
   'post_count'
 ];
 
-// Validate input parameters
-//
-var params_schema = {
-  id: {
-    type: 'string',
-    required: true
-  }
-};
-
-
-nodeca.validate(params_schema);
-
-
-// fetch user info (rpc only)
-//
-// FIXME reject for guests
-//
-// ##### params
-//
-// - `id`   User._id
-//
-module.exports = function (params, next) {
-  var data  = this.response.data;
-  var query = User.findOne({ _id: params.id }).setOptions({ lean: true });
-
-  query.select(user_in_fields.join(' ')).exec(function (err, user) {
-    if (err) {
-      next(err);
-      return;
+module.exports = function (N, apiPath) {
+  N.validate(apiPath, {
+    id: {
+      type: 'string',
+      required: true
     }
+  });
 
-    data.user = user;
-    next();
+
+  // FIXME reject for guests
+  //
+  // ##### params
+  //
+  // - `id`   User._id
+  //
+  N.wire.on(apiPath, function (env, callback) {
+
+    N.models.users.User
+        .findOne({ _id: env.params.id })
+        .setOptions({ lean: true })
+        .select(user_in_fields.join(' '))
+        .exec(function (err, user) {
+
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      env.response.data.user = user;
+      callback();
+    });
   });
 };

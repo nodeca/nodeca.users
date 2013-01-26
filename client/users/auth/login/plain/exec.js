@@ -36,7 +36,6 @@ var login_required_fields = [
  *  send login request
  **/
 module.exports = function ($form) {
-  var message;
   var params = nodeca.client.common.form.getData($form);
 
   var has_empty_fields = _.any(login_required_fields, function (field) {

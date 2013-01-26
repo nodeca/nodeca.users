@@ -21,7 +21,7 @@
  *  client.admin.users.usergroups.remove
  **/
 
-/*global confirm, nodeca, window*/
+/*global nodeca, window*/
 
 /**
  *  client.admin.users.usergroups.remove($elem, event)

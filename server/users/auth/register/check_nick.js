@@ -1,45 +1,38 @@
+// Check if nick is not occupied
+//
 "use strict";
 
-/*global nodeca, _*/
 
-var User = nodeca.models.users.User;
+var _ = require('lodash');
 
-// Validate input parameters
-//
-var params_schema = {
-  nick: {
-    type: "string",
-    minLength: 1,
-    required: true
-  }
-};
-nodeca.validate(params_schema);
 
-/**
- * users.auth.register.check_nick(params, callback) -> Void
- *
- * ##### Params
- * - nick(String):        Nickname
- *
- * Register new user
- *
- **/
-module.exports = function (params, next) {
-  var env = this;
-  User.findOne({ 'nick': params.nick}).setOptions({ lean: true })
-      .exec(function (err, doc) {
-    if (err) {
-      next(err);
-      return;
+module.exports = function (N, apiPath) {
+  N.validate(apiPath, {
+    nick: {
+      type: "string",
+      minLength: 1,
+      required: true
     }
-    if (!_.isEmpty(doc)) {
-      next({
-        code: nodeca.io.BAD_REQUEST,
-        data: { nick: env.helpers.t('users.auth.reg_form.error.nick_busy')}
-      });
-      return;
-    }
-    next();
+  });
 
+  // Request handler
+  //
+  N.wire.on(apiPath, function (env, callback) {
+
+    N.models.users.User.findOne({ 'nick': env.params.nick}).setOptions({ lean: true })
+        .exec(function (err, doc) {
+      if (err) {
+        callback(err);
+        return;
+      }
+      if (!_.isEmpty(doc)) {
+        callback({
+          code: N.io.BAD_REQUEST,
+          data: { nick: env.helpers.t('users.auth.reg_form.error.nick_busy')}
+        });
+        return;
+      }
+      callback();
+    });
   });
 };

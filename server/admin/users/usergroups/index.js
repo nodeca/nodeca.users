@@ -1,16 +1,10 @@
+// Display user groups list
+//
 "use strict";
 
-/*global nodeca*/
 
-var UserGroup = nodeca.models.users.UserGroup;
-var User      = nodeca.models.users.User;
-var Async = require('nlib').Vendor.Async;
+var async = require('async');
 
-// Validate input parameters
-//
-var params_schema = {
-};
-nodeca.validate(params_schema);
 
 var group_in_fields = [
   '_id',
@@ -18,49 +12,47 @@ var group_in_fields = [
   'is_protected'
 ];
 
-/**
- * admin.usergroups.index(params, callback) -> Void
- *
- *
- * Display group list
- *
- **/
-module.exports = function (params, next) {
-  var env = this;
 
-  env.data.usergroups = {};
-  UserGroup.find().select(group_in_fields.join(' ')).sort('_id')
-      .setOptions({ lean: true }).exec(function(err, usergroups) {
-    if (err) {
-      next(err);
-      return;
-    }
-    Async.forEachSeries(usergroups, function(group, next_group) {
-      User.count({ usergroups: group._id }, function(err, count) {
-        group.user_number = count;
-        group._id = group._id.toString();
-        env.data.usergroups[group['short_name']] = group;
+module.exports = function (N, apiPath) {
+  N.validate(apiPath, {
+  });
 
-        next_group();
-      });
-    }, next);
+  // Request handler
+  //
+  N.wire.on(apiPath, function (env, callback) {
+    var UserGroup = N.models.users.UserGroup;
+    var User      = N.models.users.User;
+
+    env.data.usergroups = {};
+    UserGroup.find().select(group_in_fields.join(' ')).sort('_id')
+        .setOptions({ lean: true }).exec(function(err, usergroups) {
+      if (err) {
+        callback(err);
+        return;
+      }
+      async.forEachSeries(usergroups, function(group, next_group) {
+        User.count({ usergroups: group._id }, function(err, count) {
+          group.user_number = count;
+          group._id = group._id.toString();
+          env.data.usergroups[group['short_name']] = group;
+
+          next_group();
+        });
+      }, callback);
+    });
+  });
+
+
+  // Put usergroups into response data
+  //
+  N.wire.after(apiPath, function _copy_data(env) {
+    env.response.data.usergroups = env.data.usergroups;
+  });
+
+
+  // Fill head meta
+  //
+  N.wire.after(apiPath, function _add_meta(env) {
+    env.response.data.head.title = env.helpers.t('admin.users.usergroups.title.index');
   });
 };
-
-
-// Put usergroups into response data
-//
-nodeca.filters.after('@', function (params, next) {
-  this.response.data.usergroups = this.data.usergroups;
-  next();
-});
-
-
-//
-// Fill head meta
-//
-nodeca.filters.after('@', function set_forum_index_breadcrumbs(params, next) {
-  this.response.data.head.title = this.helpers.t('admin.users.usergroups.title.index');
-
-  next();
-});

@@ -1,94 +1,87 @@
+// Remove user group
+//
 "use strict";
 
-/*global nodeca, _*/
 
-var UserGroup = nodeca.models.users.UserGroup;
-var User = nodeca.models.users.User;
-
-// Validate input parameters
-//
-var params_schema = {
-  _id: {
-    type: 'string',
-    required: true,
-    minLength: 24,
-    maxLength: 24
-  }
-};
-
-nodeca.validate(params_schema);
+var _ = require('lodash');
 
 
-/**
- * admin.usergroups.remove(params, callback) -> Void
- *
- * ##### Params
- * - short_name(String):        group id
- *
- * Remove user group
- *
- **/
-module.exports = function (params, next) {
-  var env = this;
-  UserGroup.findById(params._id).exec(function(err, group) {
-    if (err) {
-      next(err);
-      return;
+module.exports = function (N, apiPath) {
+  N.validate(apiPath, {
+    _id: {
+      type: 'string',
+      required: true,
+      minLength: 24,
+      maxLength: 24
     }
+  });
 
-    // not found
-    if (!group) {
-      next(nodeca.io.NOT_FOUND);
-      return;
-    }
+  // Request handler
+  //
+  N.wire.on(apiPath, function (env, callback) {
+    var UserGroup = N.models.users.UserGroup;
+    var User = N.models.users.User;
 
-    // group protected
-    if (group.is_protected) {
-      next({
-        code: nodeca.io.BAD_REQUEST,
-        data: {
-          common: env.helpers.t('admin.users.usergroups.remove.error.protected')
-        }
-      });
-      return;
-    }
-
-    // find children
-    UserGroup.find({parent: group._id}).exec(function(err, children) {
+    UserGroup.findById(env.params._id).exec(function(err, group) {
       if (err) {
-        next(err);
+        callback(err);
         return;
       }
 
-      if (!_.isEmpty(children)) {
-        next({
-          code: nodeca.io.BAD_REQUEST,
+      // not found
+      if (!group) {
+        callback(N.io.NOT_FOUND);
+        return;
+      }
+
+      // group protected
+      if (group.is_protected) {
+        callback({
+          code: N.io.BAD_REQUEST,
           data: {
-            common: env.helpers.t('admin.users.usergroups.remove.error.has_children')
+            common: env.helpers.t('admin.users.usergroups.remove.error.protected')
           }
         });
         return;
       }
- 
-      // find users associated with group
-      User.find({ usergroups: group._id })
-          .exec(function(err, users) {
+
+      // find children
+      UserGroup.find({parent: group._id}).exec(function(err, children) {
         if (err) {
-          next(err);
+          callback(err);
           return;
         }
-        if (!_.isEmpty(users)) {
-          next({
-            code: nodeca.io.BAD_REQUEST,
+
+        if (!_.isEmpty(children)) {
+          callback({
+            code: N.io.BAD_REQUEST,
             data: {
-              common: env.helpers.t('admin.users.usergroups.remove.error.not_empty')
+              common: env.helpers.t('admin.users.usergroups.remove.error.has_children')
             }
           });
           return;
         }
-        group.remove(next);
-      });
+   
+        // find users associated with group
+        User.find({ usergroups: group._id })
+            .exec(function(err, users) {
+          if (err) {
+            callback(err);
+            return;
+          }
+          if (!_.isEmpty(users)) {
+            callback({
+              code: N.io.BAD_REQUEST,
+              data: {
+                common: env.helpers.t('admin.users.usergroups.remove.error.not_empty')
+              }
+            });
+            return;
+          }
+          group.remove(callback);
+        });
 
+      });
     });
   });
 };

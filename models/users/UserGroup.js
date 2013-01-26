@@ -2,54 +2,50 @@
 
 
 /**
- *  models
- **/
-
-/**
- *  models.users
- **/
-
-
-/**
  *  class models.users.UserGroup
  *
  *  Store usergroup settings
  **/
 
-/*global nodeca*/
 
-var mongoose = nodeca.components.mongoose;
-var Schema = mongoose.Schema;
+var Mongoose = require('mongoose');
+var Schema = Mongoose.Schema;
 
+////////////////////////////////////////////////////////////////////////////////
 
-/**
- *  new models.users.UserGroup()
- *
- *  Create new odm object
- **/
-var UserGroup = module.exports.UserGroup = new Schema({
-    // user group name used in ACP and migrations
-    short_name        : String
+module.exports = function (N, collectionName) {
 
-    // parent group, all none overriden settings
-    //will be inherited from parent
-  , parent            : Schema.Types.ObjectId
+  /**
+   *  new models.users.UserGroup()
+   *
+   *  Create new odm object
+   **/
+  var UserGroup = module.exports.UserGroup = new Schema({
+      // user group name used in ACP and migrations
+      short_name        : String
 
-    // can by deleted?
-  , is_protected      : { type: Boolean, default: false }
+      // parent group, all none overriden settings
+      //will be inherited from parent
+    , parent            : Schema.Types.ObjectId
 
-    // restrictive groups makes "forced" settings.
-    // mostly used to "remove" some rights of  group (e.g. restrict posting)
-  , is_forced         : { type: Boolean, default: false }
+      // can by deleted?
+    , is_protected      : { type: Boolean, default: false }
 
-    // belong to only this group settings (overriden)
-  , raw_settings      : { type: Schema.Types.Mixed, default: {}}
+      // restrictive groups makes "forced" settings.
+      // mostly used to "remove" some rights of  group (e.g. restrict posting)
+    , is_forced         : { type: Boolean, default: false }
 
-    // result setting(considering inherited and defaults)
-    // Note: only store can write to this property
-  , settings          : { type: Schema.Types.Mixed, default: {}}
-});
+      // belong to only this group settings (overriden)
+    , raw_settings      : { type: Schema.Types.Mixed, default: {}}
 
-module.exports.__init__ = function __init__() {
-  return mongoose.model('users.UserGroup', UserGroup);
+      // result setting(considering inherited and defaults)
+      // Note: only store can write to this property
+    , settings          : { type: Schema.Types.Mixed, default: {}}
+  });
+
+  UserGroup.__init__ = function __init__() {
+    return Mongoose.model(collectionName, UserGroup);
+  };
+
+  return UserGroup;
 };

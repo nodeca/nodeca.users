@@ -3,9 +3,9 @@
 
 "use strict";
 
-/*global nodeca*/
+/*global N*/
 
-var redback = nodeca.components.redback;
+var redback = N.runtime.redback;
 
 // Global invalid login attempts, trace 60 attempts / 60 seconds.
 // Used to avoid CPU overload by bcrypt: just force user to enter captcha

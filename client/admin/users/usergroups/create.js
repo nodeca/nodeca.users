@@ -22,7 +22,7 @@
  **/
 
 
-/*global nodeca, window, _*/
+/*global nodeca, _*/
 
 var white_list = ['short_name', 'parent'];
 var params_mask = 's_';
