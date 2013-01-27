@@ -1,3 +1,8 @@
+bundles:
+  frontend:
+    - users
+
+
 packages:
   admin:
     client:
@@ -16,7 +21,6 @@ packages:
 
     styles:
       root:       "./client/admin"
-      main:       "app.styl"
       include:    "*.styl"
 
     server:
