@@ -4,60 +4,79 @@ bundles:
 
 
 packages:
+  #admin:
+  #  client:
+  #    root:       "./client/admin"
+  #    include:    "*.js"
+  #    exclude:    "/(^|\\/)_.*/"
+
+  #  views:
+  #    root:       "./client/admin"
+  #    include:    "*.jade"
+  #    exclude:    "/(^|\\/)_.*/"
+
+  #  i18n_client:
+  #    root:       "./client/admin"
+  #    include:    "i18n/*.yml"
+
+  #  styles:
+  #    root:       "./client/admin"
+  #    include:    "*.styl"
+
+  #  server:
+  #    root:       "./server/admin"
+  #    include:    "*.js"
+  #    exclude:    "/(^|\\/)_.*/"
+
+  #  i18n_server:
+  #    root:       "./server/admin"
+  #    include:    "i18n/*.yml"
+
+
+  #users:
+  #  client:
+  #    root:       "./client/users"
+  #    include:    "*.js"
+  #    exclude:    "/(^|\\/)_.*/"
+
+  #  views:
+  #    root:       "./client/users"
+  #    include:    "*.jade"
+  #    exclude:    "/(^|\\/)_.*/"
+
+  #  i18n_client:
+  #    root:       "./client/users"
+  #    include:    "i18n/*.yml"
+
+  #  styles:
+  #    root:       "./client/users"
+  #    main:       "app.styl"
+  #    include:    "*.styl"
+
+  #  server:
+  #    root:       "./server/users"
+  #    include:    "*.js"
+  #    exclude:    "/(^|\\/)_.*/"
+
+  #  i18n_server:
+  #    root:       "./server/users"
+  #    include:    "i18n/*.yml"
+
+
   admin:
-    client:
-      root:       "./client/admin"
-      include:    "*.js"
-      exclude:    "/(^|\\/)_.*/"
-
-    views:
-      root:       "./client/admin"
-      include:    "*.jade"
-      exclude:    "/(^|\\/)_.*/"
-
-    i18n_client:
-      root:       "./client/admin"
-      include:    "i18n/*.yml"
-
-    styles:
-      root:       "./client/admin"
-      include:    "*.styl"
-
     server:
       root:       "./server/admin"
       include:    "*.js"
       exclude:    "/(^|\\/)_.*/"
-
-    i18n_server:
-      root:       "./server/admin"
-      include:    "i18n/*.yml"
-
 
   users:
-    client:
-      root:       "./client/users"
-      include:    "*.js"
-      exclude:    "/(^|\\/)_.*/"
-
-    views:
-      root:       "./client/users"
-      include:    "*.jade"
-      exclude:    "/(^|\\/)_.*/"
-
-    i18n_client:
-      root:       "./client/users"
-      include:    "i18n/*.yml"
-
-    styles:
-      root:       "./client/users"
-      main:       "app.styl"
-      include:    "*.styl"
-
     server:
       root:       "./server/users"
       include:    "*.js"
       exclude:    "/(^|\\/)_.*/"
 
-    i18n_server:
-      root:       "./server/users"
-      include:    "i18n/*.yml"
+    views:
+      root:       "./views/desktop/layouts"
+      include:    "*.jade"
+      exclude:    "/(^|\\/)_.*/"
+      apiPrefix:  "layouts"
