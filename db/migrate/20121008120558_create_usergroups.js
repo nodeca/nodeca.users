@@ -1,13 +1,12 @@
 "use strict";
 
-/*global N*/
 
 var async = require('async');
 
 
-var models = N.models;
+module.exports.up = function (N, cb) {
+  var models = N.models;
 
-module.exports.up = function (cb) {
   // FIXME implement sets of real group items
   async.forEachSeries(['administrators','members','guests'],
     function(current_group, next_group) {
