@@ -124,9 +124,12 @@ module.exports = function (N, collectionName) {
   });
 
 
-  AuthLink.__init__ = function __init__() {
-    return Mongoose.model(collectionName, AuthLink);
-  };
+  N.wire.on("init:models", function emit_init_AuthLink(__, callback) {
+    N.wire.emit("init:models." + collectionName, AuthLink, callback);
+  });
 
-  return AuthLink;
+  N.wire.on("init:models." + collectionName, function init_model_AuthLink(schema, callback) {
+    N.models[collectionName] = Mongoose.model(collectionName, schema);
+    callback();
+  });
 };

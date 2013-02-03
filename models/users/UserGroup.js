@@ -43,9 +43,12 @@ module.exports = function (N, collectionName) {
     , settings          : { type: Schema.Types.Mixed, default: {}}
   });
 
-  UserGroup.__init__ = function __init__() {
-    return Mongoose.model(collectionName, UserGroup);
-  };
+  N.wire.on("init:models", function emit_init_UserGroup(__, callback) {
+    N.wire.emit("init:models." + collectionName, UserGroup, callback);
+  });
 
-  return UserGroup;
+  N.wire.on("init:models." + collectionName, function init_model_UserGroup(schema, callback) {
+    N.models[collectionName] = Mongoose.model(collectionName, schema);
+    callback();
+  });
 };
