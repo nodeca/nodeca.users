@@ -14,7 +14,7 @@ module.exports = function (N, apiPath) {
   // Inject flag to show captcha field, if needed (when too many failed attempt)
   // See server.login.plain.exec() for details
   //
-  N.wire.before('apiPath', function login_inject_captcha(env, callback) {
+  N.wire.before(apiPath, function login_inject_captcha(env, callback) {
     var user_ip = env.request.ip;
    
     rate.ip.count(user_ip, function (err, high) {
