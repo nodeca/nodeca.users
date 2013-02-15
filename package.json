@@ -14,8 +14,8 @@
   "main"            : "./index.js",
 
   "devDependencies" : {
-                        "chai"    : "~ 1.4.0",
-                        "mocha"   : "~ 1.7.0",
+                        "chai"    : "*",
+                        "mocha"   : "*",
                         "jshint"  : "*"
                       },
   "engines"         : { "node": ">= 0.6.0" }
