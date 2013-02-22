@@ -82,7 +82,7 @@ packages:
 
   users:
     depends:
-      - lib
+      - common
 
     client:
       root:       "./client/users"
