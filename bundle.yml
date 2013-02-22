@@ -81,6 +81,9 @@ packages:
 
 
   users:
+    depends:
+      - lib
+
     client:
       root:       "./client/users"
       include:    "*.js"
