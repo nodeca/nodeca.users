@@ -41,7 +41,7 @@ module.exports = function ($elem) {
   }
   else {
     // FIXME Ask server inherited setting value
-    
+
     // toggle control group class to inherited
     $('div#cg_' + setting_name).addClass('inherited');
     $('div#cg_' + setting_name).removeClass('overriden');

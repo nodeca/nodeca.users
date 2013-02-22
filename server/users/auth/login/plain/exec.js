@@ -92,7 +92,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function login_ip_rate_limit(env, callback) {
     var user_ip = env.request.ip;
-   
+
     rate.ip.count(user_ip, function (err, high) {
       if (err) {
         callback(err);

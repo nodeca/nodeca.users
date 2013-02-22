@@ -15,7 +15,7 @@ module.exports = function (N, apiPath) {
     },
     parent: {
       type: 'string',
-      default: null,
+      'default': null,
       minLength: 24,
       maxLength: 24
     }

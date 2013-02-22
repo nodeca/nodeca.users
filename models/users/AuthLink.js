@@ -28,7 +28,7 @@ var bcrypt = require('bcrypt');
 
 module.exports = function (N, collectionName) {
 
-  
+
   // Provider sub-document schema
   //
   var AuthProvider = new Schema({

@@ -61,7 +61,7 @@ module.exports = function (N, apiPath) {
           });
           return;
         }
-   
+
         // find users associated with group
         User.find({ usergroups: group._id })
             .exec(function(err, users) {

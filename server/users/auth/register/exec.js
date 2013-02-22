@@ -105,11 +105,11 @@ module.exports = function (N, apiPath) {
           if (doc) {
             errors['nick'] = env.helpers.t('users.auth.reg_form.error.nick_busy');
           }
-        
+
           next();
         });
       }
-    
+
     ],
 
     function (err) {
