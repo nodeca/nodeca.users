@@ -1,0 +1,23 @@
+en-US:
+  index:
+    title: Manage user groups
+
+  add:
+    title: Create new group
+
+  create:
+    error:
+     short_name_busy: This name is occupied, select another one.
+
+  edit:
+    title: "Edit group: #{name}"
+
+  update:
+    error:
+      circular_dependency: Can't inherit this parent (circular dependency)
+
+  remove:
+    error:
+      protected: This group can't be deleted.
+      not_empty: Can't delete not empty group
+      has_children: "Group '#{name}' depends on this one. Please, resolve dependency prior to remove."

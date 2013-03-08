@@ -1,0 +1,27 @@
+//-include ./partials/_display_value
+
+#content
+  form.form-horizontal(data-on-submit='admin.users.usergroups.update')
+    - self.errors = self.errors || {}
+    - var _input_help_text
+
+    legend
+      h1 #{self.head.title}
+
+    .cg-head
+
+      input(type="hidden", name='_id', value=self.current._id)
+
+      != self.partial('@admin.users.blocks.parent_group_select')
+      != self.partial('@admin.users.blocks.settings_filter')
+
+
+    - each category, category_name in self.settings_categories
+
+      legend #{self.t('@admin.setting.category.' + category_name)}
+      //-- each item, item_name in category
+      //-  mixin display_value(item_name, item)
+
+
+    .form-actions
+      button.btn.btn-primary.btn-large(type='submit') #{self.t('save')}

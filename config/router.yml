@@ -18,12 +18,12 @@ router:
         _id: /\w+/
 
     admin.users.members.search:
-      "/members/search": ~
+      "/members": ~
 
     users.auth.login.show:
       "/auth/login": ~
 
-    users.auth.logout:
+    users.auth.logout.exec:
       "/auth/logout": ~
 
     users.auth.register.show:

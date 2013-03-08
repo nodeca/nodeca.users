@@ -1,0 +1,4 @@
+en-US:
+  login: login
+  register: register
+  logout: Exit

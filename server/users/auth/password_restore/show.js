@@ -1,4 +1,4 @@
-// Render registration form
+// Render restore password form
 //
 "use strict";
 

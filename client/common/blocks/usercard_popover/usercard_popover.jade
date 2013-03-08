@@ -1,0 +1,29 @@
+#usercard_popover.ucard-inner(id=self.popover_id)
+  - if (self.loading)
+    .progress: span= self.t('loading')
+  - else 
+    .ucard-head.cleafix #{self._uname}
+    aside.ucard-sidebar
+      a.ucard-avatar(href='#')
+        img.av-l(alt='#{self._uname}',src='http://lorempixel.com/150/150/sports/a' + '#{self.id}')
+
+      a.btn.btn-mini.btn-block= self.t('find_posts')  
+      a.btn.btn-mini.btn-block= self.t('send_message')  
+
+    .ucard-info
+      dl.dl-horizontal
+
+        dt Age
+        dd 32
+
+        dt City
+        dd Honolulu
+
+        dt Member since
+        dd #{self.date(self.joined_ts, 'date')}
+
+        dt Total posts
+        dd 678
+
+        dt Last active
+        dd Now
