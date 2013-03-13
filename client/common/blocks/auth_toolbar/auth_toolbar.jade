@@ -1,9 +1,9 @@
 #auth_toolbar
-  - if (self.runtime.is_member)
+  - if (self.is_member)
     ul.nav.pull-right
       li.dropdown
         a.dropdown-toggle.icon-user(href='#', data-toggle='dropdown')
-          | #{self.runtime.user_name}
+          | #{self.user_name}
           b.caret
         ul.dropdown-menu
           li: a(href='#') Admin
