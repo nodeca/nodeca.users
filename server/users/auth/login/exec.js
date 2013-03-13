@@ -57,7 +57,7 @@ module.exports = function (N, apiPath) {
           if (!user) {
             callback({
               code: N.io.APP_ERROR,
-              data: env.helpers.t(env.method + '.error.auth_user_broken')
+              data: env.helpers.t('users.auth.login.exec.error.auth_user_broken')
             });
             return;
           }
@@ -109,7 +109,7 @@ module.exports = function (N, apiPath) {
         callback({
           code: N.io.BAD_REQUEST,
           data: {
-            common: env.helpers.t(env.method, '.error.too_many_attempts')
+            common: env.helpers.t('users.auth.login.exec.error.too_many_attempts')
           }
         });
         return;
@@ -206,7 +206,7 @@ module.exports = function (N, apiPath) {
       var provider;
       var login_error = {
         code: N.io.BAD_REQUEST,
-        data: { common: env.helpers.t(env.method + '.error.login_failed') }
+        data: { common: env.helpers.t('users.auth.login.exec.error.login_failed') }
       };
 
       if (err) {

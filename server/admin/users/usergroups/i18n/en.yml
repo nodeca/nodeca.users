@@ -7,7 +7,7 @@ en-US:
 
   create:
     error:
-     short_name_busy: This name is occupied, select another one.
+      short_name_busy: This name is occupied, select another one.
 
   edit:
     title: "Edit group: #{name}"

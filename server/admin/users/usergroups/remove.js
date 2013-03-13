@@ -39,7 +39,7 @@ module.exports = function (N, apiPath) {
         callback({
           code: N.io.BAD_REQUEST,
           data: {
-            common: env.helpers.t(env.method + '.error.protected')
+            common: env.helpers.t('admin.users.usergroups.remove.error.protected')
           }
         });
         return;
@@ -56,7 +56,7 @@ module.exports = function (N, apiPath) {
           callback({
             code: N.io.BAD_REQUEST,
             data: {
-              common: env.helpers.t(env.method + '.error.has_children')
+              common: env.helpers.t('admin.users.usergroups.remove.error.has_children')
             }
           });
           return;
@@ -73,7 +73,7 @@ module.exports = function (N, apiPath) {
             callback({
               code: N.io.BAD_REQUEST,
               data: {
-                common: env.helpers.t(env.method + '.error.not_empty')
+                common: env.helpers.t('admin.users.usergroups.remove.error.not_empty')
               }
             });
             return;

@@ -49,8 +49,7 @@
             span.help-block #{_input_help_text}
               
 
-      //- TODO: This
-      //-include ../../../common/recaptcha
+      != self.partial('@common.blocks.recaptcha', { public_key: self.runtime.recaptcha.public_key, errors: self.errors ? self.errors.recaptcha : null })
 
       .control-group
         .controls

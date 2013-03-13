@@ -1,18 +1,17 @@
-#auth_toolbar
-  - if (self.is_member)
-    ul.nav.pull-right
-      li.dropdown
-        a.dropdown-toggle.icon-user(href='#', data-toggle='dropdown')
-          | #{self.user_name}
-          b.caret
-        ul.dropdown-menu
-          li: a(href='#') Admin
-          li.divider
-          li: a(href=self.link_to('users.profile'))= self.t('profile')
-          li: a.icon-check(href='#') No images (fast)
-          li.divider
-          li: a(href=self.link_to('users.auth.logout.exec'))= self.t('logout')
-  - else
-    ul.nav.pull-right
-      li: a(href=self.link_to('users.auth.login.show'))= self.t('login')
-      li: a(href=self.link_to('users.auth.register.show'))= self.t('register')
+- if (self.is_member)
+  ul.nav.pull-right
+    li.dropdown
+      a.dropdown-toggle.icon-user(href='#', data-toggle='dropdown')
+        | #{self.user_name}
+        b.caret
+      ul.dropdown-menu
+        li: a(href='#') Admin
+        li.divider
+        li: a(href=self.link_to('users.profile'))= self.t('profile')
+        li: a.icon-check(href='#') No images (fast)
+        li.divider
+        li: a(href=self.link_to('users.auth.logout.exec'))= self.t('logout')
+- else
+  ul.nav.pull-right
+    li: a(href=self.link_to('users.auth.login.show'))= self.t('login')
+    li: a(href=self.link_to('users.auth.register.show'))= self.t('register')

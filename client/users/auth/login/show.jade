@@ -27,9 +27,8 @@
             input.span12(id='lgn_pass', name='pass', type='password', value=self.pass)
 
       //- show captcha only when rate limit reached or captcha error in previous request
-      //- TODO: This.
-      //-- if (self.captcha_required || (self.errors && ('recaptcha' in self.errors)))
-      //-  include ../../../common/recaptcha
+      - if (self.captcha_required || (self.errors && self.errors.recaptcha))
+        != self.partial('@common.blocks.recaptcha', { public_key: self.runtime.recaptcha.public_key, errors: self.errors.recaptcha })
 
       .control-group
         .controls

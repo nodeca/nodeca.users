@@ -89,7 +89,7 @@ module.exports = function (N, apiPath) {
   // Fill head meta
   //
   N.wire.after(apiPath, function _add_meta(env) {
-    env.response.data.head.title = env.helpers.t(env.method + '.title', {
+    env.response.data.head.title = env.helpers.t('admin.users.usergroups.edit.title', {
       name: env.data.current.short_name
     });
   });

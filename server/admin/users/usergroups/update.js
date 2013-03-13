@@ -136,7 +136,7 @@ module.exports = function (N, apiPath) {
           callback({
             code: N.io.BAD_REQUEST,
             data: {
-              common: env.helpers.t(env.method + '.error.circular_dependency')
+              common: env.helpers.t('admin.users.usergroups.update.error.circular_dependency')
             }
           });
           return;

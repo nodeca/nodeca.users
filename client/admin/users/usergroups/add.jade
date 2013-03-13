@@ -1,5 +1,3 @@
-//-include ./partials/_display_value
-
 #content
   form.form-horizontal(data-on-submit='admin.users.usergroups.create')
     - var _input_help_text
@@ -25,8 +23,8 @@
     - each category, category_name in self.settings_categories
 
       legend #{self.t('@admin.setting.category.' + category_name)}
-      //-- each item, item_name in category
-      //-  mixin display_value(item_name, item)
+      - each item, item_name in category
+        != self.partial('@admin.users.blocks.display_value', { name: item_name, item: item })
 
 
     .form-actions

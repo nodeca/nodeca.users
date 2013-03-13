@@ -6,7 +6,6 @@ en-US:
     error:
       email_busy: This email already exists
       nick_busy: This nick already exists
-      auth_user_broken: User info broken. Please, contact admin.
 
   check_nick:
     nick_busy: This nick already exists
