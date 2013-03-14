@@ -1,0 +1,13 @@
+en-US:
+  show:
+    title: Login
+
+  exec:
+    error:
+      login_failed:
+        Can't login. Check, that your email and password are correct and try again.
+        Or use link below to reset your password.
+      not_filled: Please, fill all fields.
+      too_many_attempts:
+        Too many login attempts. Please, wait 5 minutes before next retry.
+      auth_user_broken: User info broken. Please, contact admin.

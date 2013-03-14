@@ -1,0 +1,56 @@
+#content.row
+  .span8.offset2.well.well-form
+    form.form-horizontal(data-on-submit='users.auth.register.exec')
+
+      legend
+        small.pull-right: a(href=self.link_to('users.auth.login.show')) #{self.t('login')}
+        | #{self.t('title')}
+
+
+      - self.errors = self.errors || {}
+      - var _status_class, _input_help_text
+
+
+      - _status_class = ('email' in self.errors) ? 'error' : ''
+      - _input_help_text = (self.errors.email) ? self.errors.email : self.t('email_help')
+
+      .control-group(class=_status_class)
+        label.control-label(for='reg_eml') #{self.t('email')}
+        .controls
+          .row-fluid
+            input.span12(id='reg_eml', name='email', type='email', value=self.email)
+            span.help-block #{_input_help_text}
+
+
+      - _status_class = ('pass' in self.errors) ? 'error' : ''
+      - _input_help_text = (self.errors.pass) ? self.errors.pass : self.t('password_help')
+
+      .control-group(class=_status_class)
+        label.control-label(for='reg_pass') #{self.t('password')}
+        .controls
+          .row-fluid
+            input.span12(id='reg_pass', name='pass', type='password', value=self.pass)
+            span.help-block #{_input_help_text}
+
+
+      - _status_class = ('nick' in self.errors) ? 'error' : ''
+      - _input_help_text = (self.errors.nick) ? self.errors.nick : self.t('nick_help')
+
+      .control-group(class=_status_class)
+        label.control-label(for='reg_nick') #{self.t('nick')}
+        .controls
+          .row-fluid
+            input.span12(
+              id='reg_nick',
+              name='nick',
+              type='text',
+              value=self.nick,
+              data-on-input='check_nick')
+            span.help-block #{_input_help_text}
+              
+
+      != self.partial('@common.blocks.recaptcha', { public_key: self.runtime.recaptcha.public_key, errors: self.errors ? self.errors.recaptcha : null })
+
+      .control-group
+        .controls
+          button.btn.btn-primary.btn-large(type='submit') #{self.t('register')}

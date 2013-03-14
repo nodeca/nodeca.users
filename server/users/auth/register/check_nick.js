@@ -28,7 +28,7 @@ module.exports = function (N, apiPath) {
       if (!_.isEmpty(doc)) {
         callback({
           code: N.io.BAD_REQUEST,
-          data: { nick: env.helpers.t('users.auth.reg_form.error.nick_busy')}
+          data: { nick: env.helpers.t('users.auth.register.check_nick.nick_busy')}
         });
         return;
       }

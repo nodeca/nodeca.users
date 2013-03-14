@@ -59,7 +59,7 @@ module.exports = function (N, apiPath) {
         callback({
           code: N.io.BAD_REQUEST,
           data: {
-            common: env.helpers.t('admin.users.usergroups.edit.error.short_name_busy')
+            common: env.helpers.t('admin.users.usergroups.create.error.short_name_busy')
           }
         });
         return;

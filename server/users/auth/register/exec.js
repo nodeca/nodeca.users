@@ -85,7 +85,7 @@ module.exports = function (N, apiPath) {
 
           // Accumulate error and continue check next params
           if (doc) {
-            errors['email'] = env.helpers.t('users.auth.reg_form.error.email_busy');
+            errors['email'] = env.helpers.t('users.auth.register.exec.error.email_busy');
           }
 
           next();
@@ -103,7 +103,7 @@ module.exports = function (N, apiPath) {
 
           // Accumulate error and continue check next params
           if (doc) {
-            errors['nick'] = env.helpers.t('users.auth.reg_form.error.nick_busy');
+            errors['nick'] = env.helpers.t('users.auth.register.exec.error.nick_busy');
           }
 
           next();

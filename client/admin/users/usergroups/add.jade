@@ -1,0 +1,31 @@
+#content
+  form.form-horizontal(data-on-submit='admin.users.usergroups.create')
+    - var _input_help_text
+
+    legend
+      h1 #{self.head.title}
+
+    - _input_help_text = self.t('short_name_help')
+
+    .cg-head
+
+      .control-group
+        label.control-label(for='short_name') #{self.t('short_name_title')}
+        .controls
+          .row-fluid
+            input(type="text", name='short_name')
+            span.help-block #{_input_help_text}
+
+      != self.partial('@admin.users.blocks.parent_group_select')
+      != self.partial('@admin.users.blocks.settings_filter')
+
+
+    - each category, category_name in self.settings_categories
+
+      legend #{self.t('@admin.setting.category.' + category_name)}
+      - each item, item_name in category
+        != self.partial('@admin.users.blocks.display_value', { name: item_name, item: item })
+
+
+    .form-actions
+      button.btn.btn-primary.btn-large(type='submit') #{self.t('create')}

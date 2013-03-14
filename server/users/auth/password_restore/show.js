@@ -1,4 +1,4 @@
-// Show success registration page
+// Render restore password form
 //
 "use strict";
 
@@ -10,7 +10,7 @@ module.exports = function (N, apiPath) {
   // Request handler
   //
   N.wire.on(apiPath, function (env, callback) {
-    env.response.data.head.title = env.helpers.t('users.auth.register.success.title');
+    env.response.data.head.title = env.helpers.t('users.auth.password_restore.show.title');
     callback();
   });
 };

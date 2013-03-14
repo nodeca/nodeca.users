@@ -1,0 +1,7 @@
+en-US:
+  show:
+    register: Register
+    email: "Email (or nickname)"
+    password: Password
+    enter: Login
+    forgot: forgot?
