@@ -1,6 +1,11 @@
 'use strict';
 
-/*global $, nodeca*/
+/*global N, document*/
+
+
+var _ = require('lodash');
+var $ = require('jquery');
+
 
 var DELAY       = 500;  // Time in ms before showing an info card
 var TIMEOUT     = null; // Timeout ID used to interrupt previous timeout if any
@@ -8,19 +13,12 @@ var POPOVER_IDX = 0;    // Popover counters used to generate unique IDs
 
 
 // Returns user info card from cache.
-// Request from server if it's not yet cahed or cache outdated.
+// Request from server if it's not yet cached or cache outdated.
 //
 function getUserInfo(id, callback) {
-  nodeca.io.apiTree('users.usercard_popover', { id: id }, function (err, resp) {
+  N.io.rpc('common.blocks.usercard_popover', { id: id }, function (err, resp) {
     callback(err ? null : (resp.data || {}).user);
   });
-}
-
-
-// Dummy helper to render usercard_popover view with given data
-//
-function render(data) {
-  return nodeca.client.common.render.template('common.widgets.usercard_popover', data);
 }
 
 
@@ -35,22 +33,25 @@ $.fn.powerTip.smartPlacementLists.usercard = [
 ////////////////////////////////////////////////////////////////////////////////
 
 
-module.exports = function active_profiles() {
-  $('body').on('hover.nodeca.data-api', '.usercard-popover', function (event) {
+$(document).ready(function () {
+  $('body').on('mouseenter.nodeca.data-api', '.usercard-popover', function () {
     var $this = $(this),
         id    = $this.data('user-id'),
         card  = $this.data('powertip');
 
     clearTimeout(TIMEOUT);
 
-    if (!id || 'mouseleave' === event.type || card) {
+    if (!id || card) {
       return;
     }
 
     TIMEOUT = setTimeout(function () {
       var popover_id = 'usercard_popover_' + POPOVER_IDX++;
 
-      $this.data('powertip', render({ popover_id: popover_id, loading: true }));
+      $this.data('powertip', N.runtime.render('common.blocks.usercard_popover', {
+        popover_id: popover_id,
+        loading: true
+      }));
 
       // assign powertip handlers
       $this.powerTip({
@@ -77,7 +78,9 @@ module.exports = function active_profiles() {
           return;
         }
 
-        html = render($.extend(data, { popover_id: popover_id }));
+        html = N.runtime.render('common.blocks.usercard_popover', _.extend(data, {
+          popover_id: popover_id
+        }));
 
         // set powertip contents
         $this.data('powertip', html);
@@ -89,4 +92,4 @@ module.exports = function active_profiles() {
       });
     }, DELAY);
   });
-};
+});
