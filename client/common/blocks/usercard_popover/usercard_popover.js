@@ -16,7 +16,7 @@ var POPOVER_IDX = 0;    // Popover counters used to generate unique IDs
 // Request from server if it's not yet cached or cache outdated.
 //
 function getUserInfo(id, callback) {
-  N.io.rpc('common.blocks.usercard_popover', { id: id }, function (err, resp) {
+  N.io.rpc(module.apiPath, { id: id }, function (err, resp) {
     callback(err ? null : (resp.data || {}).user);
   });
 }
@@ -48,7 +48,7 @@ $(document).ready(function () {
     TIMEOUT = setTimeout(function () {
       var popover_id = 'usercard_popover_' + POPOVER_IDX++;
 
-      $this.data('powertip', N.runtime.render('common.blocks.usercard_popover', {
+      $this.data('powertip', N.runtime.render(module.apiPath, {
         popover_id: popover_id,
         loading: true
       }));
@@ -78,7 +78,7 @@ $(document).ready(function () {
           return;
         }
 
-        html = N.runtime.render('common.blocks.usercard_popover', _.extend(data, {
+        html = N.runtime.render(module.apiPath, _.extend(data, {
           popover_id: popover_id
         }));
 
