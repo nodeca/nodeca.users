@@ -1,6 +1,6 @@
 'use strict';
 
-/*global N, window, document*/
+/*global N, window*/
 
 
 var _ = require('lodash');
