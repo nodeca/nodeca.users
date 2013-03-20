@@ -33,7 +33,7 @@ $.fn.powerTip.smartPlacementLists.usercard = [
 ////////////////////////////////////////////////////////////////////////////////
 
 
-$(document).ready(function () {
+$(function () {
   $('body').on('mouseenter.nodeca.data-api', '.usercard-popover', function () {
     var $this = $(this),
         id    = $this.data('user-id'),
