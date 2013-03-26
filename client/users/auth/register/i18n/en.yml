@@ -5,9 +5,11 @@ en-US:
     password: Password
     password_help: "Must contain both digits and letters (other symbols also possible). Also, should have > 8 symbols."
     nick: Nickname
-    nick_help: How to show you on forum
     login: Login
     register: Register
+
+  check_nick:
+    nick_help: How to show you on forum
 
   success:
     confirm_email:
