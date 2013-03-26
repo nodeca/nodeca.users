@@ -5,3 +5,4 @@ en-US:
     password: Password
     enter: Login
     forgot: forgot?
+    not_filled: Please fill this field
