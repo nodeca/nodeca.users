@@ -1,27 +1,32 @@
 #content
-  div
-    .pull-right
-      a.btn.btn-large.btn-primary(href=self.link_to('admin.users.usergroups.add'))
-        | #{self.t('add')}
-    h1 #{self.head.title}
+  != self.partial('@admin.blocks.sidebar_menu', { apiPath: self.head.apiPath, menu: self.menus.admin })
 
-  table.table.table-hover
-    thead
-      tr
-        th #{self.t('group_name')}
-        th #{self.t('members_count')}
-        th
+  .main
+    != self.partial('@admin.blocks.breadcrumbs', { apiPath: self.head.apiPath, menu: self.menus.admin })
 
-    - each group, group_name in self.usergroups
-      tr
-        td
-          a.icon-edit(href=self.link_to('admin.users.usergroups.edit', { _id: group._id }),
-            title=self.t('edit')
-            )= group_name
-        td: a(href=self.link_to('admin.users.members.search')) #{group.user_number}
-        td
-          - if (!group.is_protected)
-            a.pull-right(
-              data-on-click='admin.users.usergroups.remove',
-              data-usergroup-id=group._id)
-              | #{self.t('remove')}
+    div
+      .pull-right
+        a.btn.btn-large.btn-primary(href=self.link_to('admin.users.usergroups.add'))
+          | #{self.t('add')}
+      h1 #{self.head.title}
+
+    table.table.table-hover
+      thead
+        tr
+          th #{self.t('group_name')}
+          th #{self.t('members_count')}
+          th
+
+      - each group, group_name in self.usergroups
+        tr
+          td
+            a.icon-edit(href=self.link_to('admin.users.usergroups.edit', { _id: group._id }),
+              title=self.t('edit')
+              )= group_name
+          td: a(href=self.link_to('admin.users.members.search')) #{group.user_number}
+          td
+            - if (!group.is_protected)
+              a.pull-right(
+                data-on-click='admin.users.usergroups.remove',
+                data-usergroup-id=group._id)
+                | #{self.t('remove')}
