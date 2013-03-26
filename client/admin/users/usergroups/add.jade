@@ -21,7 +21,7 @@
               input(type="text", name='short_name')
               span.help-block #{_input_help_text}
 
-        != self.partial('@admin.users.blocks.parent_group_select')
+        != self.partial('@admin.users.blocks.parent_group_select', { usergroups: self.usergroups, current: self.current })
         != self.partial('@admin.users.blocks.settings_filter')
 
 
