@@ -36,7 +36,7 @@ N.wire.on(module.apiPath, function usergroup_edit(event) {
     if (err) {
       if (N.io.BAD_REQUEST === err.code) {
         // add errors
-        N.wire.emit('lib.notification', err.data.common);
+        N.wire.emit('notify', err.data.common);
       } else {
         // no need for fatal errors notifications as it's done by io automagically
         N.logger.error(err);
@@ -44,6 +44,6 @@ N.wire.on(module.apiPath, function usergroup_edit(event) {
       return;
     }
 
-    N.wire.emit('lib.notification', { type: 'info', message: t('saved') });
+    N.wire.emit('notify', { type: 'info', message: t('saved') });
   });
 });

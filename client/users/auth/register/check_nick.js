@@ -30,7 +30,7 @@ N.wire.on(module.apiPath, function register_check_nick(event) {
           $control_group.find('.help-block').text(err.message['nick']);
         } else {
           // something fatal
-          N.wire.emit('lib.notification', err.message);
+          N.wire.emit('notify', err.message);
         }
         return;
       }

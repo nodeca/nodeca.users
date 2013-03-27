@@ -47,7 +47,7 @@ N.wire.on(module.apiPath, function usergroup_add(event) {
           // error from revalidator
           err_message = err.message;
         }
-        N.wire.emit('lib.notification', err_message);
+        N.wire.emit('notify', err_message);
       } else {
         // no need for fatal errors notifications as it's done by io automagically
         N.logger.error(err);
@@ -55,6 +55,6 @@ N.wire.on(module.apiPath, function usergroup_add(event) {
       return;
     }
 
-    N.wire.emit('lib.notification', { type: 'info', message: t('created') });
+    N.wire.emit('notify', { type: 'info', message: t('created') });
   });
 });
