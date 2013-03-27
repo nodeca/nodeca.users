@@ -6,10 +6,6 @@
 'use strict';
 
 
-/*global N, t, window*/
-
-
-var $ = window.jQuery;
 var notify = require('nodeca.core/client/common/_notify');
 
 
@@ -39,11 +35,12 @@ N.wire.on(module.apiPath, function register_check_nick(event) {
           // something fatal
           notify('error', err.message);
         }
-      } else {
-        // no errors -> restore defaults
-        $control_group.removeClass('error');
-        $control_group.find('.help-block').text(t('nick_help'));
+        return;
       }
+
+      // no errors -> restore defaults
+      $control_group.removeClass('error');
+      $control_group.find('.help-block').text(t('nick_help'));
     });
   }, DELAY);
 });

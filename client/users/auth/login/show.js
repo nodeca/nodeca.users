@@ -6,11 +6,7 @@
 'use strict';
 
 
-/*global N, t, window*/
-
-
 var _ = require('lodash');
-var $ = window.jQuery;
 var getFormData = require('nodeca.core/client/common/_get_form_data');
 
 
@@ -49,8 +45,9 @@ N.wire.on(module.apiPath, function login(event) {
         // no need for fatal errors notifications as it's done by io automagically
         N.logger.error(err);
       }
-    } else {
-      window.location = N.runtime.router.linkTo('users.profile');
+      return;
     }
+
+    window.location = N.runtime.router.linkTo('users.profile');
   });
 });

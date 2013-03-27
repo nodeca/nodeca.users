@@ -1,10 +1,6 @@
 'use strict';
 
 
-/*global N, window*/
-
-
-var $      = window.jQuery;
 var notify = require('nodeca.core/client/admin/_notify');
 
 
@@ -21,6 +17,7 @@ N.wire.on(module.apiPath, function usergroup_remove(event) {
         // no need for fatal errors notifications as it's done by io automagically
         N.logger.error(err);
       }
+      return;
     }
 
     window.location = N.runtime.router.linkTo('admin.users.usergroups.index');

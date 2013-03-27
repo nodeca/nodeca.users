@@ -7,12 +7,6 @@
 'use strict';
 
 
-/*global N, window*/
-
-
-var $ = window.jQuery;
-
-
 N.wire.on(module.apiPath, function usergroup_override_toggele(event) {
   var $elem        = $(event.currentTarget)
     , setting_name = $elem.attr('id').replace('so_', '');

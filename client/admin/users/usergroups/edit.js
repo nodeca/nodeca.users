@@ -6,11 +6,7 @@
 'use strict';
 
 
-/*global N, t, window*/
-
-
 var _           = require('lodash');
-var $           = window.jQuery;
 var notify      = require('nodeca.core/client/admin/_notify');
 var getFormData = require('nodeca.core/client/admin/_get_form_data');
 
@@ -46,8 +42,9 @@ N.wire.on(module.apiPath, function usergroup_edit(event) {
         // no need for fatal errors notifications as it's done by io automagically
         N.logger.error(err);
       }
-    } else {
-      notify('info', t('saved'));
+      return;
     }
+
+    notify('info', t('saved'));
   });
 });

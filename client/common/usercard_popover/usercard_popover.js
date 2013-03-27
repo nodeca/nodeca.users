@@ -1,10 +1,7 @@
 'use strict';
 
-/*global N, window*/
-
 
 var _ = require('lodash');
-var $ = window.jQuery;
 
 
 var DELAY       = 500;  // Time in ms before showing an info card
