@@ -92,4 +92,8 @@ $(function () {
       });
     }, DELAY);
   });
+
+  $('body').on('mouseleave.nodeca.data-api', '.usercard-popover', function () {
+    clearTimeout(TIMEOUT);
+  });
 });
