@@ -1,9 +1,6 @@
 'use strict';
 
 
-var notify = require('nodeca.core/client/admin/_notify');
-
-
 N.wire.on(module.apiPath, function usergroup_remove(event) {
   var $elem  = $(event.currentTarget)
     , params = { _id: $elem.attr('data-usergroup-id') };
@@ -12,7 +9,7 @@ N.wire.on(module.apiPath, function usergroup_remove(event) {
     if (err) {
       if (N.io.BAD_REQUEST === err.code) {
         // something non fatal error
-        notify('error', err.data.common);
+        N.wire.emit('lib.notification', err.data.common);
       } else {
         // no need for fatal errors notifications as it's done by io automagically
         N.logger.error(err);

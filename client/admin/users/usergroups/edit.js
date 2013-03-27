@@ -7,8 +7,7 @@
 
 
 var _           = require('lodash');
-var notify      = require('nodeca.core/client/admin/_notify');
-var getFormData = require('nodeca.core/client/admin/_get_form_data');
+var getFormData = require('nodeca.core/lib/client/get_form_data');
 
 
 var white_list = ['_id','parent'];
@@ -37,7 +36,7 @@ N.wire.on(module.apiPath, function usergroup_edit(event) {
     if (err) {
       if (N.io.BAD_REQUEST === err.code) {
         // add errors
-        notify('error', err.data.common);
+        N.wire.emit('lib.notification', err.data.common);
       } else {
         // no need for fatal errors notifications as it's done by io automagically
         N.logger.error(err);
@@ -45,6 +44,6 @@ N.wire.on(module.apiPath, function usergroup_edit(event) {
       return;
     }
 
-    notify('info', t('saved'));
+    N.wire.emit('lib.notification', { type: 'info', message: t('saved') });
   });
 });

@@ -6,9 +6,6 @@
 'use strict';
 
 
-var notify = require('nodeca.core/client/common/_notify');
-
-
 var DELAY = 500;
 var timeout;
 
@@ -33,7 +30,7 @@ N.wire.on(module.apiPath, function register_check_nick(event) {
           $control_group.find('.help-block').text(err.message['nick']);
         } else {
           // something fatal
-          notify('error', err.message);
+          N.wire.emit('lib.notification', err.message);
         }
         return;
       }

@@ -7,8 +7,7 @@
 
 
 var _           = require('lodash');
-var notify      = require('nodeca.core/client/admin/_notify');
-var getFormData = require('nodeca.core/client/admin/_get_form_data');
+var getFormData = require('nodeca.core/lib/client/get_form_data');
 
 
 var white_list  = ['short_name', 'parent'];
@@ -48,7 +47,7 @@ N.wire.on(module.apiPath, function usergroup_add(event) {
           // error from revalidator
           err_message = err.message;
         }
-        notify('error', err_message);
+        N.wire.emit('lib.notification', err_message);
       } else {
         // no need for fatal errors notifications as it's done by io automagically
         N.logger.error(err);
@@ -56,6 +55,6 @@ N.wire.on(module.apiPath, function usergroup_add(event) {
       return;
     }
 
-    notify('info', t('created'));
+    N.wire.emit('lib.notification', { type: 'info', message: t('created') });
   });
 });

@@ -7,7 +7,7 @@
 
 
 var _ = require('lodash');
-var getFormData = require('nodeca.core/client/common/_get_form_data');
+var getFormData = require('nodeca.core/lib/client/get_form_data');
 
 
 var login_required_fields = [
