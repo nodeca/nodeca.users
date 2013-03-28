@@ -1,5 +1,6 @@
 en-US:
   show:
+    title: Login
     register: Register
     email: "Email (or nickname)"
     password: Password

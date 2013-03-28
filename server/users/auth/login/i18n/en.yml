@@ -1,7 +1,4 @@
 en-US:
-  show:
-    title: Login
-
   exec:
     error:
       login_failed:

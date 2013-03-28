@@ -1,7 +1,4 @@
 en-US:
-  show:
-    title: Registration
-
   exec:
     error:
       email_busy: This email already exists
