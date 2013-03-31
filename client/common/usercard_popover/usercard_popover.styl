@@ -1,0 +1,104 @@
+@import "nodeca.core/client/lib/_variables"
+
+/* ucard-popover Plugin */
+#ucard-popover
+  cursor default
+  background-color white
+  border-radius 6px
+  display none
+  position absolute
+  z-index 2000
+
+  width 430px
+  min-height 180px
+  border 6px solid grayDark
+  border-radius 4px
+  box-shadow 0 0 20px 5px #888
+
+  &.ne-alt, &.nw-alt, &.se-alt, &.sw-alt
+    &:before
+      content ""
+      position absolute
+
+      border-top 20px solid grayDark
+      bottom -20px
+      border-left 20px solid transparent
+      border-right 20px solid transparent
+      left 2px
+
+    &:after
+      content ""
+      position absolute
+
+      border-top 12px solid white
+      bottom -12px
+      border-left 12px solid transparent
+      border-right 12px solid transparent
+      left 10px
+
+  &.sw-alt, &.se-alt
+    &:before
+      border-top none
+      border-bottom 20px solid grayDark
+      bottom auto
+      top -20px
+    &:after
+      border-top none
+      border-bottom 12px solid grayDark
+      bottom auto
+      top -12px
+
+  &.ne-alt
+    &:before
+      left auto
+      right 2px
+    &:after
+      left auto
+      right 10px
+
+  &.se-alt
+    &:before
+      left auto
+      right 2px
+    &:after
+      left auto
+      right 10px
+
+
+.ucard-head
+  background-color grayDark
+  color grayLighter
+  font-size 16px
+  line-height 20px
+  padding 6px 0 12px 130px
+  white-space nowrap
+  overflow hidden
+  text-overflow: ellipsis;
+
+.ucard-sidebar
+  float left
+  display inline // IE7 hack
+  margin -28px 20px 10px 10px
+  width 100px // Fixes IE when hover on buttons
+
+.ucard-avatar
+  border 1px solid white
+  box-shadow 0 0 2px 1px grayLightest
+  margin-bottom 9px
+  background grayLighter
+  border-radius 4px
+  display block
+  height 100px
+  width 100px
+
+.ucard-info
+  overflow hidden
+  margin 10px 10px 10px 20px
+
+  > dl
+    margin-top 0
+    margin-bottom (baseLineHeight/2)
+
+  dt
+    opacity .7
+    font-weight normal

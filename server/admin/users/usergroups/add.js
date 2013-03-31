@@ -60,7 +60,7 @@ module.exports = function (N, apiPath) {
   // Fill head meta
   //
   N.wire.after(apiPath, function _add_meta(env, callback) {
-    env.response.data.head.title = env.helpers.t('admin.users.usergroups.title.add');
+    env.response.data.head.title = env.helpers.t('admin.users.usergroups.add.title');
     callback();
   });
 };

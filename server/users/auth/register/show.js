@@ -10,7 +10,7 @@ module.exports = function (N, apiPath) {
   // Request handler
   //
   N.wire.on(apiPath, function (env, callback) {
-    env.response.data.head.title = env.helpers.t('users.auth.reg_form.title');
+    env.response.data.head.title = env.helpers.t('users.auth.register.show.title');
     callback();
   });
 };

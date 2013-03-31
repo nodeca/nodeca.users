@@ -1,50 +1,22 @@
 'use strict';
 
 
-/**
- *  client
- **/
+N.wire.on(module.apiPath, function usergroup_remove(event) {
+  var $elem  = $(event.currentTarget)
+    , params = { _id: $elem.attr('data-usergroup-id') };
 
-/**
- *  client.admin
- **/
-
-/**
- *  client.admin.users
- **/
-
-/**
- *  client.admin.users.usergroups
- **/
-
-/**
- *  client.admin.users.usergroups.remove
- **/
-
-/*global nodeca, window*/
-
-/**
- *  client.admin.users.usergroups.remove($elem, event)
- *
- **/
-module.exports = function ($elem) {
-  var params = { _id: $elem.attr('data-usergroup-id') };
-
-  nodeca.server.admin.users.usergroups.remove(params, function (err) {
+  N.io.rpc('admin.users.usergroups.remove', params, function (err) {
     if (err) {
-      // something non fatal error
-      if (err.code === nodeca.io.BAD_REQUEST) {
-        nodeca.client.admin.notify('error', err.data.common);
-        return;
+      if (N.io.BAD_REQUEST === err.code) {
+        // something non fatal error
+        N.wire.emit('notify', err.data.common);
+      } else {
+        // no need for fatal errors notifications as it's done by io automagically
+        N.logger.error(err);
       }
-      // no need for fatal errors notifications as it's done by io automagically
-      nodeca.logger.error(err);
       return;
     }
 
-    window.location = nodeca.runtime.router.linkTo('admin.users.usergroups.index');
+    window.location = N.runtime.router.linkTo('admin.users.usergroups.index');
   });
-
-  // Disable regular click
-  return false;
-};
+});

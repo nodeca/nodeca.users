@@ -1,0 +1,17 @@
+en-US:
+  index:
+    group_name: Group name
+    members_count: Members
+    add: Create new group
+    edit: Edit group
+    remove: delete
+
+  add:
+    create: Create group
+    created: Group created
+    short_name_title: Group name
+    short_name_help: Short unique text, will be used for translations.
+
+  edit:
+    save: Save group
+    saved: Group saved

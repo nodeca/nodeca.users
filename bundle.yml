@@ -6,78 +6,48 @@ bundles:
 packages:
   admin:
     client:
-      root:       "./client/admin"
-      include:    "*.js"
-      exclude:    "/(^|\\/|\\\\)_.*/"
+      include: client/admin/**.js
+      exclude: /(^|\/|\\)_.*/
 
-    #views:
-    #  root:       "./client/admin"
-    #  include:    "*.jade"
-    #  exclude:    "/(^|\\/|\\\\)_.*/"
-
-    #views:
-    #  root:       "./views/desktop/admin"
-    #  include:    "*.jade"
-    #  exclude:    "/(^|\\/|\\\\)_.*/"
+    views:
+      include: client/admin/**.jade
+      exclude: /(^|\/|\\)_.*/
 
     i18n_client:
-      root:       "./client/admin"
-      include:    "i18n/*.yml"
+      include: client/admin/**i18n/*.yml
 
-    #styles:
-    #  root:       "./client/admin"
-    #  include:    "*.styl"
-
-    #styles:
-    #  root:       "./assets"
-    #  include:    "desktop/admin/**.styl"
+    styles:
+      include: client/admin/**.styl
 
     server:
-      root:       "./server/admin"
-      include:    "*.js"
-      exclude:    "/(^|\\/|\\\\)_.*/"
+      include: server/admin/**.js
+      exclude: /(^|\/|\\)_.*/
 
     i18n_server:
-      root:       "./server/admin"
-      include:    "i18n/*.yml"
+      include: server/admin/**i18n/*.yml
 
 
   common:
     client:
-      root:       "./client/common"
-      include:    "*.js"
-      exclude:    "/(^|\\/|\\\\)_.*/"
+      include: client/common/**.js
+      exclude: /(^|\/|\\)_.*/
 
-    #views:
-    #  root:       "./client/common"
-    #  include:    "*.jade"
-    #  exclude:    "/(^|\\/|\\\\)_.*/"
-
-    #views:
-    #  root:       "./views/desktop/common"
-    #  include:    "*.jade"
-    #  exclude:    "/(^|\\/|\\\\)_.*/"
+    views:
+      include: client/common/**.jade
+      exclude: /(^|\/|\\)_.*/
 
     i18n_client:
-      root:       "./client/common"
-      include:    "i18n/*.yml"
+      include: client/common/**i18n/*.yml
 
-    #styles:
-    #  root:       "./client/common"
-    #  include:    "*.styl"
-
-    #styles:
-    #  root:       "./assets"
-    #  include:    "desktop/common/**.styl"
+    styles:
+      include: client/common/**.styl
 
     server:
-      root:       "./server/common"
-      include:    "*.js"
-      exclude:    "/(^|\\/|\\\\)_.*/"
+      include: server/common/**.js
+      exclude: /(^|\/|\\)_.*/
 
     i18n_server:
-      root:       "./server/common"
-      include:    "i18n/*.yml"
+      include: server/common/**i18n/*.yml
 
 
   users:
@@ -85,39 +55,22 @@ packages:
       - common
 
     client:
-      root:       "./client/users"
-      include:    "*.js"
-      exclude:    "/(^|\\/|\\\\)_.*/"
+      include: client/users/**.js
+      exclude: /(^|\/|\\)_.*/
 
-    #views:
-    #  root:       "./client/users"
-    #  include:    "*.jade"
-    #  exclude:    "/(^|\\/|\\\\)_.*/"
-
-    #views:
-    #  root:       "./views/desktop/users"
-    #  include:    "*.jade"
-    #  exclude:    "/(^|\\/|\\\\)_.*/"
+    views:
+      include: client/users/**.jade
+      exclude:  /(^|\/|\\)_.*/
 
     i18n_client:
-      root:       "./client/users"
-      include:    "i18n/*.yml"
+      include: client/users/**i18n/*.yml
 
-    #styles:
-    #  root:       "./client/users"
-    #  main:       "app.styl"
-    #  include:    "*.styl"
-
-    #styles:
-    #  root:       "./assets"
-    #  main:       "desktop/users/app.styl"
-    #  include:    "desktop/users/**.styl"
+    styles:
+      include: client/users/**.styl
 
     server:
-      root:       "./server/users"
-      include:    "*.js"
-      exclude:    "/(^|\\/|\\\\)_.*/"
+      include: server/users/**.js
+      exclude: /(^|\/|\\)_.*/
 
     i18n_server:
-      root:       "./server/users"
-      include:    "i18n/*.yml"
+      include: server/users/**i18n/*.yml

@@ -1,0 +1,9 @@
+en-US:
+  show:
+    title: Login
+    register: Register
+    email: "Email (or nickname)"
+    password: Password
+    enter: Login
+    forgot: forgot?
+    not_filled: Please fill this field

@@ -35,7 +35,7 @@ module.exports = function (N, apiPath) {
     params_schema[name] = { type: item_type };
   });
 
-  N.validate(params_schema);
+  N.validate(apiPath, params_schema);
 
 
   // test_circular_step(groups, checked, sample) -> Boolean
@@ -136,7 +136,7 @@ module.exports = function (N, apiPath) {
           callback({
             code: N.io.BAD_REQUEST,
             data: {
-              common: env.helpers.t('admin.users.usergroups.edit.error.circular_dependency')
+              common: env.helpers.t('admin.users.usergroups.update.error.circular_dependency')
             }
           });
           return;

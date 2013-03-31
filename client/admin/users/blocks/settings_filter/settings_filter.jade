@@ -1,0 +1,12 @@
+.control-group
+  label.control-label #{self.t('label')}
+  .controls
+    label.radio
+      input(type='radio', name='sfilter', id='sfilter_all', checked=true)
+      |  #{self.t('show_all')}
+    label.radio
+      input(type='radio', name='sfilter', id='sfilter_inherited', value='filter-inherited')
+      |  #{self.t('show_inherited')}
+    label.radio
+      input(type='radio', name='sfilter', id='sfilter_overriden', value='filter-overriden')
+      |  #{self.t('show_overriden')}
