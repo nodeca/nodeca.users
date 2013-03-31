@@ -1,31 +1,36 @@
 #content
-  form.form-horizontal(data-on-submit='admin.users.usergroups.create')
-    - var _input_help_text
+  != self.partial('@admin.blocks.sidebar_menu', { apiPath: self.head.apiPath, menu: self.menus.admin })
 
-    legend
-      h1 #{self.head.title}
+  .main
+    != self.partial('@admin.blocks.breadcrumbs', { title: self.head.title, apiPath: self.head.apiPath, menu: self.menus.admin, })
 
-    - _input_help_text = self.t('short_name_help')
+    form.form-horizontal(data-on-submit='admin.users.usergroups.add')
+      - var _input_help_text
 
-    .cg-head
+      legend
+        h1 #{self.head.title}
 
-      .control-group
-        label.control-label(for='short_name') #{self.t('short_name_title')}
-        .controls
-          .row-fluid
-            input(type="text", name='short_name')
-            span.help-block #{_input_help_text}
+      - _input_help_text = self.t('short_name_help')
 
-      != self.partial('@admin.users.blocks.parent_group_select')
-      != self.partial('@admin.users.blocks.settings_filter')
+      .cg-head
 
+        .control-group
+          label.control-label(for='short_name') #{self.t('short_name_title')}
+          .controls
+            .row-fluid
+              input(type="text", name='short_name')
+              span.help-block #{_input_help_text}
 
-    - each category, category_name in self.settings_categories
-
-      legend #{self.t('@admin.setting.category.' + category_name)}
-      - each item, item_name in category
-        != self.partial('@admin.users.blocks.display_value', { name: item_name, item: item })
+        != self.partial('@admin.users.blocks.parent_group_select', { usergroups: self.usergroups, current: self.current })
+        != self.partial('@admin.users.blocks.settings_filter')
 
 
-    .form-actions
-      button.btn.btn-primary.btn-large(type='submit') #{self.t('create')}
+      - each category, category_name in self.settings_categories
+
+        legend #{self.t('@admin.setting.category.' + category_name)}
+        - each item, item_name in category
+          != self.partial('@admin.users.blocks.display_value', { name: item_name, item: item })
+
+
+      .form-actions
+        button.btn.btn-primary.btn-large(type='submit') #{self.t('create')}

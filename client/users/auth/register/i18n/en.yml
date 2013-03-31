@@ -1,5 +1,6 @@
 en-US:
   show:
+    title: Registration
     email: Email
     email_help: "Should be valid, you will get confirmation code there, to activate your account."
     password: Password

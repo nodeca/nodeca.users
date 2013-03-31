@@ -34,7 +34,7 @@ module.exports = function (N, apiPath) {
     }
     params_schema[name] = { type: item_type };
   });
-  N.validate(params_schema);
+  N.validate(apiPath, params_schema);
 
 
   // Request handler
