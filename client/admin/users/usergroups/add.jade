@@ -1,8 +1,8 @@
 #content
-  != self.partial('@admin.blocks.sidebar_menu', { apiPath: self.getApiPath(), menu: self.menus.admin })
+  != self.partial('@admin.blocks.sidebar_menu', { apiPath: self.apiPath, menu: self.menus.admin })
 
   .main
-    != self.partial('@admin.blocks.breadcrumbs', { title: self.head.title, apiPath: self.getApiPath(), menu: self.menus.admin, })
+    != self.partial('@admin.blocks.breadcrumbs', { title: self.head.title, apiPath: self.apiPath, menu: self.menus.admin, })
 
     form.form-horizontal(data-on-submit='admin.users.usergroups.add')
       - var _input_help_text
