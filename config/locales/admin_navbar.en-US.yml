@@ -1,8 +1,7 @@
 i18n:
   en-US:
+
     admin:
-      users:
-        title: Acp Members
 
       menus:
         navbar:

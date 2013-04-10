@@ -1,6 +1,8 @@
 i18n:
   en-US:
+
     common:
+
       menus:
         navbar:
           profile: Profile
