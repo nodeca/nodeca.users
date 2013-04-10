@@ -54,10 +54,13 @@ module.exports = function (N, apiPath) {
             callback(err);
             return;
           }
+
+          // Should not happen. Only if denormalized data broken - auth token
+          // exists, but user deleted.
           if (!user) {
             callback({
               code: N.io.APP_ERROR,
-              data: env.helpers.t('users.auth.login.exec.error.auth_user_broken')
+              data: env.helpers.t('users.auth.login.exec.error.login_failed')
             });
             return;
           }

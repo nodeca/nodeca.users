@@ -7,4 +7,3 @@ en-US:
       not_filled: Please, fill all fields.
       too_many_attempts:
         Too many login attempts. Please, wait 5 minutes before next retry.
-      auth_user_broken: User info broken. Please, contact admin.
