@@ -3,9 +3,6 @@
 "use strict";
 
 
-var _ = require('lodash');
-
-
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
   });

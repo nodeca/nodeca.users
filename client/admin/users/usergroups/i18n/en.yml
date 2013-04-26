@@ -14,7 +14,9 @@ en-US:
       inherit_none: None
 
     setting:
-      inherit: Inherit
+      yes: Yes
+      no: No
+      override: Override
       force: Force
 
     filter: Filter settings

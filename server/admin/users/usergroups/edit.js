@@ -1,96 +1,81 @@
-// Display usergroup
-//
-
-"use strict";
+'use strict';
 
 
-var _ = require('lodash');
+var _     = require('lodash');
+var async = require('async');
 
 
 module.exports = function (N, apiPath) {
+  var UserGroup = N.models.users.UserGroup
+    , store     = N.settings.getStore('usergroup');
+
+
   N.validate(apiPath, {
     _id: {
-      type: 'string',
-      required: true,
-      minLength: 24,
-      maxLength: 24
+      type: 'string'
+    , required: true
+    , minLength: 24
+    , maxLength: 24
     }
   });
 
-  // Request handler
-  //
+
   N.wire.on(apiPath, function (env, callback) {
-    var UserGroup = N.models.users.UserGroup;
+    var data = env.response.data;
 
-    env.data.usergroups = [];
+    data.currentGroupId = null;
+    data.allGroupsData  = [];
+    data.settingSchemas = N.config.setting_schemas['usergroup'] || {};
 
-    UserGroup.findById(env.params._id)
-        .setOptions({ lean: true }).exec(function(err, group) {
+    UserGroup
+        .findById(env.params._id)
+        .select('_id short_name')
+        .setOptions({ lean: true })
+        .exec(function (err, currentGroup) {
+
       if (err) {
         callback(err);
         return;
       }
-      if (!group) {
+
+      if (!currentGroup) {
         callback(N.io.NOT_FOUND);
         return;
       }
 
-      // FIXME fetch settings from store
-      var settings = N.config.setting_schemas['usergroup'];
-
-      // collect  usergroups items and group it by setting group
-      var settings_categories = {};
-      _.keys(settings).forEach(function(name) {
-        var item = settings[name];
-
-        // mark setting as overriden
-        if (group.raw_settings && name in group.raw_settings) {
-          item.value = group.raw_settings[name];
-          item.overriden = true;
-        }
-
-        var category_name = item['category'];
-        if (!settings_categories[category_name]) {
-          settings_categories[category_name] = {};
-        }
-        settings_categories[category_name][name] = item;
-      });
-      env.data.settings_categories = settings_categories;
-
-      group._id = group._id.toString();
-      env.data.current = group;
-
-      // fetch other groups need for parent selected
-      UserGroup.find().select({ '_id':1, 'short_name': 1 })
-          .setOptions({ lean: true }).exec(function(err, usergroups) {
-        usergroups.forEach(function(group) {
-          group._id = group._id.toString();
-          // group can't be parent of him self
-          if (group._id === env.data.current._id) {
-            return;
-          }
-          env.data.usergroups.push(group);
+      data.head.title =
+        env.helpers.t('admin.users.usergroups.edit.title', {
+          name: currentGroup.short_name
         });
-        callback();
+
+      data.currentGroupId = currentGroup._id;
+
+      UserGroup
+          .find()
+          .select('_id short_name is_protected parent_group overriden_settings forced_settings')
+          .sort('is_protected _id')
+          .setOptions({ lean: true })
+          .exec(function (err, allGroupsData) {
+
+        data.allGroupsData = allGroupsData;
+
+        async.forEach(allGroupsData, function (group, next) {
+          group.setting_values = {};
+
+          store.get(_.keys(data.settingSchemas), { usergroup_ids: [group._id] }, function (err, results) {
+            if (err) {
+              next({ code: N.io.BAD_REQUEST, message: err });
+              return;
+            }
+
+            _.forEach(results, function (setting, key) {
+              group.setting_values[key] = setting.value;
+            });
+
+            next();
+          });
+        }, callback);
       });
-    });
-  });
-
-
-  // Put currents items into response data
-  //
-  N.wire.after(apiPath, function _copy_data(env) {
-    env.response.data.current = env.data.current;
-    env.response.data.usergroups = env.data.usergroups;
-    env.response.data.settings_categories = env.data.settings_categories;
-  });
-
-
-  // Fill head meta
-  //
-  N.wire.after(apiPath, function _add_meta(env) {
-    env.response.data.head.title = env.helpers.t('admin.users.usergroups.edit.title', {
-      name: env.data.current.short_name
     });
   });
 };

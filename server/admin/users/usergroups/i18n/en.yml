@@ -1,16 +1,16 @@
 en-US:
-  index:
+  show:
     title: Manage user groups
 
-  add:
+  new:
     title: Create new group
+
+  edit:
+    title: "Edit group: #{name}"
 
   create:
     error:
       short_name_busy: This name is occupied, select another one.
-
-  edit:
-    title: "Edit group: #{name}"
 
   update:
     error:

@@ -21,26 +21,24 @@ module.exports = function (N, collectionName) {
    *  Create new odm object
    **/
   var UserGroup = module.exports.UserGroup = new Schema({
-    // user group name used in ACP and migrations
-    short_name        : String
+    // User group name used in ACP and migrations.
+    short_name         : String
 
-    // parent group, all none overriden settings
-    //will be inherited from parent
-  , parent            : Schema.Types.ObjectId
+    // Can by deleted or renamed?
+  , is_protected       : { type: Boolean, 'default': false }
 
-    // can by deleted?
-  , is_protected      : { type: Boolean, 'default': false }
+    // Parent group, all non-overriden settings will be inherited from this.
+  , parent_group       : Schema.Types.ObjectId
 
-    // restrictive groups makes "forced" settings.
-    // mostly used to "remove" some rights of  group (e.g. restrict posting)
-  , is_forced         : { type: Boolean, 'default': false }
+    // Own settings of a group (i.e. not inherited).
+  , overriden_settings : { type: Array, 'default': [] }
 
-    // belong to only this group settings (overriden)
-  , raw_settings      : { type: Schema.Types.Mixed, 'default': {}}
+    // Restrictive groups can mark some settings as "forced".
+    // Mostly used to "remove" some rights of a group (e.g. restrict posting).
+  , forced_settings    : { type: Array, 'default': [] }
 
-    // result setting(considering inherited and defaults)
-    // Note: only store can write to this property
-  , settings          : { type: Schema.Types.Mixed, 'default': {}}
+    // Settings storage. Used only the the UsergroupStore.
+  , settings           : { type: Schema.Types.Mixed, 'default': {} }
   });
 
   N.wire.on("init:models", function emit_init_UserGroup(__, callback) {

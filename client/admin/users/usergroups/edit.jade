@@ -1,30 +1,14 @@
-#content
-  != self.partial('@admin.core.blocks.sidebar_menu', { apiPath: self.apiPath, menu: self.menus.admin })
+div#content
+  != self.partial('@admin.core.blocks.sidebar_menu', { menu: self.menus.admin })
 
-  .main
-    != self.partial('@admin.core.blocks.breadcrumbs', { title: self.head.title, apiPath: self.apiPath, menu: self.menus.admin, })
+  div.main
+    != self.partial('@admin.core.blocks.breadcrumbs', { menu: self.menus.admin })
 
-    form.form-horizontal(data-on-submit='admin.users.usergroups.edit')
-      - self.errors = self.errors || {}
-      - var _input_help_text
+    h1= self.head.title
 
-      legend
-        h1 #{self.head.title}
+    - self.add_raw_data('currentGroupId', self.currentGroupId);
+    - self.add_raw_data('allGroupsData',  self.allGroupsData);
+    - self.add_raw_data('settingSchemas', self.settingSchemas);
+    - self.add_raw_data('settingValues',  self.settingValues);
 
-      .cg-head
-
-        input(type="hidden", name='_id', value=self.current._id)
-
-        != self.partial('@admin.users.blocks.parent_group_select', { usergroups: self.usergroups, current: self.current })
-        != self.partial('@admin.users.blocks.settings_filter')
-
-
-      - each category, category_name in self.settings_categories
-
-        legend #{self.t('@admin.setting.category.' + category_name)}
-        - each item, item_name in category
-          != self.partial('@admin.users.blocks.display_value', { name: item_name, item: item })
-
-
-      .form-actions
-        button.btn.btn-primary.btn-large(type='submit') #{self.t('save')}
+    include ./_form
