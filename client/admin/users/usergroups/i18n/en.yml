@@ -1,17 +1,35 @@
 en-US:
-  index:
+  show:
     group_name: Group name
     members_count: Members
-    add: Create new group
+    new: Create new group
     edit: Edit group
     remove: delete
 
+  _form: &form
+    group:
+      short_name: Group name
+      short_name_help: Short unique text, will be used for translations.
+      inherit: Inherits
+      inherit_none: None
+
+    setting:
+      inherit: Inherit
+      force: Force
+
+    filter: Filter settings
+    filter_options:
+      show_all: Show all
+      show_inherited: Show inherited only
+      show_overriden: Show overriden only
+      show_forced: Show forced only
+
   add:
-    create: Create group
-    created: Group created
-    short_name_title: Group name
-    short_name_help: Short unique text, will be used for translations.
+    <<: *form
+    submit: Create group
+    submited: Group created
 
   edit:
-    save: Save group
-    saved: Group saved
+    <<: *form
+    submit: Save group
+    submited: Group saved
