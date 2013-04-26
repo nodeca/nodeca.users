@@ -7,11 +7,8 @@ router:
       "/member{id}":
         id: /\d+/
 
-    admin.users.usergroups.index:
+    admin.users.usergroups.show:
       "/usergroups": ~
-
-    admin.users.usergroups.add:
-      "/usergroups/add": ~
 
     admin.users.usergroups.edit:
       "/usergroups/edit/{_id}":

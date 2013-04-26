@@ -8,7 +8,7 @@ i18n:
           users: Users
 
           users.usergroups: User groups
-          users.usergroups.index: Manage
+          users.usergroups.show: Manage
 
           users.members: Members
           users.members.search: Search

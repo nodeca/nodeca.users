@@ -1,0 +1,34 @@
+div#content
+  != self.partial('@admin.core.blocks.sidebar_menu', { menu: self.menus.admin })
+
+  div.main
+    != self.partial('@admin.core.blocks.breadcrumbs', { menu: self.menus.admin })
+
+    div
+      div.pull-right
+        a.btn.btn-large.btn-primary(href=self.link_to('admin.users.usergroups.new'))
+          = self.t('new')
+
+      h1= self.head.title
+
+    table.table.table-hover
+      thead
+        tr
+          th= self.t('group_name')
+          th= self.t('members_count')
+          th
+
+      each group in self.usergroups
+        tr
+          td
+            a.icon-edit(href=self.link_to('admin.users.usergroups.edit', { _id: group._id }),
+                        title=self.t('edit'))
+              = group.short_name
+          td
+            a(href=self.link_to('admin.users.members.search'))
+              = group.members_count
+          td
+            unless group.is_protected
+              a.pull-right(data-on-click='admin.users.usergroups.remove',
+                           data-usergroup-id=group._id)
+                = self.t('remove')

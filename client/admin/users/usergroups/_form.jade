@@ -1,0 +1,68 @@
+form.form-horizontal(data-bind="submit: $root.saveChanges")
+  fieldset(data-bind="with: $root.currentGroup")
+    div.control-group
+      label.control-label= self.t('group.short_name')
+      div.controls
+        input(type="text", data-bind="value: currentName, disable: isProtected")
+        span(data-bind="text: localizedName")
+        span.help-block= self.t('group.short_name_help')
+
+  fieldset
+    div.control-group
+      label.control-label= self.t('group.inherit')
+      div.controls
+        select(data-bind="options: $root.otherGroups, optionsText: 'currentName', optionsCaption: '#{self.t('group.inherit_none')}'")
+
+    div.control-group
+      label.control-label= self.t('filter')
+      div.controls
+        input(type="radio", name="filter", value="all", data-bind="checked: showSettings")
+        span= self.t('filter_options.show_all')
+
+      div.controls
+        input(type="radio", name="filter", value="inherited", data-bind="checked: showSettings")
+        span= self.t('filter_options.show_inherited')
+
+      div.controls
+        input(type="radio", name="filter", value="overriden", data-bind="checked: showSettings")
+        span= self.t('filter_options.show_overriden')
+
+      div.controls
+        input(type="radio", name="filter", value="forced", data-bind="checked: showSettings")
+        span= self.t('filter_options.show_forced')
+
+  // ko foreach: $root.settingCategories
+  fieldset
+    legend(data-bind="text: localizedName")
+
+    // ko foreach: $root.settingModels[name]
+    div.control-group
+      label.control-label(data-bind="text: localizedName")
+        div.controls
+          // ko if: 'string' === type
+          input(type="text", data-bind="value: userValue, valueUpdate: 'keyup', attr: { id: id }")
+          // /ko
+
+          // ko if: 'number' === type
+          input(type="number", data-bind="value: userValue, valueUpdate: 'keyup', attr: { id: id }")
+          // /ko
+
+          // ko if: 'boolean' === type
+          input(type="checkbox", data-bind="checked: userValue, attr: { id: id }")
+          // /ko
+
+          label.checkbox.inline
+            input(type="checkbox", data-bind="checked: inherit")
+            = self.t('setting.inherit')
+
+          label.checkbox.inline
+            input(type="checkbox", data-bind="checked: force, disable: inherit")
+            = self.t('setting.force')
+
+          span.help-block(data-bind="if: localizedHelp, text: localizedHelp")
+    // /ko
+  // /ko
+
+  div
+    button.btn.btn-primary(type="submit", data-bind="enable: $root.isModified")
+      = self.t('submit')

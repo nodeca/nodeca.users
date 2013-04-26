@@ -7,12 +7,12 @@ menus:
   admin:
     navbar:
       users:
-        to: admin.users.usergroups.index
+        to: admin.users.usergroups.show
         submenu:
           usergroups:
             submenu:
-              index:
-                to: admin.users.usergroups.index
+              show:
+                to: admin.users.usergroups.show
           members:
             submenu:
               search:
