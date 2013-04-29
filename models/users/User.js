@@ -1,42 +1,37 @@
-"use strict";
+'use strict';
 
 
 var Mongoose = require('mongoose');
-var xregexp = require('xregexp').XRegExp;
+var Schema   = Mongoose.Schema;
+var xregexp  = require('xregexp').XRegExp;
 
-
-var Schema = Mongoose.Schema;
-
-
-////////////////////////////////////////////////////////////////////////////////
 
 module.exports = function (N, collectionName) {
 
   /**
    *  new models.users.User()
    **/
-  var User = module.exports.User = new Schema({
-
+  var User = new Schema({
     // user-friendly id (autoincremented)
-    id                : { type: Number, min: 1, index: true }
+    id             : { type: Number, min: 1, index: true }
 
-  , first_name        : String
-  , last_name         : String
-  , nick              : String
+  , first_name     : String
+  , last_name      : String
+  , nick           : String
 
-  , usergroups        : [Schema.Types.ObjectId]
+  , usergroups     : [Schema.Types.ObjectId]
 
-  , joined_ts         : Date
-  , joined_ip         : String
+  , joined_ts      : Date
+  , joined_ip      : String
 
-  , locale            : String
+  , locale         : String
 
-  , _uname            : String
-  , _uname_short      : String
+  , _uname         : String
+  , _uname_short   : String
 
-  , post_count       : { type: Number, 'default': 0 }
+  , post_count     : { type: Number, 'default': 0 }
 
-  , warning_points   : { type: Number, 'default': 0 }
+  , warning_points : { type: Number, 'default': 0 }
   });
 
 

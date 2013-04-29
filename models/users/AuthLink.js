@@ -1,6 +1,3 @@
-'use strict';
-
-
 /**
  *  class models.users.AuthLink
  *
@@ -16,47 +13,42 @@
  **/
 
 
+'use strict';
+
+
 var Mongoose = require('mongoose');
-var Schema = Mongoose.Schema;
+var Schema   = Mongoose.Schema;
+var bcrypt   = require('bcrypt');
 
-/* 3rd-paty modules */
-
-var bcrypt = require('bcrypt');
-
-
-////////////////////////////////////////////////////////////////////////////////
 
 module.exports = function (N, collectionName) {
-
 
   // Provider sub-document schema
   //
   var AuthProvider = new Schema({
-
     // Provider types. We plan to support:
     //
     // - `plain` - just email/password pair
     // - `yandex`, `facebook`, `vkontakte`, `twitter` - different oauth (not supported now)
-    type:  { type: String, required: true },
+    type   : { type: String, required: true }
 
     // Provider state
     // FIXME: define states (active/validating)
-    state:    Number,
+  , state  : Number
 
     // Email is mandatory to `email` provider
     // We also will require it everywhere, when possible (twitter don't have it)
-    email:    String,  // user email
+  , email  : String // user email
 
     // Password/Salt hash - for email provider only
     // Salt is stored right in hash string
-    pass:     String,
+  , pass   : String
 
     // For oauth providers only, external user id
-    ext_id:   String,
+  , ext_id : String
 
     // metadata, if we like to extract extended info from oauth providers
-    meta:     {}
-
+  , meta   : {}
   });
 
 
@@ -95,14 +87,14 @@ module.exports = function (N, collectionName) {
   // - login by email
   // - check that email is unique
   AuthProvider.index({
-    email: 1,
-    provider: 1
+    email: 1
+  , provider: 1
   });
 
   // used in login via oauth
   AuthProvider.index({
-    ext_id: 1,
-    provider: 1
+    ext_id: 1
+  , provider: 1
   });
 
 
@@ -112,9 +104,9 @@ module.exports = function (N, collectionName) {
    *  Create new odm object
    **/
   var AuthLink = new Schema({
-    user_id:            Schema.ObjectId,
-    providers:          [ AuthProvider ]
-  }, { strict: true });
+    user_id   : Schema.ObjectId
+  , providers : [AuthProvider]
+  });
 
   // used in:
   // - login via nickname

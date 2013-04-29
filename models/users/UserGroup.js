@@ -1,6 +1,3 @@
-"use strict";
-
-
 /**
  *  class models.users.UserGroup
  *
@@ -8,10 +5,12 @@
  **/
 
 
-var Mongoose = require('mongoose');
-var Schema = Mongoose.Schema;
+'use strict';
 
-////////////////////////////////////////////////////////////////////////////////
+
+var Mongoose = require('mongoose');
+var Schema   = Mongoose.Schema;
+
 
 module.exports = function (N, collectionName) {
 
@@ -20,7 +19,7 @@ module.exports = function (N, collectionName) {
    *
    *  Create new odm object
    **/
-  var UserGroup = module.exports.UserGroup = new Schema({
+  var UserGroup = new Schema({
     // User group name used in ACP and migrations.
     short_name         : String
 
@@ -40,6 +39,7 @@ module.exports = function (N, collectionName) {
     // Settings storage. Used only the the UsergroupStore.
   , settings           : { type: Schema.Types.Mixed, 'default': {} }
   });
+
 
   N.wire.on("init:models", function emit_init_UserGroup(__, callback) {
     N.wire.emit("init:models." + collectionName, UserGroup, callback);
