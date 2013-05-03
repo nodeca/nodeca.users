@@ -26,7 +26,7 @@ en-US:
       show_overriden: Show overriden only
       show_forced: Show forced only
 
-  add:
+  new:
     <<: *form
     submit: Create group
     submited: Group created

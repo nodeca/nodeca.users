@@ -6,8 +6,7 @@ div#content
 
     h1= self.head.title
 
-    - self.add_raw_data('setting_schemas',  self.setting_schemas)
-    - self.add_raw_data('groups_data',      self.groups_data)
-    - self.add_raw_data('current_group_id', self.current_group_id)
+    - self.add_raw_data('setting_schemas', self.setting_schemas)
+    - self.add_raw_data('groups_data',     self.groups_data)
 
     include ./_form

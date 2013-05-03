@@ -1,13 +1,12 @@
 'use strict';
 
 
-var _     = require('lodash');
-var async = require('async');
+var _ = require('lodash');
+var fetchGroups = require('./_lib/fetch_groups');
 
 
 module.exports = function (N, apiPath) {
-  var UserGroup = N.models.users.UserGroup
-    , store     = N.settings.getStore('usergroup');
+  var UserGroup = N.models.users.UserGroup;
 
 
   N.validate(apiPath, {
@@ -23,9 +22,7 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function (env, callback) {
     var data = env.response.data;
 
-    data.currentGroupId = null;
-    data.allGroupsData  = [];
-    data.settingSchemas = N.config.setting_schemas['usergroup'] || {};
+    data.setting_schemas = N.config.setting_schemas['usergroup'] || {};
 
     UserGroup
         .findById(env.params._id)
@@ -48,33 +45,11 @@ module.exports = function (N, apiPath) {
           name: currentGroup.short_name
         });
 
-      data.currentGroupId = currentGroup._id;
+      data.current_group_id = currentGroup._id;
 
-      UserGroup
-          .find()
-          .select('_id short_name is_protected parent_group overriden_settings forced_settings')
-          .sort('is_protected _id')
-          .setOptions({ lean: true })
-          .exec(function (err, allGroupsData) {
-
-        data.allGroupsData = allGroupsData;
-
-        async.forEach(allGroupsData, function (group, next) {
-          group.setting_values = {};
-
-          store.get(_.keys(data.settingSchemas), { usergroup_ids: [group._id] }, function (err, results) {
-            if (err) {
-              next({ code: N.io.BAD_REQUEST, message: err });
-              return;
-            }
-
-            _.forEach(results, function (setting, key) {
-              group.setting_values[key] = setting.value;
-            });
-
-            next();
-          });
-        }, callback);
+      fetchGroups(N, _.keys(data.setting_schemas), function (err, allGroupsData) {
+        data.groups_data = allGroupsData;
+        callback(err);
       });
     });
   });
