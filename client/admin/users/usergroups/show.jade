@@ -30,5 +30,5 @@ div#content
           td
             unless group.is_protected
               a.pull-right(data-on-click='admin.users.usergroups.remove',
-                           data-usergroup-id=group._id)
+                           data-usergroup-id=group._id.toString())
                 = self.t('remove')

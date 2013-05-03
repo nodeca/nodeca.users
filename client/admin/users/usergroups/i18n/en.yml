@@ -5,6 +5,8 @@ en-US:
     new: Create new group
     edit: Edit group
     remove: delete
+    error:
+      remove: Error while removing the group!
 
   _form: &form
     group:
@@ -28,10 +30,12 @@ en-US:
 
   new:
     <<: *form
+    error: Error while creating the group!
     submit: Create group
     submited: Group created
 
   edit:
     <<: *form
+    error: Error while updating the group!
     submit: Save group
     submited: Group saved

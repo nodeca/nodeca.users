@@ -1,41 +1,50 @@
-// Update usergroup settings
-//
-"use strict";
-
-
-var _ = require('lodash');
+'use strict';
 
 
 module.exports = function (N, apiPath) {
+  var UserGroup = N.models.users.UserGroup;
 
-  // Defaults params (static)
-  var params_schema = {
+
+  N.validate(apiPath, {
     _id: {
-      type: 'string',
-      required: true,
-      minLength: 24,
-      maxLength: 24
-    },
-    parent: {
-      type: 'string',
-      minLength: 24,
-      maxLength: 24
+      type: 'string'
+    , required: true
+    , minLength: 24
+    , maxLength: 24
     }
-  };
-
-  var usergroup_schema = N.config.setting_schemas['usergroup'];
-
-  // generate settings validators (get info from config)
-  _.keys(usergroup_schema).forEach(function (name) {
-    var item_type = usergroup_schema[name]['type'];
-    if (!_.any(['string', 'number', 'boolean'],
-        function (t) { return t === item_type; })) {
-      item_type = 'string';
+  , short_name: {
+      type: 'string'
+    , required: true
+    , minLength: 1
     }
-    params_schema[name] = { type: item_type };
+  , parent_group: {
+      type: ['string', 'null']
+    , required: true
+    , minLength: 24
+    , maxLength: 24
+    }
+  , raw_settings: {
+      type: 'object'
+    , required: true
+    , properties: {
+        usergroup: {
+          type: 'object'
+        , required: false
+        , 'default': {}
+        }
+      }
+    }
+  , settings: {
+      type: 'object'
+    , required: true
+    , properties: {
+        usergroup: {
+          type: 'object'
+        , required: true
+        }
+      }
+    }
   });
-
-  N.validate(apiPath, params_schema);
 
 
   // test_circular_step(groups, checked, sample) -> Boolean
@@ -54,109 +63,76 @@ module.exports = function (N, apiPath) {
     return test_circular_step(groups, groups[checked], sample);
   }
 
-  // test_circular(id, parent, callback)
+
+  // test_circular(id, parent_group, callback)
   // - id (Object): group id
-  // - parent (Object): parent id
+  // - parent_group (Object): parent id
   // - callback(function) : callback with err and is_circular params
   //
   // Check parents for circular inheritance.
   // Fire callback with search result as second parameter
   // true if has circular and false if not
   //
-  function test_circular(id, parent, callback) {
-    if (!parent) {
+  function test_circular(id, parent_group, callback) {
+    if (!parent_group) {
       callback(null, false);
       return;
     }
-    N.models.users.UserGroup.find().select('_id parent').exec(function (err, docs) {
+
+    UserGroup.find().select('_id parent_group').exec(function (err, docs) {
       var groups = {};
       if (err) {
         callback(err);
       }
       // collect groups to hash
-      // { _id => parent }
+      // { _id => parent_group }
       docs.forEach(function (group) {
-        groups[group._id.toString()] = group.parent ? group.parent.toString() : null;
+        groups[group._id.toString()] = group.parent_group ? group.parent_group.toString() : null;
       });
 
-      callback(null, test_circular_step(groups, parent.toString(), id.toString()));
+      callback(null, test_circular_step(groups, parent_group.toString(), id.toString()));
     });
   }
 
 
-  // Request handler. Here we update group parameters
-  // (inheritance, overrides and other)
-  // !Don't mix with `settings`!
-  //
   N.wire.on(apiPath, function (env, callback) {
-    var items = _.clone(env.params);
-
-    // remove _id parent from property list
-    delete items['_id'];
-    delete items['parent'];
-
-    N.models.users.UserGroup.findById(env.params._id).exec(function (err, group) {
+    UserGroup.findById(env.params._id).exec(function (err, group) {
       if (err) {
         callback(err);
         return;
       }
 
-      // group not found
       if (!group) {
         callback(N.io.NOT_FOUND);
         return;
       }
 
-      // update parent
-      if (!_.isUndefined(env.params.parent)) {
-        group.parent = env.params.parent;
-      }
+      group.raw_settings.usergroup = env.params.raw_settings.usergroup;
+      group.markModified('raw_settings.usergroup');
 
-      // update group items one by one
-      _.keys(items).forEach(function (name) {
-        if (_.isNull(items[name])) {
-          items[name] = usergroup_schema[name]['default'];
-        }
-
-        // FIXME eval before_save
-        group.raw_settings[name] = items[name];
-      });
-
-      // this command required for update Mixed fields
-      // see Mixed in http://mongoosejs.com/docs/schematypes.html
-      group.markModified('raw_settings');
-
-      test_circular(group._id, group.parent, function (err, is_circular) {
+      test_circular(group._id, group.parent_group, function (err, isCircular) {
         if (err) {
           callback(err);
           return;
         }
 
-        if (is_circular) {
+        if (isCircular) {
           callback({
             code: N.io.BAD_REQUEST,
-            data: {
-              common: env.helpers.t('admin.users.usergroups.update.error.circular_dependency')
-            }
+            message: env.helpers.t('admin.users.usergroups.update.error.circular_dependency')
           });
           return;
         }
 
-        group.save(callback);
+        group.save(function (err) {
+          if (err) {
+            callback(err);
+            return;
+          }
+
+          N.settings.set('usergroup', env.params.settings.usergroup, { usergroup_id: group._id }, callback);
+        });
       });
     });
-  });
-
-  // After group update - regenerate settings
-  //
-  N.wire.after(apiPath, function _update_store(env, callback) {
-    var values = {};
-
-    // prepare values for the store
-    _.each(env.params, function (val, key) {
-      values[key] = { value: val };
-    });
-
-    N.settings.set('usergroup', values, { usergroup_id: env.params._id }, callback);
   });
 };

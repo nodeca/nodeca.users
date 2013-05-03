@@ -21,23 +21,19 @@ module.exports = function (N, collectionName) {
    **/
   var UserGroup = new Schema({
     // User group name used in ACP and migrations.
-    short_name         : String
+    short_name   : { type: String, unique: true }
 
     // Can by deleted or renamed?
-  , is_protected       : { type: Boolean, 'default': false }
+  , is_protected : { type: Boolean, 'default': false }
 
     // Parent group, all non-overriden settings will be inherited from this.
-  , parent_group       : Schema.Types.ObjectId
+  , parent_group : Schema.Types.ObjectId
 
-    // Own settings of a group (i.e. not inherited).
-  , overriden_settings : { type: Array, 'default': [] }
-
-    // Restrictive groups can mark some settings as "forced".
-    // Mostly used to "remove" some rights of a group (e.g. restrict posting).
-  , forced_settings    : { type: Array, 'default': [] }
+    // Own settings of a group (i.e. not inherited). Used by the admin interface.
+  , raw_settings : { type: Schema.Types.Mixed, 'default': {} }
 
     // Settings storage. Used only the the UsergroupStore.
-  , settings           : { type: Schema.Types.Mixed, 'default': {} }
+  , settings     : { type: Schema.Types.Mixed, 'default': {} }
   });
 
 

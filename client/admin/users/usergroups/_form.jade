@@ -1,72 +1,72 @@
-form.form-horizontal(data-bind="submit: $root.submit", style="display: none")
-  fieldset(data-bind="with: $root.currentGroup")
+form.form-horizontal(data-bind="submit: submit", style="display: none")
+  fieldset
     div.control-group
       label.control-label= self.t('group.short_name')
       div.controls
-        input(type="text", data-bind="value: name, disable: isProtected")
-        div(data-bind="if: localizedName, text: localizedName")
+        input(type="text", data-bind="value: currentGroup.name, disable: currentGroup.isProtected")
+        div(data-bind="if: currentGroup.localizedName, text: currentGroup.localizedName")
         span.help-block= self.t('group.short_name_help')
 
   fieldset
     div.control-group
       label.control-label= self.t('group.inherit')
       div.controls
-        select(data-bind="options: $root.otherGroups, optionsText: 'name', optionsCaption: '#{self.t('group.inherit_none')}', value: $root.currentGroup.parent")
+        select(data-bind="options: otherGroups, optionsText: 'name', optionsCaption: '#{self.t('group.inherit_none')}', value: currentGroup.parentGroup")
 
     div.control-group
       label.control-label= self.t('filter')
       div.controls
         label.radio
-          input(type="radio", name="filter", value="all", data-bind="checked: $root.settingsFilter")
+          input(type="radio", name="filter", value="", data-bind="checked: filter")
           = self.t('filter_options.show_all')
 
         label.radio
-          input(type="radio", name="filter", value="inherited", data-bind="checked: $root.settingsFilter")
+          input(type="radio", name="filter", value="inherited", data-bind="checked: filter")
           = self.t('filter_options.show_inherited')
 
         label.radio
-          input(type="radio", name="filter", value="overriden", data-bind="checked: $root.settingsFilter")
+          input(type="radio", name="filter", value="overriden", data-bind="checked: filter")
           = self.t('filter_options.show_overriden')
 
         label.radio
-          input(type="radio", name="filter", value="forced", data-bind="checked: $root.settingsFilter")
+          input(type="radio", name="filter", value="forced", data-bind="checked: filter")
           = self.t('filter_options.show_forced')
 
-  // ko foreach: $root.currentGroup.categories
+  // ko foreach: currentGroup.categories
   fieldset
     legend(data-bind="text: localizedName")
 
     // ko foreach: settings
     div.control-group(data-bind="visible: visible, css: { overriden: overriden, inherited: inherited, forced: forced }")
-      label.control-label(data-bind="text: localizedName, attr: { 'for': id }")
+      label.control-label(data-bind="text: localizedName, attr: { 'for': pageId }")
       div.controls
-        // ko if: 'string' === type
-        input(type="text", data-bind="enable: editable, value: value, valueUpdate: 'keyup', attr: { id: id }")
-        // /ko
-
-        // ko if: 'number' === type
-        input(type="number", data-bind="enable: editable, value: value, valueUpdate: 'keyup', attr: { id: id }")
-        // /ko
-
-        // ko if: 'boolean' === type
-        div.switch
-          input(type="checkbox", data-bind="enable: editable, checked: value, attr: { id: id }")
-          label(data-yes=self.t('setting.yes'), data-no=self.t('setting.no'), data-bind="attr: { 'for': id }"): i
-        // /ko
-
         div
           label.checkbox.inline
-            input(type="checkbox", data-bind="enable: parent, checked: overriden")
+            input(type="checkbox", data-bind="checked: overriden")
             = self.t('setting.override')
 
-          label.checkbox.inline
-            input(type="checkbox", data-bind="enable: overriden, checked: forced")
+          label.checkbox.inline(data-bind="visible: overriden")
+            input(type="checkbox", data-bind="checked: forced")
             = self.t('setting.force')
+
+        // ko if: 'string' === valueType
+        input(type="text", data-bind="value: value, valueUpdate: 'keyup', attr: { id: pageId }")
+        // /ko
+
+        // ko if: 'number' === valueType
+        input(type="number", data-bind="value: value, valueUpdate: 'keyup', attr: { id: pageId }")
+        // /ko
+
+        // ko if: 'boolean' === valueType
+        div.switch
+          input(type="checkbox", data-bind="checked: value, attr: { id: pageId }")
+          label(data-yes=self.t('setting.yes'), data-no=self.t('setting.no'), data-bind="attr: { 'for': pageId }"): i
+        // /ko
 
         span.help-block(data-bind="if: localizedHelp, text: localizedHelp")
     // /ko
   // /ko
 
   div
-    button.btn.btn-primary(type="submit", data-bind="enable: $root.currentGroup.isModified")
+    button.btn.btn-primary(type="submit", data-bind="enable: currentGroup.isModified")
       = self.t('submit')

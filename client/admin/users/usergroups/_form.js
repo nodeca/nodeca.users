@@ -6,81 +6,108 @@ var ko = require('knockout');
 
 
 function Setting(form, name, schema, config) {
-  this.id       = 'setting_' + name;
-  this.name     = name;
-  this.type     = schema.type;
-  this.category = schema.category_key;
-  this.priotity = schema.priority;
+  var tName = 'admin.setting.' + name
+    , tHelp = 'admin.setting.' + name + '_help';
 
-  this.group  = config.group;
-  this.parent = ko.computed(function () {
-    if (this.group && this.group.parent()) {
-      return this.group.parent().settingByName[this.name];
+  this.pageId       = 'setting_' + name;
+  this.name         = name;
+  this.defaultValue = schema['default'];
+  this.valueType    = schema.type;
+  this.categoryKey  = schema.category_key;
+  this.priority     = schema.priority;
+  this.ownerGroup   = config.group;
+
+  this.localizedName = N.runtime.t(tName);
+  this.localizedHelp = N.runtime.t.exists(tHelp) ? N.runtime.t(tHelp) : null;
+
+  //////////////////////////////////////////////////////////////////////////////
+
+  this.parentSetting = ko.computed(function () {
+    if (this.ownerGroup && this.ownerGroup.parentGroup()) {
+      return this.ownerGroup.parentGroup().settingsByName[this.name];
     } else {
       return null;
     }
   }, this);
 
-  this.localizedName = ko.computed(function () {
-    return N.runtime.t('admin.setting.' + this.name);
-  }, this);
+  //////////////////////////////////////////////////////////////////////////////
 
-  this.localizedHelp = ko.computed(function () {
-    var translation = 'admin.setting.' + this.name + '_help';
-    return N.runtime.t.exists(translation) ? N.runtime.t(translation) : null;
-  }, this);
-
-  this.savedOverriden = ko.observable(Boolean(config.overriden));
-  this.savedValue     = ko.observable('boolean' === schema.type ? Boolean(config.value) : String(config.value));
-  this.savedForced    = ko.observable(Boolean(config.forced));
+  this.savedOverriden = ko.observable(config.overriden);
+  this.savedForced    = ko.observable(config.forced);
+  this.savedValue     = ko.observable(config.value);
 
   this.overriden = ko.observable(this.savedOverriden());
   this.inherited = ko.computed(function () { return !this.overriden(); }, this);
-  this.value     = ko.observable(this.savedValue());
-  this.forced    = ko.observable(this.savedForced());
+  this._forced   = ko.observable(this.savedForced());
+  this._value    = ko.observable(this.savedValue());
 
-  this.overriden.subscribe(function (input) {
-    if (!input) {
-      this.value(this.parent() ? this.parent().value() : this.savedValue());
-      this.forced(false);
+  this.forced = ko.computed({
+    read:  function () { return this.overriden() && this._forced(); }
+  , write: this._forced
+  , owner: this
+  });
+
+  this.value = ko.computed({
+    read: function () {
+      if (this.overriden()) {
+        return ('number' === this.valueType) ? Number(this._value()) : this._value();
+
+      } else if (this.parentSetting()) {
+        return this.parentSetting().value();
+
+      } else {
+        return this.defaultValue;
+      }
     }
-  }, this);
-
-  this.parent.subscribe(function (input) {
-    if (!this.overriden() && null !== input) {
-      this.value(input.value());
+  , write: function (newValue) {
+      this.overriden(true);
+      this._value(newValue);
     }
-  }, this);
+  , owner: this
+  });
 
-  this.editable = ko.computed(function () {
-    return this.overriden() || !this.parent();
-  }, this);
+  //////////////////////////////////////////////////////////////////////////////
 
   this.visible = ko.computed(function () {
-    switch (form.settingsFilter()) {
-    case 'all':
+    var filter = form.filter();
+
+    if (filter && this.hasOwnProperty(filter)) {
+      return this[filter].call(this);
+    } else {
       return true;
-
-    case 'inherited':
-      return this.inherited();
-
-    case 'overriden':
-      return this.overriden();
-
-    case 'forced':
-      return this.forced();
-
-    default:
-      throw new Error('Unknown filter option: ' + form.settingsFilter());
     }
   }, this);
 
   this.isModified = ko.computed(function () {
-    return this.overriden() !== this.savedOverriden() ||
-           this.value()     !== this.savedValue()     ||
-           this.forced()    !== this.savedForced();
+    if (this.overriden() !== this.savedOverriden()) {
+      return true;
+    }
+
+    if (this.overriden()) {
+      if (this.value() !== this.savedValue()) {
+        return true;
+      }
+      if (this.forced() !== this.savedForced()) {
+        return true;
+      }
+    }
+
+    return false;
   }, this);
 }
+
+Setting.prototype.save = function save() {
+  this.savedOverriden(this.overriden());
+  this.savedForced(this.forced());
+  this.savedValue(this.value());
+};
+
+Setting.prototype.dump = function dump() {
+  return {
+    value:  this.value()
+  , forced: this.forced()
+  };
+};
 
 
 function SettingCategory(form, name, settings) {
@@ -93,58 +120,59 @@ function SettingCategory(form, name, settings) {
 
 
 function UserGroup(form, data) {
-  if (!data) {
-    data = {
-      _id: null
-    , is_protected: false
-    , parent_group: null
-    , short_name: ''
-    , overriden_settings: []
-    , forced_settings: []
-    , setting_values: {}
-    };
+  data = data || {};
+
+  var rawSettings;
+
+  if (data.raw_settings) {
+    rawSettings = data.raw_settings.usergroup || {};
+  } else {
+    rawSettings = {};
   }
 
-  this.id          = data._id;
-  this.isProtected = data.is_protected;
+  this.objectId    = data._id || null;
+  this.isProtected = data.is_protected || false;
 
-  this.name          = ko.observable(data.short_name);
-  this.savedName     = ko.observable(data.short_name);
+  this.savedName = ko.observable(data.short_name || '');
+  this.name      = ko.observable(this.savedName());
+
   this.localizedName = ko.computed(function () {
     return this.name() ? N.runtime.t('users.usergroup.' + this.name()) : null;
   }, this);
 
-  this.parentId      = ko.observable(data.parent_group);
-  this.savedParentId = ko.observable(this.parentId());
+  this.savedParentId = ko.observable(data.parent_group || null);
+  this.parentId      = ko.observable(this.savedParentId());
 
-  this.parent = ko.computed({
-    read:  function () { return _.find(form.otherGroups, { id: this.parentId() }); }
-  , write: function (input) { this.parentId(input ? input.id : null); }
+  this.parentGroup = ko.computed({
+    read:  function () { return form.groupsById[this.parentId()]; }
+  , write: function (group) { this.parentId(group ? group.objectId : null); }
   , owner: this
   });
 
-  this.settings       = [];
-  this.settingByName  = {};
-  this.categories     = [];
-  this.categoryByName = {};
+  this.settings         = [];
+  this.settingsByName   = {};
+  this.categories       = [];
+  this.categoriesByName = {};
 
-  _.forEach(form.settingSchemas, function (schema, name) {
-    var setting = new Setting(form, name, schema, {
+  _.forEach(form.setting_schemas, function (schema, name) {
+    var setting, overriden = _.has(rawSettings, name);
+
+    setting = new Setting(form, name, schema, {
       group:     this
-    , value:     data.setting_values[name]
-    , overriden: _.contains(data.overriden_settings, name)
-    , forced:    _.contains(data.forced_settings, name)
+    , overriden: overriden
+    , forced:    overriden ? rawSettings[name].force : false
+    , value:     overriden ? rawSettings[name].value : schema['default']
     });
 
     this.settings.push(setting);
-    this.settingByName[name] = setting;
+    this.settingsByName[name] = setting;
   }, this);
 
-  _(form.settingSchemas).pluck('category_key').unique().forEach(function (name) {
-    var category = new SettingCategory(form, name, _.select(this.settings, { category: name }));
+  _(form.setting_schemas).pluck('category_key').unique().forEach(function (name) {
+    var category = new SettingCategory(form, name, _.select(this.settings, { categoryKey: name }));
 
     this.categories.push(category);
-    this.categoryByName[name] = category;
+    this.categoriesByName[name] = category;
   }, this);
 
   this.settings.sort(function (a, b) { return a.priority - b.priority; });
@@ -157,101 +185,109 @@ function UserGroup(form, data) {
   }, this);
 }
 
-UserGroup.prototype.dumpPlainData = function () {
+UserGroup.prototype.save = function () {
+  this.savedName(this.name());
+  this.savedParentId(this.parentId());
+  _.invoke(this.settings, 'save');
+};
+
+UserGroup.prototype.dump = function () {
   var result = {
-    short_name:         this.name()
-  , parent_group:       this.parentId()
-  , overriden_settings: []
-  , forced_settings:    []
-  , setting_values:     {}
+    short_name:   this.name()
+  , parent_group: this.parentId()
+  , raw_settings: { usergroup: {} }
+  , settings:     { usergroup: {} }
   };
 
+  if (this.objectId) {
+    result._id = this.objectId;
+  }
+
   _.forEach(this.settings, function (setting) {
-    if (setting.overriden() || !setting.parent()) {
-      result.overriden_settings.push(setting.name);
+    // Keep interface information.
+    if (setting.overriden()) {
+      result.raw_settings.usergroup[setting.name] = setting.dump();
     }
 
-    if (setting.forced()) {
-      result.forced_settings.push(setting.name);
-    }
-
-    result.setting_values[setting.name] = setting.value();
+    // Fill in all "computed" settings used by the store.
+    result.settings.usergroup[setting.name] = setting.dump();
   });
 
   return result;
 };
 
 
-function Form(page_data) {
-  this.isNew        = false;
-  this.allGroups    = [];
+function Form(translator, page_data) {
+  this.t = translator;
+  this.setting_schemas = page_data.setting_schemas;
+
+  this.groups     = [];
+  this.groupsById = {};
+
+  this.filter = ko.observable('');
+
+  this.createMode   = !_.has(page_data, 'current_group_id');
   this.currentGroup = null;
   this.otherGroups  = [];
 
-  this.settingSchemas = page_data.setting_schemas;
-  this.settingsFilter = ko.observable('all');
+  if (this.createMode) {
+    this.currentGroup = new UserGroup(this);
+  }
 
   _.forEach(page_data.groups_data, function (data) {
     var group = new UserGroup(this, data);
 
-    if (page_data.current_group_id && page_data.current_group_id === group.id) {
+    this.groups.push(group);
+    this.groupsById[group.objectId] = group;
+
+    if (!this.createMode && group.objectId === page_data.current_group_id) {
       this.currentGroup = group;
     } else {
-      this.allGroups.push(group);
       this.otherGroups.push(group);
     }
   }, this);
-
-  if (!this.currentGroup) {
-    this.isNew = true;
-    this.currentGroup = new UserGroup(this);
-  }
-
-  this.allGroups.push(this.currentGroup);
 }
 
-Form.prototype.submitCreate = function submitCreate() {
-  var payload = this.currentGroup.dumpPlainData();
+Form.prototype.submit = function submit() {
+  var self = this, method, payload = [];
 
-  console.log(payload);
+  if (this.createMode) {
+    method = 'admin.users.usergroups.create';
+    payload.push(this.currentGroup.dump());
+  } else {
+    method = 'admin.users.usergroups.update';
+    _.forEach(this.groups, function (group) {
+      if (group.isModified()) {
+        payload.push(group.dump());
+      }
+    });
+  }
 
-  N.io.rpc('admin.users.usergroups.create', payload, function (err) {
+  function complete(err) {
     if (err) {
-      return; // User should receive error notification automatically.
-    }
-
-    N.wire.emit('notify', { type: 'info', message: t('submited') });
-  });
-};
-
-Form.prototype.submitUpdate = function submitUpdate() {
-  var payload = {};
-
-  _.forEach(this.allGroups, function (group) {
-    if (!group.isModified()) {
+      N.wire.emit('notify', { type: 'error', message: self.t('error') });
       return;
     }
 
-    payload[group.id] = group.dumpPlainData();
-  });
+    _.invoke(self.groups, 'save');
 
-  console.log(payload);
-
-  N.io.rpc('admin.users.usergroups.update', payload, function (err) {
-    if (err) {
-      return; // User should receive error notification automatically.
-    }
-
-    N.wire.emit('notify', { type: 'info', message: t('submited') });
-  });
-};
-
-Form.prototype.submit = function submit() {
-  if (this.isNew) {
-    this.submitCreate();
-  } else {
-    this.submitUpdate();
+    N.wire.emit('notify', { type: 'info', message: self.t('submited') });
+    N.wire.emit('navigate.to', { apiPath: 'admin.users.usergroups.show' });
   }
+
+  function send() {
+    var data = payload.shift();
+
+    N.io.rpc(method, data, function (err) {
+      if (err || _.isEmpty(payload)) {
+        complete(err);
+      } else {
+        send();
+      }
+    });
+  }
+
+  send();
 };
 
 

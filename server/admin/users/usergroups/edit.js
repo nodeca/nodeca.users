@@ -1,14 +1,7 @@
 'use strict';
 
 
-var _ = require('lodash');
-var fetchGroups = require('./_lib/fetch_groups');
-
-
 module.exports = function (N, apiPath) {
-  var UserGroup = N.models.users.UserGroup;
-
-
   N.validate(apiPath, {
     _id: {
       type: 'string'
@@ -24,7 +17,7 @@ module.exports = function (N, apiPath) {
 
     data.setting_schemas = N.config.setting_schemas['usergroup'] || {};
 
-    UserGroup
+    N.models.users.UserGroup
         .findById(env.params._id)
         .select('_id short_name')
         .setOptions({ lean: true })
@@ -47,8 +40,13 @@ module.exports = function (N, apiPath) {
 
       data.current_group_id = currentGroup._id;
 
-      fetchGroups(N, _.keys(data.setting_schemas), function (err, allGroupsData) {
-        data.groups_data = allGroupsData;
+      N.models.users.UserGroup
+          .find()
+          .select('_id short_name is_protected parent_group raw_settings')
+          .sort('is_protected _id')
+          .setOptions({ lean: true })
+          .exec(function (err, groupsData) {
+        data.groups_data = groupsData;
         callback(err);
       });
     });
