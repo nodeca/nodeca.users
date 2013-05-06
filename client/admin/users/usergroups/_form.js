@@ -32,9 +32,11 @@ function Setting(form, name, schema, config) {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  this.savedOverriden = ko.observable(config.overriden);
-  this.savedForced    = ko.observable(config.forced);
-  this.savedValue     = ko.observable(config.value);
+  this.savedOverriden = ko.observable(Boolean(config.overriden));
+  this.savedForced    = ko.observable(Boolean(config.forced));
+  this.savedValue     = ko.observable('number' === schema.type ?
+                                      Number(config.value)     :
+                                      config.value);
 
   this.overriden = ko.observable(this.savedOverriden());
   this.inherited = ko.computed(function () { return !this.overriden(); }, this);
@@ -50,7 +52,9 @@ function Setting(form, name, schema, config) {
   this.value = ko.computed({
     read: function () {
       if (this.overriden()) {
-        return ('number' === this.valueType) ? Number(this._value()) : this._value();
+        return 'number' === this.valueType ?
+               Number(this._value())       :
+               this._value();
 
       } else if (this.parentSetting()) {
         return this.parentSetting().value();
