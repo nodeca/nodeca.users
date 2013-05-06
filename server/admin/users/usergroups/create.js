@@ -3,45 +3,15 @@
 
 var _ = require('lodash');
 
+var updateSettings = require('./_lib/update_settings');
+var PARAMS_SCHEMA  = require('./_lib/params_schema');
+
 
 module.exports = function (N, apiPath) {
   var UserGroup = N.models.users.UserGroup;
 
 
-  N.validate(apiPath, {
-    short_name: {
-      type: 'string'
-    , required: true
-    , minLength: 1
-    }
-  , parent_group: {
-      type: ['string', 'null']
-    , required: true
-    , minLength: 24
-    , maxLength: 24
-    }
-  , raw_settings: {
-      type: 'object'
-    , required: true
-    , properties: {
-        usergroup: {
-          type: 'object'
-        , required: false
-        , 'default': {}
-        }
-      }
-    }
-  , settings: {
-      type: 'object'
-    , required: true
-    , properties: {
-        usergroup: {
-          type: 'object'
-        , required: true
-        }
-      }
-    }
-  });
+  N.validate(apiPath, PARAMS_SCHEMA);
 
 
   N.wire.on(apiPath, function (env, callback) {
@@ -59,11 +29,13 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      var group = new UserGroup(_.pick(env.params, [
-        'short_name'
-      , 'parent_group'
-      , 'raw_settings'
-      ]));
+      var group = new UserGroup(_.pick(env.params, 'short_name', 'parent_group'));
+
+      group.raw_settings.usergroup = {};
+
+      _.forEach(env.params.raw_settings, function (setting, key) {
+        group.raw_settings.usergroup[key] = setting;
+      });
 
       group.save(function (err) {
         if (err) {
@@ -71,7 +43,7 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        N.settings.set('usergroup', env.params.settings.usergroup, { usergroup_id: group._id }, callback);
+        updateSettings(N, callback);
       });
     });
   });

@@ -5,8 +5,8 @@ var _ = require('lodash');
 
 
 module.exports = function (N, apiPath) {
-  var UserGroup = N.models.users.UserGroup;
-  var User      = N.models.users.User;
+  var UserGroup = N.models.users.UserGroup
+    , User      = N.models.users.User;
 
 
   N.validate(apiPath, {

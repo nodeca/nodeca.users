@@ -199,8 +199,7 @@ UserGroup.prototype.dump = function () {
   var result = {
     short_name:   this.name()
   , parent_group: this.parentId()
-  , raw_settings: { usergroup: {} }
-  , settings:     { usergroup: {} }
+  , raw_settings: {}
   };
 
   if (this.objectId) {
@@ -208,13 +207,9 @@ UserGroup.prototype.dump = function () {
   }
 
   _.forEach(this.settings, function (setting) {
-    // Keep interface information.
     if (setting.overriden()) {
-      result.raw_settings.usergroup[setting.name] = setting.dump();
+      result.raw_settings[setting.name] = setting.dump();
     }
-
-    // Fill in all "computed" settings used by the store.
-    result.settings.usergroup[setting.name] = setting.dump();
   });
 
   return result;
@@ -252,46 +247,41 @@ function Form(translator, page_data) {
   }, this);
 }
 
-Form.prototype.submit = function submit() {
-  var self = this, method, payload = [];
+Form.prototype.create = function create() {
+  var self = this;
 
-  if (this.createMode) {
-    method = 'admin.users.usergroups.create';
-    payload.push(this.currentGroup.dump());
-  } else {
-    method = 'admin.users.usergroups.update';
-    _.forEach(this.groups, function (group) {
-      if (group.isModified()) {
-        payload.push(group.dump());
-      }
-    });
-  }
-
-  function complete(err) {
+  N.io.rpc('admin.users.usergroups.create', this.currentGroup.dump(), function (err) {
     if (err) {
       N.wire.emit('notify', { type: 'error', message: self.t('error') });
       return;
     }
 
-    _.invoke(self.groups, 'save');
+    N.wire.emit('notify', { type: 'info', message: self.t('submited') });
+
+    // TODO: Replace this with the navigate.js when it will be ported for ACP.
+    window.location = N.runtime.router.linkTo('admin.users.usergroups.show');
+  });
+};
+
+Form.prototype.update = function update() {
+  var self = this;
+
+  N.io.rpc('admin.users.usergroups.update', this.currentGroup.dump(), function (err) {
+    if (err) {
+      N.wire.emit('notify', { type: 'error', message: self.t('error') });
+      return;
+    }
 
     N.wire.emit('notify', { type: 'info', message: self.t('submited') });
-    N.wire.emit('navigate.to', { apiPath: 'admin.users.usergroups.show' });
+  });
+};
+
+Form.prototype.submit = function submit() {
+  if (this.createMode) {
+    this.create();
+  } else {
+    this.update();
   }
-
-  function send() {
-    var data = payload.shift();
-
-    N.io.rpc(method, data, function (err) {
-      if (err || _.isEmpty(payload)) {
-        complete(err);
-      } else {
-        send();
-      }
-    });
-  }
-
-  send();
 };
 
 
