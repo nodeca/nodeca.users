@@ -1,3 +1,7 @@
+// Logic of the usergroup editor interface. It's used by "new" and "edit" pages.
+//
+
+
 'use strict';
 
 
@@ -5,23 +9,46 @@ var _  = require('lodash');
 var ko = require('knockout');
 
 
+ko.extenders.trackable = function (target) {
+  var savedValue = ko.observable(target());
+
+  target.isModified = ko.computed(function () {
+    return savedValue() !== target();
+  });
+
+  target.markSaved = function () {
+    savedValue(target());
+  };
+
+  return target;
+};
+
+
+// Single setting of a usergroup.
+//
+// form (Form): Root form object. See below for Form class.
+// name (String): Unique identofier of the setting.
+// schema (Object): N.config.setting_schemas.usergroup[name]
+// config (Object): Must contain: `group`, `overriden`, `forced`, and `value`.
+//
 function Setting(form, name, schema, config) {
   var tName = 'admin.setting.' + name
     , tHelp = 'admin.setting.' + name + '_help';
 
-  this.pageId       = 'setting_' + name;
-  this.name         = name;
-  this.defaultValue = schema['default'];
-  this.valueType    = schema.type;
-  this.categoryKey  = schema.category_key;
-  this.priority     = schema.priority;
-  this.ownerGroup   = config.group;
-
+  // Read-only slots.
+  //
+  this.elementId     = 'setting_' + name; // HTML id attribute.
+  this.name          = name;
+  this.defaultValue  = schema['default'];
+  this.valueType     = schema.type;
+  this.categoryKey   = schema.category_key;
+  this.priority      = schema.priority;
+  this.ownerGroup    = config.group;
   this.localizedName = N.runtime.t(tName);
   this.localizedHelp = N.runtime.t.exists(tHelp) ? N.runtime.t(tHelp) : null;
 
-  //////////////////////////////////////////////////////////////////////////////
-
+  // Setting model of `ownerGroup` from which the current setting should inherit
+  // the value when it isn't overriden.
   this.parentSetting = ko.computed(function () {
     if (this.ownerGroup && this.ownerGroup.parentGroup()) {
       return this.ownerGroup.parentGroup().settingsByName[this.name];
@@ -30,23 +57,21 @@ function Setting(form, name, schema, config) {
     }
   }, this);
 
-  //////////////////////////////////////////////////////////////////////////////
+  // Private writable slots.
+  //
+  this._overriden = ko.observable(Boolean(config.overriden));
+  this._forced    = ko.observable(Boolean(config.forced));
+  this._value     = ko.observable('number' === schema.type ? Number(config.value) : config.value);
 
-  this.savedOverriden = ko.observable(Boolean(config.overriden));
-  this.savedForced    = ko.observable(Boolean(config.forced));
-  this.savedValue     = ko.observable('number' === schema.type ?
-                                      Number(config.value)     :
-                                      config.value);
-
-  this._overriden = ko.observable(this.savedOverriden());
-  this._forced    = ko.observable(this.savedForced());
-  this._value     = ko.observable(this.savedValue());
-
+  // Public proxy slots. These allows dynamically recompute _shown_ data on
+  // parent group change or overriden flag unmark AND keep user's own input
+  // at the same time.
+  //
   this.overriden = ko.computed({
     read:  function () { return this._overriden() || !this.ownerGroup.parentGroup(); }
   , write: this._overriden
   , owner: this
-  });
+  }).extend({ trackable: true });
 
   this.inherited = ko.computed(function () { return !this.overriden(); }, this);
 
@@ -54,14 +79,12 @@ function Setting(form, name, schema, config) {
     read:  function () { return this.overriden() && this._forced(); }
   , write: this._forced
   , owner: this
-  });
+  }).extend({ trackable: true });
 
   this.value = ko.computed({
     read: function () {
       if (this.overriden()) {
-        return 'number' === this.valueType ?
-               Number(this._value())       :
-               this._value();
+        return 'number' === this.valueType ? Number(this._value()) : this._value();
 
       } else if (this.parentSetting()) {
         return this.parentSetting().value();
@@ -75,30 +98,37 @@ function Setting(form, name, schema, config) {
       this._value(newValue);
     }
   , owner: this
-  });
+  }).extend({ trackable: true });
 
-  //////////////////////////////////////////////////////////////////////////////
-
+  // Helpers.
+  //
   this.visible = ko.computed(function () {
     var filter = form.filter();
 
-    if (filter && this.hasOwnProperty(filter)) {
-      return this[filter].call(this);
+    if ('overriden' === filter) {
+      return this.overriden();
+
+    } else if ('inherited' === filter) {
+      return this.inherited();
+
+    } else if ('forced' === filter) {
+      return this.forced();
+
     } else {
       return true;
     }
   }, this);
 
   this.isModified = ko.computed(function () {
-    if (this.overriden() !== this.savedOverriden()) {
+    if (this.overriden.isModified()) {
       return true;
     }
 
     if (this.overriden()) {
-      if (this.value() !== this.savedValue()) {
+      if (this.value.isModified()) {
         return true;
       }
-      if (this.forced() !== this.savedForced()) {
+      if (this.forced.isModified()) {
         return true;
       }
     }
@@ -107,13 +137,17 @@ function Setting(form, name, schema, config) {
   }, this);
 }
 
-Setting.prototype.save = function save() {
-  this.savedOverriden(this.overriden());
-  this.savedForced(this.forced());
-  this.savedValue(this.value());
+// Marks all trackable data slots as saved.
+//
+Setting.prototype.markSaved = function markSaved() {
+  this.overriden.markSaved();
+  this.forced.markSaved();
+  this.value.markSaved();
 };
 
-Setting.prototype.dump = function dump() {
+// Returns data suitable for the server.
+//
+Setting.prototype.getOutputData = function getOutputData() {
   return {
     value:  this.value()
   , forced: this.forced()
@@ -121,6 +155,12 @@ Setting.prototype.dump = function dump() {
 };
 
 
+// Named group of settings. (visible interface element)
+//
+// form (Form): See below for Form class.
+// name (String): Title translation key.
+// settings (Array): List of related settings.
+//
 function SettingCategory(form, name, settings) {
   this.name          = name;
   this.localizedName = N.runtime.t('admin.setting.category.' + name);
@@ -130,6 +170,9 @@ function SettingCategory(form, name, settings) {
 }
 
 
+// Single known user group. Used either for displayed group and for groups in
+// the "inherits" list.
+//
 function UserGroup(form, data) {
   data = data || {};
 
@@ -141,18 +184,21 @@ function UserGroup(form, data) {
     rawSettings = {};
   }
 
+  // Read-only slots.
+  //
   this.objectId    = data._id || null;
   this.isProtected = data.is_protected || false;
 
-  this.savedName = ko.observable(data.short_name || '');
-  this.name      = ko.observable(this.savedName());
+  // Writable and savable slots.
+  //
+  this.name     = ko.observable(data.short_name || '').extend({ trackable: true });
+  this.parentId = ko.observable(data.parent_group || null).extend({ trackable: true });
 
+  // Computed values.
+  //
   this.localizedName = ko.computed(function () {
     return this.name() ? N.runtime.t('users.usergroup.' + this.name()) : null;
   }, this);
-
-  this.savedParentId = ko.observable(data.parent_group || null);
-  this.parentId      = ko.observable(this.savedParentId());
 
   this.parentGroup = ko.computed({
     read:  function () { return form.groupsById[this.parentId()]; }
@@ -160,11 +206,15 @@ function UserGroup(form, data) {
   , owner: this
   });
 
+  // Related settings and categories lists.
+  // See Setting and SettingCategory classes for details.
+  //
   this.settings         = [];
   this.settingsByName   = {};
   this.categories       = [];
   this.categoriesByName = {};
 
+  // Collect setting models.
   _.forEach(form.setting_schemas, function (schema, name) {
     var setting, overriden = _.has(rawSettings, name);
 
@@ -179,6 +229,9 @@ function UserGroup(form, data) {
     this.settingsByName[name] = setting;
   }, this);
 
+  this.settings = _.sortBy(this.settings, 'priority');
+
+  // Collect category models.
   _(form.setting_schemas).pluck('category_key').unique().forEach(function (name) {
     var category = new SettingCategory(form, name, _.select(this.settings, { categoryKey: name }));
 
@@ -186,36 +239,42 @@ function UserGroup(form, data) {
     this.categoriesByName[name] = category;
   }, this);
 
-  this.settings.sort(function (a, b) { return a.priority - b.priority; });
-  this.categories.sort(function (a, b) { return a.priority - b.priority; });
+  this.categories = _.sortBy(this.categories, 'priority');
 
+  // Helpers.
+  //
   this.isModified = ko.computed(function () {
-    return this.name()     !== this.savedName()     ||
-           this.parentId() !== this.savedParentId() ||
-           _.any(this.settings, function (setting) { return setting.isModified(); });
+    return this.name.isModified()     ||
+           this.parentId.isModified() ||
+           _(this.settings).invoke('isModified').any();
   }, this);
 }
 
-UserGroup.prototype.save = function () {
-  this.savedName(this.name());
-  this.savedParentId(this.parentId());
-  _.invoke(this.settings, 'save');
+// Marks all trackable data slots and related settings as saved.
+//
+UserGroup.prototype.markSaved = function markSaved() {
+  this.name.markSaved();
+  this.parentId.markSaved();
+  _.invoke(this.settings, 'markSaved');
 };
 
-UserGroup.prototype.dump = function () {
+// Returns data suitable for the server.
+//
+UserGroup.prototype.getOutputData = function getOutputData() {
   var result = {
     short_name:   this.name()
   , parent_group: this.parentId()
   , raw_settings: {}
   };
 
+  // Add `_id` property only when `this` is a persistent (i.e. saved) group.
   if (this.objectId) {
     result._id = this.objectId;
   }
 
   _.forEach(this.settings, function (setting) {
     if (setting.overriden()) {
-      result.raw_settings[setting.name] = setting.dump();
+      result.raw_settings[setting.name] = setting.getOutputData();
     }
   });
 
@@ -223,6 +282,13 @@ UserGroup.prototype.dump = function () {
 };
 
 
+// Root view model of the page. It has two modes: 'create' and 'update'.
+//
+// page_data.setting_schemas (Object): N.config.setting_schemas.usergroup
+// page_data.groups_data (Array): List of all existent user groups.
+// page_data.current_group_id (String, Optional): ObjectID of a group for edit.
+// If this identifier is provided, the form will use 'update' mode.
+//
 function Form(translator, page_data) {
   this.t = translator;
   this.setting_schemas = page_data.setting_schemas;
@@ -254,15 +320,18 @@ function Form(translator, page_data) {
   }, this);
 }
 
+// Sends 'create' request for `currentGroup`.
+//
 Form.prototype.create = function create() {
   var self = this;
 
-  N.io.rpc('admin.users.usergroups.create', this.currentGroup.dump(), function (err) {
+  N.io.rpc('admin.users.usergroups.create', this.currentGroup.getOutputData(), function (err) {
     if (err) {
       N.wire.emit('notify', { type: 'error', message: self.t('error') });
       return;
     }
 
+    self.currentGroup.markSaved();
     N.wire.emit('notify', { type: 'info', message: self.t('submited') });
 
     // TODO: Replace this with the navigate.js when it will be ported for ACP.
@@ -270,19 +339,24 @@ Form.prototype.create = function create() {
   });
 };
 
+// Sends 'update' request for `currentGroup`.
+//
 Form.prototype.update = function update() {
   var self = this;
 
-  N.io.rpc('admin.users.usergroups.update', this.currentGroup.dump(), function (err) {
+  N.io.rpc('admin.users.usergroups.update', this.currentGroup.getOutputData(), function (err) {
     if (err) {
       N.wire.emit('notify', { type: 'error', message: self.t('error') });
       return;
     }
 
+    self.currentGroup.markSaved();
     N.wire.emit('notify', { type: 'info', message: self.t('submited') });
   });
 };
 
+// Sends save request to the server.
+//
 Form.prototype.submit = function submit() {
   if (this.createMode) {
     this.create();

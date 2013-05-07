@@ -13,13 +13,15 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.on(apiPath, function (env, callback) {
-    UserGroup.count({ short_name: env.params.short_name }).exec(function (err, existent) {
+
+    // Check if any group with the specified name exists.
+    UserGroup.count({ short_name: env.params.short_name }).exec(function (err, count) {
       if (err) {
         callback(err);
         return;
       }
 
-      if (existent) {
+      if (0 !== count) {
         callback({
           code: N.io.BAD_REQUEST
         , message: env.helpers.t('admin.users.usergroups.create.error.short_name_busy')

@@ -38,7 +38,7 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
 
     // ko foreach: settings
     div.control-group(data-bind="visible: visible, css: { overriden: overriden, inherited: inherited, forced: forced }")
-      label.control-label(data-bind="text: localizedName, attr: { 'for': pageId }")
+      label.control-label(data-bind="text: localizedName, attr: { 'for': elementId }")
       div.controls
         div
           label.checkbox.inline(data-bind="visible: parentSetting")
@@ -50,17 +50,17 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
             = self.t('setting.force')
 
         // ko if: 'string' === valueType
-        input(type="text", data-bind="value: value, valueUpdate: 'keyup', attr: { id: pageId }")
+        input(type="text", data-bind="value: value, valueUpdate: 'keyup', attr: { id: elementId }")
         // /ko
 
         // ko if: 'number' === valueType
-        input(type="number", data-bind="value: value, valueUpdate: 'keyup', attr: { id: pageId }")
+        input(type="number", data-bind="value: value, valueUpdate: 'keyup', attr: { id: elementId }")
         // /ko
 
         // ko if: 'boolean' === valueType
         div.switch
-          input(type="checkbox", data-bind="checked: value, attr: { id: pageId }")
-          label(data-yes=self.t('setting.yes'), data-no=self.t('setting.no'), data-bind="attr: { 'for': pageId }"): i
+          input(type="checkbox", data-bind="checked: value, attr: { id: elementId }")
+          label(data-yes=self.t('setting.yes'), data-no=self.t('setting.no'), data-bind="attr: { 'for': elementId }"): i
         // /ko
 
         span.help-block(data-bind="if: localizedHelp, text: localizedHelp")
