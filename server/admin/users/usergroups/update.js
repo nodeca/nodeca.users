@@ -18,6 +18,7 @@ module.exports = function (N, apiPath) {
     , required: true
     , minLength: 24
     , maxLength: 24
+    , pattern: /^[0-9a-f]{24}$/
     }
   }, PARAMS_SCHEMA));
 

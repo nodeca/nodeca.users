@@ -5,9 +5,6 @@
 'use strict';
 
 
-var revalidator = require('revalidator');
-
-
 module.exports = {
   short_name: {
     type: 'string'
@@ -19,13 +16,17 @@ module.exports = {
   , required: true
   , minLength: 24
   , maxLength: 24
+  , pattern: /^[0-9a-f]{24}$/
   }
 , raw_settings: {
     type: 'object'
   , required: true
-  , conform: function (raw_settings) {
-      return revalidator.validate(raw_settings, {
-        properties: {
+  , patternProperties: {
+      '.*': {
+        type: 'object'
+      , required: true
+      , additionalProperties: false
+      , properties: {
           value: {
             required: true
           }
@@ -34,8 +35,7 @@ module.exports = {
           , required: true
           }
         }
-      , additionalProperties: false
-      });
+      }
     }
   }
 };
