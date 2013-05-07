@@ -289,8 +289,7 @@ UserGroup.prototype.getOutputData = function getOutputData() {
 // page_data.current_group_id (String, Optional): ObjectID of a group for edit.
 // If this identifier is provided, the form will use 'update' mode.
 //
-function Form(translator, page_data) {
-  this.t = translator;
+function Form(page_data) {
   this.setting_schemas = page_data.setting_schemas;
 
   this.groups     = [];
@@ -327,12 +326,21 @@ Form.prototype.create = function create() {
 
   N.io.rpc('admin.users.usergroups.create', this.currentGroup.getOutputData(), function (err) {
     if (err) {
-      N.wire.emit('notify', { type: 'error', message: self.t('error') });
+      N.wire.emit('notify', {
+        type: 'error'
+      , message: N.runtime.t(N.io.BAD_REQUEST === err.code ?
+                             'admin.users.usergroups.form.error.bad_request' :
+                             'admin.users.usergroups.form.error.unknown')
+      });
       return;
     }
 
     self.currentGroup.markSaved();
-    N.wire.emit('notify', { type: 'info', message: self.t('submited') });
+
+    N.wire.emit('notify', {
+      type: 'info'
+    , message: N.runtime.t('admin.users.usergroups.form.created')
+    });
 
     // TODO: Replace this with the navigate.js when it will be ported for ACP.
     window.location = N.runtime.router.linkTo('admin.users.usergroups.show');
@@ -346,12 +354,21 @@ Form.prototype.update = function update() {
 
   N.io.rpc('admin.users.usergroups.update', this.currentGroup.getOutputData(), function (err) {
     if (err) {
-      N.wire.emit('notify', { type: 'error', message: self.t('error') });
+      N.wire.emit('notify', {
+        type: 'error'
+      , message: N.runtime.t(N.io.BAD_REQUEST === err.code ?
+                             'admin.users.usergroups.form.error.bad_request' :
+                             'admin.users.usergroups.form.error.unknown')
+      });
       return;
     }
 
     self.currentGroup.markSaved();
-    N.wire.emit('notify', { type: 'info', message: self.t('submited') });
+
+    N.wire.emit('notify', {
+      type: 'info'
+    , message: N.runtime.t('admin.users.usergroups.form.updated')
+    });
   });
 };
 

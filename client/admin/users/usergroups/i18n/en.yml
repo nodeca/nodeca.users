@@ -8,7 +8,7 @@ en-US:
     error:
       remove: Error while removing the group!
 
-  _form: &form
+  form: &form
     group:
       short_name: Group name
       short_name_help: Short unique text, will be used for translations.
@@ -28,14 +28,10 @@ en-US:
       show_overriden: Show overriden only
       show_forced: Show forced only
 
-  new:
-    <<: *form
-    error: Error while creating the group!
-    submit: Create group
-    submited: Group created
+    error:
+      bad_request: Unacceptable group configuration.
+      unknown: An unknown error occured while saving the the group.
 
-  edit:
-    <<: *form
-    error: Error while updating the group!
-    submit: Save group
-    submited: Group saved
+    submit: Save
+    created: Group is created.
+    updated: Group is updated.
