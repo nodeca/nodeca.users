@@ -149,8 +149,8 @@ Setting.prototype.markSaved = function markSaved() {
 //
 Setting.prototype.getOutputData = function getOutputData() {
   return {
-    value:  this.value()
-  , forced: this.forced()
+    value: this.value()
+  , force: this.forced()
   };
 };
 
