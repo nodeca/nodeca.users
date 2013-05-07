@@ -10,6 +10,12 @@ var _ = require('lodash');
 
 
 module.exports = function detectCircular(groupId, parentId, callback) {
+  if (!parentId) {
+    // No parent - skip.
+    callback(null, null);
+    return;
+  }
+
   N.models.users.UserGroup
       .find()
       .select('_id short_name parent_group')
