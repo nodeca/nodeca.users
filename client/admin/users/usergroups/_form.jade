@@ -68,5 +68,5 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
   // /ko
 
   div
-    button.btn.btn-primary(type="submit", data-bind="enable: currentGroup.isModified")
+    button.btn.btn-primary(type="submit", data-bind="enable: currentGroup.isDirty")
       = self.t('@admin.users.usergroups.form.submit')

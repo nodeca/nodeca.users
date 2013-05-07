@@ -9,21 +9,6 @@ var _  = require('lodash');
 var ko = require('knockout');
 
 
-ko.extenders.trackable = function (target) {
-  var savedValue = ko.observable(target());
-
-  target.isModified = ko.computed(function () {
-    return savedValue() !== target();
-  });
-
-  target.markSaved = function () {
-    savedValue(target());
-  };
-
-  return target;
-};
-
-
 // Single setting of a usergroup.
 //
 // form (Form): Root form object. See below for Form class.
@@ -71,7 +56,7 @@ function Setting(form, name, schema, config) {
     read:  function () { return this._overriden() || !this.ownerGroup.parentGroup(); }
   , write: this._overriden
   , owner: this
-  }).extend({ trackable: true });
+  }).extend({ dirty: false });
 
   this.inherited = ko.computed(function () { return !this.overriden(); }, this);
 
@@ -79,7 +64,7 @@ function Setting(form, name, schema, config) {
     read:  function () { return this.overriden() && this._forced(); }
   , write: this._forced
   , owner: this
-  }).extend({ trackable: true });
+  }).extend({ dirty: false });
 
   this.value = ko.computed({
     read: function () {
@@ -98,7 +83,7 @@ function Setting(form, name, schema, config) {
       this._value(newValue);
     }
   , owner: this
-  }).extend({ trackable: true });
+  }).extend({ dirty: false });
 
   // Helpers.
   //
@@ -119,16 +104,16 @@ function Setting(form, name, schema, config) {
     }
   }, this);
 
-  this.isModified = ko.computed(function () {
-    if (this.overriden.isModified()) {
+  this.isDirty = ko.computed(function () {
+    if (this.overriden.isDirty()) {
       return true;
     }
 
     if (this.overriden()) {
-      if (this.value.isModified()) {
+      if (this.value.isDirty()) {
         return true;
       }
-      if (this.forced.isModified()) {
+      if (this.forced.isDirty()) {
         return true;
       }
     }
@@ -139,10 +124,10 @@ function Setting(form, name, schema, config) {
 
 // Marks all trackable data slots as saved.
 //
-Setting.prototype.markSaved = function markSaved() {
-  this.overriden.markSaved();
-  this.forced.markSaved();
-  this.value.markSaved();
+Setting.prototype.markClean = function markClean() {
+  this.overriden.markClean();
+  this.forced.markClean();
+  this.value.markClean();
 };
 
 // Returns data suitable for the server.
@@ -191,8 +176,8 @@ function UserGroup(form, data) {
 
   // Writable and savable slots.
   //
-  this.name     = ko.observable(data.short_name || '').extend({ trackable: true });
-  this.parentId = ko.observable(data.parent_group || null).extend({ trackable: true });
+  this.name     = ko.observable(data.short_name || '').extend({ dirty: false });
+  this.parentId = ko.observable(data.parent_group || null).extend({ dirty: false });
 
   // Computed values.
   //
@@ -243,19 +228,19 @@ function UserGroup(form, data) {
 
   // Helpers.
   //
-  this.isModified = ko.computed(function () {
-    return this.name.isModified()     ||
-           this.parentId.isModified() ||
-           _(this.settings).invoke('isModified').any();
+  this.isDirty = ko.computed(function () {
+    return this.name.isDirty()     ||
+           this.parentId.isDirty() ||
+           _(this.settings).invoke('isDirty').any();
   }, this);
 }
 
 // Marks all trackable data slots and related settings as saved.
 //
-UserGroup.prototype.markSaved = function markSaved() {
-  this.name.markSaved();
-  this.parentId.markSaved();
-  _.invoke(this.settings, 'markSaved');
+UserGroup.prototype.markClean = function markClean() {
+  this.name.markClean();
+  this.parentId.markClean();
+  _.invoke(this.settings, 'markClean');
 };
 
 // Returns data suitable for the server.
@@ -335,7 +320,7 @@ Form.prototype.create = function create() {
       return;
     }
 
-    self.currentGroup.markSaved();
+    self.currentGroup.markClean();
 
     N.wire.emit('notify', {
       type: 'info'
@@ -363,7 +348,7 @@ Form.prototype.update = function update() {
       return;
     }
 
-    self.currentGroup.markSaved();
+    self.currentGroup.markClean();
 
     N.wire.emit('notify', {
       type: 'info'
