@@ -1,6 +1,0 @@
-en-US:
-  parent_title: Inherit from
-  parent_help:
-    You can dynamically inherit all settings, until overriden.
-    Select 'None' to make group independent. You can change this later.
-  no_parent: None
