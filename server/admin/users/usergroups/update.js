@@ -50,10 +50,12 @@ module.exports = function (N, apiPath) {
 
         if (!_.has(group.raw_settings, 'usergroup')) {
           group.raw_settings.usergroup = {};
-          group.markModified('raw_settings');
         }
 
+        group.short_name             = env.params.short_name;
+        group.parent_group           = env.params.parent_group
         group.raw_settings.usergroup = env.params.raw_settings;
+
         group.markModified('raw_settings.usergroup');
 
         group.save(function (err) {
