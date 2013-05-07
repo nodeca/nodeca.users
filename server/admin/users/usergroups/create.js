@@ -29,6 +29,11 @@ module.exports = function (N, apiPath) {
         return;
       }
 
+      // Raw settings is an "own" settings collection provided by the group.
+      // - Root groups have all their settings as raw settings.
+      // - Settings marked as "overriden" by the user become raw settings.
+      //
+      // See ./_lib/params_schema.js for details on raw settings format.
       var group = new UserGroup({
         short_name:   env.params.short_name
       , parent_group: env.params.parent_group

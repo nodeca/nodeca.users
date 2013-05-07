@@ -55,6 +55,12 @@ module.exports = function (N, apiPath) {
 
         group.short_name             = env.params.short_name;
         group.parent_group           = env.params.parent_group;
+
+        // Raw settings is an "own" settings collection provided by the group.
+        // - Root groups have all their settings as raw settings.
+        // - Settings marked as "overriden" by the user become raw settings.
+        //
+        // See ./_lib/params_schema.js for details on raw settings format.
         group.raw_settings.usergroup = env.params.raw_settings;
 
         group.markModified('raw_settings.usergroup');
