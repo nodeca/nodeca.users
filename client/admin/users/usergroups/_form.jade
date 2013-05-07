@@ -41,7 +41,7 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
       label.control-label(data-bind="text: localizedName, attr: { 'for': pageId }")
       div.controls
         div
-          label.checkbox.inline
+          label.checkbox.inline(data-bind="visible: parentSetting")
             input(type="checkbox", data-bind="checked: overriden")
             = self.t('setting.override')
 

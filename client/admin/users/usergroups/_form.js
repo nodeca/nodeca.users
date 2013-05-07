@@ -38,10 +38,17 @@ function Setting(form, name, schema, config) {
                                       Number(config.value)     :
                                       config.value);
 
-  this.overriden = ko.observable(this.savedOverriden());
+  this._overriden = ko.observable(this.savedOverriden());
+  this._forced    = ko.observable(this.savedForced());
+  this._value     = ko.observable(this.savedValue());
+
+  this.overriden = ko.computed({
+    read:  function () { return this._overriden() || !this.ownerGroup.parentGroup(); }
+  , write: this._overriden
+  , owner: this
+  });
+
   this.inherited = ko.computed(function () { return !this.overriden(); }, this);
-  this._forced   = ko.observable(this.savedForced());
-  this._value    = ko.observable(this.savedValue());
 
   this.forced = ko.computed({
     read:  function () { return this.overriden() && this._forced(); }
