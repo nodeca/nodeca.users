@@ -1,8 +1,6 @@
 'use strict';
 
 
-var _ = require('lodash');
-
 var updateSettings = require('./_lib/update_settings');
 var PARAMS_SCHEMA  = require('./_lib/params_schema');
 
@@ -29,12 +27,10 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      var group = new UserGroup(_.pick(env.params, 'short_name', 'parent_group'));
-
-      group.raw_settings.usergroup = {};
-
-      _.forEach(env.params.raw_settings, function (setting, key) {
-        group.raw_settings.usergroup[key] = setting;
+      var group = new UserGroup({
+        short_name:   env.params.short_name
+      , parent_group: env.params.parent_group
+      , raw_settings: { usergroup: env.params.raw_settings }
       });
 
       group.save(function (err) {

@@ -53,10 +53,7 @@ module.exports = function (N, apiPath) {
           group.markModified('raw_settings');
         }
 
-        _.forEach(env.params.raw_settings, function (setting, key) {
-          group.raw_settings.usergroup[key] = setting;
-        });
-
+        group.raw_settings.usergroup = env.params.raw_settings;
         group.markModified('raw_settings.usergroup');
 
         group.save(function (err) {
