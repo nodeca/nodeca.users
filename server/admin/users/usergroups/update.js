@@ -53,7 +53,7 @@ module.exports = function (N, apiPath) {
         }
 
         group.short_name             = env.params.short_name;
-        group.parent_group           = env.params.parent_group
+        group.parent_group           = env.params.parent_group;
         group.raw_settings.usergroup = env.params.raw_settings;
 
         group.markModified('raw_settings.usergroup');
