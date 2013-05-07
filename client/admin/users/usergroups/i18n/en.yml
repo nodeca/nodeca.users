@@ -8,7 +8,7 @@ en-US:
     error:
       remove: Error while removing the group!
 
-  form: &form
+  form:
     group:
       short_name: Group name
       short_name_help: Short unique text, will be used for translations.
