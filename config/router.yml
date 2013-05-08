@@ -1,33 +1,34 @@
 router:
   map:
-    users.profile:
-      "/profile": ~
+    http.get:
+      users.profile:
+        "/profile": ~
 
-    users.member:
-      "/member{id}":
-        id: /\d+/
+      users.member:
+        "/member{id}":
+          id: /\d+/
 
-    admin.users.usergroups.show:
-      "/usergroups": ~
+      admin.users.usergroups.show:
+        "/usergroups": ~
 
-    admin.users.usergroups.new:
-      "/usergroups/new": ~
+      admin.users.usergroups.new:
+        "/usergroups/new": ~
 
-    admin.users.usergroups.edit:
-      "/usergroups/edit/{_id}":
-        _id: /\w+/
+      admin.users.usergroups.edit:
+        "/usergroups/edit/{_id}":
+          _id: /\w+/
 
-    admin.users.members.search:
-      "/members/search": ~
+      admin.users.members.search:
+        "/members/search": ~
 
-    users.auth.login.show:
-      "/auth/login": ~
+      users.auth.login.show:
+        "/auth/login": ~
 
-    users.auth.logout:
-      "/auth/logout": ~
+      users.auth.logout:
+        "/auth/logout": ~
 
-    users.auth.register.show:
-      "/auth/reg": ~
+      users.auth.register.show:
+        "/auth/reg": ~
 
-    users.auth.register.success:
-      "/auth/reg/done": ~
+      users.auth.register.success:
+        "/auth/reg/done": ~
