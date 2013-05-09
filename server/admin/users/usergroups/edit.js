@@ -1,13 +1,14 @@
+// Show page with group edit form
+
 'use strict';
 
 
 module.exports = function (N, apiPath) {
+
   N.validate(apiPath, {
     _id: {
       type: 'string'
     , required: true
-    , minLength: 24
-    , maxLength: 24
     }
   });
 
@@ -15,8 +16,11 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function (env, callback) {
     var data = env.response.data;
 
+    // Fill Default settings and their configuration
     data.setting_schemas = N.config.setting_schemas['usergroup'] || {};
 
+    // Fetch real values
+    // We always fetch all groups, to calculate inreritances on client
     N.models.users.UserGroup
         .findById(env.params._id)
         .select('_id short_name')

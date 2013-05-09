@@ -1,5 +1,5 @@
-// Walks through all existent usergroups and recalculates their settings to
-// comform the group inheritance.
+// Walks through all existent usergroups and recalculates their
+// interface state (raw_settings) into `usergroup store` values (permissions)
 //
 
 
@@ -24,18 +24,19 @@ module.exports = function updateSettings(N, callback) {
       return;
     }
 
+    // Get full settings list for specified group
+    // For inherited settings automatically extract values from parents
     function fetchSettings(groupId) {
       var group  = _.find(groups, function (g) { return g._id.equals(groupId); })
         , result = {};
 
-      if (!group) {
-        return result;
-      }
-
+      // If parent group exists - fetch it's settings values first
       if (group.parent_group) {
-        _.extend(result, fetchSettings(group.parent_group));
+        result = _.clone(fetchSettings(group.parent_group), true);
       }
 
+      // Now override defaults with value of current group
+      // (root one will have full list)
       if (group.raw_settings && group.raw_settings.usergroup) {
         _.extend(result, group.raw_settings.usergroup);
       }

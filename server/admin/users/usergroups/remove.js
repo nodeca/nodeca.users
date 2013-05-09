@@ -1,3 +1,5 @@
+// Delete user group
+
 'use strict';
 
 
@@ -13,8 +15,6 @@ module.exports = function (N, apiPath) {
     _id: {
       type: 'string'
     , required: true
-    , minLength: 24
-    , maxLength: 24
     }
   });
 

@@ -1,3 +1,5 @@
+// Create user group
+
 'use strict';
 
 
@@ -29,9 +31,12 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      // Raw settings is an "own" settings collection provided by the group.
-      // - Root groups have all their settings as raw settings.
-      // - Settings marked as "overriden" by the user become raw settings.
+      // Raw settings contains interface state:
+      // - Full settings list for Root groups
+      // - List of overriden settings for inherited groups
+      //
+      // We store interfase data separately, and then use it
+      // to calculate final `store` values (permissions)
       //
       // See ./_lib/params_schema.js for details on raw settings format.
       var group = new UserGroup({

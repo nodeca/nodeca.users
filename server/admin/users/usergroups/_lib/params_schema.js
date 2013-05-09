@@ -1,5 +1,4 @@
-// Revalidator schema for params on usergroup `create` and `update` methods.
-//
+// json-schema for params on usergroup `create` and `update` methods.
 
 
 'use strict';
@@ -14,9 +13,6 @@ module.exports = {
 , parent_group: {
     type: ['string', 'null']
   , required: true
-  , minLength: 24
-  , maxLength: 24
-  , pattern: /^[0-9a-f]{24}$/
   }
 , raw_settings: {
     type: 'object'

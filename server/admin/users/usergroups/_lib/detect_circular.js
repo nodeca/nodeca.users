@@ -1,5 +1,5 @@
 // Checks if inheritance list of the given group is not circular.
-// Returns (via a callback) ObjectID of the group whree the circularity appears.
+// Returns (via a callback) null on ok, or ObjectID of the group where circularity found.
 //
 
 
@@ -29,6 +29,8 @@ module.exports = function detectCircular(groupId, parentId, callback) {
 
     var descendants = [ String(groupId) ];
 
+    // Returns `null` if no circular dependency found
+    // or group id of first detected circular dependency
     function checkGroup(groupId) {
       var group    = _.find(groups, function (g) { return g._id.equals(groupId); })
         , stringId = String(groupId);

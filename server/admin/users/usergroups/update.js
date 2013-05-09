@@ -1,3 +1,5 @@
+// Save settings for specified group
+
 'use strict';
 
 
@@ -16,9 +18,6 @@ module.exports = function (N, apiPath) {
     _id: {
       type: 'string'
     , required: true
-    , minLength: 24
-    , maxLength: 24
-    , pattern: /^[0-9a-f]{24}$/
     }
   }, PARAMS_SCHEMA));
 
@@ -56,9 +55,12 @@ module.exports = function (N, apiPath) {
         group.short_name             = env.params.short_name;
         group.parent_group           = env.params.parent_group;
 
-        // Raw settings is an "own" settings collection provided by the group.
-        // - Root groups have all their settings as raw settings.
-        // - Settings marked as "overriden" by the user become raw settings.
+        // Raw settings contains interface state:
+        // - Full settings list for Root groups
+        // - List of overriden settings for inherited groups
+        //
+        // We store interfase data separately, and then use it
+        // to calculate final `store` values (permissions)
         //
         // See ./_lib/params_schema.js for details on raw settings format.
         group.raw_settings.usergroup = env.params.raw_settings;
