@@ -11,7 +11,7 @@ menus:
         submenu:
           usergroups:
             submenu:
-              show:
+              index:
                 to: admin.users.usergroups.index
           members:
             submenu:
