@@ -10,6 +10,8 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function (env, callback) {
     var data = env.response.data;
 
+    data.head.title = env.helpers.t('admin.users.usergroups.new.title');
+
     // Fill Default settings and their configuration
     data.setting_schemas = N.config.setting_schemas['usergroup'] || {};
 
