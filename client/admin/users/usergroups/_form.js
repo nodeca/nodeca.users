@@ -46,7 +46,7 @@ function Setting(form, name, schema, config) {
   //
   this._overriden = ko.observable(Boolean(config.overriden));
   this._forced    = ko.observable(Boolean(config.forced));
-  this._value     = ko.observable('number' === schema.type ? Number(config.value) : config.value);
+  this._value     = ko.observable(config.value);
 
   // Public proxy slots. These allows dynamically recompute _shown_ data on
   // parent group change or overriden flag unmark AND keep user's own input
@@ -158,6 +158,10 @@ function SettingCategory(form, name, settings) {
 // Single known user group. Used either for displayed group and for groups in
 // the "inherits" list.
 //
+// form (Form): See below for Form class.
+// data (Object): UserGroup data retrieved from the database at the server-side.
+// The used fields are: _id, is_protected, parent_group and raw_settings.
+//
 function UserGroup(form, data) {
   data = data || {};
 
@@ -165,7 +169,7 @@ function UserGroup(form, data) {
 
   // Read-only slots.
   //
-  this.objectId    = data._id || null;
+  this.id          = data._id || null;
   this.isProtected = data.is_protected || false;
 
   // Writable and savable slots.
@@ -181,17 +185,16 @@ function UserGroup(form, data) {
 
   this.parentGroup = ko.computed({
     read:  function () { return form.groupsById[this.parentId()]; }
-  , write: function (group) { this.parentId(group ? group.objectId : null); }
+  , write: function (group) { this.parentId(group ? group.id : null); }
   , owner: this
   });
 
   // Related settings and categories lists.
   // See Setting and SettingCategory classes for details.
   //
-  this.settings         = [];
-  this.settingsByName   = {};
-  this.categories       = [];
-  this.categoriesByName = {};
+  this.settings       = [];
+  this.settingsByName = {};
+  this.categories     = [];
 
   // Collect setting models.
   _.forEach(form.setting_schemas, function (schema, name) {
@@ -215,7 +218,6 @@ function UserGroup(form, data) {
     var category = new SettingCategory(form, name, _.select(this.settings, { categoryKey: name }));
 
     this.categories.push(category);
-    this.categoriesByName[name] = category;
   }, this);
 
   this.categories = _.sortBy(this.categories, 'priority');
@@ -246,9 +248,9 @@ UserGroup.prototype.getOutputData = function getOutputData() {
   , raw_settings: {}
   };
 
-  // Add `_id` property only when `this` is a persistent (i.e. saved) group.
-  if (this.objectId) {
-    result._id = this.objectId;
+  // Add `_id` property only when editing an existent group (not for new).
+  if (this.id) {
+    result._id = this.id;
   }
 
   _.forEach(this.settings, function (setting) {
@@ -265,8 +267,8 @@ UserGroup.prototype.getOutputData = function getOutputData() {
 //
 // page_data.setting_schemas (Object): N.config.setting_schemas.usergroup
 // page_data.groups_data (Array): List of all existent user groups.
-// page_data.current_group_id (String, Optional): ObjectID of a group for edit.
-// If this identifier is provided, the form will use 'update' mode.
+// page_data.current_group_id (String, Optional): ObjectID if editing an
+// existent group. Should be omitted for creating a new group.
 //
 function Form(page_data) {
   this.setting_schemas = page_data.setting_schemas;
@@ -276,26 +278,27 @@ function Form(page_data) {
 
   this.filter = ko.observable('');
 
-  this.createMode   = !_.has(page_data, 'current_group_id');
+  this.isNewGroup   = !_.has(page_data, 'current_group_id');
   this.currentGroup = null;
   this.otherGroups  = [];
 
-  if (this.createMode) {
-    this.currentGroup = new UserGroup(this);
-  }
-
+  // Create veiw models for all group data recieved from the server.
   _.forEach(page_data.groups_data, function (data) {
     var group = new UserGroup(this, data);
 
     this.groups.push(group);
-    this.groupsById[group.objectId] = group;
+    this.groupsById[group.id] = group;
 
-    if (!this.createMode && group.objectId === page_data.current_group_id) {
+    if (group.id === page_data.current_group_id) {
       this.currentGroup = group;
     } else {
       this.otherGroups.push(group);
     }
   }, this);
+
+  if (this.isNewGroup) {
+    this.currentGroup = new UserGroup(this);
+  }
 }
 
 // Sends 'create' request for `currentGroup`.
@@ -354,7 +357,7 @@ Form.prototype.update = function update() {
 // Sends save request to the server.
 //
 Form.prototype.submit = function submit() {
-  if (this.createMode) {
+  if (this.isNewGroup) {
     this.create();
   } else {
     this.update();
