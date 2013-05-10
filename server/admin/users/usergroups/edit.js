@@ -3,8 +3,10 @@
 'use strict';
 
 
-module.exports = function (N, apiPath) {
+var _ = require('lodash');
 
+
+module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     _id: {
       type: 'string'
@@ -19,18 +21,19 @@ module.exports = function (N, apiPath) {
     // Fill Default settings and their configuration
     data.setting_schemas = N.config.setting_schemas['usergroup'] || {};
 
-    // Fetch real values
     // We always fetch all groups, to calculate inreritances on client
     N.models.users.UserGroup
-        .findById(env.params._id)
-        .select('_id short_name')
-        .setOptions({ lean: true })
-        .exec(function (err, currentGroup) {
+        .find()
+        .select('-settings')
+        .sort('is_protected _id')
+        .exec(function (err, groups) {
 
       if (err) {
         callback(err);
         return;
       }
+
+      var currentGroup = _.find(groups, { id: env.params._id });
 
       if (!currentGroup) {
         callback(N.io.NOT_FOUND);
@@ -42,17 +45,9 @@ module.exports = function (N, apiPath) {
           name: currentGroup.short_name
         });
 
-      data.current_group_id = currentGroup._id;
-
-      N.models.users.UserGroup
-          .find()
-          .select('-settings')
-          .sort('is_protected _id')
-          .setOptions({ lean: true })
-          .exec(function (err, groupsData) {
-        data.groups_data = groupsData;
-        callback(err);
-      });
+      data.current_group_id = currentGroup._id.toString();
+      data.groups_data      = _.invoke(groups, 'toJSON');
+      callback();
     });
   });
 };
