@@ -37,8 +37,8 @@ module.exports = function updateStoreSettings(N, callback) {
 
       // Now override defaults with value of current group
       // (root one will have full list)
-      if (group.raw_settings && group.raw_settings.usergroup) {
-        _.extend(result, group.raw_settings.usergroup);
+      if (group.raw_settings) {
+        _.extend(result, group.raw_settings);
       }
 
       return result;

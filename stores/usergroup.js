@@ -12,7 +12,7 @@ module.exports = function (N) {
   function fetchUsrGrpSettings(ids, callback) {
     N.models.users.UserGroup
       .find({ _id: { $in: ids } })
-      .select('settings.usergroup')
+      .select('settings')
       .setOptions({ lean: true })
       .exec(callback);
   }
@@ -53,10 +53,8 @@ module.exports = function (N) {
           var values = [];
 
           groups.forEach(function (group) {
-            var settings = (group.settings || {}).usergroup;
-
-            if (settings && settings[key]) {
-              values.push(settings[key]);
+            if (group.settings && group.settings[key]) {
+              values.push(group.settings[key]);
             } else {
               values.push({
                 value: self.getDefaultValue(key)
@@ -92,18 +90,17 @@ module.exports = function (N) {
         }
 
         // Make sure we have settings storages.
-        group.settings           = group.settings           || {};
-        group.settings.usergroup = group.settings.usergroup || {};
+        group.settings = group.settings || {};
 
         _.forEach(settings, function (options, key) {
           if (null === options) {
-            delete group.settings.usergroup[key];
+            delete group.settings[key];
           } else {
-            group.settings.usergroup[key] = options;
+            group.settings[key] = options;
           }
         });
 
-        group.markModified('settings.usergroup');
+        group.markModified('settings');
         group.save(callback);
       });
     }

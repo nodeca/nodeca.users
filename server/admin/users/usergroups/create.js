@@ -35,14 +35,14 @@ module.exports = function (N, apiPath) {
       // - Full settings list for Root groups
       // - List of overriden settings for inherited groups
       //
-      // We store interfase data separately, and then use it
+      // We store interface data separately, and then use it
       // to calculate final `store` values (permissions)
       //
       // See ./_lib/params_schema.js for details on raw settings format.
       var group = new UserGroup({
         short_name:   env.params.short_name
       , parent_group: env.params.parent_group
-      , raw_settings: { usergroup: env.params.raw_settings }
+      , raw_settings: env.params.raw_settings
       });
 
       group.save(function (err) {

@@ -48,24 +48,19 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        if (!_.has(group.raw_settings, 'usergroup')) {
-          group.raw_settings.usergroup = {};
-        }
-
-        group.short_name             = env.params.short_name;
-        group.parent_group           = env.params.parent_group;
+        group.short_name   = env.params.short_name;
+        group.parent_group = env.params.parent_group;
 
         // Raw settings contains interface state:
         // - Full settings list for Root groups
         // - List of overriden settings for inherited groups
         //
-        // We store interfase data separately, and then use it
+        // We store interface data separately, and then use it
         // to calculate final `store` values (permissions)
         //
         // See ./_lib/params_schema.js for details on raw settings format.
-        group.raw_settings.usergroup = env.params.raw_settings;
-
-        group.markModified('raw_settings.usergroup');
+        group.raw_settings = env.params.raw_settings;
+        group.markModified('raw_settings');
 
         group.save(function (err) {
           if (err) {
