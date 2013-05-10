@@ -12,14 +12,13 @@ var _ = require('lodash');
 module.exports = function detectCircular(groupId, parentId, callback) {
   if (!parentId) {
     // No parent - skip.
-    callback(null, null);
+    callback();
     return;
   }
 
   N.models.users.UserGroup
       .find()
-      .select('_id short_name parent_group')
-      .setOptions({ lean: true })
+      .select('_id parent_group')
       .exec(function (err, groups) {
 
     if (err) {
@@ -32,22 +31,21 @@ module.exports = function detectCircular(groupId, parentId, callback) {
     // Returns `null` if no circular dependency found
     // or group id of first detected circular dependency
     function checkGroup(groupId) {
-      var group    = _.find(groups, function (g) { return g._id.equals(groupId); })
-        , stringId = String(groupId);
+      var group = _.find(groups, { id: groupId });
 
-      if (_.contains(descendants, stringId)) {
+      if (_.contains(descendants, groupId)) {
         return groupId;
       }
 
-      descendants.push(stringId);
+      descendants.push(groupId);
 
       if (group.parent_group) {
-        return checkGroup(group.parent_group);
+        return checkGroup(group.parent_group.toString());
       } else {
         return null;
       }
     }
 
-    callback(null, checkGroup(parentId));
+    callback(null, checkGroup(String(parentId)));
   });
 };
