@@ -322,7 +322,7 @@ Form.prototype.create = function create() {
     });
 
     // TODO: Replace this with the navigate.js when it will be ported for ACP.
-    window.location = N.runtime.router.linkTo('admin.users.usergroups.show');
+    window.location = N.runtime.router.linkTo('admin.users.usergroups.index');
   });
 };
 
