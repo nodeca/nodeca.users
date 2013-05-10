@@ -161,7 +161,7 @@ function SettingCategory(form, name, settings) {
 function UserGroup(form, data) {
   data = data || {};
 
-  var rawSettings = data.raw_settings || {}
+  var rawSettings = data.raw_settings || {};
 
   // Read-only slots.
   //
