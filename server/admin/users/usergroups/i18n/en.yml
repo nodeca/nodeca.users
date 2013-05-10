@@ -9,15 +9,12 @@ en-US:
     title: "Edit group: #{name}"
 
   create:
-    error:
-      short_name_busy: This name is occupied, select another one.
+    error_short_name_busy: This name is occupied, select another one.
 
   update:
-    error:
-      circular_dependency: Can't inherit this parent (circular dependency)
+    error_circular_dependency: Can't inherit this parent (circular dependency)
 
   remove:
-    error:
-      protected: This group can't be deleted.
-      not_empty: Can't delete not empty group
-      has_children: "Group '#{name}' depends on this one. Please, resolve dependency prior to remove."
+    error_protected: This group can't be deleted.
+    error_not_empty: Can't delete not empty group
+    error_has_children: "Group '#{name}' depends on this one. Please, resolve dependency prior to remove."

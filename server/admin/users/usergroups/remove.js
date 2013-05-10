@@ -34,7 +34,7 @@ module.exports = function (N, apiPath) {
       if (group.is_protected) {
         callback({
           code: N.io.BAD_REQUEST
-        , message: env.helpers.t('admin.users.usergroups.remove.error.protected')
+        , message: env.helpers.t('admin.users.usergroups.remove.error_protected')
         });
         return;
       }
@@ -49,7 +49,7 @@ module.exports = function (N, apiPath) {
         if (!_.isEmpty(children)) {
           callback({
             code: N.io.BAD_REQUEST
-          , message: env.helpers.t('admin.users.usergroups.remove.error.has_children')
+          , message: env.helpers.t('admin.users.usergroups.remove.error_has_children')
           });
           return;
         }
@@ -64,7 +64,7 @@ module.exports = function (N, apiPath) {
           if (!_.isEmpty(users)) {
             callback({
               code: N.io.BAD_REQUEST
-            , message: env.helpers.t('admin.users.usergroups.remove.error.not_empty')
+            , message: env.helpers.t('admin.users.usergroups.remove.error_not_empty')
             });
             return;
           }

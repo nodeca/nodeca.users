@@ -43,7 +43,7 @@ module.exports = function (N, apiPath) {
         if (circularGroup) {
           callback({
             code: N.io.BAD_REQUEST
-          , message: env.helpers.t('admin.users.usergroups.update.error.circular_dependency')
+          , message: env.helpers.t('admin.users.usergroups.update.error_circular_dependency')
           });
           return;
         }
