@@ -3,9 +3,6 @@
 'use strict';
 
 
-var _ = require('lodash');
-
-
 module.exports = function (N, apiPath) {
   var UserGroup = N.models.users.UserGroup
     , User      = N.models.users.User;
@@ -39,14 +36,14 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      // Find children.
-      UserGroup.find({ parent: group._id }).exec(function(err, children) {
+      // Count children.
+      UserGroup.count({ parent: group._id }).exec(function(err, childrenCount) {
         if (err) {
           callback(err);
           return;
         }
 
-        if (!_.isEmpty(children)) {
+        if (0 !== childrenCount) {
           callback({
             code: N.io.BAD_REQUEST
           , message: env.helpers.t('admin.users.usergroups.remove.error_has_children')
@@ -54,14 +51,14 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        // Find users associated with the group.
-        User.find({ usergroups: group._id }).exec(function(err, users) {
+        // Count users associated with the group.
+        User.count({ usergroups: group._id }).exec(function(err, usersCount) {
           if (err) {
             callback(err);
             return;
           }
 
-          if (!_.isEmpty(users)) {
+          if (0 !== usersCount) {
             callback({
               code: N.io.BAD_REQUEST
             , message: env.helpers.t('admin.users.usergroups.remove.error_not_empty')
