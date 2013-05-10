@@ -324,8 +324,7 @@ Form.prototype.create = function create() {
     , message: N.runtime.t('admin.users.usergroups.form.created')
     });
 
-    // TODO: Replace this with the navigate.js when it will be ported for ACP.
-    window.location = N.runtime.router.linkTo('admin.users.usergroups.index');
+    N.wire.emit('navigate.to', { apiPath: 'admin.users.usergroups.index' });
   });
 };
 
