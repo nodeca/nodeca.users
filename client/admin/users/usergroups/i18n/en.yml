@@ -5,6 +5,7 @@ en-US:
     new: Create new group
     edit: Edit group
     remove: delete
+    remove_confirm: 'Are you sure you want to delete "#{group_name}" user group?'
     error_remove: Error while removing the group!
 
   form:
