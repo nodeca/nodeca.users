@@ -5,9 +5,9 @@
 
 var _ = require('lodash');
 
-var detectCircular = require('./_lib/detect_circular');
-var updateSettings = require('./_lib/update_settings');
-var PARAMS_SCHEMA  = require('./_lib/params_schema');
+var detectCircular      = require('./_lib/detect_circular');
+var updateStoreSettings = require('./_lib/update_store_settings');
+var PARAMS_SCHEMA       = require('./_lib/params_schema');
 
 
 module.exports = function (N, apiPath) {
@@ -73,7 +73,8 @@ module.exports = function (N, apiPath) {
             return;
           }
 
-          updateSettings(N, callback);
+          // Recalculate store settings of all groups.
+          updateStoreSettings(N, callback);
         });
       });
     });

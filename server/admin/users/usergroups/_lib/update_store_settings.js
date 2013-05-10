@@ -10,7 +10,7 @@ var _     = require('lodash');
 var async = require('async');
 
 
-module.exports = function updateSettings(N, callback) {
+module.exports = function updateStoreSettings(N, callback) {
   var store = N.settings.getStore('usergroup');
 
   N.models.users.UserGroup
