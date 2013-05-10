@@ -26,7 +26,7 @@ div#content
               = group.short_name
           td
             a(href=self.link_to('admin.users.members.search'))
-              = group.members_count
+              = self.members_count[group._id]
           td
             unless group.is_protected
               a.pull-right(data-on-click='admin.users.usergroups.remove',
