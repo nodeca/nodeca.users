@@ -1,4 +1,4 @@
-// Show existing groups lit
+// Show existing groups list
 
 'use strict';
 
@@ -14,7 +14,7 @@ module.exports = function (N, apiPath) {
     var data = env.response.data;
 
     data.head.title =
-      env.helpers.t('admin.users.usergroups.show.title');
+      env.helpers.t('admin.users.usergroups.index.title');
 
     data.usergroups = [];
 

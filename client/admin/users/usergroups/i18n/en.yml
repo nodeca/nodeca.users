@@ -1,5 +1,5 @@
 en-US:
-  show:
+  index:
     group_name: Group name
     members_count: Members
     new: Create new group
