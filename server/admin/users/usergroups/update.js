@@ -22,6 +22,31 @@ module.exports = function (N, apiPath) {
   }, PARAMS_SCHEMA));
 
 
+  // Check do wanted parent_group exists or not.
+  N.wire.before(apiPath, function (env, callback) {
+    if (!env.params.parent_group) {
+      callback(); // This is a root group.
+      return;
+    }
+
+    UserGroup.count({ _id: env.params.parent_group }, function (err, count) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      if (0 === count) {
+        callback({
+          code: N.io.BAD_REQUEST
+        , message: env.helpers.t('admin.users.usergroups.update.error_nonexistent_parent_group')
+        });
+      }
+
+      callback(); // Ok.
+    });
+  });
+
+
   N.wire.on(apiPath, function (env, callback) {
     UserGroup.findById(env.params._id).exec(function (err, group) {
       if (err) {
