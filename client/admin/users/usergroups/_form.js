@@ -314,8 +314,8 @@ Form.prototype.create = function create() {
       N.wire.emit('notify', {
         type: 'error'
       , message: N.runtime.t(N.io.BAD_REQUEST === err.code ?
-                             'admin.users.usergroups.form.error.bad_request' :
-                             'admin.users.usergroups.form.error.unknown')
+                             'admin.users.usergroups.form.error_bad_request' :
+                             'admin.users.usergroups.form.error_unknown')
       });
       return;
     }
@@ -342,8 +342,8 @@ Form.prototype.update = function update() {
       N.wire.emit('notify', {
         type: 'error'
       , message: N.runtime.t(N.io.BAD_REQUEST === err.code ?
-                             'admin.users.usergroups.form.error.bad_request' :
-                             'admin.users.usergroups.form.error.unknown')
+                             'admin.users.usergroups.form.error_bad_request' :
+                             'admin.users.usergroups.form.error_unknown')
       });
       return;
     }

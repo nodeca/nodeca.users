@@ -5,8 +5,7 @@ en-US:
     new: Create new group
     edit: Edit group
     remove: delete
-    error:
-      remove: Error while removing the group!
+    error_remove: Error while removing the group!
 
   form:
     group:
@@ -28,9 +27,8 @@ en-US:
       show_overriden: Show overriden only
       show_forced: Show forced only
 
-    error:
-      bad_request: Unacceptable group configuration.
-      unknown: An unknown error occured while saving the the group.
+    error_bad_request: Unacceptable group configuration.
+    error_unknown: An unknown error occured while saving the the group.
 
     submit: Save
     created: Group is created.
