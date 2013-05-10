@@ -21,7 +21,7 @@ module.exports = function (N, apiPath) {
     N.models.users.UserGroup
         .find()
         .select('_id short_name is_protected')
-        .sort('is_protected _id')
+        .sort('_id')
         .setOptions({ lean: true })
         .exec(function (err, usergroups) {
 

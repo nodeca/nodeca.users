@@ -25,7 +25,7 @@ module.exports = function (N, apiPath) {
     N.models.users.UserGroup
         .find()
         .select('-settings')
-        .sort('is_protected _id')
+        .sort('_id')
         .exec(function (err, groups) {
 
       if (err) {

@@ -20,7 +20,7 @@ module.exports = function (N, apiPath) {
     N.models.users.UserGroup
         .find()
         .select('-settings')
-        .sort('is_protected _id')
+        .sort('_id')
         .setOptions({ lean: true })
         .exec(function (err, groupsData) {
       data.groups_data = groupsData;
