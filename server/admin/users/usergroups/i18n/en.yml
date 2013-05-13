@@ -15,7 +15,7 @@ en-US:
     error_nonexistent_parent_group: Given parent does not exists.
     error_circular_dependency: Can't inherit this parent (circular dependency)
 
-  remove:
+  destroy:
     error_protected: This group can't be deleted.
     error_not_empty: Can't delete not empty group
     error_has_children: "Group '#{name}' depends on this one. Please, resolve dependency prior to remove."

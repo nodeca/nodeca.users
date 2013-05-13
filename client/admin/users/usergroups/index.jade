@@ -29,7 +29,7 @@ div#content
               = self.members_count[group._id]
           td
             unless group.is_protected
-              a.pull-right(data-on-click='admin.users.usergroups.remove',
+              a.pull-right(data-on-click='admin.users.usergroups.destroy',
                            data-usergroup-id=group._id.toString()
                            data-usergroup-name=group.short_name)
-                = self.t('remove')
+                = self.t('destroy')
