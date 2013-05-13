@@ -4,9 +4,9 @@ en-US:
     members_count: Members
     new: Create new group
     edit: Edit group
-    destroy: delete
-    destroy_confirm: 'Are you sure you want to delete "#{group_name}" user group?'
-    error_destroy: Error while removing the group!
+    delete: delete
+    delete_confirm: 'Are you sure you want to delete "#{group_name}" user group?'
+    error_delete: Error while removing the group!
 
   form:
     group:
