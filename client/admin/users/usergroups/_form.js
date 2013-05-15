@@ -231,6 +231,17 @@ function UserGroup(form, data) {
   }, this);
 }
 
+// Checks if the given group is a descendant of this.
+//
+UserGroup.prototype.isDescendantOf = function isDescendantOf(group) {
+  if (this.parentGroup()) {
+    return this.parentId() === group.id ||
+           this.parentGroup().isDescendantOf(group);
+  } else {
+    return false;
+  }
+};
+
 // Marks all trackable data slots and related settings as saved.
 //
 UserGroup.prototype.markClean = function markClean() {
@@ -273,32 +284,35 @@ UserGroup.prototype.getOutputData = function getOutputData() {
 function Form(page_data) {
   this.setting_schemas = page_data.setting_schemas;
 
+  // Settings filter interface switcher.
+  this.filter = ko.observable('');
+
   this.groups     = [];
   this.groupsById = {};
 
-  this.filter = ko.observable('');
-
-  this.isNewGroup   = !_.has(page_data, 'current_group_id');
-  this.currentGroup = null;
-  this.otherGroups  = [];
-
-  // Create veiw models for all group data recieved from the server.
+  // Create view models for all group data recieved from the server.
   _.forEach(page_data.groups_data, function (data) {
     var group = new UserGroup(this, data);
 
     this.groups.push(group);
     this.groupsById[group.id] = group;
-
-    if (group.id === page_data.current_group_id) {
-      this.currentGroup = group;
-    } else {
-      this.otherGroups.push(group);
-    }
   }, this);
 
+  this.isNewGroup = !_.has(page_data, 'current_group_id');
+
+  // Create or find the group to edit by the user.
   if (this.isNewGroup) {
     this.currentGroup = new UserGroup(this);
+  } else {
+    this.currentGroup = _.find(this.groups, { id: page_data.current_group_id });
   }
+
+  // Select groups suitable for 'inherits' list.
+  // Excludes current group and it's descendants.
+  this.otherGroups = _.select(this.groups, function (group) {
+    return group.id !== this.currentGroup.id &&
+           !group.isDescendantOf(this.currentGroup);
+  }, this);
 }
 
 // Sends 'create' request for `currentGroup`.
