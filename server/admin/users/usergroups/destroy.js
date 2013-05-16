@@ -37,7 +37,7 @@ module.exports = function (N, apiPath) {
       }
 
       // Count children.
-      UserGroup.count({ parent: group._id }).exec(function(err, childrenCount) {
+      UserGroup.count({ parent_group: group._id }).exec(function(err, childrenCount) {
         if (err) {
           callback(err);
           return;
