@@ -34,6 +34,9 @@ module.exports = function (N, collectionName) {
   , warning_points : { type: Number, 'default': 0 }
   });
 
+  // Needed to count users in group
+  User.index({ usergroups: 1 });
+
 
   var NICK_RE = xregexp('^[\\p{L}\\d\\-_]{3,}$');
 
