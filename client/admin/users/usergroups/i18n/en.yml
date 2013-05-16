@@ -28,7 +28,7 @@ en-US:
       show_overriden: Show overriden only
       show_forced: Show forced only
 
-    error_bad_request: Unacceptable group configuration.
+    error_wrong_params: Unacceptable group configuration.
     error_unknown: An unknown error occured while saving the the group.
 
     submit: Save
