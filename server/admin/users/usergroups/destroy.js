@@ -36,17 +36,19 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      // Count children.
-      UserGroup.count({ parent_group: group._id }).exec(function(err, childrenCount) {
+      // Try to find any child.
+      UserGroup.findOne({ parent_group: group._id }).exec(function(err, child) {
         if (err) {
           callback(err);
           return;
         }
 
-        if (0 !== childrenCount) {
+        if (child) {
           callback({
             code: N.io.BAD_REQUEST
-          , message: env.helpers.t('admin.users.usergroups.destroy.error_has_children')
+          , message: env.helpers.t('admin.users.usergroups.destroy.error_has_children', {
+              name: child.short_name
+            })
           });
           return;
         }
