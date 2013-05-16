@@ -8,8 +8,7 @@ N.wire.on('admin.users.usergroups.destroy', function (event) {
   if (window.confirm(t('delete_confirm', { group_name: $element.data('usergroupName') }))) {
     N.io.rpc('admin.users.usergroups.destroy', { _id: _id }, function (err) {
       if (err) {
-        N.wire.emit('notify', { type: 'error', message: t('error_delete') });
-        return;
+        return false;
       }
 
       $element.parents('tr').remove();

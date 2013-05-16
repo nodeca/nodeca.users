@@ -6,7 +6,6 @@ en-US:
     edit: Edit group
     delete: delete
     delete_confirm: 'Are you sure you want to delete "#{group_name}" user group?'
-    error_delete: Error while removing the group!
 
   form:
     group:

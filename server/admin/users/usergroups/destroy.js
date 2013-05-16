@@ -24,7 +24,10 @@ module.exports = function (N, apiPath) {
       }
 
       if (!group) {
-        callback(N.io.NOT_FOUND);
+        callback({
+          code: N.io.BAD_REQUEST
+        , message: env.helpers.t('admin.users.usergroups.destroy.error_not_exists')
+        });
         return;
       }
 
