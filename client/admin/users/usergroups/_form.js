@@ -17,8 +17,8 @@ var ko = require('knockout');
 // config (Object): Must contain: `group`, `overriden`, `forced`, and `value`.
 //
 function Setting(form, name, schema, config) {
-  var tName = 'admin.setting.' + name
-    , tHelp = 'admin.setting.' + name + '_help';
+  var tName = 'admin.core.setting_names.' + name
+    , tHelp = 'admin.core.setting_names.' + name + '_help';
 
   // Read-only slots.
   //
@@ -148,7 +148,7 @@ Setting.prototype.getOutputData = function getOutputData() {
 //
 function SettingCategory(form, name, settings) {
   this.name          = name;
-  this.localizedName = N.runtime.t('admin.setting.category.' + name);
+  this.localizedName = N.runtime.t('admin.core.category_names.' + name);
 
   this.settings = _.sortBy(settings, 'priority');
   this.priority = _(settings).pluck('priority').reduce(function (a, b) { return a + b; });
@@ -180,7 +180,7 @@ function UserGroup(form, data) {
   // Computed values.
   //
   this.localizedName = ko.computed(function () {
-    return this.name() ? N.runtime.t('users.usergroup.' + this.name()) : null;
+    return this.name() ? N.runtime.t('admin.users.usergroup_names.' + this.name()) : null;
   }, this);
 
   this.parentGroup = ko.computed({
