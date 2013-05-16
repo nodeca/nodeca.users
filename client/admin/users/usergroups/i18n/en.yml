@@ -28,6 +28,5 @@ en-US:
       show_forced: Show forced only
 
     submit: Save
-    submit_error: An unknown error occured while saving the the group.
     created: Group is created.
     updated: Group is updated.

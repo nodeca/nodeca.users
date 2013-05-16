@@ -322,8 +322,7 @@ Form.prototype.create = function create() {
 
   N.io.rpc('admin.users.usergroups.create', this.currentGroup.getOutputData(), function (err) {
     if (err) {
-      N.wire.emit('notify', N.runtime.t('admin.users.usergroups.form.submit_error'));
-      return;
+      return false;
     }
 
     self.currentGroup.markClean();
@@ -344,8 +343,7 @@ Form.prototype.update = function update() {
 
   N.io.rpc('admin.users.usergroups.update', this.currentGroup.getOutputData(), function (err) {
     if (err) {
-      N.wire.emit('notify', N.runtime.t('admin.users.usergroups.form.submit_error'));
-      return;
+      return false;
     }
 
     self.currentGroup.markClean();
