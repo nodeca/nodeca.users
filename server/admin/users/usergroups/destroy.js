@@ -30,7 +30,7 @@ module.exports = function (N, apiPath) {
 
       if (group.is_protected) {
         callback({
-          code: N.io.CLIENT_ERROR
+          code: N.io.BAD_REQUEST
         , message: env.helpers.t('admin.users.usergroups.destroy.error_protected')
         });
         return;
@@ -45,7 +45,7 @@ module.exports = function (N, apiPath) {
 
         if (0 !== childrenCount) {
           callback({
-            code: N.io.CLIENT_ERROR
+            code: N.io.BAD_REQUEST
           , message: env.helpers.t('admin.users.usergroups.destroy.error_has_children')
           });
           return;
@@ -60,7 +60,7 @@ module.exports = function (N, apiPath) {
 
           if (0 !== usersCount) {
             callback({
-              code: N.io.CLIENT_ERROR
+              code: N.io.BAD_REQUEST
             , message: env.helpers.t('admin.users.usergroups.destroy.error_not_empty')
             });
             return;

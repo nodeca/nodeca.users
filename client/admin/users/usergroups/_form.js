@@ -322,12 +322,7 @@ Form.prototype.create = function create() {
 
   N.io.rpc('admin.users.usergroups.create', this.currentGroup.getOutputData(), function (err) {
     if (err) {
-      N.wire.emit('notify', {
-        type: 'error'
-      , message: N.runtime.t(N.io.CLIENT_ERROR === err.code ?
-                             'admin.users.usergroups.form.error_wrong_params' :
-                             'admin.users.usergroups.form.error_unknown')
-      });
+      N.wire.emit('notify', N.runtime.t('admin.users.usergroups.form.submit_error'));
       return;
     }
 
@@ -349,12 +344,7 @@ Form.prototype.update = function update() {
 
   N.io.rpc('admin.users.usergroups.update', this.currentGroup.getOutputData(), function (err) {
     if (err) {
-      N.wire.emit('notify', {
-        type: 'error'
-      , message: N.runtime.t(N.io.CLIENT_ERROR === err.code ?
-                             'admin.users.usergroups.form.error_wrong_params' :
-                             'admin.users.usergroups.form.error_unknown')
-      });
+      N.wire.emit('notify', N.runtime.t('admin.users.usergroups.form.submit_error'));
       return;
     }
 

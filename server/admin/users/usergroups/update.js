@@ -37,7 +37,7 @@ module.exports = function (N, apiPath) {
 
       if (0 === count) {
         callback({
-          code: N.io.CLIENT_ERROR
+          code: N.io.BAD_REQUEST
         , message: env.helpers.t('admin.users.usergroups.update.error_nonexistent_parent_group')
         });
       }
@@ -67,7 +67,7 @@ module.exports = function (N, apiPath) {
 
         if (circularGroup) {
           callback({
-            code: N.io.CLIENT_ERROR
+            code: N.io.BAD_REQUEST
           , message: env.helpers.t('admin.users.usergroups.update.error_circular_dependency')
           });
           return;
