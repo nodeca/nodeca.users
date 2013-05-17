@@ -1,17 +1,16 @@
-div#content
+#content
   != self.partial('@admin.core.blocks.sidebar_menu', { menu: self.menus.admin })
 
-  div.main
+  .main
     != self.partial('@admin.core.blocks.breadcrumbs', { menu: self.menus.admin })
 
-    div
-      div.pull-right
-        a.btn.btn-large.btn-primary(href=self.link_to('admin.users.usergroups.new'))
-          = self.t('new')
+    .pull-right
+      a.btn.btn-primary(href=self.link_to('admin.users.usergroups.new'))
+        = self.t('new')
 
-      h1= self.head.title
+    h2= self.head.title
 
-    table.table.table-hover
+    table.table.table-hover.table-striped
       thead
         tr
           th= self.t('group_name')
@@ -21,15 +20,15 @@ div#content
       each group in self.usergroups
         tr
           td
-            a.icon-edit(href=self.link_to('admin.users.usergroups.edit', { _id: group._id }),
-                        title=self.t('edit'))
-              = group.short_name
+            a(href=self.link_to('admin.users.usergroups.edit', { _id: group._id }),
+              title=self.t('edit')
+            )= group.short_name
           td
-            a(href=self.link_to('admin.users.members.search'))
-              = self.members_count[group._id]
+            a(href=self.link_to('admin.users.members.search'))= self.members_count[group._id]
           td
             unless group.is_protected
-              a.pull-right(data-on-click='admin.users.usergroups.destroy',
-                           data-usergroup-id=group._id.toString()
-                           data-usergroup-name=group.short_name)
-                = self.t('delete')
+              a.pull-right(
+                data-on-click='admin.users.usergroups.destroy',
+                data-usergroup-id=group._id.toString(),
+                data-usergroup-name=group.short_name
+              )= self.t('delete')
