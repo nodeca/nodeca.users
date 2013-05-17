@@ -10,12 +10,6 @@ menus:
         to: admin.users.usergroups.index
         submenu:
           usergroups:
-            submenu:
-              index:
-                to: admin.users.usergroups.index
+            to: admin.users.usergroups.index
           members:
-            submenu:
-              search:
-                to: admin.users.members.search
-              add:
-                to: admin.users.members.add
+            to: admin.users.members.search

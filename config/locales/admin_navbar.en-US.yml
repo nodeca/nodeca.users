@@ -6,10 +6,5 @@ i18n:
       menus:
         navbar:
           users: Users
-
           users.usergroups: User groups
-          users.usergroups.index: Manage
-
           users.members: Members
-          users.members.search: Search
-          users.members.add: Create new
