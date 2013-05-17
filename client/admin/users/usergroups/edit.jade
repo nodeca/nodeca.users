@@ -1,10 +1,10 @@
-div#content
+#content
   != self.partial('@admin.core.blocks.sidebar_menu', { menu: self.menus.admin })
 
-  div.main
+  .main
     != self.partial('@admin.core.blocks.breadcrumbs', { menu: self.menus.admin })
 
-    h1= self.head.title
+    h2= self.head.title
 
     - self.add_raw_data('setting_schemas',  self.setting_schemas)
     - self.add_raw_data('groups_data',      self.groups_data)

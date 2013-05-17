@@ -1,21 +1,22 @@
 form.form-horizontal(data-bind="submit: submit", style="display: none")
   fieldset
-    div.control-group
+    legend= self.t('@admin.users.usergroups.form.group.options')
+
+    .control-group
       label.control-label= self.t('@admin.users.usergroups.form.group.short_name')
-      div.controls
+      .controls
         input(type="text", data-bind="value: currentGroup.name, disable: currentGroup.isProtected")
         div(data-bind="if: currentGroup.localizedName, text: currentGroup.localizedName")
         span.help-block= self.t('@admin.users.usergroups.form.group.short_name_help')
 
-  fieldset
-    div.control-group
+    .control-group
       label.control-label= self.t('@admin.users.usergroups.form.group.inherit')
-      div.controls
+      .controls
         select(data-bind="options: otherGroups, optionsText: 'name', optionsCaption: '#{self.t('@admin.users.usergroups.form.group.inherit_none')}', value: currentGroup.parentGroup")
 
-    div.control-group
+    .control-group
       label.control-label= self.t('@admin.users.usergroups.form.filter')
-      div.controls
+      .controls
         label.radio
           input(type="radio", name="filter", value="", data-bind="checked: filter")
           = self.t('@admin.users.usergroups.form.filter_options.show_all')
@@ -37,9 +38,9 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
     legend(data-bind="text: localizedName")
 
     // ko foreach: settings
-    div.control-group(data-bind="visible: visible, css: { overriden: overriden, inherited: inherited, forced: forced }")
+    .control-group.control-group-hover(data-bind="visible: visible, css: { overriden: overriden, inherited: inherited, forced: forced }")
       label.control-label(data-bind="text: localizedName, attr: { 'for': elementId }")
-      div.controls
+      .controls
         div
           label.checkbox.inline(data-bind="visible: parentSetting")
             input(type="checkbox", data-bind="checked: overriden")
@@ -58,7 +59,7 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
         // /ko
 
         // ko if: 'boolean' === valueType
-        div.switch
+        .switch
           input(type="checkbox", data-bind="checked: value, attr: { id: elementId }")
           label(data-yes=self.t('@admin.users.usergroups.form.setting.yes'), data-no=self.t('@admin.users.usergroups.form.setting.no'), data-bind="attr: { 'for': elementId }"): i
         // /ko
@@ -67,6 +68,6 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
     // /ko
   // /ko
 
-  div
+  .form-actions
     button.btn.btn-primary(type="submit", data-bind="enable: currentGroup.isDirty")
       = self.t('@admin.users.usergroups.form.submit')

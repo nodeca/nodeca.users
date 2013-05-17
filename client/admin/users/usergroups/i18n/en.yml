@@ -10,6 +10,7 @@ en-US:
   form:
     group:
       short_name: Group name
+      options: Group options
       short_name_help: Short unique text, will be used for translations.
       inherit: Inherits
       inherit_none: None
