@@ -11,8 +11,8 @@ i18n:
           auth_common: Common
 
         setting_names:
-          register_user_initial_groups: User initial groups
-          register_user_initial_groups_help: Set of groups for newly registered users.
+          register_user_initial_group: User initial group
+          register_user_initial_group_help: Group for newly registered users.
 
           register_confirm_email_period: Email confirm timeout
           register_confirm_email_period_help: Time in hours since confirmation email

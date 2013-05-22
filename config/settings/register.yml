@@ -5,13 +5,13 @@ setting_groups:
 
 setting_schemas:
   global:
-    register_user_initial_groups:
+    register_user_initial_group:
       priority: 10
       group_key: register
       category_key: register_common
-      type: combobox
+      type: dropdown
       values: usergroups
-      default: [ validating ]
+      default: validating
 
     register_confirm_email_period:
       priority: 20
