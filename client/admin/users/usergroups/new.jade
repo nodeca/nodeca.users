@@ -9,4 +9,4 @@
     - self.add_raw_data('setting_schemas', self.setting_schemas)
     - self.add_raw_data('groups_data',     self.groups_data)
 
-    include ./_form
+    != self.partial('@admin.users.usergroups.form')

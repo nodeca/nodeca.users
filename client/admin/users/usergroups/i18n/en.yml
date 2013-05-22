@@ -6,28 +6,3 @@ en-US:
     edit: Edit group
     delete: delete
     delete_confirm: 'Are you sure you want to delete "#{group_name}" user group?'
-
-  form:
-    group:
-      short_name: Group name
-      options: Group options
-      short_name_help: Short unique text, will be used for translations.
-      inherit: Inherits
-      inherit_none: None
-
-    setting:
-      yes: Yes
-      no: No
-      override: Override
-      force: Force
-
-    filter: Filter settings
-    filter_options:
-      show_all: Show all
-      show_inherited: Show inherited only
-      show_overriden: Show overriden only
-      show_forced: Show forced only
-
-    submit: Save
-    created: Group is created.
-    updated: Group is updated.

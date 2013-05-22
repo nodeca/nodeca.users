@@ -1,37 +1,37 @@
 form.form-horizontal(data-bind="submit: submit", style="display: none")
   fieldset
-    legend= self.t('@admin.users.usergroups.form.group.options')
+    legend= self.t('group.options')
 
     .control-group
-      label.control-label= self.t('@admin.users.usergroups.form.group.short_name')
+      label.control-label= self.t('group.short_name')
       .controls
         input(type="text", data-bind="value: currentGroup.name, disable: currentGroup.isProtected")
         div(data-bind="if: currentGroup.localizedName, text: currentGroup.localizedName")
-        span.help-block= self.t('@admin.users.usergroups.form.group.short_name_help')
+        span.help-block= self.t('group.short_name_help')
 
     .control-group
-      label.control-label= self.t('@admin.users.usergroups.form.group.inherit')
+      label.control-label= self.t('group.inherit')
       .controls
-        select(data-bind="options: otherGroups, optionsText: 'name', optionsCaption: '#{self.t('@admin.users.usergroups.form.group.inherit_none')}', value: currentGroup.parentGroup")
+        select(data-bind="options: otherGroups, optionsText: 'name', optionsCaption: '#{self.t('group.inherit_none')}', value: currentGroup.parentGroup")
 
     .control-group
-      label.control-label= self.t('@admin.users.usergroups.form.filter')
+      label.control-label= self.t('filter')
       .controls
         label.radio
           input(type="radio", name="filter", value="", data-bind="checked: filter")
-          = self.t('@admin.users.usergroups.form.filter_options.show_all')
+          = self.t('filter_options.show_all')
 
         label.radio
           input(type="radio", name="filter", value="inherited", data-bind="checked: filter")
-          = self.t('@admin.users.usergroups.form.filter_options.show_inherited')
+          = self.t('filter_options.show_inherited')
 
         label.radio
           input(type="radio", name="filter", value="overriden", data-bind="checked: filter")
-          = self.t('@admin.users.usergroups.form.filter_options.show_overriden')
+          = self.t('filter_options.show_overriden')
 
         label.radio
           input(type="radio", name="filter", value="forced", data-bind="checked: filter")
-          = self.t('@admin.users.usergroups.form.filter_options.show_forced')
+          = self.t('filter_options.show_forced')
 
   // ko foreach: currentGroup.categories
   fieldset
@@ -44,11 +44,11 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
         div
           label.checkbox.inline(data-bind="visible: parentSetting")
             input(type="checkbox", data-bind="checked: overriden")
-            = self.t('@admin.users.usergroups.form.setting.override')
+            = self.t('setting.override')
 
           label.checkbox.inline(data-bind="visible: overriden")
             input(type="checkbox", data-bind="checked: forced")
-            = self.t('@admin.users.usergroups.form.setting.force')
+            = self.t('setting.force')
 
         // ko if: 'string' === valueType
         input(type="text", data-bind="value: value, valueUpdate: 'keyup', attr: { id: elementId }")
@@ -61,7 +61,7 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
         // ko if: 'boolean' === valueType
         .switch
           input(type="checkbox", data-bind="checked: value, attr: { id: elementId }")
-          label(data-yes=self.t('@admin.users.usergroups.form.setting.yes'), data-no=self.t('@admin.users.usergroups.form.setting.no'), data-bind="attr: { 'for': elementId }"): i
+          label(data-yes=self.t('setting.yes'), data-no=self.t('setting.no'), data-bind="attr: { 'for': elementId }"): i
         // /ko
 
         span.help-block(data-bind="if: localizedHelp, text: localizedHelp")
@@ -70,4 +70,4 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
 
   .form-actions
     button.btn.btn-primary(type="submit", data-bind="enable: currentGroup.isDirty")
-      = self.t('@admin.users.usergroups.form.submit')
+      = self.t('submit')
