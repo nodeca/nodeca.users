@@ -3,21 +3,23 @@ i18n:
     admin:
       core:
         group_names:
+          register: Registration
           auth: Authentication
 
         category_names:
+          register_common: Common
           auth_common: Common
 
         setting_names:
+          register_user_initial_groups: User initial groups
+          register_user_initial_groups_help: Set of groups for newly registered users.
+
+          register_confirm_email_period: Email confirm timeout
+          register_confirm_email_period_help: Time in hours since confirmation email
+            is sent during which user is permitted to use the confirmation URL.
+
           auth_logout_redirect_url: Logout redirect
           auth_logout_redirect_url_help: URL to redirect to when user logs out.
-
-          auth_user_initial_groups: User initial groups
-          auth_user_initial_groups_help: Set of groups for newly registered users.
-
-          auth_confirm_email_period: Email confirm timeout
-          auth_confirm_email_period_help: Time in hours since confirmation email
-            is sent during which user is permitted to use the confirmation URL.
 
           auth_reset_password_period: Reset password timeout
           auth_reset_password_period_help: Time in hours since password reset

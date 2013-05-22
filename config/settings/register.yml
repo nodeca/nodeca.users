@@ -1,0 +1,21 @@
+setting_groups:
+  register:
+    parent: core
+
+
+setting_schemas:
+  global:
+    register_user_initial_groups:
+      priority: 10
+      group_key: register
+      category_key: register_common
+      type: combobox
+      values: usergroups
+      default: [ validating ]
+
+    register_confirm_email_period:
+      priority: 20
+      group_key: register
+      category_key: register_common
+      type: number
+      default: 72
