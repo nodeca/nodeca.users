@@ -1,70 +1,78 @@
 'use strict';
 
 
+var _           = require('lodash');
+var ko          = require('knockout');
 var getFormData = require('nodeca.core/lib/client/get_form_data');
 
 
 var CHECK_NICK_DELAY = 500;
-var checkNickTimeout;
 
 
+// Setup nick availability checks.
 //
-// Send registration data on server.
-//
-N.wire.on('users.auth.register.exec', function register(event) {
-  var $form  = $(event.currentTarget)
-    , params = getFormData($form);
+N.wire.on('navigate.done:' + module.apiPath, function bind_nick_check() {
+  var $input   = $('#register_nick')
+    , $control = $input.parents('.control-group')
+    , $help    = $control.find('.help-block')
+    , nick     = ko.observable('');
 
-  N.io.rpc('users.auth.register.exec', params, function (err) {
-    if (err) {
-      // Wrong form params - regenerate page with hightlighted errors
-      if (N.io.BAD_REQUEST === err.code) {
-        // add errors
-        params.errors = err.data;
-        $('#content').replaceWith(N.runtime.render(module.apiPath, params));
-      } else {
-        // no need for fatal errors notifications as it's done by io automagically
-        N.logger.error(err);
-      }
+  nick.subscribe(function () {
+    $control.removeClass('success').removeClass('error');
+  });
+
+  ko.computed(function () {
+    var text = nick();
+
+    if (text.length < 1) {
       return;
     }
 
-    window.location = N.runtime.router.linkTo('users.auth.register.success');
-  });
+    N.io.rpc('users.auth.check_nick', { nick: text }, function (err, response) {
+      if (err) {
+        return false;
+      }
+
+      if (response.data.nick_is_free) {
+        $control.removeClass('error').addClass('success');
+        $help.text(t('free_nick'));
+      } else {
+        $control.removeClass('success').addClass('error');
+        $help.text(t('busy_nick'));
+      }
+    });
+  }).extend({ throttle: CHECK_NICK_DELAY });
+
+  ko.applyBindings({ nick: nick }, $input.get(0));
 });
 
 
+// Send registration data to the server.
 //
-// Send nick value on server and show error if nick exists
-//
-N.wire.on('users.auth.register.check_nick', function register_check_nick(event) {
-  var $elem = $(event.currentTarget);
+N.wire.on('users.auth.register', function register(event) {
+  var $form = $(event.currentTarget);
 
-  // make sure previous timeout was cleared
-  clearTimeout(checkNickTimeout);
+  $('.control-group').removeClass('error');
 
-  // delay request
-  checkNickTimeout = setTimeout(function () {
-    var nick = $elem.val();
+  N.io.rpc('users.auth.register', getFormData($form), function (err, response) {
+    if (err && N.io.CLIENT_ERROR === err.code) {
+      _.forEach(err.data, function (message, name) {
+        var $input = $form.find('input[name="' + name + '"]');
 
-    N.io.rpc('users.auth.register.check_nick', { nick: nick }, function (err) {
-      var $control_group = $elem.parents('.control-group:first');
+        $input.parents('.control-group').addClass('error');
 
-      if (err) {
-        if (N.io.BAD_REQUEST === err.code) {
-          // Problems with nick
-          $control_group.addClass('error');
-          $control_group.find('.help-block').text(err.message['nick']);
-        } else {
-          // something fatal
-          N.wire.emit('notify', err.message);
+        if (message) {
+          $input.siblings('.help-block').text(N.runtime.t(message));
         }
-        return;
-      }
+      });
+      return;
+    }
 
-      // no errors -> restore defaults
-      $control_group.removeClass('error');
-      $control_group.find('.help-block').text(t('nick_help'));
-    });
-  }, CHECK_NICK_DELAY);
+    if (err) {
+      return false;
+    }
+
+    // Reload page in order to apply auto-login after the registration.
+    window.location = response.data.redirect_url;
+  });
 });

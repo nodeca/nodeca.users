@@ -23,11 +23,21 @@ router:
     users.auth.login.show:
       "/auth/login": ~
 
-    users.auth.logout:
-      "/auth/logout": ~
+    users.auth.reset_password.show:
+      "/auth/reset": ~
+
+    users.auth.reset_password:
+      "/auth/reset/{user_id}/{secret_key}":
+        user_id: /[0-9a-f]+/
+        secret_key: /[0-9a-f]+/
 
     users.auth.register.show:
-      "/auth/reg": ~
+      "/auth/register": ~
 
-    users.auth.register.success:
-      "/auth/reg/done": ~
+    users.auth.confirm_email.request:
+      "/auth/confirm": ~
+
+    users.auth.confirm_email:
+      "/auth/confirm/{user_id}/{secret_key}":
+        user_id: /[0-9a-f]+/
+        secret_key: /[0-9a-f]+/

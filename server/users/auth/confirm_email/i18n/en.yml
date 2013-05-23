@@ -1,0 +1,8 @@
+en-US:
+  letter:
+    subject: Email address confirmation
+    text: |
+      Thank you for registration!
+      Please confirm your email by following this link:
+
+      #{link}

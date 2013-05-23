@@ -10,7 +10,7 @@
         li: a(href=self.link_to('users.profile'))= self.t('profile')
         li: a.icon-check(href='#') No images (fast)
         li.divider
-        li: a(href=self.link_to('users.auth.logout'))= self.t('logout')
+        li: a(data-on-click='users.auth.logout')= self.t('logout')
 - else
   ul.nav.pull-right
     li(data-api-path='users.auth.login')

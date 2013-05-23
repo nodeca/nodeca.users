@@ -1,0 +1,19 @@
+en-US:
+  request:
+    title: Email confirmation letter is sent
+    message: Your account is created but it's also required to confirm your
+      email address. Please check your mail box and follow instructions
+      in the letter. If you did't recieve it for a time, you can request a
+      new letter at your profile page.
+
+  success:
+    title: Done!
+    message:
+      Your email address is confirmed now.
+
+  invalid_token:
+    title: Something went wrong
+    message:
+      Given confirmation token is not valid anymore.
+      Probably it is expired by a timeout.
+      Please request another confirmation letter via you profile page.

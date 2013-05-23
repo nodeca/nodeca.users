@@ -1,6 +1,6 @@
 // Render registration form
 //
-"use strict";
+'use strict';
 
 
 var rate = require('./_rate_limit.js');

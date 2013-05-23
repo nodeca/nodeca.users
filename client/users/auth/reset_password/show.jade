@@ -1,19 +1,18 @@
 #content.row
   .span6.offset3.well.well-form
-
     form.form-horizontal(data-on-submit='users.auth.login.plain.exec')
       legend
         small.pull-right: a(href=self.link_to('users.auth.register.show')) #{self.t('register')}
-        | #{self.t('title')}
+        #{self.t('title')}
 
       .control-group
         p.text-error.hidden #{self.t('error')}
 
       .control-group
-        label.control-label(for='lgn_eml') #{self.t('email')}
+        label.control-label(for='reset_password_email') #{self.t('email')}
         .controls
           .row-fluid
-            input.span12(id='lgn_eml', name='email', type='text')
+            input.span12(id='reset_password_email', name='email', type='text')
 
       .control-group
         .controls

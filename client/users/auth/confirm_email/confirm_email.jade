@@ -1,0 +1,7 @@
+#content
+  if self.success
+    h1 #{self.t('success.title')}
+    p #{self.t('success.message')}
+  else
+    h1 #{self.t('invalid_token.title')}
+    p #{self.t('invalid_token.message')}

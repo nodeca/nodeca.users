@@ -1,6 +1,6 @@
 // login by `email` provider (email/password or nick/password)
 //
-"use strict";
+'use strict';
 
 var _ = require('lodash');
 
@@ -12,18 +12,18 @@ var rate = require('./_rate_limit.js');
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     email: {
-      type: "string",
+      type: 'string',
       required: true
     },
     pass: {
-      type: "string",
+      type: 'string',
       required: true
     },
     recaptcha_challenge_field: {
-      type: "string"
+      type: 'string'
     },
     recaptcha_response_field: {
-      type: "string"
+      type: 'string'
     }
   });
 

@@ -35,7 +35,7 @@ N.wire.on(module.apiPath, function login(event) {
     return;
   }
 
-  N.io.rpc('users.auth.login.exec', params, function (err) {
+  N.io.rpc('users.auth.login.plain', params, function (err) {
     if (err) {
       if (N.io.BAD_REQUEST === err.code) {
         // failed login/password or captcha
