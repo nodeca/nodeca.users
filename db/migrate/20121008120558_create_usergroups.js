@@ -1,20 +1,17 @@
-"use strict";
+'use strict';
 
 
 var async = require('async');
 
 
-module.exports.up = function (N, cb) {
-  var models = N.models;
-
+exports.up = function (N, callback) {
   // FIXME implement sets of real group items
-  async.forEachSeries(['administrators','members','guests'],
-    function(current_group, next_group) {
-      var usergroup = new models.users.UserGroup({
-        short_name: current_group,
-        is_protected: true
-      });
-      usergroup.save(next_group);
-    }
-  , cb);
+  async.forEachSeries(['administrators', 'members', 'guests'], function(name, next) {
+    var usergroup = new N.models.users.UserGroup({
+      short_name:   name
+    , is_protected: true
+    });
+
+    usergroup.save(next);
+  }, callback);
 };
