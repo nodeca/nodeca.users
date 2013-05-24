@@ -4,9 +4,6 @@
 'use strict';
 
 
-var _ = require('lodash');
-
-
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     nick: {
@@ -17,6 +14,15 @@ module.exports = function (N, apiPath) {
   });
 
   N.wire.on(apiPath, function (env, callback) {
+    env.response.data.error   = false;
+    env.response.data.message = null;
+
+    if (!N.models.users.User.validateNick(env.params.nick)) {
+      env.response.data.error = true;
+      callback();
+      return;
+    }
+
     N.models.users.User
         .findOne({ 'nick': env.params.nick })
         .select('_id')
@@ -28,7 +34,11 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      env.response.data.nick_is_free = _.isEmpty(user);
+      if (user) {
+        env.response.data.error   = true;
+        env.response.data.message = env.helpers.t('users.auth.register.show.message_nick_busy');
+      }
+
       callback();
     });
   });

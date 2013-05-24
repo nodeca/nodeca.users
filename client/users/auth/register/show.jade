@@ -4,7 +4,7 @@
 
       legend
         small.pull-right: a(href=self.link_to('users.auth.login.show')) #{self.t('login')}
-        | #{self.t('title')}
+        | #{self.t('@users.auth.register.title')}
 
 
       .control-group
@@ -16,11 +16,11 @@
 
 
       .control-group
-        label.control-label(for='register_pass') #{self.t('password')}
+        label.control-label(for='register_pass') #{self.t('pass')}
         .controls
           .row-fluid
             input.span12(id='register_pass', name='pass', type='password')
-            span.help-block #{self.t('password_help')}
+            span.help-block #{self.t('pass_help')}
 
 
       .control-group
@@ -31,7 +31,7 @@
               id='register_nick',
               name='nick',
               type='text',
-              data-bind='value: nick, valueUpdate: "keyup"')
+              data-bind='value: nick, valueUpdate: "afterkeydown"')
             span.help-block #{self.t('nick_help')}
               
 

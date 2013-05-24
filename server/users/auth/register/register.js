@@ -8,6 +8,8 @@ var _           = require('lodash');
 var revalidator = require('revalidator');
 var recaptcha   = require('nodeca.core/lib/recaptcha.js');
 
+var sendActivationToken = require('./_lib/send_activation_token');
+
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
@@ -20,23 +22,13 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.before(apiPath, function find_validating_group_id(env, callback) {
-    N.models.users.UserGroup
-        .findOne({ short_name: 'validating' })
-        .select('_id')
-        .setOptions({ lean: true })
-        .exec(function (err, group) {
-
+    N.models.users.UserGroup.findId({ short_name: 'validating' }, function(err, id) {
       if (err) {
         callback(err);
         return;
       }
 
-      if (!group) {
-        callback(new Error('Unable to find special usergroup "validating"'));
-        return;
-      }
-
-      env.data.validatingGroupId = group._id;
+      env.data.validatingGroupId = id;
       callback();
     });
   });
@@ -47,7 +39,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.before(apiPath, function validate_params(env) {
+  N.wire.on(apiPath, function validate_params(env) {
     var report = revalidator.validate(env.params, {
       type: 'object'
     , properties: {
@@ -65,7 +57,56 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.before(apiPath, function validate_recaptcha(env, callback) {
+  N.wire.on(apiPath, function check_email_uniqueness(env, callback) {
+    N.models.users.AuthLink
+        .findOne({ 'providers.email': env.params.email })
+        .select('_id')
+        .setOptions({ lean: true })
+        .exec(function (err, authlink) {
+
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      if (authlink) {
+        env.data.errors.email = env.helpers.t('users.auth.register.show.message_busy_email');
+      }
+
+      callback();
+    });
+  });
+
+
+  N.wire.on(apiPath, function check_nick_uniqueness(env, callback) {
+    N.models.users.User
+        .findOne({ 'nick': env.params.nick })
+        .select('_id')
+        .setOptions({ lean: true })
+        .exec(function (err, user) {
+
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      if (user) {
+        env.data.errors.nick = env.helpers.t('users.auth.register.show.message_busy_nick');
+      }
+
+      callback();
+    });
+  });
+
+
+  N.wire.on(apiPath, function validate_recaptcha(env, callback) {
+    if (!_.isEmpty(env.data.errors)) {
+      // Skip if some other fields are incorrect in order to not change
+      // captcha words and not annoy the user by forcing him to retype.
+      callback();
+      return;
+    }
+
     var privateKey = N.config.options.recaptcha.private_key
       , clientIp   = env.request.ip
       , challenge  = env.params.recaptcha_challenge_field
@@ -83,49 +124,9 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.before(apiPath, function check_email_uniqueness(env, callback) {
-    N.models.users.AuthLink
-        .findOne({ 'providers.email': env.params.email })
-        .select('_id')
-        .setOptions({ lean: true })
-        .exec(function (err, authlink) {
+  N.wire.on(apiPath, function register(env, callback) {
+    env.response.data.head.title = env.helpers.t('users.auth.register.title');
 
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      if (authlink) {
-        env.data.errors.email = 'users.auth.register.show.busy_email';
-      }
-
-      callback();
-    });
-  });
-
-
-  N.wire.before(apiPath, function check_nick_uniqueness(env, callback) {
-    N.models.users.User
-        .findOne({ 'nick': env.params.nick })
-        .select('_id')
-        .setOptions({ lean: true })
-        .exec(function (err, user) {
-
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      if (user) {
-        env.data.errors.nick = 'users.auth.register.show.busy_nick';
-      }
-
-      callback();
-    });
-  });
-
-
-  N.wire.on(apiPath, function register_exec(env, callback) {
     if (!_.isEmpty(env.data.errors)) {
       callback({ code: N.io.CLIENT_ERROR, data: env.data.errors });
       return;
@@ -137,8 +138,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      var validate = env.data.validatingGroupId.equals(groupId)
-        , user     = new N.models.users.User();
+      var user = new N.models.users.User();
 
       user.nick       = env.params.nick;
       user.usergroups = [ groupId ];
@@ -159,14 +159,13 @@ module.exports = function (N, apiPath) {
         provider = authlink.providers.create({
           type: 'plain'
         , email: env.params.email
-        , state: 0
         });
         provider.setPass(env.params.pass);
 
         authlink.providers.push(provider);
         authlink.save(function (err) {
           if (err) {
-            callback(err);
+            user.remove(callback); // Can't create authlink - delete the user.
             return;
           }
 
@@ -174,16 +173,14 @@ module.exports = function (N, apiPath) {
           env.session.user_id = user._id;
 
           // If the user is in 'validating' group according to global settings, 
-          // force client to request an email confirmation.
-          if (validate) {
-            env.response.data.redirect_url =
-              N.runtime.router.linkTo('users.auth.confirm_email.request');
+          // send activation token by email.
+          if (env.data.validatingGroupId.equals(groupId)) {
+            env.response.data.redirect_url = N.runtime.router.linkTo('users.auth.register.done');
+            sendActivationToken(N, env, provider.email, callback);
           } else {
-            env.response.data.redirect_url =
-              N.runtime.router.linkTo('users.profile');
+            env.response.data.redirect_url = N.runtime.router.linkTo('users.profile');
+            callback();
           }
-
-          callback();
         });
       });
     });

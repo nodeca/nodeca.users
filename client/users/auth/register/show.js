@@ -6,24 +6,22 @@ var ko          = require('knockout');
 var getFormData = require('nodeca.core/lib/client/get_form_data');
 
 
-var CHECK_NICK_DELAY = 500;
+var CHECK_NICK_DELAY = 1000;
 
 
 // Setup nick availability checks.
 //
 N.wire.on('navigate.done:' + module.apiPath, function bind_nick_check() {
   var $input   = $('#register_nick')
-    , $control = $input.parents('.control-group')
-    , $help    = $control.find('.help-block')
+    , $control = $input.parents('.control-group:first')
+    , $help    = $control.find('.help-block:first')
     , nick     = ko.observable('');
 
   nick.subscribe(function () {
     $control.removeClass('success').removeClass('error');
   });
 
-  ko.computed(function () {
-    var text = nick();
-
+  nick.subscribe(_.debounce(function (text) {
     if (text.length < 1) {
       return;
     }
@@ -33,15 +31,13 @@ N.wire.on('navigate.done:' + module.apiPath, function bind_nick_check() {
         return false;
       }
 
-      if (response.data.nick_is_free) {
-        $control.removeClass('error').addClass('success');
-        $help.text(t('free_nick'));
-      } else {
-        $control.removeClass('success').addClass('error');
-        $help.text(t('busy_nick'));
-      }
+      $control
+        .toggleClass('success', !response.data.error)
+        .toggleClass('error', response.data.error);
+
+      $help.text(response.data.message || t('nick_help'));
     });
-  }).extend({ throttle: CHECK_NICK_DELAY });
+  }, CHECK_NICK_DELAY));
 
   ko.applyBindings({ nick: nick }, $input.get(0));
 });
@@ -52,18 +48,17 @@ N.wire.on('navigate.done:' + module.apiPath, function bind_nick_check() {
 N.wire.on('users.auth.register', function register(event) {
   var $form = $(event.currentTarget);
 
-  $('.control-group').removeClass('error');
-
   N.io.rpc('users.auth.register', getFormData($form), function (err, response) {
     if (err && N.io.CLIENT_ERROR === err.code) {
-      _.forEach(err.data, function (message, name) {
-        var $input = $form.find('input[name="' + name + '"]');
+      // Update status/messages on all input fields.
+      _.forEach($form.find('input'), function (input) {
+        var $input   = $(input)
+          , name     = $input.attr('name')
+          , $control = $input.parents('.control-group:first')
+          , $help    = $control.find('.help-block:first');
 
-        $input.parents('.control-group').addClass('error');
-
-        if (message) {
-          $input.siblings('.help-block').text(N.runtime.t(message));
-        }
+        $control.toggleClass('error', _.has(err.data, name));
+        $help.text(err.data[name] || t(name + '_help'));
       });
       return;
     }

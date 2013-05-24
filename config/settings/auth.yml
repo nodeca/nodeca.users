@@ -12,10 +12,3 @@ setting_schemas:
       type: string
       default: /
       validators: url
-
-    auth_reset_password_period:
-      priority: 20
-      group_key: auth
-      category_key: auth_common
-      type: number
-      default: 3

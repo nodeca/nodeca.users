@@ -13,9 +13,10 @@ setting_schemas:
       values: usergroups
       default: validating
 
-    register_confirm_email_period:
+    register_user_validated_group:
       priority: 20
       group_key: register
       category_key: register_common
-      type: number
-      default: 72
+      type: dropdown
+      values: usergroups
+      default: members

@@ -1,0 +1,7 @@
+en-US:
+  letter:
+    subject: '#{project_name}: Activate your account.'
+    text: |
+      Please activate your account by following this link:
+
+      #{link}

@@ -37,6 +37,23 @@ module.exports = function (N, collectionName) {
   });
 
 
+  UserGroup.statics.findId = function findId(conditions, callback) {
+    this.findOne(conditions, '_id', { lean: true }, function (err, group) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      if (!group) {
+        callback(new Error('Cannot find usergroup by criteria ' + JSON.stringify(conditions)));
+        return;
+      }
+
+      callback(null, group._id);
+    });
+  };
+
+
   N.wire.on("init:models", function emit_init_UserGroup(__, callback) {
     N.wire.emit("init:models." + collectionName, UserGroup, callback);
   });

@@ -1,14 +1,26 @@
 en-US:
+  title: Registration
+
   show:
-    title: Registration
     email: Email
-    email_help: Should be valid, you will get confirmation code there, to activate your account.
-    password: Password
-    password_help: Must contain both digits and letters (other symbols also possible). Also, should have > 8 symbols.
+    email_help: You will get confirmation code there, to activate your account.
+    pass: Password
+    pass_help: Must contain both digits and letters (other symbols also possible). Also, should have > 8 symbols.
     nick: Nickname
     nick_help: How to show you on forum
+
     login: Login
     register: Register
-    busy_email: This email already used by another member
-    busy_nick: This nick already used by another member
-    free_nick: This nick is available!
+
+    message_busy_email: This email is already used.
+    message_busy_nick: This nick is already used.
+
+  done:
+    message: You need to activate your account. Please follow instructions in activation email.
+
+  resend_activation:
+    message: New letter with activation link is sent.
+
+  activate:
+    message_success: Account is activated.
+    message_invalid_token: Invalid token. Please request another confirmation email.
