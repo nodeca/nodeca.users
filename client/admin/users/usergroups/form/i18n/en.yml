@@ -1,8 +1,8 @@
 en-US:
   group:
     short_name: Group name
+    short_name_help: Must be unique
     options: Group options
-    short_name_help: Short unique text, will be used for translations.
     inherit: Inherits
     inherit_none: None
 
@@ -12,12 +12,12 @@ en-US:
     override: Override
     force: Force
 
-  filter: Filter settings
+  filter: Show settings
   filter_options:
-    show_all: Show all
-    show_inherited: Show inherited only
-    show_overriden: Show overriden only
-    show_forced: Show forced only
+    show_all: all
+    show_overriden: overriden
+    show_forced: forced
+    show_inherited: inherited
 
   submit: Save
   created: Group is created.

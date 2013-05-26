@@ -180,7 +180,11 @@ function UserGroup(form, data) {
   // Computed values.
   //
   this.localizedName = ko.computed(function () {
-    return this.name() ? N.runtime.t('admin.users.usergroup_names.' + this.name()) : null;
+    return (this.name() && N.runtime.t.exists('admin.users.usergroup_names.' + this.name()))
+      ?
+        N.runtime.t('admin.users.usergroup_names.' + this.name())
+      :
+        null;
   }, this);
 
   this.parentGroup = ko.computed({

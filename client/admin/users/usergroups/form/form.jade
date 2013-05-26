@@ -17,21 +17,21 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
     .control-group
       label.control-label= self.t('filter')
       .controls
-        label.radio
+        label.radio.inline
           input(type="radio", name="filter", value="", data-bind="checked: filter")
           = self.t('filter_options.show_all')
-
-        label.radio
-          input(type="radio", name="filter", value="inherited", data-bind="checked: filter")
-          = self.t('filter_options.show_inherited')
-
-        label.radio
+        |  
+        label.radio.inline
           input(type="radio", name="filter", value="overriden", data-bind="checked: filter")
           = self.t('filter_options.show_overriden')
-
-        label.radio
+        |  
+        label.radio.inline
           input(type="radio", name="filter", value="forced", data-bind="checked: filter")
           = self.t('filter_options.show_forced')
+        |  
+        label.radio.inline
+          input(type="radio", name="filter", value="inherited", data-bind="checked: filter")
+          = self.t('filter_options.show_inherited')
 
   // ko foreach: currentGroup.categories
   fieldset
@@ -40,31 +40,37 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
     // ko foreach: settings
     .control-group.control-group-hover(data-bind="visible: visible, css: { overriden: overriden, inherited: inherited, forced: forced }")
       label.control-label(data-bind="text: localizedName, attr: { 'for': elementId }")
-      .controls
-        div
-          label.checkbox.inline(data-bind="visible: parentSetting")
-            input(type="checkbox", data-bind="checked: overriden")
-            = self.t('setting.override')
+      .controls.controls-row
 
-          label.checkbox.inline(data-bind="visible: overriden")
-            input(type="checkbox", data-bind="checked: forced")
-            = self.t('setting.force')
+        .span4.control-value
+          // ko if: 'string' === valueType
+          input(type="text", data-bind="value: value, valueUpdate: 'keyup', attr: { id: elementId }")
+          // /ko
 
-        // ko if: 'string' === valueType
-        input(type="text", data-bind="value: value, valueUpdate: 'keyup', attr: { id: elementId }")
-        // /ko
+          // ko if: 'number' === valueType
+          input(type="number", data-bind="value: value, valueUpdate: 'keyup', attr: { id: elementId }")
+          // /ko
 
-        // ko if: 'number' === valueType
-        input(type="number", data-bind="value: value, valueUpdate: 'keyup', attr: { id: elementId }")
-        // /ko
+          // ko if: 'boolean' === valueType
+          .switch
+            input(type="checkbox", data-bind="checked: value, attr: { id: elementId }")
+            label(data-yes=self.t('setting.yes'), data-no=self.t('setting.no'), data-bind="attr: { 'for': elementId }"): i
+          // /ko
 
-        // ko if: 'boolean' === valueType
-        .switch
-          input(type="checkbox", data-bind="checked: value, attr: { id: elementId }")
-          label(data-yes=self.t('setting.yes'), data-no=self.t('setting.no'), data-bind="attr: { 'for': elementId }"): i
-        // /ko
+          // ko if: localizedHelp
+          span.help-block(data-bind="text: localizedHelp")
+          // /ko
 
-        span.help-block(data-bind="if: localizedHelp, text: localizedHelp")
+        .span4
+          div
+            label.checkbox.inline(data-bind="visible: parentSetting")
+              input(type="checkbox", data-bind="checked: overriden")
+              = self.t('setting.override')
+
+            label.checkbox.inline(data-bind="visible: overriden")
+              input(type="checkbox", data-bind="checked: forced")
+              = self.t('setting.force')
+
     // /ko
   // /ko
 
