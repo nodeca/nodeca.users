@@ -14,7 +14,7 @@ var Schema   = Mongoose.Schema;
 var crypto   = require('crypto');
 
 
-var TOKEN_EXPIRE_TIMEOUT    = 6 * 60 * 60; // 6 hours.
+var TOKEN_EXPIRE_TIMEOUT    = 6 * 60 * 60 * 1000; // 6 hours in msecs.
 var TOKEN_SECRET_KEY_LENGTH = 16;
 
 
