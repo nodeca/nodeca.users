@@ -7,6 +7,9 @@ en-US:
   check_nick:
     message_busy_nick: This nick is already used.
 
+  resend_activation:
+    title: Resend activation
+
   letter:
     subject: '#{project_name}: Activate your account.'
     text: |
