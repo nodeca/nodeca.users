@@ -1,4 +1,4 @@
-// Create or update account activation token for the given email address and
+// Create new account activation token for the given email address and
 // send it by a letter.
 
 
