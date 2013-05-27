@@ -37,15 +37,15 @@ module.exports = function (N, collectionName) {
   });
 
 
-  UserGroup.statics.findId = function findId(conditions, callback) {
-    this.findOne(conditions, '_id', { lean: true }, function (err, group) {
+  UserGroup.statics.findIdByName = function findIdByName(shortName, callback) {
+    this.findOne({ short_name: shortName }, '_id', { lean: true }, function (err, group) {
       if (err) {
         callback(err);
         return;
       }
 
       if (!group) {
-        callback(new Error('Cannot find usergroup by criteria ' + JSON.stringify(conditions)));
+        callback(new Error('Cannot find usergroup by short name "' + shortName + '"'));
         return;
       }
 

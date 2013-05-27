@@ -12,14 +12,9 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.before(apiPath, function find_validating_group_id(env, callback) {
-    N.models.users.UserGroup.findId({ short_name: 'validating' }, function(err, id) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
+    N.models.users.UserGroup.findIdByName('validating', function(err, id) {
       env.data.validatingGroupId = id;
-      callback();
+      callback(err);
     });
   });
 
