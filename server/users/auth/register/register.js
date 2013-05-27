@@ -65,7 +65,7 @@ module.exports = function (N, apiPath) {
       }
 
       if (authlink) {
-        env.data.errors.email = env.helpers.t('users.auth.register.show.message_busy_email');
+        env.data.errors.email = env.helpers.t('users.auth.register.message_busy_email');
       }
 
       callback();
@@ -86,7 +86,7 @@ module.exports = function (N, apiPath) {
       }
 
       if (user) {
-        env.data.errors.nick = env.helpers.t('users.auth.register.show.message_busy_nick');
+        env.data.errors.nick = env.helpers.t('users.auth.register.message_busy_nick');
       }
 
       callback();

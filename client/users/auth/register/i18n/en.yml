@@ -1,6 +1,4 @@
 en-US:
-  title: Registration
-
   show:
     email: Email
     email_help: You will get confirmation code there, to activate your account.
@@ -11,9 +9,6 @@ en-US:
 
     login: Login
     register: Register
-
-    message_busy_email: This email is already used.
-    message_busy_nick: This nick is already used.
 
   done:
     message: You need to activate your account. Please follow instructions in activation email.
