@@ -25,12 +25,10 @@ function generateSecretKey() {
 
 module.exports = function (N, collectionName) {
   var TokenActivationEmail = new Schema({
-    secret_key : { type: String,                'default': generateSecretKey   }
-  , email      : { type: String,                required: true                 }
-  , create_ts  : { type: Date,                  expires:  TOKEN_EXPIRE_TIMEOUT }
+    secret_key : { type: String, required: true, 'default': generateSecretKey                   }
+  , create_ts  : { type: Date,   required: true, 'default': Date, expires: TOKEN_EXPIRE_TIMEOUT }
+  , email      : { type: String, required: true                                                 }
   });
-
-  TokenActivationEmail.statics.generateSecretKey = generateSecretKey;
 
   TokenActivationEmail.methods.isExpired = function isExpired() {
     return Date.now() >= (this.create_ts.getTime() + TOKEN_EXPIRE_TIMEOUT);

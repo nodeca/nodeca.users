@@ -9,12 +9,7 @@ var url = require('url');
 
 
 module.exports = function sendActivationToken(N, env, email, callback) {
-  N.models.users.TokenActivationEmail.findOneAndUpdate(
-    { email:      email }
-  , { secret_key: N.models.users.TokenActivationEmail.generateSecretKey(), create_ts: new Date() }
-  , { upsert:     true }
-  , function (err, token) {
-
+  N.models.users.TokenActivationEmail.create({ email: email }, function (err, token) {
     if (err) {
       callback(err);
       return;
