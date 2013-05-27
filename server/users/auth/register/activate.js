@@ -46,47 +46,31 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      N.models.users.AuthLink
-          .findOne({ 'providers.email': token.email, 'providers.type': 'plain' })
-          .exec(function (err, authlink) {
-
+      N.models.users.User.findById(token.user_id, function (err, user) {
         if (err) {
           callback(err);
           return;
         }
 
-        // No authlink found. Remove the token and show 'Invalid token' page.
-        if (!authlink) {
+        // No user found. Remove the token and show 'Invalid token' page.
+        if (!user) {
           token.remove(callback);
           return;
         }
 
-        N.models.users.User.findById(authlink.user_id, function (err, user) {
+        user.usergroups.remove(env.data.validatingGroupId);
+        user.usergroups.push(env.data.validatedGroupId);
+
+        user.save(function (err) {
           if (err) {
             callback(err);
             return;
           }
 
-          // No user found. Remove the token and show 'Invalid token' page.
-          if (!user) {
-            token.remove(callback);
-            return;
-          }
+          env.response.data.success = true;
 
-          user.usergroups.remove(env.data.validatingGroupId);
-          user.usergroups.push(env.data.validatedGroupId);
-
-          user.save(function (err) {
-            if (err) {
-              callback(err);
-              return;
-            }
-
-            env.response.data.success = true;
-
-            // Remove all ever created tokens for the activated email.
-            N.models.users.TokenActivationEmail.find({ email: token.email }).remove(callback);
-          });
+          // Remove all ever created tokens for the activated user.
+          N.models.users.TokenActivationEmail.find({ user_id: user._id }).remove(callback);
         });
       });
     });

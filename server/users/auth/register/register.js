@@ -172,7 +172,15 @@ module.exports = function (N, apiPath) {
           // send activation token by email.
           if (env.data.validatingGroupId.equals(groupId)) {
             env.response.data.redirect_url = N.runtime.router.linkTo('users.auth.register.done');
-            sendActivationToken(N, env, provider.email, callback);
+
+            N.models.users.TokenActivationEmail.create({ user_id: user._id }, function (err, token) {
+              if (err) {
+                callback(err);
+                return;
+              }
+
+              sendActivationToken(N, env, provider.email, token, callback);
+            });
           } else {
             env.response.data.redirect_url = N.runtime.router.linkTo('users.profile');
             callback();

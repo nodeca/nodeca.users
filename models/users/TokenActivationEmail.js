@@ -25,9 +25,21 @@ function generateSecretKey() {
 
 module.exports = function (N, collectionName) {
   var TokenActivationEmail = new Schema({
-    secret_key : { type: String, required: true, 'default': generateSecretKey                   }
-  , create_ts  : { type: Date,   required: true, 'default': Date, expires: TOKEN_EXPIRE_TIMEOUT }
-  , email      : { type: String, required: true                                                 }
+    secret_key: {
+      type: String
+    , required: true
+    , 'default': generateSecretKey
+    }
+  , create_ts: {
+      type: Date
+    , required: true
+    , 'default': Date
+    , expires: TOKEN_EXPIRE_TIMEOUT
+    }
+  , user_id: {
+      type: Schema.Types.ObjectId
+    , required: true
+    }
   });
 
   TokenActivationEmail.methods.isExpired = function isExpired() {
@@ -35,7 +47,7 @@ module.exports = function (N, collectionName) {
   };
 
   TokenActivationEmail.index({ secret_key: 1 });
-  TokenActivationEmail.index({ email: 1 });
+  TokenActivationEmail.index({ user_id: 1 });
 
 
   N.wire.on("init:models", function emit_init_TokenActivationEmail(__, callback) {

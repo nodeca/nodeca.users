@@ -68,7 +68,14 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        sendActivationToken(N, env, plainProvider.email, callback);
+        N.models.users.TokenActivationEmail.create({ user_id: user._id }, function (err, token) {
+          if (err) {
+            callback(err);
+            return;
+          }
+
+          sendActivationToken(N, env, plainProvider.email, token, callback);
+        });
       });
     });
   });
