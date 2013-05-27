@@ -22,10 +22,11 @@ module.exports = function (N, apiPath) {
     }
 
     if (!env.runtime.is_validating) {
-      return {
+      callback({
         code: N.io.REDIRECT
       , head: { Location: N.runtime.router.linkTo('users.profile') }
-      };
+      });
+      return;
     }
 
     N.models.users.AuthLink
