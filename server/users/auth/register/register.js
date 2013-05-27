@@ -46,6 +46,7 @@ module.exports = function (N, apiPath) {
 
     if (!report.valid) {
       _.forEach(report.errors, function (error) {
+        // Don't customize form text, just highlight the field.
         env.data.errors[error.property] = null;
       });
     }
