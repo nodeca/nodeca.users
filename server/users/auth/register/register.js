@@ -8,7 +8,7 @@ var _           = require('lodash');
 var revalidator = require('revalidator');
 var recaptcha   = require('nodeca.core/lib/recaptcha.js');
 
-var sendActivationToken = require('./_lib/send_activation_token');
+var sendActivationEmail = require('./_lib/send_activation_email');
 
 
 module.exports = function (N, apiPath) {
@@ -179,7 +179,7 @@ module.exports = function (N, apiPath) {
                 return;
               }
 
-              sendActivationToken(N, env, provider.email, token, callback);
+              sendActivationEmail(N, env, provider.email, token, callback);
             });
           } else {
             env.response.data.redirect_url = N.runtime.router.linkTo('users.profile');

@@ -6,7 +6,7 @@
 
 var _ = require('lodash');
 
-var sendActivationToken = require('./_lib/send_activation_token');
+var sendActivationEmail = require('./_lib/send_activation_email');
 
 
 module.exports = function (N, apiPath) {
@@ -74,7 +74,7 @@ module.exports = function (N, apiPath) {
             return;
           }
 
-          sendActivationToken(N, env, plainProvider.email, token, callback);
+          sendActivationEmail(N, env, plainProvider.email, token, callback);
         });
       });
     });

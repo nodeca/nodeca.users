@@ -7,7 +7,7 @@
 var url = require('url');
 
 
-module.exports = function sendActivationToken(N, env, email, token, callback) {
+module.exports = function sendActivationEmail(N, env, email, token, callback) {
   var link;
 
   // Construst base link.
