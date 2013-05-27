@@ -21,13 +21,8 @@ module.exports = function (N, apiPath) {
 
   N.wire.before(apiPath, function find_validated_group_id(env, callback) {
     N.settings.get('register_user_validated_group', {}, function (err, id) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
       env.data.validatedGroupId = id;
-      callback();
+      callback(err);
     });
   });
 
@@ -80,15 +75,16 @@ module.exports = function (N, apiPath) {
           user.usergroups.remove(env.data.validatingGroupId);
           user.usergroups.push(env.data.validatedGroupId);
 
-          env.response.data.success = true;
-
-          token.remove(function (err) {
+          user.save(function (err) {
             if (err) {
               callback(err);
               return;
             }
 
-            user.save(callback);
+            env.response.data.success = true;
+
+            // Remove all ever created tokens for the activated email.
+            N.models.users.TokenActivationEmail.find({ email: token.email }).remove(callback);
           });
         });
       });
