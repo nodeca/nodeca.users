@@ -18,4 +18,4 @@ en-US:
 
   activate:
     message_success: Account is activated.
-    message_invalid_token: Invalid token. Please request another confirmation email.
+    message_invalid_token: Invalid token.
