@@ -36,7 +36,7 @@ module.exports = function (N, collectionName) {
     return Date.now() >= (this.create_ts.getTime() + TOKEN_EXPIRE_TIMEOUT);
   };
 
-  TokenActivationEmail.index({ user_id: 1 }, { unique: true });
+  TokenActivationEmail.index({ secret_key: 1 }, { unique: true });
 
 
   N.wire.on("init:models", function emit_init_TokenActivationEmail(__, callback) {
