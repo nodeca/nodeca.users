@@ -32,8 +32,8 @@ module.exports = function (N, collectionName) {
 
   TokenActivationEmail.statics.generateSecretKey = generateSecretKey;
 
-  TokenActivationEmail.methods.check = function check() {
-    return Date.now() < (this.create_ts.getTime() + TOKEN_EXPIRE_TIMEOUT);
+  TokenActivationEmail.methods.isExpired = function isExpired() {
+    return Date.now() >= (this.create_ts.getTime() + TOKEN_EXPIRE_TIMEOUT);
   };
 
   TokenActivationEmail.index({ user_id: 1 }, { unique: true });

@@ -50,7 +50,7 @@ module.exports = function (N, apiPath) {
       }
 
       // No token found or it's expired. Show 'Invalid token' page.
-      if (!token || !token.check()) {
+      if (!token || token.isExpired()) {
         callback();
         return;
       }
