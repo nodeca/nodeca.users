@@ -10,7 +10,7 @@ en-US:
   resend_activation:
     title: Resend activation
 
-  letter:
+  activation_email:
     subject: '#{project_name}: Activate your account.'
     text: |
       Please activate your account by following this link:

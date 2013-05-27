@@ -30,8 +30,8 @@ module.exports = function sendActivationToken(N, env, email, callback) {
 
       N.mailer.send({
         to:      email
-      , subject: env.helpers.t('users.auth.register.letter.subject', { project_name: projectName })
-      , text:    env.helpers.t('users.auth.register.letter.text',    { link: link })
+      , subject: env.helpers.t('users.auth.register.activation_email.subject', { project_name: projectName })
+      , text:    env.helpers.t('users.auth.register.activation_email.text',    { link: link })
       }, callback);
     });
   });
