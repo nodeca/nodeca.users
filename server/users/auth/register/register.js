@@ -55,7 +55,7 @@ module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, function check_email_uniqueness(env, callback) {
     N.models.users.AuthLink
-        .findOne({ 'providers.email': env.params.email })
+        .findOne({ 'providers.email': env.params.email, 'providers.type': 'plain' })
         .select('_id')
         .setOptions({ lean: true })
         .exec(function (err, authlink) {
