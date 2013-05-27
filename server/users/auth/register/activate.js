@@ -46,7 +46,7 @@ module.exports = function (N, apiPath) {
       }
 
       N.models.users.AuthLink
-          .findOne({ 'providers.type': 'plain', 'providers.email': token.email })
+          .findOne({ 'providers.email': token.email, 'providers.type': 'plain' })
           .exec(function (err, authlink) {
 
         if (err) {
