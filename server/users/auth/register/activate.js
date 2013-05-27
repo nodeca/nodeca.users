@@ -58,19 +58,43 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        user.usergroups.remove(env.data.validatingGroupId);
-        user.usergroups.push(env.data.validatedGroupId);
+        // Reject activation of already activated account.
+        // NOTE: This must not happen on normal Nodeca workflow.
+        if (-1 === user.usergroups.indexOf(env.data.validatingGroupId)) {
+          token.remove(callback);
+          return;
+        }
 
-        user.save(function (err) {
+        user.usergroups.remove(env.data.validatingGroupId);
+
+        // Push the validated group only if user isn't already member of that.
+        if (-1 === user.usergroups.indexOf(env.data.validatedGroupId)) {
+          user.usergroups.push(env.data.validatedGroupId);
+        }
+
+        // Ensure all ever created tokens are deleted *before* saving
+        // the account and auto-login.
+        N.models.users.TokenActivationEmail.find({ user_id: user._id }).remove(function (err) {
           if (err) {
             callback(err);
             return;
           }
 
-          env.response.data.success = true;
+          user.save(function (err, user) {
+            if (err) {
+              callback(err);
+              return;
+            }
 
-          // Remove all ever created tokens for the activated user.
-          N.models.users.TokenActivationEmail.find({ user_id: user._id }).remove(callback);
+            env.response.data.success = true;
+
+            // Auto-login.
+            if (!env.session.user_id) {
+              env.session.user_id = user._id;
+            }
+
+            callback();
+          });
         });
       });
     });
