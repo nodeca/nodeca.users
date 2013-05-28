@@ -11,12 +11,9 @@ i18n:
           auth_common: Common
 
         setting_names:
-          register_user_initial_group: User initial group
-          register_user_initial_group_help: Group for newly registered users.
+          register_user_initial_group: Group after registration
 
-          register_user_validated_group: Validated user group
-          register_user_validated_group_help: Group to set after user confirmed
-            registration email address.
+          register_user_validated_group: Group after activation
 
           auth_logout_redirect_url: Logout redirect
           auth_logout_redirect_url_help: URL to redirect to when user logs out.

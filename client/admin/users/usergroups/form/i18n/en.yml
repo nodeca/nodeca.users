@@ -1,7 +1,6 @@
 en-US:
   group:
-    short_name: Group name
-    short_name_help: Must be unique
+    short_name: Group name (id)
     options: Group options
     inherit: Inherits
     inherit_none: None

@@ -6,8 +6,9 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
       label.control-label= self.t('group.short_name')
       .controls
         input(type="text", data-bind="value: currentGroup.name, disable: currentGroup.isProtected")
-        div(data-bind="if: currentGroup.localizedName, text: currentGroup.localizedName")
-        span.help-block= self.t('group.short_name_help')
+        // ko if: currentGroup.localizedName()
+        div(data-bind="text: currentGroup.localizedName")
+        // /ko
 
     .control-group
       label.control-label= self.t('group.inherit')
