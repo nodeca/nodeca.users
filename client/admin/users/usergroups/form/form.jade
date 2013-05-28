@@ -41,36 +41,37 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
     // ko foreach: settings
     .control-group.control-group-hover(data-bind="visible: visible, css: { overriden: overriden, inherited: inherited, forced: forced }")
       label.control-label(data-bind="text: localizedName, attr: { 'for': elementId }")
-      .controls.controls-row
+      .controls
+        .row-fluid
 
-        .span4.control-value
-          // ko if: 'string' === valueType
-          input(type="text", data-bind="value: value, valueUpdate: 'keyup', attr: { id: elementId }")
-          // /ko
+          .span4.control-value
+            // ko if: 'string' === valueType
+            input(type="text", data-bind="value: value, valueUpdate: 'keyup', attr: { id: elementId }")
+            // /ko
 
-          // ko if: 'number' === valueType
-          input(type="number", data-bind="value: value, valueUpdate: 'keyup', attr: { id: elementId }")
-          // /ko
+            // ko if: 'number' === valueType
+            input(type="number", data-bind="value: value, valueUpdate: 'keyup', attr: { id: elementId }")
+            // /ko
 
-          // ko if: 'boolean' === valueType
-          .switch
-            input(type="checkbox", data-bind="checked: value, attr: { id: elementId }")
-            label(data-yes=self.t('setting.yes'), data-no=self.t('setting.no'), data-bind="attr: { 'for': elementId }"): i
-          // /ko
+            // ko if: 'boolean' === valueType
+            .switch
+              input(type="checkbox", data-bind="checked: value, attr: { id: elementId }")
+              label(data-yes=self.t('setting.yes'), data-no=self.t('setting.no'), data-bind="attr: { 'for': elementId }"): i
+            // /ko
 
-          // ko if: localizedHelp
-          span.help-block(data-bind="text: localizedHelp")
-          // /ko
+            // ko if: localizedHelp
+            span.help-block(data-bind="text: localizedHelp")
+            // /ko
 
-        .span4
-          div
-            label.checkbox.inline(data-bind="visible: parentSetting")
-              input(type="checkbox", data-bind="checked: overriden")
-              = self.t('setting.override')
+          .span4
+            div
+              label.checkbox.inline(data-bind="visible: parentSetting")
+                input(type="checkbox", data-bind="checked: overriden")
+                = self.t('setting.override')
 
-            label.checkbox.inline(data-bind="visible: overriden")
-              input(type="checkbox", data-bind="checked: forced")
-              = self.t('setting.force')
+              label.checkbox.inline(data-bind="visible: overriden")
+                input(type="checkbox", data-bind="checked: forced")
+                = self.t('setting.force')
 
     // /ko
   // /ko
