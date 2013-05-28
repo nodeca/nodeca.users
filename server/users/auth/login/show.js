@@ -3,9 +3,6 @@
 'use strict';
 
 
-var rate = require('./_rate_limit.js');
-
-
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
   });
@@ -17,7 +14,7 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function login_inject_captcha(env, callback) {
     var user_ip = env.request.ip;
 
-    rate.ip.count(user_ip, function (err, high) {
+    N.models.users.LoginLimitIP.check(user_ip, function (err, high) {
       if (err) {
         callback(err);
         return;

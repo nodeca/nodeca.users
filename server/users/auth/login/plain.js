@@ -6,7 +6,6 @@ var _ = require('lodash');
 
 
 var ReCaptcha = require('nodeca.core/lib/recaptcha.js');
-var rate = require('./_rate_limit.js');
 
 
 module.exports = function (N, apiPath) {
@@ -96,7 +95,7 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function login_ip_rate_limit(env, callback) {
     var user_ip = env.request.ip;
 
-    rate.ip.count(user_ip, function (err, high) {
+    N.models.users.LoginLimitIP.check(user_ip, function (err, high) {
       if (err) {
         callback(err);
         return;
@@ -106,8 +105,8 @@ module.exports = function (N, apiPath) {
       // without check, and update counters.
       if (high) {
         // update fail counters in lazy style - don't wait callback
-        rate.ip.update(user_ip);
-        rate.total.update();
+        N.models.users.LoginLimitIP.update(user_ip);
+        N.models.users.LoginLimitTotal.update();
 
         callback({
           code: N.io.BAD_REQUEST,
@@ -128,7 +127,7 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function login_check_captcha(env, callback) {
 
     // check big requests count first
-    rate.total.count(function (err, high) {
+    N.models.users.LoginLimitTotal.check(function (err, high) {
       if (err) {
         callback(err);
         return;
@@ -220,8 +219,8 @@ module.exports = function (N, apiPath) {
       // No auth info
       if (!auth) {
         // update fail counters in lazy style - don't wait callback
-        rate.ip.update(user_ip);
-        rate.total.update();
+        N.models.users.LoginLimitIP.update(user_ip);
+        N.models.users.LoginLimitTotal.update();
 
         callback(login_error);
         return;
@@ -235,8 +234,8 @@ module.exports = function (N, apiPath) {
       // check password
       if (!provider.checkPass(env.params.pass)) {
         // update fail counters in lazy style - don't wait callback
-        rate.ip.update(user_ip);
-        rate.total.update();
+        N.models.users.LoginLimitIP.update(user_ip);
+        N.models.users.LoginLimitTotal.update();
 
         callback(login_error);
         return;
