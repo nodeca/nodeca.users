@@ -60,7 +60,7 @@ module.exports = function (N, apiPath) {
           if (!user) {
             callback({
               code: N.io.APP_ERROR,
-              data: env.helpers.t('users.auth.login.exec.error.login_failed')
+              data: env.t('login_failed')
             });
             return;
           }
@@ -112,7 +112,7 @@ module.exports = function (N, apiPath) {
         callback({
           code: N.io.BAD_REQUEST,
           data: {
-            common: env.helpers.t('users.auth.login.exec.error.too_many_attempts')
+            common: env.t('too_many_attempts')
           }
         });
         return;
@@ -209,7 +209,7 @@ module.exports = function (N, apiPath) {
       var provider;
       var login_error = {
         code: N.io.BAD_REQUEST,
-        data: { common: env.helpers.t('users.auth.login.exec.error.login_failed') }
+        data: { common: env.t('login_failed') }
       };
 
       if (err) {

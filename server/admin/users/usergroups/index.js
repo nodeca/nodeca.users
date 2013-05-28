@@ -13,9 +13,7 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function (env, callback) {
     var data = env.response.data;
 
-    data.head.title =
-      env.helpers.t('admin.users.usergroups.index.title');
-
+    data.head.title = env.t('title');
     data.usergroups = [];
 
     N.models.users.UserGroup

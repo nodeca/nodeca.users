@@ -30,7 +30,7 @@ module.exports = function (N, apiPath) {
       if (0 === count) {
         callback({
           code: N.io.BAD_REQUEST
-        , message: env.helpers.t('admin.users.usergroups.update.error_nonexistent_parent_group')
+        , message: env.t('error_nonexistent_parent_group')
         });
       }
 
@@ -51,7 +51,7 @@ module.exports = function (N, apiPath) {
       if (0 !== count) {
         callback({
           code: N.io.BAD_REQUEST
-        , message: env.helpers.t('admin.users.usergroups.create.error_short_name_busy')
+        , message: env.t('error_short_name_busy')
         });
         return;
       }

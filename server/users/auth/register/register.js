@@ -66,7 +66,7 @@ module.exports = function (N, apiPath) {
       }
 
       if (authlink) {
-        env.data.errors.email = env.helpers.t('users.auth.register.message_busy_email');
+        env.data.errors.email = env.t('message_busy_email');
       }
 
       callback();
@@ -87,7 +87,7 @@ module.exports = function (N, apiPath) {
       }
 
       if (user) {
-        env.data.errors.nick = env.helpers.t('users.auth.register.message_busy_nick');
+        env.data.errors.nick = env.t('message_busy_nick');
       }
 
       callback();
@@ -121,7 +121,7 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.on(apiPath, function register(env, callback) {
-    env.response.data.head.title = env.helpers.t('users.auth.register.title');
+    env.response.data.head.title = env.t('title');
 
     if (!_.isEmpty(env.data.errors)) {
       callback({ code: N.io.CLIENT_ERROR, data: env.data.errors });

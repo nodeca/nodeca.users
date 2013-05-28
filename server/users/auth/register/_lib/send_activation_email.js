@@ -24,8 +24,8 @@ module.exports = function sendActivationEmail(N, env, email, token, callback) {
 
     N.mailer.send({
       to:      email
-    , subject: env.helpers.t('users.auth.register.activation_email.subject', { project_name: projectName })
-    , text:    env.helpers.t('users.auth.register.activation_email.text',    { link: link })
+    , subject: env.t('@users.auth.register.activation_email.subject', { project_name: projectName })
+    , text:    env.t('@users.auth.register.activation_email.text',    { link: link })
     }, callback);
   });
 };

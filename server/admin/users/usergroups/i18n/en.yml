@@ -9,6 +9,7 @@ en-US:
     title: "Edit group: #{name}"
 
   create:
+    error_nonexistent_parent_group: Given parent does not exists.
     error_short_name_busy: This name is occupied, select another one.
 
   update:

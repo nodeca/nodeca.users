@@ -28,7 +28,7 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.on(apiPath, function register_activate(env, callback) {
-    env.response.data.head.title = env.helpers.t('users.auth.register.title');
+    env.response.data.head.title = env.t('title');
     env.response.data.success = false; // Just initial value.
 
     N.models.users.TokenActivationEmail

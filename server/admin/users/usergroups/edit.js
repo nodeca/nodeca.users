@@ -41,7 +41,7 @@ module.exports = function (N, apiPath) {
       }
 
       data.head.title =
-        env.helpers.t('admin.users.usergroups.edit.title', {
+        env.t('title', {
           name: currentGroup.short_name
         });
 
