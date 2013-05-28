@@ -35,7 +35,7 @@
             span.help-block #{self.t('nick_help')}
               
 
-      != self.partial('@common.blocks.recaptcha', { public_key: self.runtime.recaptcha.public_key })
+      != self.partial('@common.blocks.recaptcha')
 
       .control-group
         .controls

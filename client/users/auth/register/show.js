@@ -9,6 +9,12 @@ var getFormData = require('nodeca.core/lib/client/get_form_data');
 var CHECK_NICK_DELAY = 1000;
 
 
+// Setup ReCaptcha.
+N.wire.on('navigate.done:' + module.apiPath, function init_recaptcha(__, callback) {
+  N.wire.emit('common.blocks.recaptcha.create', null, callback);
+});
+
+
 // Setup nick availability checks.
 //
 N.wire.on('navigate.done:' + module.apiPath, function bind_nick_check() {
@@ -60,6 +66,12 @@ N.wire.on('users.auth.register', function register(event) {
         $control.toggleClass('error', _.has(err.data, name));
         $help.text(err.data[name] || t(name + '_help'));
       });
+
+      // Update ReCaptcha words if there is a ReCaptcha error.
+      if (_.has(err.data, 'recaptcha_response_field')) {
+        N.wire.emit('common.blocks.recaptcha.update');
+      }
+
       return;
     }
 
