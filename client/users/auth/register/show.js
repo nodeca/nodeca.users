@@ -9,15 +9,7 @@ var getFormData = require('nodeca.core/lib/client/get_form_data');
 var CHECK_NICK_DELAY = 1000;
 
 
-// Setup ReCaptcha.
-N.wire.on('navigate.done:' + module.apiPath, function init_recaptcha(__, callback) {
-  N.wire.emit('common.blocks.recaptcha.create', null, callback);
-});
-
-
-// Setup nick availability checks.
-//
-N.wire.on('navigate.done:' + module.apiPath, function bind_nick_check() {
+N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
   var $input   = $('#register_nick')
     , $control = $input.parents('.control-group:first')
     , $help    = $control.find('.help-block:first')
@@ -27,6 +19,7 @@ N.wire.on('navigate.done:' + module.apiPath, function bind_nick_check() {
     $control.removeClass('success').removeClass('error');
   });
 
+  // Setup automatic nick validation on input.
   nick.subscribe(_.debounce(function (text) {
     if (text.length < 1) {
       return;
@@ -46,6 +39,9 @@ N.wire.on('navigate.done:' + module.apiPath, function bind_nick_check() {
   }, CHECK_NICK_DELAY));
 
   ko.applyBindings({ nick: nick }, $input.get(0));
+
+  // Init ReCaptcha.
+  N.wire.emit('common.blocks.recaptcha.create', null, callback);
 });
 
 
