@@ -45,6 +45,11 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
 });
 
 
+N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
+  ko.cleanNode($('#register_nick').get(0));
+});
+
+
 // Send registration data to the server.
 //
 N.wire.on('users.auth.register', function register(event) {
