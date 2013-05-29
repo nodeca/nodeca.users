@@ -34,7 +34,7 @@ module.exports = function (N, apiPath) {
     }
 
     if (env.session && env.session.user_id) {
-      N.models.users.User.findByIdAndUpdate(env.session.user_id, { locale: locale }, callback);
+      N.models.users.User.update({ _id: env.session.user_id }, { locale: locale }, callback);
     } else {
       callback();
     }
