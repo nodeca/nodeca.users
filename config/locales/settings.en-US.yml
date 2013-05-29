@@ -4,11 +4,9 @@ i18n:
       core:
         group_names:
           register: Registration
-          auth: Authentication
 
         category_names:
           register_common: Common
-          auth_common: Common
 
         setting_names:
           register_user_initial_group: Group after registration
