@@ -1,8 +1,14 @@
 en-US:
   plain:
     login_failed:
-      Can't login. Check, that your email and password are correct and try again.
-      Or use link below to reset your password.
+      Can't login. Check, that your email/nick and password are correct and try
+      again. Or use link below to reset your password.
 
     too_many_attempts:
       Too many login attempts. Please, wait 5 minutes before next retry.
+
+    missed_captcha_response:
+      Please complete CAPTCHA challenge.
+
+    wrong_captcha_response:
+      Wrong CAPTCHA response.

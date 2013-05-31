@@ -1,51 +1,66 @@
-/**
- *  Send login request.
- **/
-
-
 'use strict';
 
 
-var _ = require('lodash');
+var _           = require('lodash');
+var ko          = require('knockout');
 var getFormData = require('nodeca.core/lib/client/get_form_data');
 
 
-var login_required_fields = [
-  'email'
-, 'pass'
-];
+// Knockout view model of the page.
+var view = null;
 
 
-N.wire.on(module.apiPath, function login(event) {
-  var $form  = $(event.currentTarget)
-    , params = getFormData($form);
+N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
+  var captchaRequired = N.runtime.page_data.captcha_required;
 
-  var has_empty_fields = _.any(login_required_fields, function (field) {
-    return _.isEmpty(params[field]);
-  });
+  view = {
+    message: ko.observable(null)
+  , captcha: ko.observable(captchaRequired)
+  };
 
-  // do minimal check prior to send data to server
-  // all required fields must be filled
-  if (has_empty_fields) {
-    params.errors = {
-      common: t('not_filled')
-    };
+  ko.applyBindings(view, $('#content')[0]);
 
-    $('#content').replaceWith(N.runtime.render(module.apiPath, params));
-    return;
+  if (captchaRequired) {
+    N.wire.emit('common.blocks.recaptcha.create', null, callback);
+  } else {
+    callback();
   }
+});
 
-  N.io.rpc('users.auth.login.plain', params, function (err) {
-    if (err) {
-      if (N.io.BAD_REQUEST === err.code) {
-        // failed login/password or captcha
-        params.errors = err.data;
-        $('#content').replaceWith(N.runtime.render(module.apiPath, params));
-      } else {
-        // no need for fatal errors notifications as it's done by io automagically
-        N.logger.error(err);
+
+N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
+  ko.cleanNode($('#content')[0]);
+  view = null;
+});
+
+
+N.wire.on('users.auth.login.plain', function login(event) {
+  var $form = $(event.currentTarget);
+
+  N.io.rpc('users.auth.login.plain', getFormData($form), function (err) {
+    if (err && N.io.CLIENT_ERROR) {
+      if (err.captcha) {
+        // If ReCaptcha is already created, just update it. Create otherwise.
+        if (view.captcha()) {
+          N.wire.emit('common.blocks.recaptcha.update');
+        } else {
+          N.wire.emit('common.blocks.recaptcha.create');
+        }
       }
+
+      view.message(err.message);
+      view.captcha(err.captcha);
+
+      // Reset problem fields.
+      _.forEach(err.fields, function (name) {
+        $form.find('input[name="' + name + '"]').val('');
+      });
+
       return;
+    }
+
+    if (err) {
+      return false;
     }
 
     window.location = N.runtime.router.linkTo('users.profile');

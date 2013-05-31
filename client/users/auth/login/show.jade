@@ -1,39 +1,39 @@
 #content.row
   .span8.offset2.well.well-form
-    form.form-horizontal(data-on-submit='users.auth.login.show')
-
+    form.form-horizontal(data-on-submit='users.auth.login.plain')
       legend
         small.pull-right: a(href=self.link_to('users.auth.register.show')) #{self.t('register')}
         | #{self.t('title')}
 
-      - self.errors = self.errors || {}
-      - _status_class = ('common' in self.errors) ? 'error' : ''
+      //- This is showed on errors only.
+      .control-group(data-bind='visible: message', style='display: none')
+        .controls
+          p.text-error(data-bind='text: message')
 
-      - if(self.errors.common)
-        .control-group(class=_status_class)
-          .controls
-            p.text-error #{self.errors.common}
-
-      .control-group(class=_status_class)
-        label.control-label(for='lgn_eml') #{self.t('email')}
+      .control-group
+        label.control-label(for='login_email_or_nick') #{self.t('email')}
         .controls
           .row-fluid
-            input.span12(id='lgn_eml', name='email', type='text', value=self.email)
+            input.span12(id='login_email_or_nick', name='email_or_nick', type='text')
 
-      .control-group(class=_status_class)
-        label.control-label(for='lgn_pass') #{self.t('password')}
+      .control-group
+        label.control-label(for='login_pass') #{self.t('password')}
         .controls
           .row-fluid
-            input.span12(id='lgn_pass', name='pass', type='password', value=self.pass)
+            input.span12(id='login_pass', name='pass', type='password')
 
-      //- show captcha only when rate limit reached or captcha error in previous request
-      - if (self.captcha_required || (self.errors && self.errors.recaptcha))
-        != self.partial('@common.blocks.recaptcha', { public_key: self.runtime.recaptcha.public_key, errors: self.errors.recaptcha })
+      //- Captcha is showed only when rate limit reached or there was a captcha
+      //- error in previous request.
+      div(data-bind='visible: captcha', style='display: none')
+        - self.add_raw_data('captcha_required', self.captcha_required)
+        != self.partial('@common.blocks.recaptcha')
 
       .control-group
         .controls
-          button.btn.btn-primary.btn-large(type='submit') #{self.t('enter')}
-          button.btn.btn-link(href=self.link_to('users.auth.login.eml.forgot'))
+          button.btn.btn-primary.btn-large(type='submit')
+            | #{self.t('enter')}
+
+          a.btn.btn-link(href=self.link_to('users.auth.reset_password.show'))
             | #{self.t('forgot')}
 
       //- no oauth now

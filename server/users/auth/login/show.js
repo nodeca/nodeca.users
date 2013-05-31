@@ -1,37 +1,24 @@
-// Render registration form
-//
+// Show login form.
+
+
 'use strict';
 
 
 module.exports = function (N, apiPath) {
-  N.validate(apiPath, {
-  });
+  N.validate(apiPath, {});
 
 
-  // Inject flag to show captcha field, if needed (when too many failed attempt)
-  // See server.login.plain.exec() for details
-  //
-  N.wire.before(apiPath, function login_inject_captcha(env, callback) {
-    var user_ip = env.request.ip;
+  N.wire.on(apiPath, function login_show(env, callback) {
+    env.response.data.head.title = env.t('title');
 
-    N.models.users.LoginLimitIP.check(user_ip, function (err, high) {
+    N.models.users.LoginLimitTotal.check(function (err, isExceeded) {
       if (err) {
         callback(err);
         return;
       }
 
-      env.response.data.captcha_required = high;
+      env.response.data.captcha_required = isExceeded;
       callback();
     });
-  });
-
-
-  // Request handler
-  //
-  N.wire.on(apiPath, function (env, callback) {
-
-    env.response.data.head.title = env.t('title');
-
-    callback();
   });
 };
