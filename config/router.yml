@@ -23,10 +23,10 @@ router:
     users.auth.login.show:
       "/auth/login": ~
 
-    users.auth.reset_password.show:
+    users.auth.reset_password.request_form:
       "/auth/reset": ~
 
-    users.auth.reset_password:
+    users.auth.reset_password.apply_form:
       "/auth/reset/{secret_key}":
         secret_key: /[0-9a-f]+/
 

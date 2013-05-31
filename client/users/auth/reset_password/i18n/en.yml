@@ -1,0 +1,17 @@
+en-US:
+  request_form:
+    login: Login
+    email: Email
+    reset_password: Reset password
+
+    email_is_sent: Confirmation letter is sent to this email address.
+
+  apply_form:
+    invalid_token: Invalid token.
+
+    new_password: New password
+    new_password_help: Must contain both digits and letters (other symbols also
+      possible). Also, should have > 8 symbols.
+    apply: Apply
+
+    password_changed: Your password is changed.

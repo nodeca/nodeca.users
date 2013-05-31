@@ -1,3 +1,24 @@
 en-US:
-  show:
+  request_form:
     title: Reset password
+
+  request:
+    wrong_captcha_response: Wrong CAPTCHA response.
+    unknown_email: Unknown email address.
+
+    confirmation_email_subject: '#{project_name}: Reset password confirmation.'
+    confirmation_email_text: |
+      Please follow this link to reset your password:
+
+      #{link}
+
+      If you did not requested this or changed your mind,
+      just ignore this letter.
+
+  apply_form:
+    title: Reset password
+
+  apply:
+    expired_token: Your password reset token is expired.
+    broken_token: Your password reset token is broken by some reason.
+      Please request another one.

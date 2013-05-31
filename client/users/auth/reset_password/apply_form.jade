@@ -1,0 +1,21 @@
+#content.row
+  .span6.offset3.well.well-form
+    unless self.valid_token
+      h3 #{self.head.title}
+      p #{self.t('invalid_token')}
+    else
+      form.form-horizontal(data-on-submit='users.auth.reset_password.apply')
+        input(type='hidden', name='secret_key', value=self.secret_key)
+
+        legend #{self.head.title}
+
+        .control-group
+          label.control-label(for='reset_password_new_password') #{self.t('new_password')}
+          .controls
+            .row-fluid
+              input.span12(id='reset_password_new_password', name='new_password', type='password')
+              span.span12.help-block #{self.t('new_password_help')}
+
+        .control-group
+          .controls
+            button.btn.btn-primary.btn-large(type='submit') #{self.t('apply')}

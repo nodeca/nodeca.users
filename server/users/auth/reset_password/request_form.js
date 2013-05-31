@@ -1,4 +1,4 @@
-// Render reset password form
+// Show form with email and captcha to request password reset.
 
 
 'use strict';
