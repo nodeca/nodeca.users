@@ -9,6 +9,9 @@ var recaptcha = require('nodeca.core/lib/recaptcha');
 
 
 module.exports = function (N, apiPath) {
+  var rateLimit = require('./_rate_limit')(N);
+
+
   N.validate(apiPath, {
     email_or_nick: { type: 'string', required: true }
   , pass:          { type: 'string', required: true }
@@ -20,8 +23,8 @@ module.exports = function (N, apiPath) {
   // Touch rate limits in lazy style - do not wait for callbacks.
   //
   function updateRateLimits(clientIp) {
-    N.models.users.LoginLimitIP.update(clientIp);
-    N.models.users.LoginLimitTotal.update();
+    rateLimit.ip.update(clientIp);
+    rateLimit.total.update();
   }
 
 
@@ -30,7 +33,7 @@ module.exports = function (N, apiPath) {
   // Do soft limit - ask user to enter captcha to make sure he is not a bot.
   //
   N.wire.before(apiPath, { priority: -10 }, function check_total_rate_limit(env, callback) {
-    N.models.users.LoginLimitTotal.check(function (err, isExceeded) {
+    rateLimit.total.check(function (err, isExceeded) {
       if (err) {
         callback(err);
         return;
@@ -80,7 +83,7 @@ module.exports = function (N, apiPath) {
   // Do hard limit - ask user to wait 5 minutes.
   //
   N.wire.before(apiPath, { priority: -10 }, function check_ip_rate_limit(env, callback) {
-    N.models.users.LoginLimitIP.check(env.request.ip, function (err, isExceeded) {
+    rateLimit.ip.check(env.request.ip, function (err, isExceeded) {
       if (err) {
         callback(err);
         return;

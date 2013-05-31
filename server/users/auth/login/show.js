@@ -5,13 +5,16 @@
 
 
 module.exports = function (N, apiPath) {
+  var rateLimit = require('./_rate_limit')(N);
+
+
   N.validate(apiPath, {});
 
 
   N.wire.on(apiPath, function login_show(env, callback) {
     env.response.data.head.title = env.t('title');
 
-    N.models.users.LoginLimitTotal.check(function (err, isExceeded) {
+    rateLimit.total.check(function (err, isExceeded) {
       if (err) {
         callback(err);
         return;
