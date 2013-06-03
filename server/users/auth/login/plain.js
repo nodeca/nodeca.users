@@ -133,7 +133,6 @@ module.exports = function (N, apiPath) {
 
         env.data.found     = true;
         env.data.user      = user;
-        env.data.authlink  = authlink;
         env.data.providers = _.select(authlink.providers, {
           type: 'plain'
         , email: env.params.email_or_nick
@@ -173,7 +172,6 @@ module.exports = function (N, apiPath) {
 
         env.data.found     = true;
         env.data.user      = user;
-        env.data.authlink  = authlink;
         env.data.providers = _.select(authlink.providers, { type: 'plain' });
 
         callback();
