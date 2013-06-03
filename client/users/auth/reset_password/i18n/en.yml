@@ -1,12 +1,12 @@
 en-US:
-  request_form:
+  request_show:
     login: Login
     email: Email
     reset_password: Reset password
 
     email_is_sent: Confirmation letter is sent to this email address.
 
-  apply_form:
+  change_show:
     invalid_token: Invalid token.
 
     new_password: New password

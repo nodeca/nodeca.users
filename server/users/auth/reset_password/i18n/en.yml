@@ -1,8 +1,8 @@
 en-US:
-  request_form:
+  request_show:
     title: Reset password
 
-  request:
+  request_exec:
     wrong_captcha_response: Wrong CAPTCHA response.
     unknown_email: Unknown email address.
 
@@ -15,10 +15,10 @@ en-US:
       If you did not requested this or changed your mind,
       just ignore this letter.
 
-  apply_form:
+  change_show:
     title: Reset password
 
-  apply:
+  change_exec:
     expired_token: Your password reset token is expired.
     broken_token: Your password reset token is broken by some reason.
       Please request another one.

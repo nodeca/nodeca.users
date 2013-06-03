@@ -26,10 +26,10 @@ N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
 });
 
 
-N.wire.on('users.auth.reset_password.request', function reset_password(event) {
+N.wire.on('users.auth.reset_password.request_exec', function reset_password(event) {
   var $form = $(event.currentTarget);
 
-  N.io.rpc('users.auth.reset_password.request', getFormData($form), function (err) {
+  N.io.rpc('users.auth.reset_password.request_exec', getFormData($form), function (err) {
     N.wire.emit('common.blocks.recaptcha.update');
 
     if (err && err.message) {

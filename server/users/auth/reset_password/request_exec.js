@@ -61,7 +61,7 @@ module.exports = function (N, apiPath) {
             var link;
 
             // Construct base link.
-            link = N.runtime.router.linkTo('users.auth.reset_password.apply_form', {
+            link = N.runtime.router.linkTo('users.auth.reset_password.change_show', {
               secret_key: token.secret_key
             });
 

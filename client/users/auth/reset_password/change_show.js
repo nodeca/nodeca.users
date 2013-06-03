@@ -20,10 +20,10 @@ N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
 });
 
 
-N.wire.on('users.auth.reset_password.apply', function reset_password(event) {
+N.wire.on('users.auth.reset_password.change_exec', function reset_password(event) {
   var $form = $(event.currentTarget);
 
-  N.io.rpc('users.auth.reset_password.apply', getFormData($form), function (err) {
+  N.io.rpc('users.auth.reset_password.change_exec', getFormData($form), function (err) {
     if (err && N.io.CLIENT_ERROR === err.code) {
       view.status(err.bad_password ? 'error' : null);
       return;
