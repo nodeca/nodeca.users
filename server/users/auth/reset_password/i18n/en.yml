@@ -22,3 +22,6 @@ en-US:
     expired_token: Your password reset token is expired.
     broken_token: Your password reset token is broken by some reason.
       Please request another one.
+
+  change_done:
+    title: Reset password

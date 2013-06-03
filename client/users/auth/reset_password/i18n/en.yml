@@ -15,3 +15,6 @@ en-US:
     apply: Apply
 
     password_changed: Your password is changed.
+
+  change_done:
+    message: Your password is changed.

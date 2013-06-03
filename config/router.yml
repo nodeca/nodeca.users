@@ -30,6 +30,9 @@ router:
       "/auth/reset/{secret_key}":
         secret_key: /[0-9a-f]+/
 
+    users.auth.reset_password.change_done:
+      "/auth/reset/done":
+
     users.auth.register.show:
       "/auth/register": ~
 

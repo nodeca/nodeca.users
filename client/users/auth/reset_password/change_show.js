@@ -34,6 +34,6 @@ N.wire.on('users.auth.reset_password.change_exec', function reset_password(event
     }
 
     N.wire.emit('notify', { type: 'info', message: t('password_changed') });
-    N.wire.emit('navigate.to', { apiPath: 'users.auth.login.show' });
+    N.wire.emit('navigate.to', { apiPath: 'users.auth.reset_password.change_done' });
   });
 });
