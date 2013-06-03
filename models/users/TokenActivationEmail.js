@@ -25,21 +25,9 @@ function generateSecretKey() {
 
 module.exports = function (N, collectionName) {
   var TokenActivationEmail = new Schema({
-    secret_key: {
-      type: String
-    , required: true
-    , 'default': generateSecretKey
-    }
-  , create_ts: {
-      type: Date
-    , required: true
-    , 'default': Date
-    , expires: TOKEN_EXPIRE_TIMEOUT
-    }
-  , user_id: {
-      type: Schema.Types.ObjectId
-    , required: true
-    }
+    secret_key: { type: String, 'default': generateSecretKey, required: true }
+  , create_ts:  { type: Date,   'default': Date,              expires: TOKEN_EXPIRE_TIMEOUT, required: true }
+  , user_id:    { type: Schema.Types.ObjectId,                required: true }
   });
 
   TokenActivationEmail.index({ secret_key: 1 });

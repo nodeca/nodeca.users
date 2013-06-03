@@ -24,25 +24,10 @@ function generateSecretKey() {
 
 module.exports = function (N, collectionName) {
   var TokenResetPassword = new Schema({
-    secret_key: {
-      type: String
-    , required: true
-    , 'default': generateSecretKey
-    }
-  , create_ts: {
-      type: Date
-    , required: true
-    , 'default': Date
-    , expires: TOKEN_EXPIRE_TIMEOUT
-    }
-  , authlink_id: {
-      type: Schema.Types.ObjectId
-    , required: true
-    }
-  , authprovider_id: {
-      type: Schema.Types.ObjectId
-    , required: true
-    }
+    secret_key:      { type: String, 'default': generateSecretKey, required: true }
+  , create_ts:       { type: Date,   'default': Date,              expires: TOKEN_EXPIRE_TIMEOUT, required: true }
+  , authlink_id:     { type: Schema.Types.ObjectId,                required: true }
+  , authprovider_id: { type: Schema.Types.ObjectId,                required: true }
   });
 
   TokenResetPassword.index({ secret_key: 1 });
