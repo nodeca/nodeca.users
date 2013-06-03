@@ -59,6 +59,7 @@ module.exports = function (N, apiPath) {
         , message: env.t('missed_captcha_response')
         , captcha: env.data.captcha_required
         });
+        return;
       }
 
       recaptcha.verify(privateKey, clientIp, challenge, response, function (err, valid) {
