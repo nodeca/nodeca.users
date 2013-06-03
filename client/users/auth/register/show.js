@@ -9,36 +9,59 @@ var getFormData = require('nodeca.core/lib/client/get_form_data');
 var CHECK_NICK_DELAY = 1000;
 
 
-N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
-  var $input   = $('#register_nick')
-    , $control = $input.parents('.control-group:first')
-    , $help    = $control.find('.help-block:first')
-    , nick     = ko.observable('');
+var view = null;
 
-  nick.subscribe(function () {
-    $control.removeClass('success').removeClass('error');
-  });
+
+// View model for editable fields of the form: email, pass and nick.
+//
+function Field(defaultHelp) {
+  this.defaultHelp = defaultHelp;
+
+  this.css     = ko.observable('');
+  this.message = ko.observable(null);
+  this.value   = ko.observable('');
+  this.help    = ko.computed(function () { return this.message() || this.defaultHelp; }, this);
+}
+
+
+N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
+  // Root view model.
+  view = {
+    email: new Field(t('email_help'))
+  , pass:  new Field(t('pass_help'))
+  , nick:  new Field(t('nick_help'))
+
+    // This field is intended for a plugged-in ReCaptcha module.
+    // It uses only 'css' property.
+  , recaptcha_response_field: new Field(null)
+  };
+
+  // Reset nick CSS class and message on every change.
+  view.nick.value.subscribe(function () {
+    this.css('');
+    this.message(null);
+  }, view.nick);
 
   // Setup automatic nick validation on input.
-  nick.subscribe(_.debounce(function (text) {
+  view.nick.value.subscribe(_.debounce(function (text) {
     if (text.length < 1) {
       return;
     }
+
+    var self = this;
 
     N.io.rpc('users.auth.check_nick', { nick: text }, function (err, response) {
       if (err) {
         return false;
       }
 
-      $control
-        .toggleClass('success', !response.data.error)
-        .toggleClass('error', response.data.error);
-
-      $help.text(response.data.message || t('nick_help'));
+      self.css(response.data.error ? 'error' : 'success');
+      self.message(response.data.message);
     });
-  }, CHECK_NICK_DELAY));
+  }, CHECK_NICK_DELAY), view.nick);
 
-  ko.applyBindings({ nick: nick }, $input.get(0));
+  // Apply root view model.
+  ko.applyBindings(view, $('#content')[0]);
 
   // Init ReCaptcha.
   N.wire.emit('common.blocks.recaptcha.create', null, callback);
@@ -46,7 +69,8 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
 
 
 N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
-  ko.cleanNode($('#register_nick').get(0));
+  ko.cleanNode($('#content')[0]);
+  view = null;
 });
 
 
@@ -57,15 +81,10 @@ N.wire.on('users.auth.register', function register(event) {
 
   N.io.rpc('users.auth.register', getFormData($form), function (err, response) {
     if (err && N.io.CLIENT_ERROR === err.code) {
-      // Update status/messages on all input fields.
-      _.forEach($form.find('input'), function (input) {
-        var $input   = $(input)
-          , name     = $input.attr('name')
-          , $control = $input.parents('.control-group:first')
-          , $help    = $control.find('.help-block:first');
-
-        $control.toggleClass('error', _.has(err.data, name));
-        $help.text(err.data[name] || t(name + '_help'));
+      // Update classes and messages on all input fields.
+      _.forEach(view, function (field, name) {
+        field.css(_.has(err.data, name) ? 'error' : '');
+        field.message(err.data[name]);
       });
 
       // Update ReCaptcha words if there is a ReCaptcha error.

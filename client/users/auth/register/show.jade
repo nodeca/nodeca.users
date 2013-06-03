@@ -6,24 +6,27 @@
         small.pull-right: a(href=self.link_to('users.auth.login.show')) #{self.t('login')}
         | #{self.head.title}
 
-
-      .control-group
+      // ko with: email
+      .control-group(data-bind='css: css')
         label.control-label(for='register_email') #{self.t('email')}
         .controls
           .row-fluid
-            input.span12(id='register_email', name='email', type='email')
-            span.help-block #{self.t('email_help')}
+            input.span12(id='register_email', name='email', type='email', data-bind='value: value')
+            span.help-block(data-bind='text: help')
+      // /ko
 
-
-      .control-group
+      // ko with: pass
+      .control-group(data-bind='css: css')
         label.control-label(for='register_pass') #{self.t('pass')}
         .controls
           .row-fluid
-            input.span12(id='register_pass', name='pass', type='password')
-            span.help-block #{self.t('pass_help')}
+            input.span12(id='register_pass', name='pass', type='password', data-bind='value: value')
+            span.help-block(data-bind='text: help')
+      // /ko
 
 
-      .control-group
+      // ko with: nick
+      .control-group(data-bind='css: css')
         label.control-label(for='register_nick') #{self.t('nick')}
         .controls
           .row-fluid
@@ -31,11 +34,13 @@
               id='register_nick',
               name='nick',
               type='text',
-              data-bind='value: nick, valueUpdate: "afterkeydown"')
-            span.help-block #{self.t('nick_help')}
+              data-bind='value: value, valueUpdate: "afterkeydown"')
+            span.help-block(data-bind='text: help')
+      // /ko
               
-
+      // ko with: recaptcha_response_field
       != self.partial('@common.blocks.recaptcha')
+      // /ko
 
       .control-group
         .controls
