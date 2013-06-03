@@ -2,9 +2,6 @@ en-US:
   message_busy_email: This email is already used.
   message_busy_nick: This nick is already used.
 
-  check_nick:
-    message_busy_nick: This nick is already used.
-
   show:
     title: Registration
 
