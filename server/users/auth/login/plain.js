@@ -28,6 +28,21 @@ module.exports = function (N, apiPath) {
   }
 
 
+  // If there is neither email_or_nick or pass - stop before database queries.
+  //
+  N.wire.before(apiPath, { priority: -15 }, function check_params(env) {
+    if (_.isEmpty(env.params.email_or_nick) ||
+        _.isEmpty(env.params.pass)) {
+      return {
+        code:    N.io.CLIENT_ERROR
+      , message: env.t('login_failed')
+      , fields:  ['email_or_nick', 'pass']
+      , captcha: false
+      };
+    }
+  });
+
+
   // Check for too many total logins (60 attempts / 60 seconds).
   // That can cause too hight CPU use in bcrypt.
   // Do soft limit - ask user to enter captcha to make sure he is not a bot.
