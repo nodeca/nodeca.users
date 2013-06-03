@@ -41,6 +41,14 @@ module.exports = function (N, apiPath) {
           return;
         }
 
+        if (!authlink) {
+          callback({
+            code:    N.io.NOT_FOUND
+          , message: env.t('broken_token')
+          });
+          return;
+        }
+
         var provider = _.find(authlink.providers, function (provider) {
           return provider._id.equals(token.authprovider_id);
         });
