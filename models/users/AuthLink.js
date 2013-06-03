@@ -51,6 +51,24 @@ module.exports = function (N, collectionName) {
   , meta   : {}
   });
 
+  //
+  // Subdocument indexes
+  //
+
+  // used in:
+  // - login by email
+  // - check that email is unique
+  AuthProvider.index({
+    email: 1
+  , provider: 1
+  });
+
+  // used in login via oauth
+  AuthProvider.index({
+    ext_id: 1
+  , provider: 1
+  });
+
 
   /**
    * models.users.AuthLink#providers.AuthProvider#setPass(password) -> void
@@ -78,24 +96,6 @@ module.exports = function (N, collectionName) {
     }
     return bcrypt.compareSync(password, this.pass);
   };
-
-  //
-  // Subdocument indexes
-  //
-
-  // used in:
-  // - login by email
-  // - check that email is unique
-  AuthProvider.index({
-    email: 1
-  , provider: 1
-  });
-
-  // used in login via oauth
-  AuthProvider.index({
-    ext_id: 1
-  , provider: 1
-  });
 
 
   /**

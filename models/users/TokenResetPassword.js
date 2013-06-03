@@ -45,12 +45,12 @@ module.exports = function (N, collectionName) {
     }
   });
 
+  TokenResetPassword.index({ secret_key: 1 });
+  TokenResetPassword.index({ authprovider_id: 1 });
+
   TokenResetPassword.methods.isExpired = function isExpired() {
     return Date.now() >= (this.create_ts.getTime() + TOKEN_EXPIRE_TIMEOUT);
   };
-
-  TokenResetPassword.index({ secret_key: 1 });
-  TokenResetPassword.index({ authprovider_id: 1 });
 
 
   N.wire.on("init:models", function emit_init_TokenResetPassword(__, callback) {
