@@ -8,7 +8,7 @@
 
         legend #{self.head.title}
 
-        .control-group
+        .control-group(data-bind='css: status')
           label.control-label(for='reset_password_new_password') #{self.t('new_password')}
           .controls
             .row-fluid
