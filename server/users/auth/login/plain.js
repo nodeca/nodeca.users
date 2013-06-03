@@ -218,20 +218,8 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    // "locale" cookie is set by user manually, so it has higher priority since
-    // user can change the locale before login.
-    var activeLocale = env.extras.getCookie('locale');
-
     // Apply login.
     env.session.user_id = env.data.user._id;
-    env.session.locale  = activeLocale || env.data.user.locale;
-
-    // Update account locale if needed, and reply positively.
-    if (activeLocale && activeLocale !== env.data.user.locale) {
-      env.data.user.locale = activeLocale;
-      env.data.user.save(callback);
-    } else {
-      callback();
-    }
+    callback();
   });
 };
