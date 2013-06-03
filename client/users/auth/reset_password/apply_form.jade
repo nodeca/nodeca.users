@@ -1,8 +1,7 @@
 #content.row
-  .span6.offset3.well.well-form
+  .span8.offset2.well.well-form
     unless self.valid_token
-      h3 #{self.head.title}
-      p #{self.t('invalid_token')}
+      = self.t('invalid_token')
     else
       form.form-horizontal(data-on-submit='users.auth.reset_password.apply')
         input(type='hidden', name='secret_key', value=self.secret_key)

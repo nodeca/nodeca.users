@@ -1,5 +1,6 @@
-#content
-  if self.success
-    p #{self.t('message_success')}
-  else
-    p #{self.t('message_invalid_token')}
+#content.row
+  .span8.offset2.well.well-form
+    if self.success
+      = self.t('message_success')
+    else
+      = self.t('message_invalid_token')
