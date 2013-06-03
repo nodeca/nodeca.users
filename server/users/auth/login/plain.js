@@ -152,9 +152,9 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        env.data.found     = true;
-        env.data.user      = user;
-        env.data.providers = _.select(authlink.providers, {
+        env.data.found    = true;
+        env.data.user     = user;
+        env.data.provider = _.find(authlink.providers, {
           type: 'plain'
         , email: env.params.email_or_nick
         });
@@ -196,9 +196,9 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        env.data.found     = true;
-        env.data.user      = user;
-        env.data.providers = _.select(authlink.providers, { type: 'plain' });
+        env.data.found    = true;
+        env.data.user     = user;
+        env.data.provider = _.find(authlink.providers, { type: 'plain' });
 
         callback();
       });
@@ -206,19 +206,8 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Check pass against all suitable auth providers.
-  // Just one on login-by-email or possibly multiple on login-by-nick.
-  // Returns true if at least one provider is passes the check.
-  //
-  function checkPass(providers, pass) {
-    return _.any(providers, function (provider) {
-      return provider.checkPass(pass);
-    });
-  }
-
-
   N.wire.on(apiPath, function (env, callback) {
-    if (!env.data.found || !checkPass(env.data.providers, env.params.pass)) {
+    if (!env.data.found || !env.data.provider.checkPass(env.params.pass)) {
       updateRateLimits(env.request.ip);
       callback({
         code:    N.io.CLIENT_ERROR
