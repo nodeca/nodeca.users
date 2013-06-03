@@ -15,6 +15,9 @@ en-US:
       If you did not requested this or changed your mind,
       just ignore this letter.
 
+  request_done:
+    title: Reset password
+
   change_show:
     title: Reset password
 

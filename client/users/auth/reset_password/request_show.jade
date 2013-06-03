@@ -7,7 +7,7 @@
 
       .control-group(data-bind='visible: message', style='display: none')
         .controls
-          p(data-bind='text: message, css: status')
+          p.text-error(data-bind='text: message')
 
       .control-group
         label.control-label(for='reset_password_email') #{self.t('email')}

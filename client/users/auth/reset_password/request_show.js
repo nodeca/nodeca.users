@@ -9,10 +9,7 @@ var view = null;
 
 
 N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
-  view = {
-    status:  ko.observable(null)
-  , message: ko.observable(null)
-  };
+  view = { message: ko.observable(null) };
 
   ko.applyBindings(view, $('#content')[0]);
 
@@ -33,7 +30,6 @@ N.wire.on('users.auth.reset_password.request_exec', function reset_password(even
     N.wire.emit('common.blocks.recaptcha.update');
 
     if (err && err.message) {
-      view.status('text-error');
       view.message(err.message);
       return;
     }
@@ -42,7 +38,6 @@ N.wire.on('users.auth.reset_password.request_exec', function reset_password(even
       return false;
     }
 
-    view.status('text-success');
-    view.message(t('email_is_sent'));
+    N.wire.emit('navigate.to', { apiPath: 'users.auth.reset_password.request_done' });
   });
 });

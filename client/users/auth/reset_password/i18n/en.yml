@@ -4,7 +4,8 @@ en-US:
     email: Email
     reset_password: Reset password
 
-    email_is_sent: Confirmation letter is sent to this email address.
+  request_done:
+    message: Confirmation letter is sent.
 
   change_show:
     invalid_token: Invalid token.
