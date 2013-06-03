@@ -53,15 +53,6 @@ module.exports = function (N, apiPath) {
         , email: env.params.email
         });
 
-        // Must not happen but it's better to check.
-        if (!provider) {
-          callback({
-            code:    N.io.NOT_FOUND
-          , message: env.t('unknown_email')
-          });
-          return;
-        }
-
         N.models.users.TokenResetPassword.create({
           authlink_id:     authlink._id
         , authprovider_id: provider._id
