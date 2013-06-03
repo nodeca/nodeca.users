@@ -24,9 +24,8 @@
 
       //- Captcha is showed only when rate limit reached or there was a captcha
       //- error in previous request.
-      div(data-bind='visible: captcha', style='display: none')
-        - self.add_raw_data('captcha_required', self.captcha_required)
-        != self.partial('@common.blocks.recaptcha')
+      - self.add_raw_data('captcha_required', self.captcha_required)
+      != self.partial('@common.blocks.recaptcha')
 
       .control-group
         .controls
