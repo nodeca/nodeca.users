@@ -124,7 +124,7 @@ module.exports = function (N, apiPath) {
   // Try to find auth data using `email_or_nick` as an email.
   //
   N.wire.before(apiPath, { priority: -5 }, function find_authlink_by_email(env, callback) {
-    if (env.data.found) {
+    if (env.data.user && env.data.provider) {
       callback();
       return;
     }
@@ -152,7 +152,6 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        env.data.found    = true;
         env.data.user     = user;
         env.data.provider = _.find(authlink.providers, {
           type: 'plain'
@@ -168,7 +167,7 @@ module.exports = function (N, apiPath) {
   // Try to find auth data using `email_or_nick` as a nick.
   //
   N.wire.before(apiPath, { priority: -5 }, function find_authlink_by_nick(env, callback) {
-    if (env.data.found) {
+    if (env.data.user && env.data.provider) {
       callback();
       return;
     }
@@ -196,7 +195,6 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        env.data.found    = true;
         env.data.user     = user;
         env.data.provider = _.find(authlink.providers, { type: 'plain' });
 
@@ -207,7 +205,10 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.on(apiPath, function (env, callback) {
-    if (!env.data.found || !env.data.provider.checkPass(env.params.pass)) {
+    if (!env.data.user     ||
+        !env.data.provider ||
+        !env.data.provider.checkPass(env.params.pass)) {
+
       updateRateLimits(env.request.ip);
       callback({
         code:    N.io.CLIENT_ERROR
