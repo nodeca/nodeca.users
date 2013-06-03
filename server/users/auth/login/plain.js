@@ -121,7 +121,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Try to find auth data in case that email_or_nick field is email.
+  // Try to find auth data using `email_or_nick` as an email.
   //
   N.wire.before(apiPath, { priority: -5 }, function find_authlink_by_email(env, callback) {
     if (env.data.found) {
@@ -165,7 +165,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Try to find auth data in case that email_or_nick field is nick.
+  // Try to find auth data using `email_or_nick` as a nick.
   //
   N.wire.before(apiPath, { priority: -5 }, function find_authlink_by_nick(env, callback) {
     if (env.data.found) {
