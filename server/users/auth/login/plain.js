@@ -133,8 +133,13 @@ module.exports = function (N, apiPath) {
         .findOne({ 'providers.email': env.params.email_or_nick, 'providers.type': 'plain' })
         .exec(function (err, authlink) {
 
-      if (err || !authlink) {
+      if (err) {
         callback(err);
+        return;
+      }
+
+      if (!authlink) {
+        callback(); // There is no error - let next hooks do their job.
         return;
       }
 
@@ -172,8 +177,13 @@ module.exports = function (N, apiPath) {
         .findOne({ 'nick': env.params.email_or_nick })
         .exec(function (err, user) {
 
-      if (err || !user) {
+      if (err) {
         callback(err);
+        return;
+      }
+
+      if (!user) {
+        callback(); // There is no error - let next hooks do their job.
         return;
       }
 
