@@ -10,7 +10,7 @@ var _ = require('lodash');
 module.exports = _.once(function (N) {
   // Global invalid login attempts, trace 60 attempts / 60 seconds.
   // Used to avoid CPU overload by bcrypt.
-  var totalRateLimit = N.runtime.redback.createRateLimit('limit:login', {
+  var totalRateLimit = N.runtime.redback.createRateLimit('limit:login:global', {
     bucket_span:     60 + 20
   , bucket_interval: 10
   , subject_expiry:  2 * 60
@@ -33,7 +33,7 @@ module.exports = _.once(function (N) {
 
   // Used to track invalid login attempts for single IP.
   // Maximum 5 attempts in 5 minutes.
-  var ipRateLimit = N.runtime.redback.createRateLimit('block:login:ip', {
+  var ipRateLimit = N.runtime.redback.createRateLimit('limit:login:ip', {
     bucket_span:     60 * (5 + 1)
   , bucket_interval: 60
   , subject_expiry:  10 * 60
