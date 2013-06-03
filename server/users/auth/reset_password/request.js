@@ -42,7 +42,7 @@ module.exports = function (N, apiPath) {
 
         if (!authlink) {
           callback({
-            code:    N.io.NOT_FOUND
+            code:    N.io.CLIENT_ERROR
           , message: env.t('unknown_email')
           });
           return;

@@ -15,7 +15,11 @@ module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, function (env, callback) {
     if (!N.models.users.User.validatePassword(env.params.new_password)) {
-      callback(N.io.CLIENT_ERROR);
+      callback({
+        code:         N.io.CLIENT_ERROR
+      , message:      null
+      , bad_password: true
+      });
       return;
     }
 
@@ -29,8 +33,9 @@ module.exports = function (N, apiPath) {
 
       if (!token || token.isExpired()) {
         callback({
-          code:    N.io.NOT_FOUND
-        , message: env.t('expired_token')
+          code:         N.io.CLIENT_ERROR
+        , message:      env.t('expired_token')
+        , bad_password: false
         });
         return;
       }
@@ -43,8 +48,9 @@ module.exports = function (N, apiPath) {
 
         if (!authlink) {
           callback({
-            code:    N.io.NOT_FOUND
-          , message: env.t('broken_token')
+            code:         N.io.CLIENT_ERROR
+          , message:      env.t('broken_token')
+          , bad_password: false
           });
           return;
         }
@@ -55,8 +61,9 @@ module.exports = function (N, apiPath) {
 
         if (!provider) {
           callback({
-            code:    N.io.NOT_FOUND
-          , message: env.t('broken_token')
+            code:         N.io.CLIENT_ERROR
+          , message:      env.t('broken_token')
+          , bad_password: false
           });
           return;
         }

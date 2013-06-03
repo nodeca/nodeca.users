@@ -8,7 +8,7 @@ N.wire.on('users.auth.reset_password.apply', function reset_password(event) {
   var $form = $(event.currentTarget);
 
   N.io.rpc('users.auth.reset_password.apply', getFormData($form), function (err) {
-    if (err && N.io.CLIENT_ERROR === err.code) {
+    if (err && N.io.CLIENT_ERROR === err.code && err.bad_password) {
       $form.find('input').parents('.control-group:first').addClass('error');
       return;
     }
