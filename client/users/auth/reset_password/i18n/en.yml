@@ -17,4 +17,4 @@ en-US:
     password_changed: Your password is changed.
 
   change_done:
-    message: Your password is changed.
+    message: Your password is changed, and you are logged in now.

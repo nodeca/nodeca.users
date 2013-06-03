@@ -80,7 +80,16 @@ module.exports = function (N, apiPath) {
           }
 
           // Save new password.
-          authlink.save(callback);
+          authlink.save(function (err, authlink) {
+            if (err) {
+              callback(err);
+              return;
+            }
+
+            // Auto login.
+            env.session.user_id = authlink.user_id;
+            callback();
+          });
         });
       });
     });

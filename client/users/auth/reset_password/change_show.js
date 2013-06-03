@@ -33,7 +33,7 @@ N.wire.on('users.auth.reset_password.change_exec', function reset_password(event
       return false;
     }
 
-    N.wire.emit('notify', { type: 'info', message: t('password_changed') });
-    N.wire.emit('navigate.to', { apiPath: 'users.auth.reset_password.change_done' });
+    // Reload the page in order to apply auto login.
+    window.location = N.runtime.router.linkTo('users.auth.reset_password.change_done');
   });
 });
