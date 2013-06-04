@@ -25,7 +25,12 @@
       //- Captcha is showed only when rate limit reached or there was a captcha
       //- error in previous request.
       - self.add_raw_data('captcha_required', self.captcha_required)
+
+      // ko if: recaptcha_response_field.visible
+      // ko with: recaptcha_response_field
       != self.partial('@common.blocks.recaptcha')
+      // /ko
+      // /ko
 
       .control-group
         .controls

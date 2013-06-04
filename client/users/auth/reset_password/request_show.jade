@@ -15,7 +15,9 @@
           .row-fluid
             input.span12(id='reset_password_email', name='email', type='text')
 
+      // ko with: recaptcha_response_field
       != self.partial('@common.blocks.recaptcha')
+      // /ko
 
       .control-group
         .controls

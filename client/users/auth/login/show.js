@@ -15,7 +15,10 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
 
   view = {
     message: ko.observable(null)
-  , captcha: ko.observable(captchaRequired)
+  , recaptcha_response_field: {
+      visible: ko.observable(captchaRequired)
+    , css:     null
+    }
   };
 
   ko.applyBindings(view, $('#content')[0]);
@@ -41,7 +44,7 @@ N.wire.on('users.auth.login.plain', function login(event) {
     if (err && N.io.CLIENT_ERROR) {
       if (err.captcha) {
         // If ReCaptcha is already created, just update it. Create otherwise.
-        if (view.captcha()) {
+        if (view.recaptcha_response_field.visible()) {
           N.wire.emit('common.blocks.recaptcha.update');
         } else {
           N.wire.emit('common.blocks.recaptcha.create');
@@ -49,7 +52,7 @@ N.wire.on('users.auth.login.plain', function login(event) {
       }
 
       view.message(err.message);
-      view.captcha(err.captcha);
+      view.recaptcha_response_field.visible(err.captcha);
 
       // Reset problem fields.
       _.forEach(err.fields, function (name) {
