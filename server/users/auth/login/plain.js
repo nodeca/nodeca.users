@@ -30,7 +30,7 @@ module.exports = function (N, apiPath) {
 
   // If there is neither email_or_nick or pass - stop before database queries.
   //
-  /*N.wire.before(apiPath, { priority: -15 }, function check_params(env) {
+  N.wire.before(apiPath, { priority: -15 }, function check_params(env) {
     if (_.isEmpty(env.params.email_or_nick) ||
         _.isEmpty(env.params.pass)) {
       return {
@@ -40,7 +40,7 @@ module.exports = function (N, apiPath) {
       , captcha: false
       };
     }
-  });*/
+  });
 
 
   // Check for too many total logins (60 attempts / 60 seconds).
@@ -98,7 +98,7 @@ module.exports = function (N, apiPath) {
   // Check for too many invalid logins (5 attempts / 300 seconds) from single IP
   // Do hard limit - ask user to wait 5 minutes.
   //
-  /*N.wire.before(apiPath, { priority: -10 }, function check_ip_rate_limit(env, callback) {
+  N.wire.before(apiPath, { priority: -10 }, function check_ip_rate_limit(env, callback) {
     rateLimit.ip.check(env.request.ip, function (err, isExceeded) {
       if (err) {
         callback(err);
@@ -118,7 +118,7 @@ module.exports = function (N, apiPath) {
 
       callback();
     });
-  });*/
+  });
 
 
   // Try to find auth data using `email_or_nick` as an email.
