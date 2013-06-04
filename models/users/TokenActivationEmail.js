@@ -14,7 +14,7 @@ var Schema   = Mongoose.Schema;
 var crypto   = require('crypto');
 
 
-var TOKEN_EXPIRE_TIMEOUT    = 6 * 60 * 60 * 1000; // 6 hours in msecs.
+var TOKEN_EXPIRE_TIMEOUT    = 6 * 60 * 60; // 6 hours in seconds.
 var TOKEN_SECRET_KEY_LENGTH = 16;
 
 
@@ -34,7 +34,7 @@ module.exports = function (N, collectionName) {
   TokenActivationEmail.index({ user_id: 1 });
 
   TokenActivationEmail.methods.isExpired = function isExpired() {
-    return Date.now() >= (this.create_ts.getTime() + TOKEN_EXPIRE_TIMEOUT);
+    return Date.now() >= (this.create_ts.getTime() + TOKEN_EXPIRE_TIMEOUT * 1000);
   };
 
 

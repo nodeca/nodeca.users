@@ -13,7 +13,7 @@ var Schema   = Mongoose.Schema;
 var crypto   = require('crypto');
 
 
-var TOKEN_EXPIRE_TIMEOUT    = 15 * 60 * 1000; // 15 minutes in msecs.
+var TOKEN_EXPIRE_TIMEOUT    = 15 * 60; // 15 minutes in seconds.
 var TOKEN_SECRET_KEY_LENGTH = 32;
 
 
@@ -34,7 +34,7 @@ module.exports = function (N, collectionName) {
   TokenResetPassword.index({ authprovider_id: 1 });
 
   TokenResetPassword.methods.isExpired = function isExpired() {
-    return Date.now() >= (this.create_ts.getTime() + TOKEN_EXPIRE_TIMEOUT);
+    return Date.now() >= (this.create_ts.getTime() + TOKEN_EXPIRE_TIMEOUT * 1000);
   };
 
 
