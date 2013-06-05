@@ -71,7 +71,7 @@ module.exports = function (N, apiPath) {
         updateRateLimits(clientIp);
         callback({
           code:    N.io.CLIENT_ERROR
-        , message: env.t('missed_captcha_response')
+        , message: env.t('missed_captcha_solution')
         , captcha: env.data.captcha_required
         });
         return;
@@ -82,7 +82,7 @@ module.exports = function (N, apiPath) {
           updateRateLimits(clientIp);
           callback({
             code:    N.io.CLIENT_ERROR
-          , message: env.t('wrong_captcha_response')
+          , message: env.t('wrong_captcha_solution')
           , fields:  ['recaptcha_response_field']
           , captcha: env.data.captcha_required
           });

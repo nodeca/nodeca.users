@@ -26,7 +26,7 @@ module.exports = function (N, apiPath) {
       if (err || !valid) {
         callback({
           code:    N.io.CLIENT_ERROR
-        , message: env.t('wrong_captcha_response')
+        , message: env.t('wrong_captcha_solution')
         });
         return;
       }

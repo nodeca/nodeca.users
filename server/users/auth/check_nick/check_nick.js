@@ -36,7 +36,7 @@ module.exports = function (N, apiPath) {
 
       if (user) {
         env.response.data.error   = true;
-        env.response.data.message = env.t('busy_nick');
+        env.response.data.message = env.t('message_busy_nick');
       }
 
       callback();

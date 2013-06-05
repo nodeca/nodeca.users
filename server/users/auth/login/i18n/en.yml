@@ -10,5 +10,5 @@ en-US:
     missed_captcha_response:
       Please complete CAPTCHA challenge.
 
-    wrong_captcha_response:
-      Wrong CAPTCHA response.
+    wrong_captcha_solution:
+      Wrong CAPTCHA solution.

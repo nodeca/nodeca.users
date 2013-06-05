@@ -3,7 +3,7 @@ en-US:
     title: Reset password
 
   request_exec:
-    wrong_captcha_response: Wrong CAPTCHA response.
+    wrong_captcha_solution: Wrong CAPTCHA solution.
     unknown_email: Unknown email address.
 
     confirmation_email_subject: '#{project_name}: Reset password confirmation.'
