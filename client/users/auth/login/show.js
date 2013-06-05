@@ -15,9 +15,11 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
 
   view = {
     message: ko.observable(null)
+
   , recaptcha_response_field: {
       visible: ko.observable(captchaRequired)
-    , css:     null
+    , css:     ''
+    , message: null
     }
   };
 

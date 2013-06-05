@@ -5,6 +5,7 @@ en-US:
   exec:
     message_busy_email: This email is already used.
     message_busy_nick: This nick is already used.
+    message_wrong_captcha_solution: Wrong CAPTCHA solution.
 
   done_show:
     title: Registration

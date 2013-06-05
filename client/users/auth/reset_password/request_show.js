@@ -11,7 +11,12 @@ var view = null;
 N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
   view = {
     message: ko.observable(null)
-  , recaptcha_response_field: { css: null }
+
+  , recaptcha_response_field: {
+      visible: true
+    , css:     ''
+    , message: null
+    }
   };
 
   ko.applyBindings(view, $('#content')[0]);

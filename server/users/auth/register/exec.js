@@ -109,10 +109,8 @@ module.exports = function (N, apiPath) {
       , response   = env.params.recaptcha_response_field;
 
     recaptcha.verify(privateKey, clientIp, challenge, response, function (err, result) {
-      // User send wrong captcha code.
-      // Don't customize form text, just highlight the field.
       if (err || !result) {
-        env.data.errors.recaptcha_response_field = null;
+        env.data.errors.recaptcha_response_field = env.t('message_wrong_captcha_solution');
       }
 
       callback();

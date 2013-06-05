@@ -31,9 +31,11 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
   , pass:  new Control(t('pass_help'))
   , nick:  new Control(t('nick_help'))
 
-    // This field is intended for a plugged-in ReCaptcha module.
-    // It uses only 'css' property.
-  , recaptcha_response_field: new Control(null)
+  , recaptcha_response_field: {
+      visible: true
+    , css:     ko.observable('')
+    , message: ko.observable(null)
+    }
   };
 
   // Reset nick CSS class and message on every change.
