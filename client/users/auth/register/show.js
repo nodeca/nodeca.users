@@ -14,7 +14,7 @@ var view = null;
 
 // View model for editable fields of the form: email, pass and nick.
 //
-function Field(defaultHelp) {
+function Control(defaultHelp) {
   this.defaultHelp = defaultHelp;
 
   this.css     = ko.observable('');
@@ -27,13 +27,13 @@ function Field(defaultHelp) {
 N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
   // Root view model.
   view = {
-    email: new Field(t('email_help'))
-  , pass:  new Field(t('pass_help'))
-  , nick:  new Field(t('nick_help'))
+    email: new Control(t('email_help'))
+  , pass:  new Control(t('pass_help'))
+  , nick:  new Control(t('nick_help'))
 
     // This field is intended for a plugged-in ReCaptcha module.
     // It uses only 'css' property.
-  , recaptcha_response_field: new Field(null)
+  , recaptcha_response_field: new Control(null)
   };
 
   // Reset nick CSS class and message on every change.
