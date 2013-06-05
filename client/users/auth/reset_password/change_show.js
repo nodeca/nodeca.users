@@ -34,6 +34,6 @@ N.wire.on('users.auth.reset_password.change_exec', function reset_password(event
     }
 
     // Reload the page in order to apply auto login.
-    window.location = N.runtime.router.linkTo('users.auth.reset_password.change_done');
+    window.location = N.runtime.router.linkTo('users.auth.reset_password.change_done_show');
   });
 });

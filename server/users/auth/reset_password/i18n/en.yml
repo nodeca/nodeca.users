@@ -15,7 +15,7 @@ en-US:
       If you did not requested this or changed your mind,
       just ignore this letter.
 
-  request_done:
+  request_done_show:
     title: Reset password
 
   change_show:
@@ -26,5 +26,5 @@ en-US:
     broken_token: Your password reset token is broken by some reason.
       Please request another one.
 
-  change_done:
+  change_done_show:
     title: Reset password

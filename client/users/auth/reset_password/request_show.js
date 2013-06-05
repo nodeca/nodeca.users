@@ -41,6 +41,6 @@ N.wire.on('users.auth.reset_password.request_exec', function reset_password(even
       return false;
     }
 
-    N.wire.emit('navigate.to', { apiPath: 'users.auth.reset_password.request_done' });
+    N.wire.emit('navigate.to', { apiPath: 'users.auth.reset_password.request_done_show' });
   });
 });

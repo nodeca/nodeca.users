@@ -11,7 +11,7 @@ module.exports = function sendActivationEmail(N, env, email, token, callback) {
   var link;
 
   // Construst base link.
-  link = N.runtime.router.linkTo('users.auth.register.activate', { secret_key: token.secret_key });
+  link = N.runtime.router.linkTo('users.auth.register.activate_show', { secret_key: token.secret_key });
 
   // Prepend protocol and host if link not contains them.
   link = url.resolve(env.origin.req.fullUrl, link);

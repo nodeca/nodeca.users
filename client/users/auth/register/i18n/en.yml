@@ -10,12 +10,12 @@ en-US:
     login: Login
     register: Register
 
-  done:
+  done_show:
     message: You need to activate your account. Please follow instructions in activation email.
 
-  resend_activation:
+  resend_activation_show:
     message: New letter with activation link is sent.
 
-  activate:
+  activate_show:
     message_success: Account is activated.
     message_invalid_token: Invalid token.

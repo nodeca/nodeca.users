@@ -1,17 +1,18 @@
 en-US:
-  message_busy_email: This email is already used.
-  message_busy_nick: This nick is already used.
-
   show:
     title: Registration
 
-  done:
+  exec:
+    message_busy_email: This email is already used.
+    message_busy_nick: This nick is already used.
+
+  done_show:
     title: Registration
 
-  resend_activation:
+  resend_activation_show:
     title: Resend activation
 
-  activate:
+  activate_show:
     title: Registration
 
   activation_email:

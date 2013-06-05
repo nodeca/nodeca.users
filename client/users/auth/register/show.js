@@ -76,10 +76,10 @@ N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
 
 // Send registration data to the server.
 //
-N.wire.on('users.auth.register', function register(event) {
+N.wire.on('users.auth.register.exec', function register(event) {
   var $form = $(event.currentTarget);
 
-  N.io.rpc('users.auth.register', getFormData($form), function (err, response) {
+  N.io.rpc('users.auth.register.exec', getFormData($form), function (err, response) {
     if (err && N.io.CLIENT_ERROR === err.code) {
       // Update classes and messages on all input fields.
       _.forEach(view, function (field, name) {

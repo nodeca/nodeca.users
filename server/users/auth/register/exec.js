@@ -171,7 +171,7 @@ module.exports = function (N, apiPath) {
           // If the user is in 'validating' group according to global settings, 
           // send activation token by email.
           if (env.data.validatingGroupId.equals(groupId)) {
-            env.response.data.redirect_url = N.runtime.router.linkTo('users.auth.register.done');
+            env.response.data.redirect_url = N.runtime.router.linkTo('users.auth.register.done_show');
 
             N.models.users.TokenActivationEmail.create({ user_id: user._id }, function (err, token) {
               if (err) {

@@ -26,25 +26,25 @@ router:
     users.auth.reset_password.request_show:
       "/auth/reset": ~
 
-    users.auth.reset_password.request_done:
+    users.auth.reset_password.request_done_show:
       "/auth/reset/sent": ~
 
     users.auth.reset_password.change_show:
       "/auth/reset/{secret_key}":
         secret_key: /[0-9a-f]+/
 
-    users.auth.reset_password.change_done:
+    users.auth.reset_password.change_done_show:
       "/auth/reset/done":
 
     users.auth.register.show:
       "/auth/register": ~
 
-    users.auth.register.done:
+    users.auth.register.done_show:
       "/auth/register/done": ~
 
-    users.auth.register.resend_activation:
+    users.auth.register.resend_activation_show:
       "/auth/register/resend": ~
 
-    users.auth.register.activate:
+    users.auth.register.activate_show:
       "/auth/register/activate/{secret_key}":
         secret_key: /[0-9a-f]+/

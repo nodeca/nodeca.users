@@ -37,10 +37,10 @@ N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
 });
 
 
-N.wire.on('users.auth.login.plain', function login(event) {
+N.wire.on('users.auth.login.plain_exec', function login(event) {
   var $form = $(event.currentTarget);
 
-  N.io.rpc('users.auth.login.plain', getFormData($form), function (err) {
+  N.io.rpc('users.auth.login.plain_exec', getFormData($form), function (err) {
     if (err && N.io.CLIENT_ERROR) {
       if (err.captcha) {
         // If ReCaptcha is already created, just update it. Create otherwise.

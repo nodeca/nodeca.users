@@ -1,5 +1,5 @@
 en-US:
-  plain:
+  plain_exec:
     login_failed:
       Can't login. Check, that your email/nick and password are correct and try
       again. Or use link below to reset your password.

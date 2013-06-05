@@ -4,7 +4,7 @@ en-US:
     email: Email
     reset_password: Reset password
 
-  request_done:
+  request_done_show:
     message: Confirmation letter is sent.
 
   change_show:
@@ -17,5 +17,5 @@ en-US:
 
     password_changed: Your password is changed.
 
-  change_done:
+  change_done_show:
     message: Your password is changed.
