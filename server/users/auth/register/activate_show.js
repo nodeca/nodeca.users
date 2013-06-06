@@ -90,7 +90,8 @@ module.exports = function (N, apiPath) {
 
             // Auto-login.
             if (!env.session.user_id) {
-              env.session.user_id = user._id;
+              env.session.user_id   = user._id;
+              env.session.force_ssl = true;
             }
 
             callback();

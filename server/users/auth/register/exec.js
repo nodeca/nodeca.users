@@ -164,7 +164,8 @@ module.exports = function (N, apiPath) {
           }
 
           // Auto log-in to the new account.
-          env.session.user_id = user._id;
+          env.session.user_id   = user._id;
+          env.session.force_ssl = true;
 
           // If the user is in 'validating' group according to global settings, 
           // send activation token by email.

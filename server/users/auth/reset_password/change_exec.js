@@ -87,7 +87,8 @@ module.exports = function (N, apiPath) {
             }
 
             // Auto login.
-            env.session.user_id = authlink.user_id;
+            env.session.user_id   = authlink.user_id;
+            env.session.force_ssl = true;
             callback();
           });
         });
