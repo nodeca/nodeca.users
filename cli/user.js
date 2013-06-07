@@ -25,7 +25,7 @@ module.exports.commandLineArguments = [
     }
   }
 , {
-    args: ['--group']
+    args: ['-g', '--group']
   , options: {
       dest: 'mark_to_add'
     , help: 'add user to group'
@@ -35,7 +35,7 @@ module.exports.commandLineArguments = [
     }
   }
 , {
-    args: ['--no-group']
+    args: ['-G', '--no-group']
   , options: {
       dest: 'mark_to_remove'
     , help: 'remove user from group'
@@ -53,14 +53,14 @@ module.exports.commandLineArguments = [
     }
   }
 , {
-    args: ['--pass']
+    args: ['-p', '--pass']
   , options: {
       help: 'user passsword. required only for add command'
     , type: 'string'
     }
   }
 , {
-    args: ['--email']
+    args: ['-e', '--email']
   , options: {
       help: 'user email. required only for add command'
     , type: 'string'
