@@ -55,12 +55,6 @@ N.wire.on('users.auth.login.plain_exec', function login(event) {
 
       view.message(err.message);
       view.recaptcha_response_field.visible(err.captcha);
-
-      // Reset problem fields.
-      _.forEach(err.fields, function (name) {
-        $form.find('input[name="' + name + '"]').val('');
-      });
-
       return;
     }
 
