@@ -1,7 +1,6 @@
 'use strict';
 
 
-var _           = require('lodash');
 var ko          = require('knockout');
 var getFormData = require('nodeca.core/lib/client/get_form_data');
 
