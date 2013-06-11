@@ -229,8 +229,7 @@ module.exports = function (N, apiPath) {
     }
 
     // Apply login.
-    env.session.user_id   = env.data.user._id;
-    env.session.force_ssl = true;
+    env.session.user_id = env.data.user._id;
     callback();
   });
 };
