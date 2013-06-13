@@ -1,0 +1,17 @@
+setting_groups:
+  auth:
+    parent: core
+
+
+setting_schemas:
+  global:
+    auth_security_policy:
+      priority: 10
+      group_key: auth
+      category_key: auth_common
+      type: dropdown
+      values:
+      - https_for_registered: https_for_registered
+      - https_only: https_only
+      - http_only: http_only
+      default: https_for_registered
