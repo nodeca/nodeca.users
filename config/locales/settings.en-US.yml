@@ -17,9 +17,6 @@ i18n:
 
           register_user_validated_group: Group after activation
 
-          auth_logout_redirect_url: Logout redirect
-          auth_logout_redirect_url_help: URL to redirect to when user logs out.
-
         setting_values:
           auth_security_policy:
             https_for_registered: HTTPS for registered users only
