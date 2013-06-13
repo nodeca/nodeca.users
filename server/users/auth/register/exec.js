@@ -7,6 +7,7 @@
 var _           = require('lodash');
 var revalidator = require('revalidator');
 var recaptcha   = require('nodeca.core/lib/recaptcha.js');
+var login       = require('nodeca.users/lib/login');
 
 var sendActivationEmail = require('./_lib/send_activation_email');
 
@@ -164,7 +165,7 @@ module.exports = function (N, apiPath) {
           }
 
           // Auto log-in to the new account.
-          env.session.user_id = user._id;
+          login(env, user._id);
 
           // If the user is in 'validating' group according to global settings, 
           // send activation token by email.

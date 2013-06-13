@@ -4,7 +4,8 @@
 'use strict';
 
 
-var _ = require('lodash');
+var _     = require('lodash');
+var login = require('nodeca.users/lib/login');
 
 
 module.exports = function (N, apiPath) {
@@ -87,7 +88,7 @@ module.exports = function (N, apiPath) {
             }
 
             // Auto login.
-            env.session.user_id = authlink.user_id;
+            login(env, authlink.user_id);
             callback();
           });
         });

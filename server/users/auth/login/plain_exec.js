@@ -6,6 +6,7 @@
 
 var _         = require('lodash');
 var recaptcha = require('nodeca.core/lib/recaptcha');
+var login     = require('nodeca.users/lib/login');
 
 
 module.exports = function (N, apiPath) {
@@ -229,7 +230,7 @@ module.exports = function (N, apiPath) {
     }
 
     // Apply login.
-    env.session.user_id = env.data.user._id;
+    login(env, env.data.user._id);
     callback();
   });
 };
