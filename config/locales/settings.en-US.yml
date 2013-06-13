@@ -9,14 +9,14 @@ i18n:
           register_common: Common
 
         setting_names:
-          general_security_policy: Security policy
+          general_ssl_mode: SSL mode
 
           register_user_initial_group: Group after registration
 
           register_user_validated_group: Group after activation
 
         setting_values:
-          general_security_policy:
-            https_for_registered: HTTPS for registered users only
-            https_only: HTTPS for all
-            http_only: HTTP for all
+          general_ssl_mode:
+            https_members: https for logged in
+            https_always: https for all
+            https_off: don't use https

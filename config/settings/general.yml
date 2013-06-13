@@ -1,12 +1,12 @@
 setting_schemas:
   global:
-    general_security_policy:
+    general_ssl_mode:
       priority: 10
       group_key: general
       category_key: general_common
       type: dropdown
       values:
-      - https_for_registered: https_for_registered
-      - https_only: https_only
-      - http_only: http_only
-      default: https_for_registered
+      - https_members: https_members
+      - https_always:  https_always
+      - https_off:     https_off
+      default: https_members
