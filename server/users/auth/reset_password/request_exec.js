@@ -5,7 +5,6 @@
 
 
 var _         = require('lodash');
-var url       = require('url');
 var recaptcha = require('nodeca.core/lib/recaptcha');
 
 
@@ -58,15 +57,9 @@ module.exports = function (N, apiPath) {
         , authprovider_id: provider._id
         }, function (err, token) {
           N.settings.get('general_project_name', {}, function (err, projectName) {
-            var link;
-
-            // Construct base link.
-            link = N.runtime.router.linkTo('users.auth.reset_password.change_show', {
+            var link = env.helpers.url_to('users.auth.reset_password.change_show', {
               secret_key: token.secret_key
             });
-
-            // Prepend protocol and host if link not contains them.
-            link = url.resolve(env.origin.req.fullUrl, link);
 
             N.mailer.send({
               to:      provider.email
