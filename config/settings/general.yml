@@ -1,14 +1,9 @@
-setting_groups:
-  auth:
-    parent: core
-
-
 setting_schemas:
   global:
-    auth_security_policy:
+    general_security_policy:
       priority: 10
-      group_key: auth
-      category_key: auth_common
+      group_key: general
+      category_key: general_common
       type: dropdown
       values:
       - https_for_registered: https_for_registered
