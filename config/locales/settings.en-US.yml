@@ -11,12 +11,6 @@ i18n:
         setting_names:
           general_ssl_mode: SSL mode
 
-          general_session_expire_hours: Session expire time (hours)
-          general_session_expire_hours_help: Session store period since last visit.
-
-          general_login_expire_days: Login expire time (days)
-          general_login_expire_days_help: Force user to relogin after this period. 0 - never expire.
-
           register_user_initial_group: Group after registration
 
           register_user_validated_group: Group after activation
