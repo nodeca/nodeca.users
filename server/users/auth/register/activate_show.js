@@ -23,7 +23,7 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.before(apiPath, function find_validated_group_id(env, callback) {
-    N.settings.get('register_user_validated_group', {}, function (err, id) {
+    N.settings.get('register_user_validated_group', function (err, id) {
       env.data.validatedGroupId = id;
       callback(err);
     });

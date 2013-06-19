@@ -127,7 +127,7 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    N.settings.get('register_user_initial_group', {}, function (err, groupId) {
+    N.settings.get('register_user_initial_group', function (err, groupId) {
       if (err) {
         callback(err);
         return;

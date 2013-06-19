@@ -9,7 +9,7 @@ module.exports = function sendActivationEmail(N, env, email, token, callback) {
     secret_key: token.secret_key
   });
 
-  N.settings.get('general_project_name', {}, function (err, projectName) {
+  N.settings.get('general_project_name', function (err, projectName) {
     if (err) {
       callback(err);
       return;

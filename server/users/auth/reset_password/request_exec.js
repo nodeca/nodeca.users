@@ -56,7 +56,7 @@ module.exports = function (N, apiPath) {
           authlink_id:     authlink._id
         , authprovider_id: provider._id
         }, function (err, token) {
-          N.settings.get('general_project_name', {}, function (err, projectName) {
+          N.settings.get('general_project_name', function (err, projectName) {
             var link = env.helpers.url_to('users.auth.reset_password.change_show', {
               secret_key: token.secret_key
             });
