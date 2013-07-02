@@ -1,7 +1,7 @@
 #content
-  != self.partial('@admin.core.blocks.sidebar_menu', { apiPath: self.apiPath, menu: self.menus.admin })
+  != self.partial('@admin.core.blocks.sidebar_menu', { apiPath: self.apiPath, menu: self.runtime.menus.admin })
 
   .main
-    != self.partial('@admin.core.blocks.breadcrumbs', { apiPath: self.apiPath, menu: self.menus.admin })
+    != self.partial('@admin.core.blocks.breadcrumbs', { apiPath: self.apiPath, menu: self.runtime.menus.admin })
 
     h1 Members search page

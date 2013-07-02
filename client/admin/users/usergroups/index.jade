@@ -1,8 +1,8 @@
 #content
-  != self.partial('@admin.core.blocks.sidebar_menu', { menu: self.menus.admin })
+  != self.partial('@admin.core.blocks.sidebar_menu', { menu: self.runtime.menus.admin })
 
   .main
-    != self.partial('@admin.core.blocks.breadcrumbs', { menu: self.menus.admin })
+    != self.partial('@admin.core.blocks.breadcrumbs', { menu: self.runtime.menus.admin })
 
     .pull-right
       a.btn.btn-primary(href=self.link_to('admin.users.usergroups.new'))
