@@ -31,7 +31,7 @@ $.fn.powerTip.smartPlacementLists.usercard = [
 
 
 $(function () {
-  $('body').on('mouseenter.nodeca.data-api', '.usercard-popover', function () {
+  $('body').on('mouseenter.nodeca.data-api', '._ucard-popover', function () {
     var $this = $(this),
         id    = $this.data('user-id'),
         card  = $this.data('powertip');
@@ -90,7 +90,7 @@ $(function () {
     }, DELAY);
   });
 
-  $('body').on('mouseleave.nodeca.data-api', '.usercard-popover', function () {
+  $('body').on('mouseleave.nodeca.data-api', '._ucard-popover', function () {
     clearTimeout(TIMEOUT);
   });
 });
