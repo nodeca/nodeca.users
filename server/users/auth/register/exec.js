@@ -133,57 +133,73 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      var user = new N.models.users.User();
+      // Find highest user id. (plain number)
+      N.models.users.User
+          .find()
+          .select('id')
+          .sort('-id')
+          .limit(1)
+          .setOptions({ lean: true })
+          .exec(function (err, lastUser) {
 
-      user.nick       = env.params.nick;
-      user.usergroups = [ groupId ];
-      user.joined_ip  = env.request.ip;
-      user.joined_ts  = new Date();
-      user.locale     = env.runtime.locale || N.config.locales['default'];
-
-      user.save(function (err, user) {
         if (err) {
           callback(err);
           return;
         }
 
-        var authlink, provider;
+        var user = new N.models.users.User();
 
-        authlink = new N.models.users.AuthLink({ 'user_id': user._id });
+        user.id         = _.isEmpty(lastUser) ? 1 : lastUser[0].id + 1;
+        user.nick       = env.params.nick;
+        user.usergroups = [ groupId ];
+        user.joined_ip  = env.request.ip;
+        user.joined_ts  = new Date();
+        user.locale     = env.runtime.locale || N.config.locales['default'];
 
-        provider = authlink.providers.create({
-          type: 'plain'
-        , email: env.params.email
-        });
-        provider.setPass(env.params.pass);
-
-        authlink.providers.push(provider);
-        authlink.save(function (err) {
+        user.save(function (err, user) {
           if (err) {
-            user.remove(callback); // Can't create authlink - delete the user.
+            callback(err);
             return;
           }
 
-          // Auto log-in to the new account.
-          login(env, user._id);
+          var authlink, provider;
 
-          // If the user is in 'validating' group according to global settings, 
-          // send activation token by email.
-          if (env.data.validatingGroupId.equals(groupId)) {
-            env.response.data.redirect_url = N.runtime.router.linkTo('users.auth.register.done_show');
+          authlink = new N.models.users.AuthLink({ 'user_id': user._id });
 
-            N.models.users.TokenActivationEmail.create({ user_id: user._id }, function (err, token) {
-              if (err) {
-                callback(err);
-                return;
-              }
+          provider = authlink.providers.create({
+            type: 'plain'
+          , email: env.params.email
+          });
+          provider.setPass(env.params.pass);
 
-              sendActivationEmail(N, env, provider.email, token, callback);
-            });
-          } else {
-            env.response.data.redirect_url = N.runtime.router.linkTo('users.profile');
-            callback();
-          }
+          authlink.providers.push(provider);
+          authlink.save(function (err) {
+            if (err) {
+              user.remove(callback); // Can't create authlink - delete the user.
+              return;
+            }
+
+            // Auto log-in to the new account.
+            login(env, user._id);
+
+            // If the user is in 'validating' group according to global settings, 
+            // send activation token by email.
+            if (env.data.validatingGroupId.equals(groupId)) {
+              env.response.data.redirect_url = N.runtime.router.linkTo('users.auth.register.done_show');
+
+              N.models.users.TokenActivationEmail.create({ user_id: user._id }, function (err, token) {
+                if (err) {
+                  callback(err);
+                  return;
+                }
+
+                sendActivationEmail(N, env, provider.email, token, callback);
+              });
+            } else {
+              env.response.data.redirect_url = N.runtime.router.linkTo('users.profile');
+              callback();
+            }
+          });
         });
       });
     });
