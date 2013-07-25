@@ -1,0 +1,6 @@
+en-US:
+  title: Select user
+  placeholder_enter_name: Enter name
+  button_cancel: Cancel
+  button_accept: Accept
+  error_no_user: User is not selected
