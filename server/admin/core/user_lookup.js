@@ -11,18 +11,24 @@ function escapeRegexp(source) {
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
-    nick:  { type: 'string', required: true,  minLength: 2 }
-  , limit: { type: 'number', required: false, 'default': 10 }
+    nick:   { type: 'string',  required: true,  minLength: 2     }
+  , limit:  { type: 'number',  required: false, 'default': 10    }
+  , strict: { type: 'boolean', required: false, 'default': false }
   });
 
   N.wire.on(apiPath, function moderator_find_user(env, callback) {
-    N.models.users.User
-        .find()
-        .where('nick').regex(new RegExp(escapeRegexp(env.params.nick), 'mi'))
-        .limit(env.params.limit)
-        .select('_id _uname nick')
-        .setOptions({ lean: true })
-        .exec(function (err, users) {
+    var query = N.models.users.User.find();
+
+    if (env.params.strict) {
+      query.where('nick').equals(env.params.nick);
+    } else {
+      query.where('nick').regex(new RegExp(escapeRegexp(env.params.nick), 'mi'));
+    }
+
+    query.limit(env.params.limit)
+         .select('_id _uname nick')
+         .setOptions({ lean: true })
+         .exec(function (err, users) {
 
       if (err) {
         callback(err);
