@@ -12,7 +12,6 @@ function escapeRegexp(source) {
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     nick:   { type: 'string',  required: true,  minLength: 2     }
-  , limit:  { type: 'number',  required: false, 'default': 10    }
   , strict: { type: 'boolean', required: false, 'default': false }
   });
 
@@ -25,7 +24,7 @@ module.exports = function (N, apiPath) {
       query.where('nick').regex(new RegExp(escapeRegexp(env.params.nick), 'mi'));
     }
 
-    query.limit(env.params.limit)
+    query.limit(10)
          .select('_id _uname nick')
          .setOptions({ lean: true })
          .exec(function (err, users) {
