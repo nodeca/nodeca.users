@@ -26,6 +26,9 @@ packages:
     i18n_server:
       include: server/admin/**i18n/*.yml
 
+    vendor:
+      - users.nick_typeahead: ./lib/client/nick_typeahead.js
+
 
   common:
     client:
