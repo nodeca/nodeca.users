@@ -7,6 +7,7 @@ i18n:
 
         category_names:
           register_common: Common
+          admin: Administration
 
         setting_names:
           general_ssl_mode: SSL mode
@@ -14,6 +15,8 @@ i18n:
           register_user_initial_group: Group after registration
 
           register_user_validated_group: Group after activation
+
+          can_see_hellbanned: Can see hellbanned users content
 
         setting_values:
           general_ssl_mode:

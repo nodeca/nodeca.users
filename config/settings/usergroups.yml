@@ -1,0 +1,7 @@
+setting_schemas:
+  usergroup:
+    can_see_hellbanned:
+      priority: 10
+      category_key: admin
+      type: boolean
+      default: false
