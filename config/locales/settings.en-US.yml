@@ -16,7 +16,7 @@ i18n:
 
           register_user_validated_group: Group after activation
 
-          can_see_hellbanned: Can see hellbanned users content
+          can_see_hellbanned: Show hellbanned content
 
         setting_values:
           general_ssl_mode:
