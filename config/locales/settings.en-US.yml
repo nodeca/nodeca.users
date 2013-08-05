@@ -7,7 +7,7 @@ i18n:
 
         category_names:
           register_common: Common
-          admin: Administration
+          perm_admin: Administration
 
         setting_names:
           general_ssl_mode: SSL mode
