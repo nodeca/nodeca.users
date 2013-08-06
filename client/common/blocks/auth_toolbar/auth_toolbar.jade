@@ -5,10 +5,9 @@
         | #{self.user_name}
         b.caret
       ul.dropdown-menu
-        li: a(href='#') Admin
-        li.divider
         li: a(href=self.link_to('users.profile'))= self.t('profile')
-        li: a.icon-check(href='#') No images (fast)
+        - if (self.settings.can_access_acp)
+          li: a(href=self.link_to('admin.core.dashboard'), target='_blank')= self.t('admin')
         li.divider
         li: a(data-on-click='users.auth.logout')= self.t('logout')
 - else

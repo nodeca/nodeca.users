@@ -1,5 +1,6 @@
 en-US:
   profile: Profile
-  login: login
-  register: register
-  logout: Exit
+  admin: Administration
+  login: Login
+  register: Register
+  logout: Logout
