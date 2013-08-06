@@ -16,6 +16,8 @@ i18n:
 
           register_user_validated_group: Group after activation
 
+          can_access_acp: Can access ACP
+
           can_see_hellbanned: Show hellbanned content
 
         setting_values:

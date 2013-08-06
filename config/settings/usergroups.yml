@@ -1,7 +1,13 @@
 setting_schemas:
   usergroup:
-    can_see_hellbanned:
+    can_access_acp:
       priority: 1000
+      category_key: perm_admin
+      type: boolean
+      default: false
+
+    can_see_hellbanned:
+      priority: 1010
       category_key: perm_admin
       type: boolean
       default: false
