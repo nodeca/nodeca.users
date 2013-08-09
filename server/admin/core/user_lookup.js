@@ -1,4 +1,4 @@
-// Select list of users by part of nick.
+// Select list of users, starting by pattern (or exact match)
 
 
 'use strict';
@@ -8,10 +8,12 @@ function escapeRegexp(source) {
   return String(source).replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
 }
 
-
+// - nick - first letters of nick
+// - strict - exact match when true
+//
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
-    nick:   { type: 'string',  required: true,  minLength: 2     }
+    nick:   { type: 'string',  required: true,  minLength: 1     }
   , strict: { type: 'boolean', required: false, 'default': false }
   });
 
@@ -21,7 +23,7 @@ module.exports = function (N, apiPath) {
     if (env.params.strict) {
       query.where('nick').equals(env.params.nick);
     } else {
-      query.where('nick').regex(new RegExp(escapeRegexp(env.params.nick), 'mi'));
+      query.where('nick').regex(new RegExp('^' + escapeRegexp(env.params.nick), 'i'));
     }
 
     query.limit(10)
