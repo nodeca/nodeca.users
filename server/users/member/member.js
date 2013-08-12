@@ -3,7 +3,7 @@
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
-    id: {
+    hid: {
       type: "integer",
       minimum: 1,
       required: true

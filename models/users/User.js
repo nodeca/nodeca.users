@@ -13,7 +13,7 @@ module.exports = function (N, collectionName) {
    **/
   var User = new Schema({
     // user-friendly id (autoincremented)
-    id             : { type: Number, min: 1, index: true }
+    hid            : { type: Number, min: 1, index: true }
 
   , first_name     : String
   , last_name      : String

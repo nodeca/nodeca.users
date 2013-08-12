@@ -4,8 +4,8 @@ router:
       "/profile": ~
 
     users.member:
-      "/member{id}":
-        id: /\d+/
+      "/member{hid}":
+        hid: /\d+/
 
     admin.users.usergroups.index:
       "/usergroups": ~

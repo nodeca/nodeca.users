@@ -5,7 +5,7 @@
 
 var user_in_fields = [
   '_id',
-  'id',
+  'hid',
   'joined_ts',
   '_uname',
   '_uname_short',

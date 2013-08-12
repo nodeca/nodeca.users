@@ -133,11 +133,11 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      // Find highest user id. (plain number)
+      // Find highest user hid. (plain number)
       N.models.users.User
           .find()
-          .select('id')
-          .sort('-id')
+          .select('hid')
+          .sort('-hid')
           .limit(1)
           .setOptions({ lean: true })
           .exec(function (err, lastUser) {
@@ -149,7 +149,7 @@ module.exports = function (N, apiPath) {
 
         var user = new N.models.users.User();
 
-        user.id         = _.isEmpty(lastUser) ? 1 : lastUser[0].id + 1;
+        user.hid         = _.isEmpty(lastUser) ? 1 : lastUser[0].hid + 1;
         user.nick       = env.params.nick;
         user.usergroups = [ groupId ];
         user.joined_ip  = env.request.ip;
