@@ -14,10 +14,7 @@ var user_in_fields = [
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
-    id: {
-      type: 'string',
-      required: true
-    }
+    id: { format: 'mongo', required: true }
   });
 
 

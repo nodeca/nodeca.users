@@ -15,10 +15,7 @@ module.exports = function (N, apiPath) {
 
 
   N.validate(apiPath, _.extend({
-    _id: {
-      type: 'string'
-    , required: true
-    }
+    _id: { format: 'mongo', required: true }
   }, PARAMS_SCHEMA));
 
 
