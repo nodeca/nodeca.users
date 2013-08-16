@@ -13,8 +13,8 @@ var POPOVER_IDX = 0;    // Popover counters used to generate unique IDs
 // Request from server if it's not yet cached or cache outdated.
 //
 function getUserInfo(id, callback) {
-  N.io.rpc(module.apiPath, { id: id }, function (err, resp) {
-    callback(err ? null : (resp.data || {}).user);
+  N.io.rpc(module.apiPath, { id: id }, function (err, res) {
+    callback(err ? null : (res || {}).user);
   });
 }
 

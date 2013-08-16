@@ -10,8 +10,8 @@ module.exports = function (N, apiPath) {
   });
 
   N.wire.on(apiPath, function (env, callback) {
-    env.response.data.head.title = env.t('title');
-    env.response.data.secret_key = env.params.secret_key;
+    env.res.head.title = env.t('title');
+    env.res.secret_key = env.params.secret_key;
 
     N.models.users.TokenResetPassword.findOne({
       secret_key: env.params.secret_key
@@ -21,7 +21,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      env.response.data.valid_token = token && !token.isExpired();
+      env.res.valid_token = token && !token.isExpired();
       callback();
     });
   });

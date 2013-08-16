@@ -13,10 +13,10 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.on(apiPath, function (env, callback) {
-    var data = env.response.data;
+    var res = env.res;
 
     // Fill Default settings and their configuration
-    data.setting_schemas = N.config.setting_schemas['usergroup'] || {};
+    res.setting_schemas = N.config.setting_schemas['usergroup'] || {};
 
     // We always fetch all groups, to calculate inreritances on client
     N.models.users.UserGroup
@@ -37,13 +37,13 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      data.head.title =
+      res.head.title =
         env.t('title', {
           name: currentGroup.short_name
         });
 
-      data.current_group_id = currentGroup._id.toString();
-      data.groups_data      = _.invoke(groups, 'toJSON');
+      res.current_group_id = currentGroup._id.toString();
+      res.groups_data      = _.invoke(groups, 'toJSON');
       callback();
     });
   });

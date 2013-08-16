@@ -12,7 +12,7 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.on(apiPath, function login_show(env, callback) {
-    env.response.data.head.title = env.t('title');
+    env.res.head.title = env.t('title');
 
     rateLimit.total.check(function (err, isExceeded) {
       if (err) {
@@ -20,7 +20,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      env.response.data.captcha_required = isExceeded;
+      env.res.captcha_required = isExceeded;
       callback();
     });
   });

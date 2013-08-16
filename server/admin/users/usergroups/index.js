@@ -11,10 +11,10 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.on(apiPath, function (env, callback) {
-    var data = env.response.data;
+    var res = env.res;
 
-    data.head.title = env.t('title');
-    data.usergroups = [];
+    res.head.title = env.t('title');
+    res.usergroups = [];
 
     N.models.users.UserGroup
         .find()
@@ -28,20 +28,20 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      data.usergroups = usergroups;
+      res.usergroups = usergroups;
       callback();
     });
   });
 
 
   N.wire.after(apiPath, function (env, callback) {
-    var data = env.response.data;
+    var res = env.res;
 
-    data.members_count = {};
+    res.members_count = {};
 
-    async.forEach(data.usergroups, function (group, next) {
+    async.forEach(res.usergroups, function (group, next) {
       N.models.users.User.count({ usergroups: group._id }, function (err, members_count) {
-        data.members_count[group._id] = members_count;
+        res.members_count[group._id] = members_count;
         next();
       });
     }, callback);

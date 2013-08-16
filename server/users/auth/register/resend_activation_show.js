@@ -22,7 +22,7 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.on(apiPath, function resend_activation(env, callback) {
-    env.response.data.head.title = env.t('title');
+    env.res.head.title = env.t('title');
 
     if (!env.session.user_id) {
       callback(N.io.NOT_AUTHORIZED);

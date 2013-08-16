@@ -120,7 +120,7 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.on(apiPath, function register(env, callback) {
-    env.response.data.head.title = env.t('title');
+    env.res.head.title = env.t('title');
 
     if (!_.isEmpty(env.data.errors)) {
       callback({ code: N.io.CLIENT_ERROR, data: env.data.errors });
@@ -185,7 +185,7 @@ module.exports = function (N, apiPath) {
             // If the user is in 'validating' group according to global settings, 
             // send activation token by email.
             if (env.data.validatingGroupId.equals(groupId)) {
-              env.response.data.redirect_url = N.runtime.router.linkTo('users.auth.register.done_show');
+              env.res.redirect_url = N.runtime.router.linkTo('users.auth.register.done_show');
 
               N.models.users.TokenActivationEmail.create({ user_id: user._id }, function (err, token) {
                 if (err) {
@@ -196,7 +196,7 @@ module.exports = function (N, apiPath) {
                 sendActivationEmail(N, env, provider.email, token, callback);
               });
             } else {
-              env.response.data.redirect_url = N.runtime.router.linkTo('users.profile');
+              env.res.redirect_url = N.runtime.router.linkTo('users.profile');
               callback();
             }
           });

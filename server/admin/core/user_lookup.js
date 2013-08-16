@@ -36,7 +36,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      env.response.data.users = users;
+      env.res.users = users;
       callback();
     });
   });

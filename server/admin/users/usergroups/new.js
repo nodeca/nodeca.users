@@ -8,12 +8,12 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.on(apiPath, function (env, callback) {
-    var data = env.response.data;
+    var res = env.res;
 
-    data.head.title = env.t('title');
+    res.head.title = env.t('title');
 
     // Fill Default settings and their configuration
-    data.setting_schemas = N.config.setting_schemas['usergroup'] || {};
+    res.setting_schemas = N.config.setting_schemas['usergroup'] || {};
 
     // Fetch real values from groups
     // We always fetch all groups, to calculate inreritances on client
@@ -23,7 +23,7 @@ module.exports = function (N, apiPath) {
         .sort('_id')
         .setOptions({ lean: true })
         .exec(function (err, groupsData) {
-      data.groups_data = groupsData;
+      res.groups_data = groupsData;
       callback(err);
     });
   });

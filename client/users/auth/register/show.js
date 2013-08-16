@@ -52,13 +52,13 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
 
     var self = this;
 
-    N.io.rpc('users.auth.check_nick', { nick: text }, function (err, response) {
+    N.io.rpc('users.auth.check_nick', { nick: text }, function (err, res) {
       if (err) {
         return false;
       }
 
-      self.css(response.data.error ? 'error' : 'success');
-      self.message(response.data.message);
+      self.css(res.error ? 'error' : 'success');
+      self.message(res.message);
     });
   }, CHECK_NICK_DELAY), view.nick);
 
@@ -81,7 +81,7 @@ N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
 N.wire.on('users.auth.register.exec', function register(event) {
   var $form = $(event.currentTarget);
 
-  N.io.rpc('users.auth.register.exec', getFormData($form), function (err, response) {
+  N.io.rpc('users.auth.register.exec', getFormData($form), function (err, res) {
     if (err && N.io.CLIENT_ERROR === err.code) {
       // Update classes and messages on all input fields.
       _.forEach(view, function (field, name) {
@@ -102,6 +102,6 @@ N.wire.on('users.auth.register.exec', function register(event) {
     }
 
     // Reload page in order to apply auto-login after the registration.
-    window.location = response.data.redirect_url;
+    window.location = res.redirect_url;
   });
 });

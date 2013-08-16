@@ -14,11 +14,11 @@ module.exports = function (N, apiPath) {
   });
 
   N.wire.on(apiPath, function (env, callback) {
-    env.response.data.error   = false;
-    env.response.data.message = null;
+    env.res.error   = false;
+    env.res.message = null;
 
     if (!N.models.users.User.validateNick(env.params.nick)) {
-      env.response.data.error = true;
+      env.res.error = true;
       callback();
       return;
     }
@@ -35,8 +35,8 @@ module.exports = function (N, apiPath) {
       }
 
       if (user) {
-        env.response.data.error   = true;
-        env.response.data.message = env.t('message_busy_nick');
+        env.res.error   = true;
+        env.res.message = env.t('message_busy_nick');
       }
 
       callback();

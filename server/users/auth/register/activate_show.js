@@ -31,8 +31,8 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.on(apiPath, function register_activate(env, callback) {
-    env.response.data.head.title = env.t('title');
-    env.response.data.success = false; // Just initial value.
+    env.res.head.title = env.t('title');
+    env.res.success = false; // Just initial value.
 
     N.models.users.TokenActivationEmail
         .findOne({ secret_key: env.params.secret_key })
@@ -89,7 +89,7 @@ module.exports = function (N, apiPath) {
               return;
             }
 
-            env.response.data.success = true;
+            env.res.success = true;
 
             // Auto-login.
             if (!env.session.user_id) {

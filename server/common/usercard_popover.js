@@ -37,7 +37,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      env.response.data.user = user;
+      env.res.user = user;
       callback();
     });
   });
