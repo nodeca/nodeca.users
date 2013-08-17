@@ -7,7 +7,6 @@
 var _           = require('lodash');
 var revalidator = require('revalidator');
 var recaptcha   = require('nodeca.core/lib/recaptcha.js');
-var login       = require('nodeca.users/lib/login');
 
 var sendActivationEmail = require('./_lib/send_activation_email');
 
@@ -180,25 +179,33 @@ module.exports = function (N, apiPath) {
             }
 
             // Auto log-in to the new account.
-            login(env, user._id);
+            env.data.user = user;
+            N.wire.emit('internal:users.login', env, function (err) {
+              if (err) {
+                callback(err);
+                return;
+              }
 
-            // If the user is in 'validating' group according to global settings, 
-            // send activation token by email.
-            if (env.data.validatingGroupId.equals(groupId)) {
-              env.res.redirect_url = N.runtime.router.linkTo('users.auth.register.done_show');
+              // If the user is in 'validating' group according to global settings, 
+              // send activation token by email.
+              if (env.data.validatingGroupId.equals(groupId)) {
+                env.res.redirect_url = N.runtime.router.linkTo('users.auth.register.done_show');
 
-              N.models.users.TokenActivationEmail.create({ user_id: user._id }, function (err, token) {
-                if (err) {
-                  callback(err);
+                N.models.users.TokenActivationEmail.create({ user_id: user._id }, function (err, token) {
+                  if (err) {
+                    callback(err);
+                    return;
+                  }
+
+                  sendActivationEmail(N, env, provider.email, token, callback);
                   return;
-                }
-
-                sendActivationEmail(N, env, provider.email, token, callback);
-              });
-            } else {
-              env.res.redirect_url = N.runtime.router.linkTo('users.profile');
-              callback();
-            }
+                });
+              } else {
+                env.res.redirect_url = N.runtime.router.linkTo('users.profile');
+                callback();
+                return;
+              }
+            });
           });
         });
       });

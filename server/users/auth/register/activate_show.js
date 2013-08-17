@@ -5,9 +5,6 @@
 'use strict';
 
 
-var login = require('nodeca.users/lib/login');
-
-
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     secret_key: { type: 'string', required: true }
@@ -93,7 +90,9 @@ module.exports = function (N, apiPath) {
 
             // Auto-login.
             if (!env.session.user_id) {
-              login(env, user._id);
+              env.data.user = user;
+              N.wire.emit('internal:users.login', env, callback);
+              return;
             }
 
             callback();

@@ -6,7 +6,6 @@
 
 var _         = require('lodash');
 var recaptcha = require('nodeca.core/lib/recaptcha');
-var login     = require('nodeca.users/lib/login');
 
 
 module.exports = function (N, apiPath) {
@@ -131,8 +130,8 @@ module.exports = function (N, apiPath) {
     }
 
     N.models.users.AuthLink
-        .findOne({ 'providers.email': env.params.email_or_nick, 'providers.type': 'plain' })
-        .exec(function (err, authlink) {
+      .findOne({ 'providers.email': env.params.email_or_nick, 'providers.type': 'plain' })
+      .exec(function (err, authlink) {
 
       if (err) {
         callback(err);
@@ -145,8 +144,9 @@ module.exports = function (N, apiPath) {
       }
 
       N.models.users.User
-          .findOne({ '_id': authlink.user_id })
-          .exec(function (err, user) {
+        .findOne({ '_id': authlink.user_id })
+        .setOptions({ lean: true })
+        .exec(function (err, user) {
 
         if (err) {
           callback(err);
@@ -179,8 +179,9 @@ module.exports = function (N, apiPath) {
     }
 
     N.models.users.User
-        .findOne({ 'nick': env.params.email_or_nick })
-        .exec(function (err, user) {
+      .findOne({ 'nick': env.params.email_or_nick })
+      .setOptions({ lean: true })
+      .exec(function (err, user) {
 
       if (err) {
         callback(err);
@@ -193,8 +194,8 @@ module.exports = function (N, apiPath) {
       }
 
       N.models.users.AuthLink
-          .findOne({ 'user_id': user._id, 'providers.type': 'plain' })
-          .exec(function (err, authlink) {
+        .findOne({ 'user_id': user._id, 'providers.type': 'plain' })
+        .exec(function (err, authlink) {
 
         if (err) {
           callback(err);
@@ -230,7 +231,6 @@ module.exports = function (N, apiPath) {
     }
 
     // Apply login.
-    login(env, env.data.user._id);
-    callback();
+    N.wire.emit('internal:users.login', env, callback);
   });
 };

@@ -5,7 +5,6 @@
 
 
 var _     = require('lodash');
-var login = require('nodeca.users/lib/login');
 
 
 module.exports = function (N, apiPath) {
@@ -88,8 +87,15 @@ module.exports = function (N, apiPath) {
             }
 
             // Auto login.
-            login(env, authlink.user_id);
-            callback();
+            N.models.users.User.findById(authlink.user_id, function (err, user) {
+              if (err) {
+                callback(err);
+                return;
+              }
+
+              env.data.user = user;
+              N.wire.emit('internal:users.login', env, callback);
+            });
           });
         });
       });
