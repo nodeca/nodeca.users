@@ -64,7 +64,7 @@ module.exports = function (N, apiPath) {
       }
 
       var privateKey = N.config.options.recaptcha.private_key
-        , clientIp   = env.request.ip
+        , clientIp   = env.req.ip
         , challenge  = env.params.recaptcha_challenge_field
         , response   = env.params.recaptcha_response_field;
 
@@ -100,14 +100,14 @@ module.exports = function (N, apiPath) {
   // Do hard limit - ask user to wait 5 minutes.
   //
   N.wire.before(apiPath, { priority: -10 }, function check_ip_rate_limit(env, callback) {
-    rateLimit.ip.check(env.request.ip, function (err, isExceeded) {
+    rateLimit.ip.check(env.req.ip, function (err, isExceeded) {
       if (err) {
         callback(err);
         return;
       }
 
       if (isExceeded) {
-        updateRateLimits(env.request.ip);
+        updateRateLimits(env.req.ip);
         callback({
           code:    N.io.CLIENT_ERROR
         , message: env.t('too_many_attempts')
@@ -219,7 +219,7 @@ module.exports = function (N, apiPath) {
         !env.data.provider ||
         !env.data.provider.checkPass(env.params.pass)) {
 
-      updateRateLimits(env.request.ip);
+      updateRateLimits(env.req.ip);
       callback({
         code:    N.io.CLIENT_ERROR
       , message: env.t('login_failed')

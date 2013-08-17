@@ -105,7 +105,7 @@ module.exports = function (N, apiPath) {
     }
 
     var privateKey = N.config.options.recaptcha.private_key
-      , clientIp   = env.request.ip
+      , clientIp   = env.req.ip
       , challenge  = env.params.recaptcha_challenge_field
       , response   = env.params.recaptcha_response_field;
 
@@ -152,7 +152,7 @@ module.exports = function (N, apiPath) {
         user.hid         = _.isEmpty(lastUser) ? 1 : lastUser[0].hid + 1;
         user.nick       = env.params.nick;
         user.usergroups = [ groupId ];
-        user.joined_ip  = env.request.ip;
+        user.joined_ip  = env.req.ip;
         user.joined_ts  = new Date();
         user.locale     = env.runtime.locale || N.config.locales['default'];
 
