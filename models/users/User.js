@@ -32,6 +32,9 @@ module.exports = function (N, collectionName) {
   , post_count     : { type: Number, 'default': 0 }
 
   , warning_points : { type: Number, 'default': 0 }
+  },
+  {
+    versionKey : false
   });
 
   // Needed to count users in group

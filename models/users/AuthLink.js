@@ -49,6 +49,9 @@ module.exports = function (N, collectionName) {
 
     // metadata, if we like to extract extended info from oauth providers
   , meta   : {}
+  },
+  {
+    versionKey : false
   });
 
   //
@@ -106,6 +109,9 @@ module.exports = function (N, collectionName) {
   var AuthLink = new Schema({
     user_id   : Schema.ObjectId
   , providers : [AuthProvider]
+  },
+  {
+    versionKey : false
   });
 
   // used in:

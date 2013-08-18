@@ -34,6 +34,9 @@ module.exports = function (N, collectionName) {
 
     // Settings storage. Used only the the UsergroupStore.
   , settings     : { type: Schema.Types.Mixed, 'default': {} }
+  },
+  {
+    versionKey : false
   });
 
 

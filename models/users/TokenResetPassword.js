@@ -28,6 +28,9 @@ module.exports = function (N, collectionName) {
   , create_ts:       { type: Date,   'default': Date,              expires: TOKEN_EXPIRE_TIMEOUT, required: true }
   , authlink_id:     { type: Schema.Types.ObjectId,                required: true }
   , authprovider_id: { type: Schema.Types.ObjectId,                required: true }
+  },
+  {
+    versionKey : false
   });
 
   TokenResetPassword.index({ secret_key: 1 });

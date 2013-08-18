@@ -28,6 +28,9 @@ module.exports = function (N, collectionName) {
     secret_key: { type: String, 'default': generateSecretKey, required: true }
   , create_ts:  { type: Date,   'default': Date,              expires: TOKEN_EXPIRE_TIMEOUT, required: true }
   , user_id:    { type: Schema.Types.ObjectId,                required: true }
+  },
+  {
+    versionKey : false
   });
 
   TokenActivationEmail.index({ secret_key: 1 });
