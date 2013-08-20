@@ -80,7 +80,7 @@ module.exports = function (N, collectionName) {
 
 
   // FIXME: make denormalisation customizeable
-  User.pre('save', function (next) {
+  User.pre('save', function (callback) {
     this._uname_short = this.nick;
     if (!!this.first_name && !!this.last_name) {
       this._uname = this.first_name +
@@ -89,9 +89,27 @@ module.exports = function (N, collectionName) {
     else {
       this._uname = this._uname_short;
     }
-    next();
+    callback();
   });
 
+  // Set 'hid' for the new user.
+  // This hook should always be the last one to avoid counter increment on error
+  User.pre('save', function (callback) {
+    if (!this.isNew) {
+      callback();
+      return;
+    }
+
+    var self = this;
+    N.models.core.Increment.next('user', function(err, value) {
+      if (err) {
+        callback(err);
+        return;
+      }
+      self.hid = value;
+      callback();
+    });
+  });
 
   N.wire.on("init:models", function emit_init_User(__, callback) {
     N.wire.emit("init:models." + collectionName, User, callback);
