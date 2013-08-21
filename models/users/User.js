@@ -13,7 +13,7 @@ module.exports = function (N, collectionName) {
    **/
   var User = new Schema({
     // user-friendly id (autoincremented)
-    hid            : { type: Number, min: 1, index: true }
+    hid            : { type: Number }
 
   , first_name     : String
   , last_name      : String
@@ -24,18 +24,24 @@ module.exports = function (N, collectionName) {
   , joined_ts      : Date
   , joined_ip      : String
 
+    // false -> deleted accounts
+  , exists         : { type: Boolean, required: true, 'default': true }
+    // true -> `hell banned` user
+  , hb             : { type: Boolean, 'default': false }
+
   , locale         : String
 
   , _uname         : String
   , _uname_short   : String
 
   , post_count     : { type: Number, 'default': 0 }
-
-  , warning_points : { type: Number, 'default': 0 }
   },
   {
     versionKey : false
   });
+
+  // Needed to fetch profile page
+  User.index({ usergroups: 1 });
 
   // Needed to count users in group
   User.index({ usergroups: 1 });
