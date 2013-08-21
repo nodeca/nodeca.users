@@ -7,8 +7,8 @@ var user_in_fields = [
   '_id',
   'hid',
   'joined_ts',
-  '_uname',
-  '_uname_short',
+  'name',
+  'nick',
   'post_count'
 ];
 

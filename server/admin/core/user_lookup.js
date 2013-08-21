@@ -27,7 +27,7 @@ module.exports = function (N, apiPath) {
     }
 
     query.limit(10)
-         .select('_id _uname nick')
+         .select('_id name nick')
          .setOptions({ lean: true })
          .exec(function (err, users) {
 

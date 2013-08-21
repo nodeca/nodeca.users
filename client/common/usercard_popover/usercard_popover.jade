@@ -2,10 +2,10 @@
   - if (self.loading)
     .progress: span= self.t('loading')
   - else 
-    .ucard-head.cleafix #{self._uname}
+    .ucard-head.cleafix #{self.name}
     aside.ucard-sidebar
       a.ucard-avatar(href='#')
-        img.av-l(alt='#{self._uname}',src='http://lorempixel.com/150/150/sports/a' + '#{self.hid}')
+        img.av-l(alt='#{self.name}',src='http://lorempixel.com/150/150/sports/a' + '#{self.hid}')
 
       a.btn.btn-mini.btn-block= self.t('find_posts')  
       a.btn.btn-mini.btn-block= self.t('send_message')  
