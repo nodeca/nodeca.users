@@ -36,6 +36,15 @@ module.exports = function (N, apiPath) {
         return;
       }
 
+      if (env.req.type === 'http') {
+        // For json request - built reply manually, until better solution found
+        var headers = {};
+        headers['Content-Type'] = 'application/json';
+        env.err = { head: headers, code: 200, data: users };
+        callback(env.err);
+        return;
+      }
+
       env.res.users = users;
       callback();
     });

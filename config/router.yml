@@ -7,6 +7,9 @@ router:
       "/member{hid}":
         hid: /\d+/
 
+    admin.core.user_lookup:
+     "/user_lookup": ~
+
     admin.users.usergroups.index:
       "/usergroups": ~
 
