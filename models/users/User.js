@@ -85,19 +85,28 @@ module.exports = function (N, collectionName) {
 
 
   // FIXME: make denormalisation customizeable
+  //
+  // Update full name, on dependencies change (nick /first name / last name)
+  //
   User.pre('save', function (callback) {
-    if (!!this.first_name && !!this.last_name) {
-      this.name = this.first_name +
-        ' (' + this.nick + ') ' + this.last_name;
+
+    // skip, if nothing changed
+    if (this.isModified('nick') || this.isModified('first_name') || this.isModified('last_name')) {
+      if (!!this.first_name && !!this.last_name) {
+        this.name = this.first_name + ' (' + this.nick + ') ' + this.last_name;
+      }
+      else {
+        this.name = this.nick;
+      }
     }
-    else {
-      this.name = this.nick;
-    }
+
     callback();
   });
 
-  // Set 'hid' for the new user.
-  // This hook should always be the last one to avoid counter increment on error
+
+  // Set 'hid' for the new user. This hook should always be
+  // the last one to avoid counter increment on error
+  //
   User.pre('save', function (callback) {
     if (!this.isNew) {
       callback();
@@ -114,6 +123,7 @@ module.exports = function (N, collectionName) {
       callback();
     });
   });
+
 
   N.wire.on("init:models", function emit_init_User(__, callback) {
     N.wire.emit("init:models." + collectionName, User, callback);
