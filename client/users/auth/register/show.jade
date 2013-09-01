@@ -1,47 +1,45 @@
 #content.row
-  .span8.offset2.well.well-form
-    form.form-horizontal(data-on-submit='users.auth.register.exec')
+  .col-sm-8.col-sm-offset-2
+    .panel.panel-default
 
-      legend
-        small.pull-right: a(href=self.link_to('users.auth.login.show')) #{self.t('login')}
+      .panel-heading.h3
+        .h3.pull-right: small: a(href=self.link_to('users.auth.login.show')) #{self.t('login')}
         | #{self.head.title}
 
-      // ko with: email
-      .control-group(data-bind='css: css')
-        label.control-label(for='register_email') #{self.t('email')}
-        .controls
-          .row-fluid
-            input.span12(id='register_email', name='email', type='email', data-bind='value: value')
+      form.panel-body.form-horizontal(data-on-submit='users.auth.register.exec')
+        // ko with: email
+        .form-group(data-bind='css: css')
+          label.control-label.col-md-3(for='register_email') #{self.t('email')}
+          .col-md-9
+            input.form-control(id='register_email', name='email', type='email', data-bind='value: value')
             span.help-block(data-bind='text: help')
-      // /ko
+        // /ko
 
-      // ko with: pass
-      .control-group(data-bind='css: css')
-        label.control-label(for='register_pass') #{self.t('pass')}
-        .controls
-          .row-fluid
-            input.span12(id='register_pass', name='pass', type='password', data-bind='value: value')
+        // ko with: pass
+        .form-group(data-bind='css: css')
+          label.control-label.col-md-3(for='register_pass') #{self.t('pass')}
+          .col-md-9
+            input.form-control(id='register_pass', name='pass', type='password', data-bind='value: value')
             span.help-block(data-bind='text: help')
-      // /ko
+        // /ko
 
 
-      // ko with: nick
-      .control-group(data-bind='css: css')
-        label.control-label(for='register_nick') #{self.t('nick')}
-        .controls
-          .row-fluid
-            input.span12(
+        // ko with: nick
+        .form-group(data-bind='css: css')
+          label.control-label.col-md-3(for='register_nick') #{self.t('nick')}
+          .col-md-9
+            input.form-control(
               id='register_nick',
               name='nick',
               type='text',
               data-bind='value: value, valueUpdate: "afterkeydown"')
             span.help-block(data-bind='text: help')
-      // /ko
-              
-      // ko with: recaptcha_response_field
-      != self.partial('@common.blocks.recaptcha')
-      // /ko
+        // /ko
+                
+        // ko with: recaptcha_response_field
+        != self.partial('@common.blocks.recaptcha')
+        // /ko
 
-      .control-group
-        .controls
-          button.btn.btn-primary.btn-large(type='submit') #{self.t('register')}
+        .form-group
+          .col-md-9.col-md-offset-3
+            button.btn.btn-primary(type='submit') #{self.t('register')}

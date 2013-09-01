@@ -15,7 +15,7 @@ en-US:
       possible). Also, should have > 8 symbols.
     apply: Apply
 
-    password_changed: Your password is changed.
+    password_changed: Your password was changed.
 
   change_done_show:
-    message: Your password is changed.
+    message: Your password was changed.

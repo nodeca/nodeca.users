@@ -1,24 +1,26 @@
 #content.row
-  .span8.offset2.well.well-form
-    form.form-horizontal(data-on-submit='users.auth.reset_password.request_exec')
-      legend
-        small.pull-right: a(href=self.link_to('users.auth.login.show')) #{self.t('login')}
+  .col-sm-8.col-sm-offset-2
+    .panel.panel-default
+
+      .panel-heading.h3
+        .h3.pull-right: small: a(href=self.link_to('users.auth.login.show')) #{self.t('login')}
         | #{self.head.title}
 
-      .control-group(data-bind='visible: message', style='display: none')
-        .controls
-          p.text-error(data-bind='text: message')
+      form.panel-body.form-horizontal(data-on-submit='users.auth.reset_password.request_exec')
 
-      .control-group
-        label.control-label(for='reset_password_email') #{self.t('email')}
-        .controls
-          .row-fluid
-            input.span12(id='reset_password_email', name='email', type='text')
+        .form-group(data-bind='visible: message', style='display: none')
+          .col-md-9.col-md-offset-3
+            p.text-danger(data-bind='text: message')
 
-      // ko with: recaptcha_response_field
-      != self.partial('@common.blocks.recaptcha')
-      // /ko
+        .form-group
+          label.control-label.col-md-3(for='reset_password_email') #{self.t('email')}
+          .col-md-9
+            input.form-control(id='reset_password_email', name='email', type='text')
 
-      .control-group
-        .controls
-          button.btn.btn-primary.btn-large(type='submit') #{self.t('reset_password')}
+        // ko with: recaptcha_response_field
+        != self.partial('@common.blocks.recaptcha')
+        // /ko
+
+        .form-group
+          .col-md-9.col-md-offset-3
+            button.btn.btn-primary(type='submit') #{self.t('reset_password')}

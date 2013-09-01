@@ -1,20 +1,24 @@
 #content.row
-  .span8.offset2.well.well-form
-    unless self.valid_token
-      = self.t('invalid_token')
-    else
-      form.form-horizontal(data-on-submit='users.auth.reset_password.change_exec')
-        input(type='hidden', name='secret_key', value=self.secret_key)
+  unless self.valid_token
+    .col-sm-8.col-sm-offset-2.col-lg-6.col-lg-offset-3
+      .panel.panel-default
+        .panel-body
+          = self.t('invalid_token')
+  else
+    .col-sm-8.col-sm-offset-2
+      .panel.panel-default
 
-        legend #{self.head.title}
+        .panel-heading.h3 #{self.head.title}
 
-        .control-group(data-bind='css: status')
-          label.control-label(for='reset_password_new_password') #{self.t('new_password')}
-          .controls
-            .row-fluid
-              input.span12(id='reset_password_new_password', name='new_password', type='password')
-              span.span12.help-block #{self.t('new_password_help')}
+        form.panel-body.form-horizontal(data-on-submit='users.auth.reset_password.change_exec')
+          input(type='hidden', name='secret_key', value=self.secret_key)
 
-        .control-group
-          .controls
-            button.btn.btn-primary.btn-large(type='submit') #{self.t('apply')}
+          .form-group(data-bind='css: status')
+            label.control-label.col-md-3(for='reset_password_new_password') #{self.t('new_password')}
+            .col-md-9
+              input.form-control(id='reset_password_new_password', name='new_password', type='password')
+              span.help-block #{self.t('new_password_help')}
+
+          .form-group
+            .col-md-9.col-md-offset-3
+              button.btn.btn-primary(type='submit') #{self.t('apply')}

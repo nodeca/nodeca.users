@@ -1,6 +1,8 @@
 #content.row
-  .span8.offset2.well.well-message
-    if self.success
-      = self.t('message_success')
-    else
-      = self.t('message_invalid_token')
+  .col-sm-8.col-sm-offset-2.col-lg-6.col-lg-offset-3
+    .panel.panel-default
+      .panel-body
+        if self.success
+          = self.t('message_success')
+        else
+          = self.t('message_invalid_token')

@@ -1,39 +1,40 @@
 #content.row
-  .span8.offset2.well.well-form
-    form.form-horizontal(data-on-submit='users.auth.login.plain_exec')
-      legend
-        small.pull-right: a(href=self.link_to('users.auth.register.show')) #{self.t('register')}
+  .col-sm-8.col-sm-offset-2
+    .panel.panel-default
+
+      .panel-heading.h3
+        .h3.pull-right: small: a(href=self.link_to('users.auth.register.show')) #{self.t('register')}
         | #{self.t('title')}
 
-      //- This is showed on errors only.
-      .control-group(data-bind='visible: message', style='display: none')
-        .controls
-          p.text-error(data-bind='text: message')
+      form.panel-body.form-horizontal(data-on-submit='users.auth.login.plain_exec')
 
-      .control-group
-        label.control-label(for='login_email_or_nick') #{self.t('email')}
-        .controls
-          .row-fluid
-            input.span12(id='login_email_or_nick', name='email_or_nick', type='text')
+        //- This is showed on errors only.
+        .form-group(data-bind='visible: message', style='display: none')
+          .col-md-9.col-md-offset-3
+            p.text-danger(data-bind='text: message')
 
-      .control-group
-        label.control-label(for='login_pass') #{self.t('password')}
-        .controls
-          .row-fluid
-            input.span12(id='login_pass', name='pass', type='password')
+        .form-group
+          label.control-label.col-md-3(for='login_email_or_nick') #{self.t('email')}
+          .col-md-9
+            input.form-control(id='login_email_or_nick', name='email_or_nick', type='text')
 
-      //- Captcha is showed only when rate limit reached or there was a captcha
-      //- error in previous request.
-      - self.add_raw_data('captcha_required', self.captcha_required)
+        .form-group
+          label.control-label.col-md-3(for='login_pass') #{self.t('password')}
+          .col-md-9
+            input.form-control(id='login_pass', name='pass', type='password')
 
-      // ko with: recaptcha_response_field
-      != self.partial('@common.blocks.recaptcha')
-      // /ko
+        //- Captcha is showed only when rate limit reached or there was a captcha
+        //- error in previous request.
+        - self.add_raw_data('captcha_required', self.captcha_required)
 
-      .control-group
-        .controls
-          button.btn.btn-primary.btn-large(type='submit')
-            | #{self.t('enter')}
+        // ko with: recaptcha_response_field
+        != self.partial('@common.blocks.recaptcha')
+        // /ko
 
-          a.btn.btn-link.btn-large(href=self.link_to('users.auth.reset_password.request_show'))
-            | #{self.t('forgot')}
+        .form-group
+          .col-md-9.col-md-offset-3
+            button.btn.btn-primary(type='submit')
+              | #{self.t('enter')}
+
+            a.btn.btn-link(href=self.link_to('users.auth.reset_password.request_show'))
+              | #{self.t('forgot')}
