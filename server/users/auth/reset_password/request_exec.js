@@ -17,7 +17,7 @@ module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, function (env, callback) {
     var privateKey = N.config.options.recaptcha.private_key
-      , clientIp   = env.request.ip
+      , clientIp   = env.req.ip
       , challenge  = env.params.recaptcha_challenge_field
       , response   = env.params.recaptcha_response_field;
 
