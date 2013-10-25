@@ -37,6 +37,11 @@ module.exports = function (N, apiPath) {
         return;
       }
 
+      // sanitize user info for guests: show nick instead of user name
+      if (env.user_info.is_guest) {
+        user.name = user.nick;
+      }
+
       env.res.user = user;
       callback();
     });
