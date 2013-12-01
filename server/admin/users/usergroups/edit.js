@@ -16,7 +16,7 @@ module.exports = function (N, apiPath) {
     var res = env.res;
 
     // Fill Default settings and their configuration
-    res.setting_schemas = N.config.setting_schemas['usergroup'] || {};
+    res.setting_schemas = N.config.setting_schemas.usergroup || {};
 
     // We always fetch all groups, to calculate inreritances on client
     N.models.users.UserGroup

@@ -122,11 +122,11 @@ module.exports = function (N, collectionName) {
   });
 
 
-  N.wire.on("init:models", function emit_init_AuthLink(__, callback) {
-    N.wire.emit("init:models." + collectionName, AuthLink, callback);
+  N.wire.on('init:models', function emit_init_AuthLink(__, callback) {
+    N.wire.emit('init:models.' + collectionName, AuthLink, callback);
   });
 
-  N.wire.on("init:models." + collectionName, function init_model_AuthLink(schema) {
+  N.wire.on('init:models.' + collectionName, function init_model_AuthLink(schema) {
     N.models[collectionName] = Mongoose.model(collectionName, schema);
   });
 };

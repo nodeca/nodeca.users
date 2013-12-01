@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var async = require('async');
 
@@ -21,7 +21,7 @@ module.exports = function (N, cb) {
           user.hid = 1;
           user.nick = 'admin';
           user.email = 'admin@localhost';
-          user.joined_ts = new Date;
+          user.joined_ts = new Date();
           user.post_count = 1;
           user.usergroups = [group];
 

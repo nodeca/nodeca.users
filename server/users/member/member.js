@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     hid: {
-      type: "integer",
+      type: 'integer',
       minimum: 1,
       required: true
     }

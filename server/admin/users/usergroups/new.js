@@ -13,7 +13,7 @@ module.exports = function (N, apiPath) {
     res.head.title = env.t('title');
 
     // Fill Default settings and their configuration
-    res.setting_schemas = N.config.setting_schemas['usergroup'] || {};
+    res.setting_schemas = N.config.setting_schemas.usergroup || {};
 
     // Fetch real values from groups
     // We always fetch all groups, to calculate inreritances on client

@@ -122,7 +122,7 @@ module.exports.run = function (N, args, callback) {
 
           user = new User({
             nick: args.user,
-            joined_ts: new Date
+            joined_ts: new Date()
           });
 
           user.save(function (err) {
@@ -183,7 +183,7 @@ module.exports.run = function (N, args, callback) {
       }
     ], function (err) {
       if (err) {
-        callback("User creation error: " + String(err.message || err));
+        callback('User creation error: ' + String(err.message || err));
         return;
       }
 

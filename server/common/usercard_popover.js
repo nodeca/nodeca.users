@@ -1,6 +1,6 @@
 // fetch user info, for popover (rpc only)
 //
-"use strict";
+'use strict';
 
 
 var user_in_fields = [

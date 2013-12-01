@@ -41,11 +41,11 @@ module.exports = function (N, collectionName) {
   };
 
 
-  N.wire.on("init:models", function emit_init_TokenResetPassword(__, callback) {
-    N.wire.emit("init:models." + collectionName, TokenResetPassword, callback);
+  N.wire.on('init:models', function emit_init_TokenResetPassword(__, callback) {
+    N.wire.emit('init:models.' + collectionName, TokenResetPassword, callback);
   });
 
-  N.wire.on("init:models." + collectionName, function init_model_TokenResetPassword(schema) {
+  N.wire.on('init:models.' + collectionName, function init_model_TokenResetPassword(schema) {
     N.models[collectionName] = Mongoose.model(collectionName, schema);
   });
 };
