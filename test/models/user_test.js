@@ -1,13 +1,13 @@
 'use strict';
 
 
-/*global N, describe, it*/
+/*global describe, it*/
 
 
 var expect = require('chai').expect;
 
 
-var User = N.models.users.User;
+var User = global.TEST_N.models.users.User;
 
 
 describe('User', function () {
