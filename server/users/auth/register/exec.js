@@ -13,34 +13,28 @@ var sendActivationEmail = require('./_lib/send_activation_email');
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
-    email: { type: 'string', required: true }
-  , pass:  { type: 'string', required: true }
-  , nick:  { type: 'string', required: true }
-  , recaptcha_challenge_field: { type: 'string' }
-  , recaptcha_response_field:  { type: 'string' }
-  });
-
-
-  N.wire.before(apiPath, function find_validating_group_id(env, callback) {
-    N.models.users.UserGroup.findIdByName('validating', function(err, id) {
-      env.data.validatingGroupId = id;
-      callback(err);
-    });
+    // `required` specially set to false, because values are checked later
+    // to show errors in regustration form.
+    email: { type: 'string', required: false }
+  , pass:  { type: 'string', required: false }
+  , nick:  { type: 'string', required: false }
+  , recaptcha_challenge_field: { type: 'string', required: false }
+  , recaptcha_response_field:  { type: 'string', required: false }
   });
 
 
   N.wire.before(apiPath, function prepare_env_data(env) {
-    env.data.errors = {};
+    env.data.errors = env.data.errors || {};
   });
 
 
-  N.wire.on(apiPath, function validate_params(env) {
+  N.wire.before(apiPath, function validate_params(env) {
     var report = revalidator.validate(env.params, {
       type: 'object'
     , properties: {
-        email: { format: 'email'                               }
-      , pass:  { conform: N.models.users.User.validatePassword }
-      , nick:  { conform: N.models.users.User.validateNick     }
+        email: { format: 'email',                               required: true }
+      , pass:  { conform: N.models.users.User.validatePassword, required: true }
+      , nick:  { conform: N.models.users.User.validateNick,     required: true }
       }
     });
 
@@ -49,11 +43,14 @@ module.exports = function (N, apiPath) {
         // Don't customize form text, just highlight the field.
         env.data.errors[error.property] = null;
       });
+
+      // terminate
+      return { code: N.io.CLIENT_ERROR, data: env.data.errors };
     }
   });
 
 
-  N.wire.on(apiPath, function check_email_uniqueness(env, callback) {
+  N.wire.before(apiPath, function check_email_uniqueness(env, callback) {
     N.models.users.AuthLink
         .findOne({ 'providers.email': env.params.email, 'providers.type': 'plain' })
         .select('_id')
@@ -74,7 +71,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function check_nick_uniqueness(env, callback) {
+  N.wire.before(apiPath, function check_nick_uniqueness(env, callback) {
     N.models.users.User
         .findOne({ 'nick': env.params.nick })
         .select('_id')
@@ -95,7 +92,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function validate_recaptcha(env, callback) {
+  N.wire.before(apiPath, function validate_recaptcha(env, callback) {
     if (!_.isEmpty(env.data.errors)) {
       // Skip if some other fields are incorrect in order to not change
       // captcha words and not annoy the user by forcing him to retype.
@@ -118,6 +115,14 @@ module.exports = function (N, apiPath) {
   });
 
 
+  N.wire.before(apiPath, function find_validating_group_id(env, callback) {
+    N.models.users.UserGroup.findIdByName('validating', function(err, id) {
+      env.data.validatingGroupId = id;
+      callback(err);
+    });
+  });
+
+
   N.wire.on(apiPath, function register(env, callback) {
     env.res.head.title = env.t('title');
 
@@ -133,14 +138,7 @@ module.exports = function (N, apiPath) {
       }
 
       // Find highest user hid. (plain number)
-      N.models.users.User
-          .find()
-          .select('hid')
-          .sort('-hid')
-          .limit(1)
-          .setOptions({ lean: true })
-          .exec(function (err, lastUser) {
-
+      N.models.core.Increment.next('user', function (err, newUserHid) {
         if (err) {
           callback(err);
           return;
@@ -148,7 +146,7 @@ module.exports = function (N, apiPath) {
 
         var user = new N.models.users.User();
 
-        user.hid         = _.isEmpty(lastUser) ? 1 : lastUser[0].hid + 1;
+        user.hid         = newUserHid;
         user.nick       = env.params.nick;
         user.usergroups = [ groupId ];
         user.joined_ip  = env.req.ip;

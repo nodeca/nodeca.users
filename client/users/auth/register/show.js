@@ -57,7 +57,7 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
         return false;
       }
 
-      self.css(res.error ? 'error' : 'success');
+      self.css(res.error ? 'has-error' : '');
       self.message(res.message);
     });
   }, CHECK_NICK_DELAY), view.nick);
@@ -85,7 +85,7 @@ N.wire.on('users.auth.register.exec', function register(event) {
     if (err && N.io.CLIENT_ERROR === err.code) {
       // Update classes and messages on all input fields.
       _.forEach(view, function (field, name) {
-        field.css(_.has(err.data, name) ? 'error' : '');
+        field.css(_.has(err.data, name) ? 'has-error' : '');
         field.message(err.data[name]);
       });
 
