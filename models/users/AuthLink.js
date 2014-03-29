@@ -18,7 +18,7 @@
 
 var Mongoose = require('mongoose');
 var Schema   = Mongoose.Schema;
-var bcrypt   = require('bcrypt');
+var password = require('./_lib/password');
 
 
 module.exports = function (N, collectionName) {
@@ -79,11 +79,11 @@ module.exports = function (N, collectionName) {
    *
    * Generate password hash and put in property
    **/
-  AuthProvider.methods.setPass = function (password) {
+  AuthProvider.methods.setPass = function (pass) {
     if (this.type !== 'plain') {
       return false;
     }
-    this.pass = bcrypt.hashSync(password, 10);
+    this.pass = password.hash(pass);
   };
 
 
@@ -93,11 +93,11 @@ module.exports = function (N, collectionName) {
    *
    * Compare word with stored password
    **/
-  AuthProvider.methods.checkPass = function (password) {
+  AuthProvider.methods.checkPass = function (pass) {
     if (this.type !== 'plain') {
       return false;
     }
-    return bcrypt.compareSync(password, this.pass);
+    return password.check(pass, this.pass);
   };
 
 

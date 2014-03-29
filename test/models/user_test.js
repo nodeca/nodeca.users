@@ -4,7 +4,7 @@
 /*global describe, it*/
 
 
-var expect = require('chai').expect;
+var assert = require('assert');
 
 
 var User = global.TEST_N.models.users.User;
@@ -12,29 +12,45 @@ var User = global.TEST_N.models.users.User;
 
 describe('User', function () {
   describe('.validateNick()', function () {
-    it('should require nickname to have at least 3 chars', function () {
-      expect(User.validateNick('ab')).to.equal(false);
-      expect(User.validateNick('abc')).to.equal(true);
+    it('nickname must have at least 3 chars', function () {
+      assert.equal(User.validateNick('ab'), false);
+      assert.equal(User.validateNick('abc'), true);
     });
 
-    it('should allow only letters, digits, dashes and underscores', function () {
-      expect(User.validateNick('o.O')).to.equal(false);
-      expect(User.validateNick('-O_0-')).to.equal(true);
+    it('allow only letters, digits, dashes and underscores', function () {
+      assert.equal(User.validateNick('o.O'), false);
+      assert.equal(User.validateNick('-O_0-'), true);
     });
   });
 
   describe('.validatePassword()', function () {
-    it('should require password to have least 8 chars', function () {
-      expect(User.validatePassword('abcd123')).to.equal(false);
-      expect(User.validatePassword('abcd1234')).to.equal(true);
+    it('password must have least 8 chars', function () {
+      assert.equal(User.validatePassword('abcd123'), false);
+      assert.equal(User.validatePassword('abcd1234'), true);
     });
 
-    it('should require password to have at least one digit and one letter', function () {
-      expect(User.validatePassword('abcdefgh')).to.equal(false);
-      expect(User.validatePassword('abcdefg8')).to.equal(true);
+    it('password must have at least one digit and one letter', function () {
+      assert.equal(User.validatePassword('abcdefgh'), false);
+      assert.equal(User.validatePassword('abcdefg8'), true);
 
-      expect(User.validatePassword('12345678')).to.equal(false);
-      expect(User.validatePassword('1234567h')).to.equal(true);
+      assert.equal(User.validatePassword('12345678'), false);
+      assert.equal(User.validatePassword('1234567h'), true);
+    });
+  });
+
+  describe('Auth provider', function () {
+    it('"plain" provider set/check password', function () {
+      var authLink = new global.TEST_N.models.users.AuthLink();
+
+      var provider = authLink.providers.create({
+        type: 'plain',
+        email: '123@123.123.123'
+      });
+
+      var pass = 'Qwerty123';
+      provider.setPass(pass);
+
+      assert.equal(provider.checkPass(pass), true);
     });
   });
 });
