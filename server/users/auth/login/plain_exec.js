@@ -216,21 +216,38 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.on(apiPath, function (env, callback) {
-    if (!env.data.user     ||
-        !env.data.provider ||
-        !env.data.provider.checkPass(env.params.pass)) {
-
+    // user not found or doesn't have authlink record for plain login
+    if (!env.data.user || !env.data.provider) {
       updateRateLimits(env.req.ip);
       callback({
-        code:    N.io.CLIENT_ERROR
-      , message: env.t('login_failed')
-      , fields:  ['email_or_nick', 'pass']
-      , captcha: env.data.captcha_required
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('login_failed'),
+        fields:  ['email_or_nick', 'pass'],
+        captcha: env.data.captcha_required
       });
       return;
     }
 
-    // Apply login.
-    N.wire.emit('internal:users.login', env, callback);
+    env.data.provider.checkPass(env.params.pass, function(err, success) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      // password mismatch
+      if (!success) {
+        updateRateLimits(env.req.ip);
+        callback({
+          code:    N.io.CLIENT_ERROR
+        , message: env.t('login_failed')
+        , fields:  ['email_or_nick', 'pass']
+        , captcha: env.data.captcha_required
+        });
+        return;
+      }
+
+      // Apply login.
+      N.wire.emit('internal:users.login', env, callback);
+    });
   });
 };
