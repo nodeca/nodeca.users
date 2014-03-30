@@ -36,12 +36,17 @@ module.exports = function (N, cb) {
         'email': 'admin@example.com'
       });
 
-      provider.setPass('admin');
+      provider.setPass('admin', function (err) {
+        if (err) {
+          callback(err);
+          return;
+        }
 
-      auth.user_id = user._id;
-      auth.providers.push(provider);
+        auth.user_id = user._id;
+        auth.providers.push(provider);
 
-      auth.save(callback);
+        auth.save(callback);
+      });
     }
   ], cb);
 };

@@ -68,33 +68,38 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        provider.setPass(env.params.new_password);
-
-        // Remove current and all other password reset tokens for this provider.
-        N.models.users.TokenResetPassword.remove({
-          authprovider_id: provider._id
-        }, function (err) {
+        provider.setPass(env.params.new_password, function (err) {
           if (err) {
             callback(err);
             return;
           }
 
-          // Save new password.
-          authlink.save(function (err, authlink) {
+          // Remove current and all other password reset tokens for this provider.
+          N.models.users.TokenResetPassword.remove({
+            authprovider_id: provider._id
+          }, function (err) {
             if (err) {
               callback(err);
               return;
             }
 
-            // Auto login.
-            N.models.users.User.findById(authlink.user_id, function (err, user) {
+            // Save new password.
+            authlink.save(function (err, authlink) {
               if (err) {
                 callback(err);
                 return;
               }
 
-              env.data.user = user;
-              N.wire.emit('internal:users.login', env, callback);
+              // Auto login.
+              N.models.users.User.findById(authlink.user_id, function (err, user) {
+                if (err) {
+                  callback(err);
+                  return;
+                }
+
+                env.data.user = user;
+                N.wire.emit('internal:users.login', env, callback);
+              });
             });
           });
         });

@@ -39,7 +39,7 @@ describe('User', function () {
   });
 
   describe('Auth provider', function () {
-    it('"plain" provider set/check password', function () {
+    it('"plain" provider set/check password', function (done) {
       var authLink = new global.TEST_N.models.users.AuthLink();
 
       var provider = authLink.providers.create({
@@ -48,9 +48,14 @@ describe('User', function () {
       });
 
       var pass = 'Qwerty123';
-      provider.setPass(pass);
-
-      assert.equal(provider.checkPass(pass), true);
+      provider.setPass(pass, function (err) {
+        if (err) { return done(err); }
+        provider.checkPass(pass, function (err, ok) {
+          if (err) { return done(err); }
+          assert.equal(ok, true);
+          done();
+        });
+      });
     });
   });
 });

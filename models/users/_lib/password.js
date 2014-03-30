@@ -2,25 +2,26 @@
 
 var crypto   = require('crypto');
 
-// TODO: change to crypto pbkdf2-sha256 when node 0.12 released,
+// TODO: change to async crypto pbkdf2-sha256 when node 0.12 released,
 // and increase iterations to ~200000.
 var pbkdf2   = require('pbkdf2-sha256');
 var iterations = 10000;
 
-exports.hash = function setPassword(pass) {
+exports.hash = function generateHash(pass, callback) {
   var salt = crypto.randomBytes(16);
-  var hash  = pbkdf2(new Buffer(pass), salt, iterations, 32);
+  var res  = pbkdf2(new Buffer(pass), salt, iterations, 32);
 
-  return  '$pbkdf2sha256' +
-          '$' + iterations +
-          '$' + salt.toString('base64') +
-          '$' + hash.toString('base64');
+  callback(null,  '$pbkdf2sha256' +
+                  '$' + iterations +
+                  '$' + salt.toString('base64') +
+                  '$' + res.toString('base64'));
 };
 
-exports.check = function checkPassword(pass, hash) {
+exports.check = function checkPassword(pass, hash, callback) {
   if (!pass) {
     // empty password always fail
-    return false;
+    callback(null, false);
+    return;
   }
 
   var parts = hash.split('$');
@@ -31,5 +32,5 @@ exports.check = function checkPassword(pass, hash) {
   var test = parts[3];
   var keyLen = (new Buffer(test, 'base64')).length;
 
-  return test === pbkdf2(new Buffer(pass), salt, itCount, keyLen).toString('base64');
+  callback(null, test === pbkdf2(new Buffer(pass), salt, itCount, keyLen).toString('base64'));
 };

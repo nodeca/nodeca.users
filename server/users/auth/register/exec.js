@@ -167,42 +167,48 @@ module.exports = function (N, apiPath) {
             type: 'plain'
           , email: env.params.email
           });
-          provider.setPass(env.params.pass);
 
-          authlink.providers.push(provider);
-          authlink.save(function (err) {
+          provider.setPass(env.params.pass, function (err) {
             if (err) {
-              user.remove(callback); // Can't create authlink - delete the user.
+              user.remove(callback); // Can't fill hash - delete the user.
               return;
             }
 
-            // Auto log-in to the new account.
-            env.data.user = user;
-            N.wire.emit('internal:users.login', env, function (err) {
+            authlink.providers.push(provider);
+            authlink.save(function (err) {
               if (err) {
-                callback(err);
+                user.remove(callback); // Can't create authlink - delete the user.
                 return;
               }
 
-              // If the user is in 'validating' group according to global settings, 
-              // send activation token by email.
-              if (env.data.validatingGroupId.equals(groupId)) {
-                env.res.redirect_url = N.runtime.router.linkTo('users.auth.register.done_show');
-
-                N.models.users.TokenActivationEmail.create({ user_id: user._id }, function (err, token) {
-                  if (err) {
-                    callback(err);
-                    return;
-                  }
-
-                  sendActivationEmail(N, env, provider.email, token, callback);
+              // Auto log-in to the new account.
+              env.data.user = user;
+              N.wire.emit('internal:users.login', env, function (err) {
+                if (err) {
+                  callback(err);
                   return;
-                });
-              } else {
-                env.res.redirect_url = N.runtime.router.linkTo('users.profile');
-                callback();
-                return;
-              }
+                }
+
+                // If the user is in 'validating' group according to global settings, 
+                // send activation token by email.
+                if (env.data.validatingGroupId.equals(groupId)) {
+                  env.res.redirect_url = N.runtime.router.linkTo('users.auth.register.done_show');
+
+                  N.models.users.TokenActivationEmail.create({ user_id: user._id }, function (err, token) {
+                    if (err) {
+                      callback(err);
+                      return;
+                    }
+
+                    sendActivationEmail(N, env, provider.email, token, callback);
+                    return;
+                  });
+                } else {
+                  env.res.redirect_url = N.runtime.router.linkTo('users.profile');
+                  callback();
+                  return;
+                }
+              });
             });
           });
         });

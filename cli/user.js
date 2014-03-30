@@ -136,26 +136,33 @@ module.exports.run = function (N, args, callback) {
             , 'email': args.email
             });
 
-            provider.setPass(args.pass);
+            provider.setPass(args.pass, function (err) {
+              if (err) {
+                next(err);
+                return;
+              }
 
-            auth.user_id = user._id;
-            auth.providers.push(provider);
+              auth.user_id = user._id;
+              auth.providers.push(provider);
 
-            auth.save(next);
+              auth.save(next);
+            });
           });
-        } else {
-          User.findOne({nick: args.user}).exec(function (err, doc) {
-            if (err) {
-              next(err);
-              return;
-            }
-            if (!user) {
-              next('User not found, check name or use `add`');
-            }
-            user = doc;
-            next();
-          });
+
+          return;
         }
+
+        User.findOne({nick: args.user}).exec(function (err, doc) {
+          if (err) {
+            next(err);
+            return;
+          }
+          if (!user) {
+            next('User not found, check name or use `add`');
+          }
+          user = doc;
+          next();
+        });
       }
 
       // update groups

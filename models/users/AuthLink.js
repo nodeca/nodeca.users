@@ -79,11 +79,16 @@ module.exports = function (N, collectionName) {
    *
    * Generate password hash and put in property
    **/
-  AuthProvider.methods.setPass = function (pass) {
+  AuthProvider.methods.setPass = function (pass, callback) {
     if (this.type !== 'plain') {
-      return false;
+      callback(new Error('Can\'t set password for non plain peovider'));
+      return;
     }
-    this.pass = password.hash(pass);
+    var self = this;
+    password.hash(pass, function(err, hash) {
+      self.pass = hash;
+      callback();
+    });
   };
 
 
@@ -93,11 +98,12 @@ module.exports = function (N, collectionName) {
    *
    * Compare word with stored password
    **/
-  AuthProvider.methods.checkPass = function (pass) {
+  AuthProvider.methods.checkPass = function (pass, callback) {
     if (this.type !== 'plain') {
-      return false;
+      callback(new Error('Can\'t set password for non plain peovider'));
+      return;
     }
-    return password.check(pass, this.pass);
+    password.check(pass, this.pass, callback);
   };
 
 
