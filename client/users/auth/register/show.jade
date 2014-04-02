@@ -2,9 +2,9 @@
   .col-sm-8.col-sm-offset-2
     .panel.panel-default
 
-      .panel-heading.h3
-        .h3.pull-right: small: a(href=self.link_to('users.auth.login.show')) #{self.t('login')}
-        | #{self.head.title}
+      .panel-heading
+        .panel-title #{self.head.title}
+          .pull-right: small: a(href=self.link_to('users.auth.login.show')) #{self.t('login')}
 
       form.panel-body.form-horizontal(data-on-submit='users.auth.register.exec')
         // ko with: email
@@ -35,7 +35,7 @@
               data-bind='value: value, valueUpdate: "afterkeydown"')
             span.help-block(data-bind='text: help')
         // /ko
-                
+
         // ko with: recaptcha_response_field
         != self.partial('@common.blocks.recaptcha')
         // /ko

@@ -2,9 +2,9 @@
   .col-sm-8.col-sm-offset-2
     .panel.panel-default
 
-      .panel-heading.h3
-        .h3.pull-right: small: a(href=self.link_to('users.auth.register.show')) #{self.t('register')}
-        | #{self.t('title')}
+      .panel-heading
+        .panel-title #{self.t('title')}
+          .pull-right: small: a(href=self.link_to('users.auth.register.show')) #{self.t('register')}
 
       form.panel-body.form-horizontal(data-on-submit='users.auth.login.plain_exec')
 

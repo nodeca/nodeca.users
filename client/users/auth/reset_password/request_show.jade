@@ -2,9 +2,9 @@
   .col-sm-8.col-sm-offset-2
     .panel.panel-default
 
-      .panel-heading.h3
-        .h3.pull-right: small: a(href=self.link_to('users.auth.login.show')) #{self.t('login')}
-        | #{self.head.title}
+      .panel-heading
+        .panel-title #{self.head.title}
+          .pull-right: small: a(href=self.link_to('users.auth.login.show')) #{self.t('login')}
 
       form.panel-body.form-horizontal(data-on-submit='users.auth.reset_password.request_exec')
 

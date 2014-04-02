@@ -7,8 +7,8 @@
   else
     .col-sm-8.col-sm-offset-2
       .panel.panel-default
-
-        .panel-heading.h3 #{self.head.title}
+        .panel-heading
+          .panel-title #{self.head.title}
 
         form.panel-body.form-horizontal(data-on-submit='users.auth.reset_password.change_exec')
           input(type='hidden', name='secret_key', value=self.secret_key)
