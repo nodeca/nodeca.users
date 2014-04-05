@@ -4,9 +4,9 @@
 'use strict';
 
 
-module.exports = function (N) {
+module.exports = function (N, apiPath) {
 
-  N.wire.on('internal:users.login', function (env) {
+  N.wire.on(apiPath, function (env) {
 
     // delete old session (don't wait until compleete)
     if (env.session_id) {

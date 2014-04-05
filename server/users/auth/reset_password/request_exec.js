@@ -15,6 +15,12 @@ module.exports = function (N, apiPath) {
   , recaptcha_response_field:  { type: 'string', required: true }
   });
 
+
+  N.wire.before(apiPath, function rquest_pass_guest_only(env, callback) {
+    N.wire.emit('internal:users.redirect_not_guest', env, callback);
+  });
+
+
   N.wire.on(apiPath, function (env, callback) {
     var privateKey = N.config.options.recaptcha.private_key
       , clientIp   = env.req.ip

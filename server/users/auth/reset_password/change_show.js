@@ -9,6 +9,12 @@ module.exports = function (N, apiPath) {
     secret_key: { type: 'string', required: true }
   });
 
+
+  N.wire.before(apiPath, function change_pass_guest_only(env, callback) {
+    N.wire.emit('internal:users.redirect_not_guest', env, callback);
+  });
+
+
   N.wire.on(apiPath, function (env, callback) {
     env.res.head.title = env.t('title');
     env.res.secret_key = env.params.secret_key;

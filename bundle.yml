@@ -72,5 +72,9 @@ packages:
       include: server/users/**.js
       exclude: /(^|\/|\\)_.*/
 
+    internal:
+      include: internal/users/**.js
+      exclude: /(^|\/|\\)_.*/
+
     i18n_server:
       include: server/users/**i18n/*.yml

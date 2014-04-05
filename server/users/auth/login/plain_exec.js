@@ -28,6 +28,11 @@ module.exports = function (N, apiPath) {
   }
 
 
+  N.wire.before(apiPath, function login_guest_only(env, callback) {
+    N.wire.emit('internal:users.redirect_not_guest', env, callback);
+  });
+
+
   // If there is neither email_or_nick or pass - stop before database queries.
   //
   N.wire.before(apiPath, { priority: -15 }, function check_params(env) {

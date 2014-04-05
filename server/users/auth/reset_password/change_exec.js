@@ -13,6 +13,12 @@ module.exports = function (N, apiPath) {
   , new_password: { type: 'string', required: true }
   });
 
+
+  N.wire.before(apiPath, function change_pass_guest_only(env, callback) {
+    N.wire.emit('internal:users.redirect_not_guest', env, callback);
+  });
+
+
   N.wire.on(apiPath, function (env, callback) {
     if (!N.models.users.User.validatePassword(env.params.new_password)) {
       callback({
