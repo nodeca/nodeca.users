@@ -9,7 +9,7 @@
         - if (self.settings.can_access_acp)
           li: a(href=self.link_to('admin.core.dashboard'), target='_blank')= self.t('admin')
         li.divider
-        li: a(data-on-click='users.auth.logout')= self.t('logout')
+        li: a(href='#', data-on-click='users.auth.logout')= self.t('logout')
 - else
   ul.nav.navbar-nav.navbar-right
     li(data-api-path='users.auth.login')

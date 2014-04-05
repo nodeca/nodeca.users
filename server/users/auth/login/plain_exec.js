@@ -13,8 +13,8 @@ module.exports = function (N, apiPath) {
 
 
   N.validate(apiPath, {
-    email_or_nick: { type: 'string', required: true }
-  , pass:          { type: 'string', required: true }
+    email_or_nick: { type: 'string' }
+  , pass:          { type: 'string' }
   , recaptcha_challenge_field: { type: 'string', 'default': '' }
   , recaptcha_response_field:  { type: 'string', 'default': '' }
   });
