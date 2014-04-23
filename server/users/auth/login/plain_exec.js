@@ -12,6 +12,7 @@ module.exports = function (N, apiPath) {
   var rateLimit = require('./_rate_limit')(N);
 
 
+  // Don't set "required" flag, to manually fill
   N.validate(apiPath, {
     email_or_nick: { type: 'string' }
   , pass:          { type: 'string' }
@@ -35,7 +36,7 @@ module.exports = function (N, apiPath) {
 
   // If there is neither email_or_nick or pass - stop before database queries.
   //
-  N.wire.before(apiPath, { priority: -15 }, function check_params(env) {
+  N.wire.before(apiPath, function check_params(env) {
     if (_.isEmpty(env.params.email_or_nick) ||
         _.isEmpty(env.params.pass)) {
       return {
@@ -52,7 +53,7 @@ module.exports = function (N, apiPath) {
   // That can cause too hight CPU use in bcrypt.
   // Do soft limit - ask user to enter captcha to make sure he is not a bot.
   //
-  N.wire.before(apiPath, { priority: -10 }, function check_total_rate_limit(env, callback) {
+  N.wire.before(apiPath, function check_total_rate_limit(env, callback) {
     rateLimit.total.check(function (err, isExceeded) {
       if (err) {
         callback(err);
@@ -103,7 +104,7 @@ module.exports = function (N, apiPath) {
   // Check for too many invalid logins (5 attempts / 300 seconds) from single IP
   // Do hard limit - ask user to wait 5 minutes.
   //
-  N.wire.before(apiPath, { priority: -10 }, function check_ip_rate_limit(env, callback) {
+  N.wire.before(apiPath, function check_ip_rate_limit(env, callback) {
     rateLimit.ip.check(env.req.ip, function (err, isExceeded) {
       if (err) {
         callback(err);
@@ -128,7 +129,7 @@ module.exports = function (N, apiPath) {
 
   // Try to find auth data using `email_or_nick` as an email.
   //
-  N.wire.before(apiPath, { priority: -5 }, function find_authlink_by_email(env, callback) {
+  N.wire.on(apiPath, function find_authlink_by_email(env, callback) {
     if (env.data.user && env.data.provider) {
       callback();
       return;
@@ -177,7 +178,7 @@ module.exports = function (N, apiPath) {
 
   // Try to find auth data using `email_or_nick` as a nick.
   //
-  N.wire.before(apiPath, { priority: -5 }, function find_authlink_by_nick(env, callback) {
+  N.wire.on(apiPath, function find_authlink_by_nick(env, callback) {
     if (env.data.user && env.data.provider) {
       callback();
       return;
