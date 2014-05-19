@@ -5,7 +5,9 @@ router:
 
     users.member:
       "/member{hid}":
-        hid: /\d+/
+        hid:
+          match: /\d+/
+          type: 'integer'
 
     admin.core.user_lookup:
      "/user_lookup": ~
@@ -18,7 +20,7 @@ router:
 
     admin.users.usergroups.edit:
       "/usergroups/edit/{_id}":
-        _id: /\w+/
+        _id: /[0-9a-f]{24}/
 
     admin.users.members.search:
       "/members/search": ~
