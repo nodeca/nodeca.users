@@ -4,6 +4,17 @@ menus:
       profile:
         to: users.profile
         priority: 10
+        submenu:
+          news:
+            to: users.profile
+          messages:
+            to: users.profile
+          albums:
+            to: users.profile
+          clubs:
+            to: users.profile
+          bookmarks:
+            to: users.profile
   admin:
     navbar:
       users:

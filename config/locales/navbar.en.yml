@@ -6,3 +6,8 @@ i18n:
       menus:
         navbar:
           profile: Profile
+          profile.news: News
+          profile.messages: Messages
+          profile.albums: Albums
+          profile.clubs: Clubs
+          profile.bookmarks: Bookmarks
