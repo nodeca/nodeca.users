@@ -1,0 +1,12 @@
+.modal.fade(tabindex='-1')
+  .modal-dialog
+    .modal-content
+      form(data-on-submit='users.blocks.albums_create_submit')
+        .modal-header
+          button.close( aria-hidden='true', type='button', data-dismiss='modal') &times;
+          h4.modal-title= self.t('title')
+        .modal-body
+          input#create-album__title.form-control(type='text', placeholder=self.t('input_name'))
+        .modal-footer
+          button.btn.btn-default(data-dismiss='modal')= self.t('cancel')
+          input.btn.btn-primary(type='submit', value=self.t('create'))

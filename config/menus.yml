@@ -10,7 +10,7 @@ menus:
           messages:
             to: users.profile
           albums:
-            to: users.profile
+            to: users.profile.albums_redirect
           clubs:
             to: users.profile
           bookmarks:

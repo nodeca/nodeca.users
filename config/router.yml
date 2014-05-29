@@ -9,8 +9,8 @@ router:
     #users.profile.messages:
     #  "/messages": ~
 
-    #users.profile.albums:
-    #  "/albums": ~
+    users.profile.albums_redirect:
+      "/albums": ~
 
     #users.profile.clubs:
     #  "/clubs": ~
@@ -23,6 +23,18 @@ router:
         hid:
           match: /\d+/
           type: 'integer'
+
+    users.member.albums:
+      "/member{member_hid}/albums(/{album_id})(/{all_photos})":
+        member_hid:
+          match: /\d+/
+          type: 'integer'
+        album_id:
+          match: /[0-9a-f]{24}/
+          default: ''
+        all_photos:
+          match: /all/
+          default: ''
 
     admin.core.user_lookup:
      "/user_lookup": ~

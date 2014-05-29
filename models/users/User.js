@@ -125,6 +125,22 @@ module.exports = function (N, collectionName) {
   });
 
 
+  // Creates default album for new user
+  //
+  User.pre('save', function (callback) {
+    if (!this.isNew) {
+      callback();
+      return;
+    }
+
+    var album = N.models.users.Album();
+    album.default = true;
+    // this._id generates automatically before first pre('save') call
+    album.user_id = this._id;
+    album.save(callback);
+  });
+
+
   N.wire.on('init:models', function emit_init_User(__, callback) {
     N.wire.emit('init:models.' + collectionName, User, callback);
   });

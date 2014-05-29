@@ -10,3 +10,8 @@
       a(href='#') Here
 
   h1= self.t('title')
+  each item in self.runtime.menus.common.navbar
+    if item.to == self.apiPath && item.childs
+      each child in item.childs
+        ul
+          li: a(href=child.link)= self.t(child.title)

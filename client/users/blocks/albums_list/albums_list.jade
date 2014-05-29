@@ -1,0 +1,23 @@
+- var editable = self.runtime.user_name == self.user_name
+.row
+  each album in self.albums
+    .col-md-3
+      .user-album
+        .user-album__image-wrapper
+          if editable && !album.default
+            a.update-album.btn.btn-default.btn-sm(href='#', data-_id=album._id, data-title=album.title)= self.t('edit')
+            a.destroy-album.btn.btn-default.btn-sm(href='#', data-_id=album._id)= self.t('delete')
+          if album.cover_id
+            - var imageUrl = self.link_to('core.gridfs', { 'bucket': album.cover_id })
+            img.user-album__image(src=imageUrl)
+          else
+            .user-album__no-cover No cover
+        .user-album__title
+          if !album.default
+            =album.title
+          else
+            =self.t('default_name')
+        .user-album__date= self.date(album.last_at, 'date')
+        if album.count > 0
+          div.user-album__count= self.t('count', album.count)
+        .user-album__footer

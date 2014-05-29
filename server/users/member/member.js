@@ -12,6 +12,7 @@ module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, function (env, callback) {
     //FIXME implement me
+    env.res.member_hid = env.params.hid;
     callback();
   });
 };

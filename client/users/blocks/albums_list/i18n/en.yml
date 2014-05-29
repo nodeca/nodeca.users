@@ -1,0 +1,5 @@
+en-US:
+  count: "#{count} ((photo|photos))"
+  edit: Edit
+  delete: Delete
+  default_name: Unsorted
