@@ -10,7 +10,7 @@ if self.is_member
   .nav-panel__row
     a.nav-panel__btn.nav-panel__btn-last(
       href='#'
-      data-on-click=(self.widgetPath+'.logout')
+      data-on-click=('common.blocks.auth_toolbar.logout')
       title=self.t('logout')
     )
       span.nav-panel__btn-icon.icon-logout

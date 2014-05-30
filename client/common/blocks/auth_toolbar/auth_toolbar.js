@@ -1,7 +1,7 @@
 'use strict';
 
 
-N.wire.on('users.auth.logout', function () {
+N.wire.on('common.blocks.auth_toolbar.logout', function () {
   N.io.rpc('users.auth.logout', function (err) {
     if (err) {
       return false;
