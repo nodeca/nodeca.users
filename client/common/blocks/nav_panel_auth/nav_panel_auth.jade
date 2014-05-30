@@ -1,0 +1,34 @@
+if self.is_member
+  if (self.settings.can_access_acp)
+    .nav-panel__row
+      a.nav-panel__btn(
+        href=self.link_to('admin.core.dashboard')
+        target='_blank'
+        title=self.t('admin')
+      )
+        span.nav-panel__btn-icon A
+  .nav-panel__row
+    a.nav-panel__btn.nav-panel__btn-last(
+      href='#'
+      data-on-click=(self.widgetPath+'.logout')
+      title=self.t('logout')
+    )
+      span.nav-panel__btn-icon.icon-logout
+
+  //-
+    ul.nav.navbar-nav.navbar-right
+      li.dropdown
+        a.dropdown-toggle.icon-user(href='#', data-toggle='dropdown')
+          | #{self.user_name}
+          b.caret
+        ul.dropdown-menu
+          li: a(href=self.link_to('users.profile'))= self.t('profile')
+          - if (self.settings.can_access_acp)
+            li: a(href=self.link_to('admin.core.dashboard'), target='_blank')= self.t('admin')
+          li.divider
+          li: a(href='#', data-on-click='users.auth.logout')= self.t('logout')
+
+else
+  .nav-panel__row
+    a.nav-panel__btn.nav-panel__btn-last(href=self.link_to('users.auth.login.show'))
+      span.nav-panel__btn-icon.icon-login
