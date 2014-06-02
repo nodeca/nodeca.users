@@ -1,0 +1,18 @@
+if self.is_member
+  li.dropdown
+    a.dropdown-toggle.icon-user(href='#', data-toggle='dropdown')
+      | #{self.user_name}
+      b.caret
+    ul.dropdown-menu
+      li: a(href=self.link_to('users.profile'))= self.t('profile')
+      - if (self.settings.can_access_acp)
+        li: a(href=self.link_to('admin.core.dashboard'), target='_blank')= self.t('admin')
+      li.divider
+      li: a(href='#', data-on-click='common.blocks.logout')= self.t('logout')
+else
+  //- data-api-path used to highlight curent navigation
+  li(data-api-path='users.auth.login')
+    a(href=self.link_to('users.auth.login.show'))= self.t('login')
+
+  li(data-api-path='users.auth.register')
+    a(href=self.link_to('users.auth.register.show'))= self.t('register')

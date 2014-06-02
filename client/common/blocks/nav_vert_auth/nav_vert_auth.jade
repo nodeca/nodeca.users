@@ -1,19 +1,19 @@
 if self.is_member
   if (self.settings.can_access_acp)
-    .nav-panel__row
-      a.nav-panel__btn(
+    .nav-vert__panel-row
+      a.nav-vert__btn(
         href=self.link_to('admin.core.dashboard')
         target='_blank'
         title=self.t('admin')
       )
-        span.nav-panel__btn-icon A
-  .nav-panel__row
-    a.nav-panel__btn.nav-panel__btn-last(
+        span.nav-vert__btn-icon A
+  .nav-vert__panel-row
+    a.nav-vert__btn.nav-vert__btn-last(
       href='#'
-      data-on-click=('common.blocks.auth_toolbar.logout')
+      data-on-click=('common.blocks.logout')
       title=self.t('logout')
     )
-      span.nav-panel__btn-icon.icon-logout
+      span.nav-vert__btn-icon.icon-logout
 
   //-
     ul.nav.navbar-nav.navbar-right
@@ -29,6 +29,6 @@ if self.is_member
           li: a(href='#', data-on-click='users.auth.logout')= self.t('logout')
 
 else
-  .nav-panel__row
-    a.nav-panel__btn.nav-panel__btn-last(href=self.link_to('users.auth.login.show'))
-      span.nav-panel__btn-icon.icon-login
+  .nav-vert__panel-row
+    a.nav-vert__btn.nav-vert__btn-last(href=self.link_to('users.auth.login.show'))
+      span.nav-vert__btn-icon.icon-login

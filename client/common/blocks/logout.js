@@ -1,7 +1,10 @@
 'use strict';
 
+console.log('=========================');
+console.log(module.apiPath);
+console.log('=========================');
 
-N.wire.on('common.blocks.auth_toolbar.logout', function () {
+N.wire.on(module.apiPath, function () {
   N.io.rpc('users.auth.logout', function (err) {
     if (err) {
       return false;
