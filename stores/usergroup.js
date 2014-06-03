@@ -13,7 +13,7 @@ module.exports = function (N) {
     N.models.users.UserGroup
       .find({ _id: { $in: ids } })
       .select('settings')
-      .setOptions({ lean: true })
+      .lean(true)
       .exec(callback);
   }
 

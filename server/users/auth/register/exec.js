@@ -59,7 +59,7 @@ module.exports = function (N, apiPath) {
     N.models.users.AuthLink
         .findOne({ 'providers.email': env.params.email, 'providers.type': 'plain' })
         .select('_id')
-        .setOptions({ lean: true })
+        .lean(true)
         .exec(function (err, authlink) {
 
       if (err) {
@@ -80,7 +80,7 @@ module.exports = function (N, apiPath) {
     N.models.users.User
         .findOne({ 'nick': env.params.nick })
         .select('_id')
-        .setOptions({ lean: true })
+        .lean(true)
         .exec(function (err, user) {
 
       if (err) {

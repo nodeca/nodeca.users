@@ -46,7 +46,7 @@ module.exports = function (N, apiPath) {
 
       N.models.users.AuthLink
           .findOne({ user_id: user._id })
-          .setOptions({ lean: true })
+          .lean(true)
           .exec(function (err, authlink) {
 
         if (err) {

@@ -20,7 +20,7 @@ module.exports = function (N, apiPath) {
         .find()
         .select('_id short_name is_protected')
         .sort('_id')
-        .setOptions({ lean: true })
+        .lean(true)
         .exec(function (err, usergroups) {
 
       if (err) {

@@ -151,7 +151,7 @@ module.exports = function (N, apiPath) {
 
       N.models.users.User
         .findOne({ '_id': authlink.user_id })
-        .setOptions({ lean: true })
+        .lean(true)
         .exec(function (err, user) {
 
         if (err) {
@@ -186,7 +186,7 @@ module.exports = function (N, apiPath) {
 
     N.models.users.User
       .findOne({ 'nick': env.params.email_or_nick })
-      .setOptions({ lean: true })
+      .lean(true)
       .exec(function (err, user) {
 
       if (err) {

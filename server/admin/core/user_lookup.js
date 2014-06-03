@@ -28,7 +28,7 @@ module.exports = function (N, apiPath) {
 
     query.limit(10)
          .select('_id name nick')
-         .setOptions({ lean: true })
+         .lean(true)
          .exec(function (err, users) {
 
       if (err) {

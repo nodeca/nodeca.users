@@ -21,7 +21,7 @@ module.exports = function (N, apiPath) {
         .find()
         .select('-settings')
         .sort('_id')
-        .setOptions({ lean: true })
+        .lean(true)
         .exec(function (err, groupsData) {
       res.groups_data = groupsData;
       callback(err);

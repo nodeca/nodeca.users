@@ -26,7 +26,7 @@ module.exports = function (N, apiPath) {
     N.models.users.User
         .findOne({ 'nick': env.params.nick })
         .select('_id')
-        .setOptions({ lean: true })
+        .lean(true)
         .exec(function (err, user) {
 
       if (err) {
