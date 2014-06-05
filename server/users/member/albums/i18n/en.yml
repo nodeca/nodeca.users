@@ -1,0 +1,3 @@
+en-US:
+  title_with_user: "Albums - #{user}"
+  breadcrumbs_title: Albums

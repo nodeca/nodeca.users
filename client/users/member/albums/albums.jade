@@ -1,12 +1,13 @@
-- var editable = self.runtime.user_name == self.user_name
+- var own = (self.runtime.user_name === self.user_name)
 #content
-  // TODO: breadcrumbs
-  //!= self.partial('@common.blocks.breadcrumbs')
+  != self.partial('@common.blocks.breadcrumbs')
 
-  header.page-header
-    h1= self.t('title')
-      if editable
-        button.create-album.btn.btn-primary.pull-right(data-on-click='users.member.albums.create_album')= self.t('create_album')
+  header.page-head.albums-head
+    if own
+      button.create-album.btn.btn-primary.pull-right(data-on-click='users.member.albums.create_album')= self.t('create_album')
+    h1.page-head__title(itemprop='name')= self.t('title')
+    p.page-head__descr.hidden-xs(itemprop='description')
+
   #album-content
     if self.showAsAlbums
       != self.partial('@users.blocks.albums_list')

@@ -1,10 +1,10 @@
-- var editable = self.runtime.user_name == self.user_name
+- var own = (self.runtime.user_name === self.user_name)
 .row
   each album in self.albums
     .col-md-3
       .user-album
         .user-album__image-wrapper
-          if editable && !album.default
+          if own && !album.default
             a.update-album.btn.btn-default.btn-sm(href='#', data-_id=album._id, data-title=album.title)= self.t('edit')
             a.destroy-album.btn.btn-default.btn-sm(href='#', data-_id=album._id)= self.t('delete')
           if album.cover_id

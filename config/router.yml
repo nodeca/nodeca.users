@@ -19,14 +19,14 @@ router:
     #  "/bookmarks": ~
 
     users.member:
-      "/member{hid}":
-        hid:
+      "/member{user_hid}":
+        user_hid:
           match: /\d+/
           type: 'integer'
 
     users.member.albums:
-      "/member{member_hid}/albums(/{album_id})(/{all_photos})":
-        member_hid:
+      "/member{user_hid}/albums(/{album_id})(/{all_photos})":
+        user_hid:
           match: /\d+/
           type: 'integer'
         album_id:

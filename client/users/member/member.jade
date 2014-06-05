@@ -1,14 +1,9 @@
 #content
-  ul.breadcrumbs
-    li
-      a(href='#') Breadcrumbs
-    li
-      a(href='#') Should
-    li
-      a(href='#') Be
-    li
-      a(href='#') Here
+  != self.partial('@common.blocks.breadcrumbs')
 
-  h1= self.t('title')
-  - var albumLink = self.link_to('users.member.albums', { 'member_hid': self.member_hid })
+  header.page-head
+    h1.page-head__title(itemprop='name')= self.t('title')
+    p.page-head__descr.hidden-xs(itemprop='description')
+
+  - var albumLink = self.link_to('users.member.albums', { 'user_hid': self.user_hid })
   a.btn.btn-default(href=albumLink) User albums
