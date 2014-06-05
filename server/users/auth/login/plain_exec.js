@@ -18,6 +18,7 @@ module.exports = function (N, apiPath) {
   , pass:          { type: 'string' }
   , recaptcha_challenge_field: { type: 'string', 'default': '' }
   , recaptcha_response_field:  { type: 'string', 'default': '' }
+  , redirect_id: { format: 'mongo' }
   });
 
 
@@ -255,5 +256,31 @@ module.exports = function (N, apiPath) {
       // Apply login.
       N.wire.emit('internal:users.login', env, callback);
     });
+  });
+
+
+  // Fill redirect url
+  //
+  N.wire.after(apiPath, function get_redirect_url(env, callback) {
+
+    // TODO: add setting
+    var defaultUrl = N.runtime.router.linkTo('users.profile');
+
+    if (!env.params.redirect_id) {
+      env.res.redirect_url = defaultUrl;
+      callback();
+      return;
+    }
+
+    // Fetch back url
+    N.models.users.LoginRedirect
+      .findOne({ '_id': env.params.redirect_id })
+      .lean(true)
+      .exec(function (err, redirectData) {
+        if (err) { return callback(err); }
+
+        env.res.redirect_url = redirectData ? redirectData.url : defaultUrl;
+        callback();
+      });
   });
 };

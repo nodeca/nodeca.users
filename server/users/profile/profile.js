@@ -7,12 +7,10 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, {});
 
 
-  // Check auth
+  // Redirect guests to login page
   //
-  N.wire.before(apiPath, function check_user_auth(env) {
-    if (env.user_info.is_guest) {
-      return N.io.NOT_AUTHORIZED;
-    }
+  N.wire.before(apiPath, function check_user_auth(env, callback) {
+    N.wire.emit('internal:users.force_login_guest', env, callback);
   });
 
 

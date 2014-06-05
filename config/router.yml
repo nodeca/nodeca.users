@@ -38,7 +38,8 @@ router:
       "/members/search": ~
 
     users.auth.login.show:
-      "/auth/login": ~
+      "/auth/login(/{redirect_id})":
+        redirect_id: /[0-9a-f]{24}/
 
     users.auth.reset_password.request_show:
       "/auth/reset": ~

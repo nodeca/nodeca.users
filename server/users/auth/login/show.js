@@ -8,7 +8,11 @@ module.exports = function (N, apiPath) {
   var rateLimit = require('./_rate_limit')(N);
 
 
-  N.validate(apiPath, {});
+  N.validate(apiPath, {
+    redirect_id: {
+      format: 'mongo'
+    }
+  });
 
 
   N.wire.before(apiPath, function login_guest_only(env, callback) {
