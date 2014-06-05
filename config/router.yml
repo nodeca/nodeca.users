@@ -3,21 +3,6 @@ router:
     users.profile:
       "/profile": ~
 
-    #users.profile.news:
-    #  "/news": ~
-
-    #users.profile.messages:
-    #  "/messages": ~
-
-    users.profile.albums_redirect:
-      "/albums": ~
-
-    #users.profile.clubs:
-    #  "/clubs": ~
-
-    #users.profile.bookmarks:
-    #  "/bookmarks": ~
-
     users.member:
       "/member{user_hid}":
         user_hid:
