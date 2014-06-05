@@ -41,7 +41,7 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        env.res.user_name = user.name;
+        env.res.user_hid = user.hid;
         env.data.user = user;
         callback();
       });

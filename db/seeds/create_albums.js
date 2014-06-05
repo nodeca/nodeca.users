@@ -5,6 +5,7 @@ var async = require('async');
 var Charlatan = require('charlatan');
 var path = require('path');
 var walkSync = require('fs-tools').walkSync;
+var _ = require('lodash');
 
 var ALBUMS_COUNT = 14;
 var MIN_ALBUM_PHOTOS_= 0;
@@ -90,7 +91,7 @@ module.exports = function (N, callback) {
 
         if (!user) { return next(new Error('No such user: admin')); }
 
-        createMultipleAlbums(user._id, next);
+        next(null, [user._id]);
       });
 
     },
@@ -105,15 +106,28 @@ module.exports = function (N, callback) {
         models.forum.Section.find({ 'parent': parentSection._id }).lean(true).exec(function (err, sections) {
           if (err) { return next(err); }
 
-          // For each moderator in subsection apply demo albums
-          async.eachSeries(sections, function (section, next) {
-            async.eachSeries(section.moderators, function (moderatorId, next) {
-              createMultipleAlbums(moderatorId, next);
-            }, next);
-          }, next);
+          // Prepare each moderator in subsections
+          var usersId = [];
+          _.each(sections, function (section) {
+            _.each(section.moderators, function (moderatorId) {
+              usersId.push(moderatorId);
+            });
+          });
+          next(null, usersId);
+
         });
       });
 
     }
-  ], callback);
+  ], function (err, results) {
+    var usersId = [];
+    _.each(results, function (result) {
+      usersId = _.union(usersId, result);
+    });
+
+    // Create albums for prepared user list
+    async.eachSeries(usersId, function (userId, next) {
+      createMultipleAlbums(userId, next);
+    }, callback);
+  });
 };
