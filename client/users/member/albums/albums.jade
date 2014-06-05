@@ -2,9 +2,14 @@
 #content
   != self.partial('@common.blocks.breadcrumbs')
 
+  if own
+    .breadcrumbs
+      a.btn.btn-default.btn-sm(href='#')= self.t('all_media')
+      |  
+      button.btn.btn-default.btn-sm(data-on-click='users.member.albums.create_album')= self.t('create_album')
+
+
   header.page-head.albums-head
-    if own
-      button.create-album.btn.btn-primary.pull-right(data-on-click='users.member.albums.create_album')= self.t('create_album')
     h1.page-head__title(itemprop='name')= self.t('title')
     p.page-head__descr.hidden-xs(itemprop='description')
 
