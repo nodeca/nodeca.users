@@ -8,5 +8,5 @@
         .modal-body
           input#create-album__title.form-control(type='text', placeholder=self.t('input_name'))
         .modal-footer
-          button.btn.btn-default(data-dismiss='modal')= self.t('cancel')
-          input.btn.btn-primary(type='submit', value=self.t('create'))
+          button.btn.btn-default(type='button', data-dismiss='modal')= self.t('cancel')
+          button.btn.btn-primary(type='submit')= self.t('create')

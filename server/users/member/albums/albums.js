@@ -9,16 +9,6 @@ module.exports = function (N, apiPath) {
       type: 'integer',
       minimum: 1,
       required: true
-    },
-    album_id: {
-      type: 'string',
-      default: '',
-      required: false
-    },
-    all_photos: {
-      type: 'string',
-      default: '',
-      required: false
     }
   });
 
@@ -41,7 +31,6 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        env.res.user_hid = user.hid;
         env.data.user = user;
         callback();
       });
@@ -49,20 +38,10 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.on(apiPath, function get_user_albums(env, callback) {
-    if (env.params.all_photos === 'all') {
-      // TODO: show all photos for this user
-      env.res.showAsAlbums = env.data.showAsAlbums = false;
-      return callback();
-    }
-
-    if (env.params.album_id !== '') {
-      // TODO: show all photos for this album
-      env.res.showAsAlbums = env.data.showAsAlbums = false;
-      return callback();
-    }
+    // For check is user owner
+    env.res.user_hid = env.data.user.hid;
 
     // Show albums list
-    env.res.showAsAlbums = env.data.showAsAlbums = true;
     N.wire.emit('server:users.member.albums.albums_list', env, callback);
   });
 

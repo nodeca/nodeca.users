@@ -22,8 +22,7 @@ N.wire.on('users.blocks.albums_create_submit', function submit_album_create_dlg(
   var title = $dialog.find('#create-album__title').val();
 
   N.io.rpc('users.member.albums.create', { 'title': title }, function () {
-    // TODO: make it better
-    window.location.reload();
+    N.wire.emit('users.blocks.albums_create:done');
   });
 
   $dialog.modal('hide');

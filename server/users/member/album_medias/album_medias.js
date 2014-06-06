@@ -1,8 +1,7 @@
-// Shows albums list for user by hid
+// Shows album medias (or all user medias) for user by hid
 'use strict';
 
 module.exports = function (N, apiPath) {
-  var Album = N.models.users.Album;
   var User = N.models.users.User;
 
   N.validate(apiPath, {
@@ -10,15 +9,16 @@ module.exports = function (N, apiPath) {
       type: 'integer',
       minimum: 1,
       required: true
+    },
+    album_id: {
+      format: 'mongo'
     }
   });
+
 
   // Fetch album owner by 'hid'
   //
   N.wire.before(apiPath, function fetch_user_by_hid(env, callback) {
-    // If user already loaded - do nothing
-    if (env.data.user) { return callback(); }
-
     User
       .findOne({ 'hid': env.params.user_hid })
       .lean(true)
@@ -34,30 +34,21 @@ module.exports = function (N, apiPath) {
           return;
         }
 
+        env.res.user_hid = user.hid;
         env.data.user = user;
         callback();
       });
   });
 
 
-  // Find and processes user albums
-  //
   N.wire.on(apiPath, function get_user_albums(env, callback) {
-    Album
-      .find({ 'user_id': env.data.user._id })
-      .sort('-default -last_at')
-      .lean(true)
-      .exec(function (err, result) {
-        if (err) {
-          callback(err);
-          return;
-        }
+    if (!env.params.album_id) {
+      // TODO: show all photos for user (env.data.user)
+      return callback();
+    }
 
-        // For check is user owner
-        env.res.user_hid = env.data.user.hid;
+    // TODO: show all photos for album by album_id
+    callback();
 
-        env.res.albums = result;
-        callback();
-      });
   });
 };
