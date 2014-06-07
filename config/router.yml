@@ -1,6 +1,6 @@
 router:
   http.get:
-    users.profile:
+    users.profile_redirect:
       "/profile": ~
 
     users.member:
@@ -9,13 +9,13 @@ router:
           match: /\d+/
           type: 'integer'
 
-    users.member.albums:
+    users.albums_root:
       "/member{user_hid}/albums":
         user_hid:
           match: /\d+/
           type: 'integer'
 
-    users.member.album_medias:
+    users.album:
       "/member{user_hid}/album(/{album_id})":
         user_hid:
           match: /\d+/

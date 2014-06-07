@@ -3,8 +3,8 @@
 var $dialog;
 
 
-N.wire.on('users.member.albums.create_album', function show_album_create_dlg() {
-  $dialog = $(N.runtime.render('users.blocks.albums_create'));
+N.wire.on('users.album.create', function show_album_create_dlg() {
+  $dialog = $(N.runtime.render('users.album.create'));
 
   $('body').append($dialog);
 
@@ -18,11 +18,11 @@ N.wire.on('users.member.albums.create_album', function show_album_create_dlg() {
 });
 
 
-N.wire.on('users.blocks.albums_create_submit', function submit_album_create_dlg() {
+N.wire.on('users.album.create:submit', function submit_album_create_dlg() {
   var title = $dialog.find('#create-album__title').val();
 
-  N.io.rpc('users.member.albums.create', { 'title': title }, function () {
-    N.wire.emit('users.blocks.albums_create:done');
+  N.io.rpc('users.album.create', { 'title': title }, function () {
+    N.wire.emit('users.album.create:done');
   });
 
   $dialog.modal('hide');

@@ -2,7 +2,7 @@ menus:
   common:
     navbar:
       profile:
-        to: users.profile
+        to: users.profile_redirect
         priority: 10
   admin:
     navbar:

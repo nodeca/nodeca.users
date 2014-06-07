@@ -42,7 +42,7 @@ module.exports = function (N, apiPath) {
     env.res.user_hid = env.data.user.hid;
 
     // Show albums list
-    N.wire.emit('server:users.member.albums.albums_list', env, callback);
+    N.wire.emit('server:users.albums_root.list', env, callback);
   });
 
 
@@ -77,7 +77,7 @@ module.exports = function (N, apiPath) {
 
     breadcrumbs.push({
       'text': env.t('breadcrumbs_title'),
-      'route': 'users.member.albums',
+      'route': 'users.albums_root',
       'params': { 'user_hid': user.hid }
     });
 

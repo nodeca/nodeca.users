@@ -6,7 +6,7 @@
     .breadcrumbs
       a.btn.btn-default.btn-sm(href='#')= self.t('all_media')
       |  
-      button.btn.btn-default.btn-sm(data-on-click='users.member.albums.create_album')= self.t('create_album')
+      button.btn.btn-default.btn-sm(data-on-click='users.album.create')= self.t('create_album')
 
 
   header.page-head.albums-head
@@ -14,4 +14,4 @@
     p.page-head__descr.hidden-xs(itemprop='description')
 
   #users-albums-list
-    != self.partial('@users.blocks.albums_list')
+    != self.partial('@users.albums_root.list')
