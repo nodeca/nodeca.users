@@ -4,6 +4,7 @@ menus:
       profile:
         to: users.profile_redirect
         priority: 10
+        autoselect: false
   admin:
     navbar:
       users:
