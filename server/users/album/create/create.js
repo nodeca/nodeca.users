@@ -9,6 +9,7 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     title: {
       type: 'string',
+      minLength: 1,
       required: true
     }
   });

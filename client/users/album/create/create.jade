@@ -6,7 +6,7 @@
           button.close( aria-hidden='true', type='button', data-dismiss='modal') &times;
           h4.modal-title= self.t('title')
         .modal-body
-          input#create-album__title.form-control(type='text', placeholder=self.t('input_name'))
+          input#create-album__title.form-control(type='text', name='album_name' placeholder=self.t('input_name'))
         .modal-footer
           button.btn.btn-default(type='button', data-dismiss='modal')= self.t('cancel')
           button.btn.btn-primary(type='submit')= self.t('create')
