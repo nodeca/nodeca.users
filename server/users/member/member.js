@@ -1,7 +1,9 @@
 'use strict';
 
+
 module.exports = function (N, apiPath) {
   var User = N.models.users.User;
+
 
   N.validate(apiPath, {
     user_hid: {

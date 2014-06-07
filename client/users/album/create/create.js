@@ -1,8 +1,14 @@
+// Popup dialog to create album
+
+
 'use strict';
+
 
 var $dialog;
 
 
+// Init dialog on event
+//
 N.wire.on('users.album.create', function show_album_create_dlg() {
   $dialog = $(N.runtime.render('users.album.create'));
 
@@ -18,10 +24,13 @@ N.wire.on('users.album.create', function show_album_create_dlg() {
 });
 
 
+// Listen submit button
+//
 N.wire.on('users.album.create:submit', function submit_album_create_dlg() {
   var title = $dialog.find('#create-album__title').val();
 
   N.io.rpc('users.album.create', { 'title': title }, function () {
+    // Emit event on success
     N.wire.emit('users.album.create:done');
   });
 
@@ -29,7 +38,7 @@ N.wire.on('users.album.create:submit', function submit_album_create_dlg() {
 });
 
 
-// Close dialog if user click back button in browser
+// Close dialog on sudden page exit (if user click back button in browser)
 //
 N.wire.on('navigate.exit', function teardown_page() {
   if ($dialog) {

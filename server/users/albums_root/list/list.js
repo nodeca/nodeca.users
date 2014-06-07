@@ -1,9 +1,13 @@
-// Shows albums list for user by hid
+// Fetch albums list
+
+
 'use strict';
+
 
 module.exports = function (N, apiPath) {
   var Album = N.models.users.Album;
   var User = N.models.users.User;
+
 
   N.validate(apiPath, {
     user_hid: {
@@ -12,6 +16,7 @@ module.exports = function (N, apiPath) {
       required: true
     }
   });
+
 
   // Fetch album owner by 'hid'
   //

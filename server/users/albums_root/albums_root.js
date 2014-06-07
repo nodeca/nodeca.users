@@ -1,5 +1,8 @@
-// Shows albums list for user by hid
+// Shows albums list page
+
+
 'use strict';
+
 
 module.exports = function (N, apiPath) {
   var User = N.models.users.User;
@@ -37,6 +40,8 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Get albums list (subcall)
+  //
   N.wire.on(apiPath, function get_user_albums(env, callback) {
     // For check is user owner
     env.res.user_hid = env.data.user.hid;
@@ -52,13 +57,7 @@ module.exports = function (N, apiPath) {
     var user = env.data.user;
 
     env.res.head = env.res.head || {};
-
-    if (env.data.showAsAlbums) {
-      env.res.head.title = env.t('title_with_user', { user: env.runtime.is_member ? user.name : user.nick });
-      return;
-    }
-
-    // TODO: title for photos page
+    env.res.head.title = env.t('title_with_user', { user: env.runtime.is_member ? user.name : user.nick });
   });
 
 

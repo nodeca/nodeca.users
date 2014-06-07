@@ -1,5 +1,8 @@
-// Shows album medias (or all user medias) for user by hid
+// Shows album/all medias page
+
+
 'use strict';
+
 
 module.exports = function (N, apiPath) {
   var User = N.models.users.User;
