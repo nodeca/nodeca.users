@@ -6,7 +6,6 @@
 
 module.exports = function (N, apiPath) {
   var Album = N.models.users.Album;
-  var User = N.models.users.User;
 
 
   N.validate(apiPath, {
@@ -18,30 +17,10 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Fetch album owner by 'hid'
+  // Fetch owner
   //
   N.wire.before(apiPath, function fetch_user_by_hid(env, callback) {
-    // If user already loaded - do nothing
-    if (env.data.user) { return callback(); }
-
-    User
-      .findOne({ 'hid': env.params.user_hid })
-      .lean(true)
-      .exec(function (err, user) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        // TODO: add permissions to view deleted users
-        if (!user || !user.exists) {
-          callback(N.io.NOT_FOUND);
-          return;
-        }
-
-        env.data.user = user;
-        callback();
-      });
+    N.wire.emit('internal:users.fetch_user_by_hid', env, callback);
   });
 
 
