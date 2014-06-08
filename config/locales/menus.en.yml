@@ -1,8 +1,12 @@
 i18n:
   en-US:
-
+    admin:
+      menus:
+        navbar:
+          users: Users
+          users.usergroups: User groups
+          users.members: Members
     common:
-
       menus:
         navbar:
           profile: Profile
