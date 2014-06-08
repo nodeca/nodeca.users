@@ -1,7 +1,7 @@
 nodeca.users
 ============
 
-[![Build Status](https://secure.travis-ci.org/nodeca/nodeca.users.png)](http://travis-ci.org/nodeca/nodeca.users)
+[![Build Status](https://travis-ci.org/nodeca/nodeca.users.svg?branch=master)](https://travis-ci.org/nodeca/nodeca.users)
 
 Nodeca Users app:
 
