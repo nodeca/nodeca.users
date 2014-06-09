@@ -2,7 +2,6 @@
 
 
 var ko          = require('knockout');
-var getFormData = require('nodeca.core/lib/client/get_form_data');
 
 
 var view = null;
@@ -20,10 +19,9 @@ N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
 });
 
 
-N.wire.on('users.auth.reset_password.change_exec', function reset_password(event) {
-  var $form = $(event.currentTarget);
+N.wire.on('users.auth.reset_password.change_exec', function reset_password(form) {
 
-  N.io.rpc('users.auth.reset_password.change_exec', getFormData($form), function (err) {
+  N.io.rpc('users.auth.reset_password.change_exec', form.fields, function (err) {
     if (err && N.io.CLIENT_ERROR === err.code) {
       view.status(err.bad_password ? 'error' : null);
       return;

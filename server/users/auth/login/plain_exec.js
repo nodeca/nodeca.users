@@ -264,7 +264,7 @@ module.exports = function (N, apiPath) {
   N.wire.after(apiPath, function get_redirect_url(env, callback) {
 
     // TODO: add setting
-    var defaultUrl = N.runtime.router.linkTo('users.profile');
+    var defaultUrl = N.runtime.router.linkTo('users.profile_redirect');
 
     if (!env.params.redirect_id) {
       env.res.redirect_url = defaultUrl;

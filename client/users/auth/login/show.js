@@ -2,7 +2,6 @@
 
 
 var ko          = require('knockout');
-var getFormData = require('nodeca.core/lib/client/get_form_data');
 
 
 // Knockout view model of the page.
@@ -41,9 +40,8 @@ N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
 });
 
 
-N.wire.on('users.auth.login.plain_exec', function login(event) {
-  var $form = $(event.currentTarget);
-  var loginParams = getFormData($form);
+N.wire.on('users.auth.login.plain_exec', function login(form) {
+  var loginParams = form.fields;
   if (redirect_id) {
     loginParams.redirect_id = redirect_id;
   }

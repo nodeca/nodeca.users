@@ -4,9 +4,6 @@
 'use strict';
 
 
-var getFormData = require('nodeca.core/lib/client/get_form_data');
-
-
 var $dialog;
 
 
@@ -29,8 +26,8 @@ N.wire.on('users.album.create', function show_album_create_dlg() {
 
 // Listen submit button
 //
-N.wire.on('users.album.create:submit', function submit_album_create_dlg(event) {
-  var title = getFormData($(event.currentTarget)).album_name;
+N.wire.on('users.album.create:submit', function submit_album_create_dlg(form) {
+  var title = form.fields.album_name;
 
   // Don't allow empty name for albums
   if (!title || !$.trim(title)) {
