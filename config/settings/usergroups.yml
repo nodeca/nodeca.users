@@ -17,3 +17,27 @@ setting_schemas:
       category_key: perm_admin
       type: boolean
       default: false
+
+    users_can_see_profile:
+      priority: 1030
+      category_key: perm_users
+      type: boolean
+      default: false
+
+    users_can_upload_media:
+      priority: 1040
+      category_key: perm_users
+      type: boolean
+      default: false
+
+    users_media_total_quota_mb:
+      priority: 1050
+      category_key: perm_users
+      type: number
+      default: 1024
+
+    users_media_single_quota_kb:
+      priority: 1060
+      category_key: perm_users
+      type: number
+      default: 2048

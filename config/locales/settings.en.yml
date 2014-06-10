@@ -8,6 +8,7 @@ i18n:
         category_names:
           register_common: Common
           perm_admin: Administration
+          perm_users: Profile
 
         setting_names:
           general_ssl_mode: SSL mode
@@ -21,6 +22,14 @@ i18n:
           can_see_hellbanned: Show hellbanned content
 
           can_see_deleted_users: Show deleted users
+
+          users_can_see_profile: Can see profile
+
+          users_can_upload_media: Can upload media
+
+          users_media_total_quota_mb: Total media quota (MB)
+
+          users_media_single_quota_kb: Max upload file size (KB)
 
         setting_values:
           general_ssl_mode:
