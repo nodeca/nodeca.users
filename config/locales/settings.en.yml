@@ -20,6 +20,8 @@ i18n:
 
           can_see_hellbanned: Show hellbanned content
 
+          can_see_deleted_users: Show deleted users
+
         setting_values:
           general_ssl_mode:
             https_members: https for logged in

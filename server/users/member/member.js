@@ -2,8 +2,6 @@
 
 
 module.exports = function (N, apiPath) {
-  var User = N.models.users.User;
-
 
   N.validate(apiPath, {
     user_hid: {
@@ -16,26 +14,16 @@ module.exports = function (N, apiPath) {
 
   // Fetch member by 'user_hid'
   //
+  N.wire.before(apiPath, function fetch_user_by_hid(env, callback) {
+    N.wire.emit('internal:users.fetch_user_by_hid', env, callback);
+  });
+
+
+  // Fill response
+  //
   N.wire.on(apiPath, function fetch_user_by_hid(env, callback) {
-    User
-      .findOne({ 'hid': env.params.user_hid })
-      .lean(true)
-      .exec(function (err, user) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        // TODO: add permissions to view deleted users
-        if (!user || !user.exists) {
-          callback(N.io.NOT_FOUND);
-          return;
-        }
-
-        env.data.user = user;
-        env.res.user_hid = user.hid;
-        callback();
-      });
+    env.res.user_hid = env.data.user.hid;
+    callback();
   });
 
 

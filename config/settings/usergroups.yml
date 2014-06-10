@@ -11,3 +11,9 @@ setting_schemas:
       category_key: perm_admin
       type: boolean
       default: false
+
+    can_see_deleted_users:
+      priority: 1020
+      category_key: perm_admin
+      type: boolean
+      default: false

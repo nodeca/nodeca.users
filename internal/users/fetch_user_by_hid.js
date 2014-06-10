@@ -9,28 +9,49 @@
 module.exports = function (N, apiPath) {
   var User = N.models.users.User;
 
+  // Fetch permission to see deleted users
+  //
+  N.wire.before(apiPath, function fetch_can_see_deleted_users(env, callback) {
+    env.extras.settings.fetch(['can_see_deleted_users'], function (err, settings) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      env.data.settings = env.data.settings || {};
+      env.data.settings.can_see_deleted_users = settings.can_see_deleted_users;
+      callback();
+    });
+  });
+
+
+  // Fetch user by hid
+  //
   N.wire.on(apiPath, function (env, callback) {
     // This method can be called multiple times (from page & subcalls).
     // Check if data already loaded.
     if (env.data.user) { return callback(); }
 
-    User
-      .findOne({ 'hid': env.params.user_hid })
-      .lean(true)
-      .exec(function (err, user) {
-        if (err) {
-          callback(err);
-          return;
-        }
+    var query = User.findOne({ 'hid': env.params.user_hid }).lean(true);
 
-        // TODO: add permissions to view deleted users
-        if (!user || !user.exists) {
-          callback(N.io.NOT_FOUND);
-          return;
-        }
+    // Check 'can_see_deleted_users' permission
+    if (!env.data.settings.can_see_deleted_users) {
+      query.where({ 'exists': true });
+    }
 
-        env.data.user = user;
-        callback();
-      });
+    query.exec(function (err, user) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      if (!user) {
+        callback(N.io.NOT_FOUND);
+        return;
+      }
+
+      env.data.user = user;
+      callback();
+    });
   });
 };
