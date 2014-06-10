@@ -1,23 +1,5 @@
 setting_schemas:
   usergroup:
-    can_access_acp:
-      priority: 1000
-      category_key: perm_admin
-      type: boolean
-      default: false
-
-    can_see_hellbanned:
-      priority: 1010
-      category_key: perm_admin
-      type: boolean
-      default: false
-
-    can_see_deleted_users:
-      priority: 1020
-      category_key: perm_admin
-      type: boolean
-      default: false
-
     users_can_upload_media:
       priority: 1040
       category_key: perm_users
@@ -35,3 +17,21 @@ setting_schemas:
       category_key: perm_users
       type: number
       default: 2048
+
+    can_access_acp:
+      priority: 2000
+      category_key: perm_admin
+      type: boolean
+      default: false
+
+    can_see_hellbanned:
+      priority: 2010
+      category_key: perm_admin
+      type: boolean
+      default: false
+
+    can_see_deleted_users:
+      priority: 2020
+      category_key: perm_admin
+      type: boolean
+      default: false
