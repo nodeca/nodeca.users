@@ -18,12 +18,6 @@ setting_schemas:
       type: boolean
       default: false
 
-    users_can_see_profile:
-      priority: 1030
-      category_key: perm_users
-      type: boolean
-      default: false
-
     users_can_upload_media:
       priority: 1040
       category_key: perm_users

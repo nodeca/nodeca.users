@@ -20,7 +20,6 @@ module.exports.up = function (N, cb) {
 
           async.each(groups, function (group, next) {
             group.raw_settings = _.extend({}, group.raw_settings, {
-              users_can_see_profile: { value: true },
               users_can_upload_media: { value: true }
             });
             group.save(next);

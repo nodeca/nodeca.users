@@ -23,8 +23,6 @@ i18n:
 
           can_see_deleted_users: Show deleted users
 
-          users_can_see_profile: Can see profile
-
           users_can_upload_media: Can upload media
 
           users_media_total_quota_mb: Total media quota (MB)
