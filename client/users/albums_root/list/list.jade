@@ -7,11 +7,12 @@
           if own && !album.default
             a.update-album.btn.btn-default.btn-sm(href='#', data-_id=album._id, data-title=album.title)= self.t('edit')
             a.destroy-album.btn.btn-default.btn-sm(href='#', data-_id=album._id)= self.t('delete')
-          if album.cover_id
-            - var imageUrl = self.link_to('core.gridfs', { 'bucket': album.cover_id })
-            img.user-album__image(src=imageUrl)
-          else
-            .user-album__no-cover No cover
+          a(href=self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id }))
+            if album.cover_id
+              - var imageUrl = self.link_to('core.gridfs', { 'bucket': album.cover_id })
+              img.user-album__image(src=imageUrl)
+            else
+              .user-album__no-cover No cover
         .user-album__title
           if !album.default
             =album.title
