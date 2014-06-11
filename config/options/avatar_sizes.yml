@@ -1,0 +1,6 @@
+options:
+  users:
+    avatar_sizes:
+      sm: 55x55
+      md: 100x100
+      orig: 150x150

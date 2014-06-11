@@ -25,9 +25,8 @@ var models;
 //
 var createMedia = function (userId, album, callback) {
   var photoPath = PHOTOS[Charlatan.Helpers.rand(0, PHOTOS.length)];
-  var photoName = path.basename(photoPath);
 
-  models.core.File.put(photoPath, { 'metadata': { 'origName': photoName } }, function (err, file) {
+  models.users.Media.fileCreatePreviews(photoPath, function (err, file) {
     if (err) {
       callback(err);
       return;

@@ -1,0 +1,5 @@
+options:
+  users:
+    media_sizes:
+      md: 200x150
+      orig: 1024x768

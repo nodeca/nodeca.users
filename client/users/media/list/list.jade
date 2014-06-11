@@ -5,7 +5,7 @@ ul.user-medias-list.row
       .user-media__image-wrapper
         -// TODO: check is it really image
         a(href=self.link_to('users.media', { 'user_hid': self.user_hid, 'media_id': media._id }))
-          - var imageUrl = self.link_to('core.gridfs', { 'bucket': media.file_id })
+          - var imageUrl = self.link_to('core.gridfs', { 'bucket': media.file_id + '_md' })
           img.user-media__image(src=imageUrl)
         if own
           a.user-media__edit.btn.btn-default.btn-sm(href='#', data-_id=media._id)= self.t('edit')
