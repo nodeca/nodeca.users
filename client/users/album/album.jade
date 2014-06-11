@@ -5,7 +5,8 @@
   != self.partial('@common.blocks.breadcrumbs')
 
   header.page-head.albums-head
-    h1.page-head__title(itemprop='name')= self.t('title')
+    h1.page-head__title(itemprop='name')
+      =self.album ? self.t('title_with_album', { album: self.album.title }) : self.t('title_all_files')
     p.page-head__descr.hidden-xs(itemprop='description')
 
   #users-medias-upload= self.t('drag_to_upload')

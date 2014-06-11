@@ -1,4 +1,4 @@
-// Shows album/all medias page
+// Render media page
 
 
 'use strict';
@@ -6,75 +6,86 @@
 
 module.exports = function (N, apiPath) {
 
+
   N.validate(apiPath, {
     user_hid: {
       type: 'integer',
       minimum: 1,
       required: true
     },
-    album_id: {
+    media_id: {
       format: 'mongo'
     }
   });
 
 
-  // Fetch owner
+  // Fetch owner by hid
   //
   N.wire.before(apiPath, function fetch_user_by_hid(env, callback) {
     N.wire.emit('internal:users.fetch_user_by_hid', env, callback);
   });
 
 
-  // Fetch album info (by album_id)
+  // Fetch media
   //
-  N.wire.before(apiPath, function fetch_album(env, callback) {
-    if (!env.params.album_id) {
-      callback();
-      return;
-    }
-
-    N.models.users.Album
-      .findOne({ '_id': env.params.album_id })
+  N.wire.before(apiPath, function fetch_media(env, callback) {
+    N.models.users.Media
+      .findOne({ '_id': env.params.media_id })
+      .where({ 'user_id': env.data.user._id }) // Make sure that user is real owner
       .lean(true)
-      .exec(function (err, album) {
+      .exec(function (err, result) {
         if (err) {
           callback(err);
           return;
         }
 
-        if (!album) {
+        if (!result) {
           callback(N.io.NOT_FOUND);
           return;
         }
 
-        env.data.album = album;
+        env.data.media = result;
         callback();
       });
   });
 
 
-  // Get medias list (subcall)
+  // Fetch album
   //
-  N.wire.on(apiPath, function get_user_albums(env, callback) {
-    env.res.album = env.data.album;
+  N.wire.before(apiPath, function fetch_media(env, callback) {
+    N.models.users.Album
+      .findOne({ '_id': env.data.media.album_id })
+      .where({ 'user_id': env.data.user._id }) // Make sure that user is real owner
+      .lean(true)
+      .exec(function (err, result) {
+        if (err) {
+          callback(err);
+          return;
+        }
 
-    N.wire.emit('server:users.media.list', env, callback);
+        if (!result) {
+          callback(N.io.NOT_FOUND);
+          return;
+        }
+
+        env.data.album = result;
+        callback();
+      });
+  });
+
+
+  // Prepare media
+  //
+  N.wire.on(apiPath, function prepare_media(env) {
+    env.res.media = env.data.media;
   });
 
 
   // Fill head meta
   //
   N.wire.after(apiPath, function fill_head(env) {
-    var user = env.data.user;
-
     env.res.head = env.res.head || {};
-
-    if (env.data.album) {
-      env.res.head.title = env.t('title_album_with_user', { album: env.data.album.title, user: env.runtime.is_member ? user.name : user.nick });
-      return;
-    }
-
-    env.res.head.title = env.t('title_with_user', { user: env.runtime.is_member ? user.name : user.nick });
+    env.res.head.title = env.t('title');
   });
 
 
@@ -82,6 +93,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function fill_breadcrumbs(env) {
     var user = env.data.user;
+    var album = env.data.album;
 
     var breadcrumbs = [];
 
@@ -95,6 +107,12 @@ module.exports = function (N, apiPath) {
       'text': env.t('albums_breadcrumbs_title'),
       'route': 'users.albums_root',
       'params': { 'user_hid': user.hid }
+    });
+
+    breadcrumbs.push({
+      'text': album.title,
+      'route': 'users.album',
+      'params': { 'user_hid': user.hid, 'album_id': album._id }
     });
 
     env.res.blocks.breadcrumbs = breadcrumbs;

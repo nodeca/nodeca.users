@@ -1,3 +1,4 @@
 en-US:
-  title: Album media
+  title_all_files: All files
+  title_with_album: "Album: #{album}"
   drag_to_upload: Drag photos here to upload.
