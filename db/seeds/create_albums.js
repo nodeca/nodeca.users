@@ -6,6 +6,7 @@ var Charlatan = require('charlatan');
 var path = require('path');
 var walkSync = require('fs-tools').walkSync;
 var _ = require('lodash');
+var numCPUs = require('os').cpus().length;
 
 var ALBUMS_COUNT = 14;
 var MIN_ALBUM_PHOTOS_= 0;
@@ -26,7 +27,7 @@ var models;
 var createMedia = function (userId, album, callback) {
   var photoPath = PHOTOS[Charlatan.Helpers.rand(0, PHOTOS.length)];
 
-  models.users.Media.fileCreatePreviews(photoPath, function (err, file) {
+  models.users.Media.createImage(photoPath, function (err, file) {
     if (err) {
       callback(err);
       return;
@@ -125,7 +126,7 @@ module.exports = function (N, callback) {
     });
 
     // Create albums for prepared user list
-    async.eachSeries(usersId, function (userId, next) {
+    async.eachLimit(usersId, numCPUs, function (userId, next) {
       createMultipleAlbums(userId, next);
     }, callback);
   });
