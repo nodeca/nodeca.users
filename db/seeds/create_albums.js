@@ -120,6 +120,8 @@ module.exports = function (N, callback) {
 
     }
   ], function (err, results) {
+    if (err) { return callback(err); }
+
     var usersId = [];
     _.each(results, function (result) {
       usersId = _.union(usersId, result);

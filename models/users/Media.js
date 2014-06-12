@@ -6,6 +6,7 @@ var Schema = Mongoose.Schema;
 var async = require('async');
 var gm = require('gm');
 var mimoza = require('mimoza');
+var fstools = require('fs-tools');
 var configReader = require('./_lib/size_config_reader');
 
 module.exports = function (N, collectionName) {
@@ -22,15 +23,14 @@ module.exports = function (N, collectionName) {
   });
 
 
-  // Save resized image
+  // Reads image and prepare gm instance
   //
   // - path - path of image file. Required.
   // - size (Object) - size description from config. Required.
-  // - originalId (String) - '_id' of original file. Optional.
   //
-  // callback(err, fileInfo)
+  // callback(err, gm, contentType)
   //
-  var putResizedImage = function (path, size, originalId, callback) {
+  var resizeImage = function (path, size, callback) {
     // Get image size
     gm(path).size(function(err, imageSize) {
       if (err) { return callback(err); }
@@ -41,7 +41,7 @@ module.exports = function (N, collectionName) {
         var contentType = mimoza.getMimeType(imageFormat);
 
         // Resize if image bigger than preview size
-        if (!(imageSize.width < size.width && imageSize.height < size.height)) {
+        if (imageSize.width > size.width || imageSize.height > size.height) {
           // Resize by height and crop extra
           this
             .quality(size.quality)
@@ -50,22 +50,7 @@ module.exports = function (N, collectionName) {
             .crop(size.width, size.height);
         }
 
-        // Save
-        this.toBuffer(function (err, buffer) {
-          if (err) { return callback(err); }
-
-          var params = { 'contentType': contentType };
-          if (originalId) {
-            // Specify name for preview
-            params.filename = originalId + '_' + size.size;
-          }
-
-          N.models.core.File.put(buffer, params, function (err, file) {
-            if (err) { return callback(err); }
-
-            callback(null, file);
-          });
-        });
+        callback(null, this, contentType);
       });
     });
   };
@@ -78,22 +63,59 @@ module.exports = function (N, collectionName) {
   // callback(err, originalFileInfo)
   //
   Media.statics.createImage = function (path, callback) {
-    // First - create original image (first item in mediaSizes)
-    putResizedImage(path, mediaSizes[0], '', function (err, fileInfo) {
-      if (err) { return callback(err); }
+    var origTmp = fstools.tmpdir();
+    var origContentType, origId;
 
-      async.eachSeries(mediaSizes.slice(1), function (size, next) {
-        putResizedImage(path, size, fileInfo._id, next);
-      }, function (err) {
-        if (err) {
-          N.models.core.File.remove(fileInfo._id, true, function () {
-            callback(err);
+    async.series([
+
+      // First - create orig tmp image (first size in mediaSizes)
+      function (next) {
+        resizeImage(path, mediaSizes[0], function (err, gm, contentType) {
+          if (err) { return next(err); }
+
+          origContentType = contentType;
+          gm.write(origTmp, next);
+        });
+      },
+
+      // Save orig file to gridfs to get
+      function (next) {
+        N.models.core.File.put(origTmp, { 'contentType': origContentType }, function (err, file) {
+          if (err) { return next(err); }
+          origId = file._id;
+          next();
+        });
+      },
+
+      // Create previews for all sizes exclude orig (first)
+      function (next) {
+        async.eachSeries(mediaSizes.slice(1), function (size, next) {
+          // Resize
+          resizeImage(origTmp, size, function (err, gm) {
+            gm.toBuffer(function (err, buffer) {
+              if (err) { return next(err); }
+
+              // Save
+              var params = { 'contentType': origContentType, 'filename': origId + '_' + size.size };
+              N.models.core.File.put(buffer, params, function (err) {
+                next(err);
+              });
+            });
           });
-          return;
-        }
+        }, next);
+      }
+    ], function (err) {
+      fstools.removeSync(origTmp); // Remove tmp file
 
-        callback(null, fileInfo);
-      });
+      if (err) {
+        // Remove file with origId and all previews
+        N.models.core.File.remove(origId, true, function () {
+          callback(err);
+        });
+        return;
+      }
+
+      callback(null, origId);
     });
   };
 
