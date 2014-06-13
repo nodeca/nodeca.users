@@ -2,3 +2,4 @@ en-US:
   title_with_user: "Albums - #{user}"
   albums_breadcrumbs_title: Albums
   title_album_with_user: "#{album} - #{user}"
+  default_name: Unsorted

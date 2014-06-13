@@ -68,6 +68,7 @@ module.exports = function (N, apiPath) {
           return;
         }
 
+        result.title = result.title || env.t('default_name');
         env.data.album = result;
         callback();
       });
