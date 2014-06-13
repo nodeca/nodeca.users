@@ -64,7 +64,7 @@ module.exports = function (N, collectionName) {
   //
   // - path - path of image file. Required.
   //
-  // callback(err, originalFileInfo)
+  // callback(err, originalFileId)
   //
   Media.statics.createImage = function (path, callback) {
     var origTmp = fstools.tmpdir();

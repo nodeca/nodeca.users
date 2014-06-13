@@ -9,8 +9,7 @@
       =self.album ? self.t('title_with_album', { album: self.album.title }) : self.t('title_all_files')
     p.page-head__descr.hidden-xs(itemprop='description')
 
-  #users-medias-upload= self.t('drag_to_upload')
-    -// TODO: upload
+  != self.partial('@users.media.upload')
 
   #users-medias-list
     != self.partial('@users.media.list')

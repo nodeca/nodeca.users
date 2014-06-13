@@ -80,3 +80,12 @@ router:
     users.auth.register.activate_show:
       "/auth/register/activate/{secret_key}":
         secret_key: /[0-9a-f]+/
+
+  http.post:
+    users.media.upload:
+      "/member{user_hid}/album/{album_id}/upload":
+        user_hid:
+          match: /\d+/
+          type: 'integer'
+        album_id:
+          match: /[0-9a-f]{24}/

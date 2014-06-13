@@ -1,0 +1,60 @@
+@import "nodeca.core/client/common/_variables"
+
+#media-upload
+  text-align center
+  margin 0 auto
+  width 80%
+  height 50px
+  padding-top 15px
+  margin-bottom 20px
+  border-radius 3px
+  background-color #f8f8f8
+  position relative
+
+#media-upload__button
+  position relative
+  overflow hidden
+
+#media-upload__button input[type=file]
+  position absolute
+  top 0
+  right 0
+  min-width 100%
+  min-height 100%
+  font-size 999px
+  text-align right
+  filter unquote('alpha(opacity = 0)')
+  opacity 0
+  outline none
+  background white
+  cursor inherit
+  display block
+
+#media-upload__button-wrapper
+  position absolute
+  right 10px
+  top 8px
+
+#media-upload__bar
+  width 80%
+  height 25px
+  text-align center
+  margin 0 auto
+  position relative
+  overflow hidden
+
+#media-upload__progress
+  background #125375
+  height 25px
+  position absolute
+  left 0px
+  top 0px
+  width 0%
+  z-index 10
+
+#media-upload__data
+  color #d3d3d3
+  position absolute
+  left 49%
+  top 3px
+  z-index 20

@@ -1,0 +1,16 @@
+#media-upload= self.t('drag_to_upload')
+  div#media-upload__button-wrapper
+    span#media-upload__button.btn.btn-default= self.t('select_files')
+      input(name='files[]', type='file', multiple)#media-upload__files
+
+#media-upload__dialog.modal.fade(tabindex='-1')
+  .modal-dialog
+    .modal-content
+      form
+        .modal-header
+          button.close( aria-hidden='true', type='button', data-dismiss='modal') &times;
+          h4.modal-title= self.t('title_progress')
+        .modal-body
+          #media-upload__bar.img-rounded
+            span#media-upload__data 0%
+            #media-upload__progress
