@@ -3,6 +3,8 @@
 
 'use strict';
 
+var _  = require('lodash');
+
 
 module.exports = function (N, apiPath) {
 
@@ -49,6 +51,27 @@ module.exports = function (N, apiPath) {
       });
   });
 
+  // Fetch comments
+  //
+  N.wire.before(apiPath, function fetch_comment(env, callback) {
+    N.models.users.Comment
+      .find({ 'media_id': env.params.media_id })
+      .lean(true)
+      .exec(function (err, result) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        if (!result) {
+          callback(N.io.NOT_FOUND);
+          return;
+        }
+
+        env.data.comments = result;
+        callback();
+      });
+  });
 
   // Fetch album
   //
@@ -79,8 +102,30 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, function prepare_media(env) {
     env.res.media = env.data.media;
+    env.res.comments = env.data.comments;
   });
 
+  // Add comments into to response & collect user ids
+  //
+  N.wire.after(apiPath, function build_posts_list_and_users(env, callback) {
+
+    env.extras.puncher.start('collect users ids');
+
+    env.res.comments = env.data.comments;
+
+    env.data.users = env.data.users || [];
+
+    // collect users
+    env.data.comments.forEach(function (comment) {
+      if (comment.user_id) {
+        env.data.users.push(comment.user_id);
+      }
+    });
+
+    env.extras.puncher.stop();
+
+    callback();
+  });
 
   // Fill head meta
   //

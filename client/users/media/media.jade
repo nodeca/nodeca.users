@@ -11,3 +11,11 @@
   img.user-media--large-photo(src=imageUrl)
   p= self.media.description
   p= self.date(self.media.created_at, 'date')
+
+  ul.user-media__comments
+    each comment in self.comments
+        - commentUser=self.users[comment.user_id]
+        li
+            span=comment.text
+            a= commentUser.name
+            span= self.date(comment.created_at, 'date')

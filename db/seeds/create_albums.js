@@ -11,6 +11,8 @@ var numCPUs = require('os').cpus().length;
 var ALBUMS_COUNT = 14;
 var MIN_ALBUM_PHOTOS_= 0;
 var MAX_ALBUM_PHOTOS = 5;
+var MIN_COMMENTS = 3;
+var MAX_COMMENTS = 20;
 
 var PHOTOS = [];
 walkSync(path.join(__dirname, 'fixtures', 'create_albums'), function (path, stat) {
@@ -20,7 +22,6 @@ walkSync(path.join(__dirname, 'fixtures', 'create_albums'), function (path, stat
 });
 
 var models;
-
 
 // Creates random photos to album from test fixtures
 //
@@ -78,9 +79,7 @@ var createMultipleAlbums = function (userId, callback) {
   }, callback);
 };
 
-
-module.exports = function (N, callback) {
-  models = N.models;
+var createAlbums = function (callback) {
 
   async.series([
     function (next) {
@@ -132,4 +131,60 @@ module.exports = function (N, callback) {
       createMultipleAlbums(userId, next);
     }, callback);
   });
+};
+
+
+// Creates random comments to media
+//
+var createComment = function (mediaId, userId, callback) {
+  var comment = new models.users.Comment();
+  comment.user_id = userId;
+  comment.media_id = mediaId;
+  comment.created_at = new Date();
+  comment.text = Charlatan.Lorem.paragraph(Charlatan.Helpers.rand(1, 2));
+  comment.st = 1;
+  comment.save(callback);
+};
+
+
+// Creates multiple comments
+//
+var createMultipleComments = function (mediaId, usersId, callback) {
+  async.timesSeries(Charlatan.Helpers.rand(MIN_COMMENTS, MAX_COMMENTS), function (id, cb) {
+    createComment(mediaId, usersId[Charlatan.Helpers.rand(0, usersId.length-1)], cb);
+  }, callback);
+};
+
+var createComments = function (callback) {
+
+  async.series([
+    function (next) {
+      models.users.Media.find().lean(true).exec(function (err, media) {
+        if (err) { return next(err); }
+        next(null, media);
+      });
+
+    }
+  ], function (err, results) {
+    if (err) { return callback(err); }
+
+    var usersId = _.pluck(results[0], 'user_id');
+    usersId = _.uniq(usersId);
+
+    var mediasId = _.pluck(results[0], '_id');
+
+    // Create comments for prepared media and user list
+    async.eachLimit(mediasId, numCPUs, function (mediaId, next) {
+      createMultipleComments(mediaId, usersId, next);
+    }, callback);
+  });
+};
+
+module.exports = function (N, callback) {
+  models = N.models;
+
+  async.series([
+    createAlbums,
+    createComments
+  ], callback)
 };
