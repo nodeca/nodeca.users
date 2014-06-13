@@ -7,10 +7,14 @@ var async = require('async');
 var gm = require('gm');
 var mimoza = require('mimoza');
 var fstools = require('fs-tools');
+var fs = require('fs');
 var configReader = require('./_lib/size_config_reader');
+var exec = require('child_process').exec;
 
 module.exports = function (N, collectionName) {
   var mediaSizes;
+  // Need different options depending ImageMagick or GraphicsMagick installed
+  var gmConfigOptions;
 
   var Media = new Schema({
     'file_id'     : { 'type': Schema.Types.ObjectId, 'index': true },
@@ -32,7 +36,7 @@ module.exports = function (N, collectionName) {
   //
   var resizeImage = function (path, size, callback) {
     // Get image size
-    gm(path).size(function(err, imageSize) {
+    gm(path).options(gmConfigOptions).size(function(err, imageSize) {
       if (err) { return callback(err); }
 
       // Get image format
@@ -45,8 +49,8 @@ module.exports = function (N, collectionName) {
           // Resize by height and crop extra
           this
             .quality(size.quality)
-            .resize(null, size.height)
             .gravity('Center')
+            .resize(null, size.height)
             .crop(size.width, size.height);
         }
 
@@ -105,28 +109,57 @@ module.exports = function (N, collectionName) {
         }, next);
       }
     ], function (err) {
-      fstools.removeSync(origTmp); // Remove tmp file
+      fs.unlink(origTmp, function () {
+        if (err) {
+          // Try to clean up dirty data on error
+          if (origId) {
+            N.models.core.File.remove(origId, true, function () {
+              callback(err);
+            });
+            return;
+          }
 
-      if (err) {
-        // Remove file with origId and all previews
-        N.models.core.File.remove(origId, true, function () {
+          // origId not created
           callback(err);
-        });
-        return;
-      }
+          return;
+        }
 
-      callback(null, origId);
+        callback(null, origId);
+      });
     });
   };
 
 
   N.wire.on('init:models', function emit_init_GlobalSettings(__, callback) {
+    // Read config
     mediaSizes = configReader(((N.config.options || {}).users || {}).media_sizes || {});
     if (mediaSizes instanceof Error) {
       callback(mediaSizes);
+      return;
     }
 
-    N.wire.emit('init:models.' + collectionName, Media, callback);
+    // Check is ImageMagick or GraphicsMagick installed
+    // GraphicsMagick prefered
+    exec('gm version', function (err, stdout) {
+      if (stdout.indexOf('GraphicsMagick') >= 0) {
+        // GraphicsMagick installed continue loading
+        gmConfigOptions = {};
+        N.wire.emit('init:models.' + collectionName, Media, callback);
+        return;
+      }
+
+      // Check ImageMagick if GraphicsMagick not found
+      exec('convert -version', function (err, stdout) {
+        if (stdout.indexOf('ImageMagick') >= 0) {
+          // ImageMagick installed continue loading
+          gmConfigOptions = { 'imageMagick': true };
+          N.wire.emit('init:models.' + collectionName, Media, callback);
+          return;
+        }
+
+        callback(new Error('You need GraphicsMagick or ImageMagick to run. Make sure that one of packages is installed and can be found via search path.'));
+      });
+    });
   });
 
   N.wire.on('init:models.' + collectionName, function init_model_GlobalSettings(schema) {
