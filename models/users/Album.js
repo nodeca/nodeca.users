@@ -39,7 +39,7 @@ module.exports = function (N, collectionName) {
         if (err) { return callback(err); }
 
         // Fetch newest media in album
-        Media.findOne({ 'album_id': album._id }).sort('created_at').lean(true).exec(function (err, result) {
+        Media.findOne({ 'album_id': album._id }).sort('-created_at').lean(true).exec(function (err, result) {
           if (err) { return callback(err); }
 
           // Set results
