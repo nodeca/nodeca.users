@@ -29,13 +29,15 @@ module.exports = function (N, apiPath) {
   // Find and processes user media
   //
   N.wire.on(apiPath, function get_user_medias(env, callback) {
-    var query = N.models.users.Media.find().lean(true).sort('-created_at');
+    var query = N.models.users.Media
+                  .find({ 'user_id': env.data.user._id })
+                  .lean(true)
+                  .sort('-_id');
 
-    // If album_id isn't set - fetch all user medias
+    // If album_id not set, will fetch all user medias
     if (env.params.album_id) {
       query.where({ 'album_id': env.params.album_id });
     }
-    query.where({ 'user_id': env.data.user._id });
 
     query.exec(function (err, result) {
       if (err) {

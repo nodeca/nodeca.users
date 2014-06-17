@@ -1,17 +1,8 @@
-/**
- *  class models.users.AuthLink
- *
- *  Store links beetween user and auth providers.
- **/
-
-/**
- * class models.users.AuthLink#providers.AuthProvider
- *
- * Sub-document describe link info for specified provider
- * Note: some fields such as `pass` and `ext_id`,
- * could be optional for some providers
- **/
-
+// Store links beetween user and auth providers.
+//
+// Sub-document describes link info for specified provider
+// Note: some fields such as `pass` and `ext_id`,
+// could be optional for some providers
 
 'use strict';
 
@@ -30,48 +21,42 @@ module.exports = function (N, collectionName) {
     //
     // - `plain` - just email/password pair
     // - `yandex`, `facebook`, `vkontakte`, `twitter` - different oauth (not supported now)
-    type   : { type: String, required: true }
+    type   : String,
 
     // Provider state
     // FIXME: define states (active/validating)
-  , state  : Number
+    state  : Number,
 
     // Email is mandatory to `email` provider
     // We also will require it everywhere, when possible (twitter don't have it)
-  , email  : String // user email
+    email  : String,
 
     // Password/Salt hash - for email provider only
     // Salt is stored right in hash string
-  , pass   : String
+    pass   : String,
 
     // For oauth providers only, external user id
-  , ext_id : String
+    ext_id : String,
 
     // metadata, if we like to extract extended info from oauth providers
-  , meta   : {}
+    meta   : {}
   },
   {
     versionKey : false
   });
 
-  //
-  // Subdocument indexes
-  //
+  // Indexes (subdocuments)
+  //////////////////////////////////////////////////////////////////////////////
 
-  // used in:
   // - login by email
   // - check that email is unique
-  AuthProvider.index({
-    email: 1
-  , provider: 1
-  });
+  AuthProvider.index({ email: 1, provider: 1 });
 
   // used in login via oauth
-  AuthProvider.index({
-    ext_id: 1
-  , provider: 1
-  });
+  AuthProvider.index({ ext_id: 1, provider: 1 });
 
+
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * models.users.AuthLink#providers.AuthProvider#setPass(password) -> void
@@ -106,6 +91,7 @@ module.exports = function (N, collectionName) {
     password.check(pass, this.pass, callback);
   };
 
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    *  new models.users.AuthLink()
@@ -120,6 +106,9 @@ module.exports = function (N, collectionName) {
     versionKey : false
   });
 
+  // Indexes
+  //////////////////////////////////////////////////////////////////////////////
+
   // used in:
   // - login via nickname
   // - extract auth info in other cases
@@ -127,10 +116,13 @@ module.exports = function (N, collectionName) {
     user_id: 1
   });
 
+  //////////////////////////////////////////////////////////////////////////////
+
 
   N.wire.on('init:models', function emit_init_AuthLink(__, callback) {
     N.wire.emit('init:models.' + collectionName, AuthLink, callback);
   });
+
 
   N.wire.on('init:models.' + collectionName, function init_model_AuthLink(schema) {
     N.models[collectionName] = Mongoose.model(collectionName, schema);

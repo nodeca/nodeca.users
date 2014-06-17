@@ -1,25 +1,40 @@
 // User albums
+
 'use strict';
 
+
 var Mongoose = require('mongoose');
-var Schema = Mongoose.Schema;
+var Schema   = Mongoose.Schema;
+
 
 module.exports = function (N, collectionName) {
+
   var Album = new Schema({
     'title'         : String,
-    'user_id'       : { 'type': Schema.Types.ObjectId, 'index': true },
-    'last_at'       : { 'type': Date, 'required': true, 'default': Date.now },
+    'user_id'       : Schema.Types.ObjectId,
+    'last_at'       : { 'type': Date, 'default': Date.now },
 
     // Source file '_id'. Use thumbnail to show cover.
-    'cover_id'      : { 'type': Schema.Types.ObjectId },
+    'cover_id'      : Schema.Types.ObjectId,
     'count'         : { 'type': Number, 'default': 0 },
 
-    // It is unique album for each user. It contains unsorted photos. Nobody cannot delete this album.
-    'default'       : { 'type': Boolean, 'required': true, 'default': false }
+    // true if almum is default, for incoming medias.
+    // Such albums can not be deleted
+    'default'       : { 'type': Boolean, 'default': false }
   },
   {
     versionKey: false
   });
+
+  // Indexes
+  //////////////////////////////////////////////////////////////////////////////
+
+  // User albums page, fetch albums list
+  // (sorting done in memory, because albums count is small)
+  Album.index({ user_id   : 1 });
+
+
+  //////////////////////////////////////////////////////////////////////////////
 
 
   // Update album fields
@@ -55,11 +70,11 @@ module.exports = function (N, collectionName) {
     });
   };
 
-  N.wire.on('init:models', function emit_init_GlobalSettings(__, callback) {
+  N.wire.on('init:models', function emit_init_Album(__, callback) {
     N.wire.emit('init:models.' + collectionName, Album, callback);
   });
 
-  N.wire.on('init:models.' + collectionName, function init_model_GlobalSettings(schema) {
+  N.wire.on('init:models.' + collectionName, function init_model_Album(schema) {
     N.models[collectionName] = Mongoose.model(collectionName, schema);
   });
 };

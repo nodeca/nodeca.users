@@ -1,30 +1,52 @@
 // Model for file page (comments, file usage...)
+
 'use strict';
 
-var Mongoose = require('mongoose');
-var Schema = Mongoose.Schema;
-var async = require('async');
-var gm = require('gm');
-var mimoza = require('mimoza');
-var fstools = require('fs-tools');
-var fs = require('fs');
-var configReader = require('./_lib/size_config_reader');
-var exec = require('child_process').exec;
+
+var async     = require('async');
+var gm        = require('gm');
+var mimoza    = require('mimoza');
+var fstools   = require('fs-tools');
+var fs        = require('fs');
+var exec      = require('child_process').exec;
+
+var Mongoose  = require('mongoose');
+var Schema    = Mongoose.Schema;
+
+var configReader  = require('./_lib/size_config_reader');
+
 
 module.exports = function (N, collectionName) {
+
   var mediaSizes;
-  // Need different options depending ImageMagick or GraphicsMagick installed
+  // Need different options, depending on ImageMagick or GraphicsMagick used.
   var gmConfigOptions;
 
+
   var Media = new Schema({
-    'file_id'     : { 'type': Schema.Types.ObjectId, 'index': true },
+    'file_id'     : Schema.Types.ObjectId,
     'user_id'     : Schema.Types.ObjectId,
-    'album_id'    : { 'type': Schema.Types.ObjectId, 'index': true },
-    'created_at'  : { 'type': Date, 'required': true, 'default': Date.now },
+    'album_id'    : Schema.Types.ObjectId,
+    'created_at'  : { 'type': Date, 'default': Date.now },
     'description' : String
   }, {
     versionKey: false
   });
+
+  // Indexes
+  //////////////////////////////////////////////////////////////////////////////
+
+  // Media page, routing
+  Media.index({ file_id: 1 });
+
+  // Album page, fetch medias
+  // !!! sorting done in memory, because medias count per album is small
+  Media.index({ album_id: 1 });
+
+  // "All medias" page, medias list, sorted by date
+  Media.index({ user_id: 1, _id: -1 });
+
+  //////////////////////////////////////////////////////////////////////////////
 
 
   // Remove files with previews
@@ -137,7 +159,7 @@ module.exports = function (N, collectionName) {
   };
 
 
-  N.wire.on('init:models', function emit_init_GlobalSettings(__, callback) {
+  N.wire.on('init:models', function emit_init_Media(__, callback) {
     // Read config
     mediaSizes = configReader(((N.config.options || {}).users || {}).media_sizes || {});
     if (mediaSizes instanceof Error) {
@@ -169,7 +191,8 @@ module.exports = function (N, collectionName) {
     });
   });
 
-  N.wire.on('init:models.' + collectionName, function init_model_GlobalSettings(schema) {
+
+  N.wire.on('init:models.' + collectionName, function init_model_Media(schema) {
     N.models[collectionName] = Mongoose.model(collectionName, schema);
   });
 };
