@@ -4,9 +4,11 @@
 'use strict';
 
 
+// comment statuses
+var commentStatuses = require('../_lib/statuses.js');
+
 
 module.exports = function (N, apiPath) {
-
 
   N.validate(apiPath, {
     user_hid: {
@@ -50,11 +52,63 @@ module.exports = function (N, apiPath) {
       });
   });
 
-  // Fetch comments
+
+  // Prepare list of visible comments statuses depending on user permissions
   //
-  N.wire.before(apiPath, function fetch_comment(env, callback) {
+  N.wire.before(apiPath, function define_visible_statuses(env, callback) {
+
+    env.extras.settings.fetch(['can_see_hellbanned'], function (err, settings) {
+
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      env.data.statuses = [commentStatuses.comment.VISIBLE];
+      var st = env.data.statuses;
+
+      // if user can see HB post than can see HB content
+      if (settings.can_see_hellbanned || env.user_info.hb) {
+        st.push(commentStatuses.comment.HB);
+      }
+      callback();
+    });
+  });
+
+
+  // Fetch album
+  //
+  N.wire.before(apiPath, function fetch_media(env, callback) {
+    N.models.users.Album
+      .findOne({ '_id': env.data.media.album_id })
+      .where({ 'user_id': env.data.user._id })//Make sure that user is real owner
+      .lean(true)
+      .exec(function (err, result) {
+        if (err) {
+          callback(err);
+          return;
+        }
+        // That should never happen
+        if (!result) {
+          callback(N.io.NOT_FOUND);
+          return;
+        }
+
+        result.title = result.title || env.t('default_name');
+        env.data.album = result;
+        callback();
+      });
+  });
+
+
+  // Prepare comments and medias
+  //
+  N.wire.on(apiPath, function prepare_comment(env, callback) {
+    env.res.media = env.data.media;
+
     N.models.users.Comment
       .find({ 'media_id': env.params.media_id })
+      .where('st').in(env.data.statuses)
       .lean(true)
       .exec(function (err, result) {
         if (err) {
@@ -72,41 +126,10 @@ module.exports = function (N, apiPath) {
       });
   });
 
-  // Fetch album
+
+  // Add comments into response & collect user ids
   //
-  N.wire.before(apiPath, function fetch_media(env, callback) {
-    N.models.users.Album
-      .findOne({ '_id': env.data.media.album_id })
-      .where({ 'user_id': env.data.user._id }) // Make sure that user is real owner
-      .lean(true)
-      .exec(function (err, result) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        if (!result) {
-          callback(N.io.NOT_FOUND);
-          return;
-        }
-
-        result.title = result.title || env.t('default_name');
-        env.data.album = result;
-        callback();
-      });
-  });
-
-
-  // Prepare media
-  //
-  N.wire.on(apiPath, function prepare_media(env) {
-    env.res.media = env.data.media;
-    env.res.comments = env.data.comments;
-  });
-
-  // Add comments into to response & collect user ids
-  //
-  N.wire.after(apiPath, function build_posts_list_and_users(env, callback) {
+  N.wire.after(apiPath, function build_comments_list_and_users(env, callback) {
 
     env.extras.puncher.start('collect users ids');
 
@@ -125,6 +148,7 @@ module.exports = function (N, apiPath) {
 
     callback();
   });
+
 
   // Fill head meta
   //

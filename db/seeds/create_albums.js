@@ -7,6 +7,7 @@ var path = require('path');
 var walkSync = require('fs-tools').walkSync;
 var _ = require('lodash');
 var numCPUs = require('os').cpus().length;
+var statuses = require('../../server/users/_lib/statuses.js');
 
 var ALBUMS_COUNT = 14;
 var MIN_ALBUM_PHOTOS_= 0;
@@ -79,6 +80,7 @@ var createMultipleAlbums = function (userId, callback) {
   }, callback);
 };
 
+
 var createAlbums = function (callback) {
 
   async.series([
@@ -142,7 +144,7 @@ var createComment = function (mediaId, userId, callback) {
   comment.media_id = mediaId;
   comment.created_at = new Date();
   comment.text = Charlatan.Lorem.paragraph(Charlatan.Helpers.rand(1, 2));
-  comment.st = 1;
+  comment.st = statuses.comment.VISIBLE;
   comment.save(callback);
 };
 
@@ -154,6 +156,7 @@ var createMultipleComments = function (mediaId, usersId, callback) {
     createComment(mediaId, usersId[Charlatan.Helpers.rand(0, usersId.length-1)], cb);
   }, callback);
 };
+
 
 var createComments = function (callback) {
 
@@ -179,6 +182,7 @@ var createComments = function (callback) {
     }, callback);
   });
 };
+
 
 module.exports = function (N, callback) {
   models = N.models;

@@ -1,6 +1,6 @@
-// Comment state
+// Album comments statuses
 exports.comment = {
-  OPEN:     1,
+  VISIBLE:  1,
   DELETED:  2,
   HB:       3 // hellbanned
 };

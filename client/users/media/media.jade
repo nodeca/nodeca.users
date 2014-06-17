@@ -4,7 +4,6 @@
 #content
   != self.partial('@common.blocks.breadcrumbs')
   header.page-head.albums-head
-    h1.page-head__title(itemprop='name')= self.t('title')
     p.page-head__descr.hidden-xs(itemprop='description')
 
   - var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.file_id })
