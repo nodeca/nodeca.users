@@ -1,0 +1,11 @@
+#users-upload__dialog.modal.fade(tabindex='-1')
+  .modal-dialog
+    .modal-content
+      form
+        .modal-header
+          button.close( aria-hidden='true', type='button', data-dismiss='modal') &times;
+          h4.modal-title= self.t('title_progress')
+        .modal-body
+          #users-upload__bar.img-rounded
+            span#users-upload__data 0%
+            #users-upload__progress

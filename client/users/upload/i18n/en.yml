@@ -1,6 +1,4 @@
 en-US:
-  drag_to_upload: Drag photos here to upload.
-  select_files: Browse
   title_progress: Upload in progress
   upload_error: Upload failed
   unsupported_error: "Unsupported file: #{file_name}"

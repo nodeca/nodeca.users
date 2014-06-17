@@ -9,6 +9,7 @@ var tmpDir = require('os').tmpdir();
 var fs = require('fs');
 var async = require('async');
 var _ = require('lodash');
+var mimoza = require('mimoza');
 
 
 module.exports = function (N, apiPath) {
@@ -110,7 +111,10 @@ module.exports = function (N, apiPath) {
 
         // Usually file size and type checked on client side, but we must check it for security reasons
         var cfg = N.config.options.users.media_uploads;
-        if (cfg.allowed_types.indexOf(fileInfo.type) < 0 || cfg.max_size_kb < (fileInfo.size / 1024)) {
+        var allowed_types = _.map(cfg.allowed_extensions, function (ext) {
+          return mimoza.getMimeType(ext);
+        });
+        if (allowed_types.indexOf(fileInfo.type) < 0 || cfg.max_size_kb < (fileInfo.size / 1024)) {
           callback(new Error('Wrong file'));
           return;
         }

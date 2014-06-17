@@ -4,11 +4,6 @@ options:
       max_size_kb: 20000
       client_resize_types:
         - "image/jpeg"
-        - "image/png"
-      allowed_types:
-        - "image/jpeg"
-        - "image/png"
-        - "image/gif"
       allowed_extensions:
         - "jpg"
         - "jpeg"

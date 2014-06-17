@@ -1,8 +1,6 @@
 - var own_page = (self.runtime.user_hid === self.user_hid)
 - self.add_raw_data('profile_tab', own_page)
 
-- self.add_raw_data('uploader_settings', self.uploader_settings)
-
 #content
   != self.partial('@common.blocks.breadcrumbs')
 
@@ -12,7 +10,11 @@
     p.page-head__descr.hidden-xs(itemprop='description')
 
   if own_page
-    != self.partial('@users.media.upload')
+    #users-album__upload(data-on-dragdrop='users.album:dragdrop')= self.t('drag_to_upload')
+      #users-album__upload-button-wrapper
+        span#users-album__upload-button.btn.btn-default= self.t('select_files')
+          input(name='files[]', type='file', multiple)#users-album__upload-files
+    != self.partial('@users.upload')
 
   #users-medias-list
     != self.partial('@users.media.list')

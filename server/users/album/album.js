@@ -63,19 +63,6 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Fill media uploader settings
-  //
-  N.wire.after(apiPath, function fill_uploader_settings(env) {
-    env.res.uploader_settings = {
-      width: N.config.options.users.media_sizes.orig.width,
-      height: N.config.options.users.media_sizes.orig.height,
-      max_size_kb: N.config.options.users.media_uploads.max_size_kb,
-      resize_types: N.config.options.users.media_uploads.client_resize_types,
-      allowed_extensions: N.config.options.users.media_uploads.allowed_extensions
-    };
-  });
-
-
   // Fill head meta
   //
   N.wire.after(apiPath, function fill_head(env) {
