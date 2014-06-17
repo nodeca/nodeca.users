@@ -7,6 +7,24 @@ var $uploadDialog;
 var uploadHandler;
 
 
+N.wire.on('users.media.upload:dragenter', function () {
+  $('#media-upload').addClass('media-upload__active');
+});
+
+
+N.wire.on('users.media.upload:dragleave', function () {
+  $('#media-upload').removeClass('media-upload__active');
+});
+
+
+N.wire.on('users.media.upload:drop', function () {
+  $('#media-upload').removeClass('media-upload__active');
+  if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
+    $('#media-upload__files').fileupload('add', {files: event.dataTransfer.files});
+  }
+});
+
+
 N.wire.on('users.media.upload:init', function init_uploader(data) {
   var settings = N.runtime.page_data.uploader_settings;
 
@@ -27,16 +45,7 @@ N.wire.on('users.media.upload:init', function init_uploader(data) {
       $progressText.text('0%');
     });
 
-  $(document)
-    .on('dragover', '#media-upload', function () {
-      $(this).addClass('media-upload__active');
-    })
-    .on('dragleave', '#media-upload', function () {
-      $(this).removeClass('media-upload__active');
-    });
-
   $('#media-upload__files').fileupload({
-    dropZone: $('#media-upload'),
     url: N.runtime.router.linkTo('users.media.upload', data.params),
     dataType: 'json',
     maxFileSize: settings.max_size_kb * 1024, // Need size in bytes

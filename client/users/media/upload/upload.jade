@@ -1,4 +1,7 @@
-#media-upload= self.t('drag_to_upload')
+#media-upload(
+    data-on-dragenter='users.media.upload:dragenter',
+    data-on-dragleave='users.media.upload:dragleave',
+    data-on-drop='users.media.upload:drop')= self.t('drag_to_upload')
   div#media-upload__button-wrapper
     span#media-upload__button.btn.btn-default= self.t('select_files')
       input(name='files[]', type='file', multiple)#media-upload__files
