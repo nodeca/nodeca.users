@@ -46,6 +46,7 @@ N.wire.on('users.media.upload:init', function init_uploader(data) {
     });
 
   $('#media-upload__files').fileupload({
+    sequentialUploads: true,
     url: N.runtime.router.linkTo('users.media.upload', data.params),
     dataType: 'json',
     maxFileSize: settings.max_size_kb * 1024, // Need size in bytes

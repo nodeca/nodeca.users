@@ -20,10 +20,17 @@ module.exports = function (N, collectionName) {
     'file_id'     : { 'type': Schema.Types.ObjectId, 'index': true },
     'user_id'     : Schema.Types.ObjectId,
     'album_id'    : { 'type': Schema.Types.ObjectId, 'index': true },
-    'created_at'  : Date,
+    'created_at'  : { 'type': Date, 'required': true, 'default': Date.now },
     'description' : String
   }, {
     versionKey: false
+  });
+
+
+  // Remove files with previews
+  //
+  Media.pre('remove', function (callback) {
+    N.models.core.File.remove(this.file_id, true, callback);
   });
 
 

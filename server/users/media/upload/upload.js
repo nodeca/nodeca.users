@@ -8,10 +8,12 @@ var formidable = require('formidable');
 var tmpDir = require('os').tmpdir();
 var fs = require('fs');
 var async = require('async');
-var numCPUs = require('os').cpus().length;
+var _ = require('lodash');
 
 
 module.exports = function (N, apiPath) {
+
+  // CSRF comes in post data and checked separately
   N.validate(apiPath, {
     user_hid: {
       type: 'integer',
@@ -23,24 +25,6 @@ module.exports = function (N, apiPath) {
       required: true
     }
   });
-
-
-  // Delete files in array
-  //
-  var unlinkFiles = function (files, callback) {
-    async.each(files, function (file, next) {
-      fs.unlink(file.path, next);
-    }, callback);
-  };
-
-
-  // Delete medias from DB
-  //
-  var removeMedias = function (medias, callback) {
-    async.each(medias, function (media, next) {
-      media.remove(next);
-    }, callback);
-  };
 
 
   // Fetch owner by hid
@@ -73,8 +57,7 @@ module.exports = function (N, apiPath) {
   // Check permissions
   //
   N.wire.before(apiPath, function check_permissions(env, callback) {
-    // TODO: check quota
-    // TODO: check permissions
+    // TODO: check quota and permissions
 
     // Wrong member_hid parameter
     if (env.data.user._id.toString() !== env.data.album.user_id.toString()) {
@@ -94,101 +77,93 @@ module.exports = function (N, apiPath) {
 
   // Upload files via formidable
   //
-  N.wire.on(apiPath, function upload_media(env, callback) {
-    var files = [];
-
+  N.wire.before(apiPath, function upload_media(env, callback) {
     var form = new formidable.IncomingForm();
-
     form.uploadDir = tmpDir;
-    form.on('file', function (name, file) {
-      // Check file type
-      if (N.config.options.users.media_uploads.allowed_types.indexOf(file.type) < 0) {
-        // Type incorrect - skip file
-        fs.unlink(file.path);
-        return;
-      }
 
-      // Check file size
-      if (N.config.options.users.media_uploads.max_size_kb < (file.size / 1024)) { // file.size in bytes
-        // Size incorrect - skip file
-        fs.unlink(file.path);
-        return;
-      }
+    form.parse(env.origin.req, function (err, fields, files) {
+      files = _.toArray(files);
 
-      files.push(file);
-
-    }).on('aborted', function () {
-
-      env.data.upload_files = files;
-      env.data.upload_success = false;
-      callback();
-
-    }).on('error', function (e) {
-
-      unlinkFiles(files, function () {
-        callback(e);
-      });
-    }).on('end', function () {
-
-      env.data.upload_files = files;
-      env.data.upload_success = true;
-      callback();
-
-    }).parse(env.origin.req);
-
-  });
-
-
-  // Create previews and save
-  //
-  N.wire.after(apiPath, function prepare_media(env, callback) {
-    var Media = N.models.users.Media;
-    var Album = N.models.users.Album;
-    var files = env.data.upload_files;
-    var medias = [];
-
-    // User abort
-    if (!env.data.upload_success) {
-      unlinkFiles(files, callback);
-      return;
-    }
-
-    async.eachLimit(files, numCPUs, function (file, next) {
-      Media.createImage(file.path, function (err, fileId) {
-        if (err) { return next(err); }
-
-        var media = new Media();
-        media.user_id = env.session.user_id;
-        media.album_id = env.data.album._id;
-        media.created_at = new Date();
-        media.file_id = fileId;
-        media.save(function (err) {
-          if (err) { return next(err); }
-
-          medias.push(media);
-          next();
-        });
-      });
-    }, function (err) {
-      unlinkFiles(files, function () {
+      (function (callback) {
+        // In this callback also will be 'aborted' error
         if (err) {
-          // Try to clean up dirty data on error
-          removeMedias(medias, function () {
+          callback(err);
+          return;
+        }
+
+        // Check CSRF
+        if (!env.session.csrf || !fields.csrf || (env.session.csrf !== fields.csrf)) {
+          callback({
+            code: N.io.INVALID_CSRF_TOKEN,
+            data: { token: env.session.csrf }
+          });
+          return;
+        }
+
+        // Should never happens - uploader send only one file
+        if (files.length !== 1) {
+          callback(new Error('Wrong file count'));
+          return;
+        }
+
+        var fileInfo = files[0];
+
+        // Usually file size and type checked on client side, but we must check it for security reasons
+        var cfg = N.config.options.users.media_uploads;
+        if (cfg.allowed_types.indexOf(fileInfo.type) < 0 || cfg.max_size_kb < (fileInfo.size / 1024)) {
+          callback(new Error('Wrong file'));
+          return;
+        }
+
+        env.data.upload_file_info = fileInfo;
+        callback();
+      })(function (err) {
+        if (err) {
+          async.each(_.pluck(files, 'path'), function (path, next) {
+            fs.unlink(path, next);
+          }, function () {
             callback(err);
           });
           return;
         }
 
-        Album.updateInfo(env.data.album._id, function (err) {
-          if (err) {
-            // Try to clean up dirty data on error
-            removeMedias(medias, function () {
-              callback(err);
-            });
-            return;
-          }
+        callback();
+      });
+    });
+  });
 
-          callback();
+
+  // Create previews and save
+  //
+  N.wire.on(apiPath, function prepare_media(env, callback) {
+    var Media = N.models.users.Media;
+    var fileInfo = env.data.upload_file_info;
+
+    Media.createImage(fileInfo.path, function (err, fileId) {
+      // Remove file anyway after upload to gridfs
+      fs.unlink(fileInfo.path, function () {
+        if (err) { return callback(err); }
+
+        var media = new Media();
+        media.user_id = env.session.user_id;
+        media.album_id = env.data.album._id;
+        media.file_id = fileId;
+
+        media.save(function (err) {
+          if (err) { return callback(err); }
+
+          // Update album info after save
+          N.models.users.Album.updateInfo(env.data.album._id, function (err) {
+            if (err) {
+              // Remove dirty media
+              media.remove(function () {
+                callback(err);
+              });
+              return;
+            }
+
+            callback();
+          });
         });
       });
     });
