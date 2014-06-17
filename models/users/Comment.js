@@ -4,8 +4,6 @@
 var Mongoose = require('mongoose');
 var Schema   = Mongoose.Schema;
 
-var statuses = require('../../server/users/_lib/statuses.js');
-
 module.exports = function (N, collectionName) {
 
   var Comment = new Schema({

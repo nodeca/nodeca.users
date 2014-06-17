@@ -186,5 +186,5 @@ module.exports = function (N, callback) {
   async.series([
     createAlbums,
     createComments
-  ], callback)
+  ], callback);
 };
