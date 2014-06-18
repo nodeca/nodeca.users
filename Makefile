@@ -28,6 +28,9 @@ lint:
 		fi
 	jshint . --show-non-errors
 
+eslint:
+	cd ../.. && NODECA_APP_PATH=./node_modules/${NPM_PACKAGE} $(MAKE) eslint
+
 
 test: lint
 	cd ../.. && NODECA_APP=${NPM_PACKAGE} $(MAKE) test

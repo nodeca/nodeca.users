@@ -1,0 +1,25 @@
+env:
+  node: true
+  #browser: true
+
+globals:
+  t: false
+
+  # browser only
+  N: false
+  window: false
+  $: false
+
+rules:
+  quotes: [2, 'single', 'avoid-escape']
+  camelcase: false
+  no-underscore-dangle: false
+  no-process-exit: false
+
+  # browser only
+  no-alert: false
+
+  # temporary
+  no-yoda: false
+  no-comma-dangle: false
+  consistent-return: false
