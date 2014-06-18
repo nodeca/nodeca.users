@@ -8,7 +8,7 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
   pageParams = data.params;
 
   // Init uploader
-  N.wire.emit('users.upload:init', {
+  N.wire.emit('users.uploader:init', {
     inputSelector: '#users-album__upload-files',
     uploadUrl: N.runtime.router.linkTo('users.media.upload', data.params),
     onDone: 'users.album:uploaded'
@@ -29,7 +29,7 @@ N.wire.on('users.album:dragdrop', function (event) {
       $target.removeClass('active');
 
       if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
-        N.wire.emit('users.upload:add', event.dataTransfer.files);
+        N.wire.emit('users.uploader:add', event.dataTransfer.files);
       }
       break;
   }
@@ -42,7 +42,7 @@ N.wire.on('users.album:uploaded', function update_list() {
   N.io.rpc('users.media.list', pageParams, function (err, mediaList) {
     if (err) { return false; }
 
-    var $list = $(N.runtime.render('users.media.list', mediaList));
+    var $list = $(N.runtime.render('users.album.media_list', mediaList));
     $('#users-medias-list').html($list);
   });
 });

@@ -12,7 +12,7 @@ var uploadHandler;
 //
 // - files - array of File or Blob objects
 //
-N.wire.on('users.upload:add', function add_files(files) {
+N.wire.on('users.uploader:add', function add_files(files) {
   if ($uploader) {
     $uploader.fileupload('add', {files: files});
     return;
@@ -28,8 +28,8 @@ N.wire.on('users.upload:add', function add_files(files) {
 //   - uploadUrl - request url
 //   - onDone - name of event, emit when uploads finish
 //
-N.wire.on('users.upload:init', function init_uploader(params) {
-  N.io.rpc('users.upload_config', {}, function (err, settings) {
+N.wire.on('users.uploader:init', function init_uploader(params) {
+  N.io.rpc('users.uploader_config', {}, function (err, settings) {
     if (err) { return false; }
 
     $uploadDialog = $('#users-upload__dialog');
