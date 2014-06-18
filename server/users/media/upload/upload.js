@@ -85,54 +85,53 @@ module.exports = function (N, apiPath) {
     form.parse(env.origin.req, function (err, fields, files) {
       files = _.toArray(files);
 
-      (function (callback) {
-        // In this callback also will be 'aborted' error
-        if (err) {
+      var finish = function (err) {
+        async.each(_.pluck(files, 'path'), function (path, next) {
+          fs.unlink(path, next);
+        }, function (/*__*/) {
+          // Don't care unlink result, forward previous error
           callback(err);
-          return;
-        }
-
-        // Check CSRF
-        if (!env.session.csrf || !fields.csrf || (env.session.csrf !== fields.csrf)) {
-          callback({
-            code: N.io.INVALID_CSRF_TOKEN,
-            data: { token: env.session.csrf }
-          });
-          return;
-        }
-
-        // Should never happens - uploader send only one file
-        if (files.length !== 1) {
-          callback(new Error('Wrong file count'));
-          return;
-        }
-
-        var fileInfo = files[0];
-
-        // Usually file size and type checked on client side, but we must check it for security reasons
-        var cfg = N.config.options.users.media_uploads;
-        var allowed_types = _.map(cfg.allowed_extensions, function (ext) {
-          return mimoza.getMimeType(ext);
         });
-        if (allowed_types.indexOf(fileInfo.type) < 0 || cfg.max_size_kb < (fileInfo.size / 1024)) {
-          callback(new Error('Wrong file'));
-          return;
-        }
+        return;
+      };
 
-        env.data.upload_file_info = fileInfo;
-        callback();
-      })(function (err) {
-        if (err) {
-          async.each(_.pluck(files, 'path'), function (path, next) {
-            fs.unlink(path, next);
-          }, function () {
-            callback(err);
-          });
-          return;
-        }
+      // In this callback also will be 'aborted' error
+      if (err) {
+        finish(err);
+        return;
+      }
 
-        callback();
+      // Check CSRF
+      if (!env.session.csrf || !fields.csrf || (env.session.csrf !== fields.csrf)) {
+        finish({
+          code: N.io.INVALID_CSRF_TOKEN,
+          data: { token: env.session.csrf }
+        });
+        return;
+      }
+
+      // Should never happens - uploader send only one file
+      if (files.length !== 1) {
+        finish(new Error('Only one file allowed on single upload request'));
+        return;
+      }
+
+      var fileInfo = files[0];
+
+      // Usually file size and type are checked on client side,
+      // but we must check it on server side for security reasons
+      var cfg = N.config.options.users.media_uploads;
+      var allowed_types = _.map(cfg.allowed_extensions, function (ext) {
+        return mimoza.getMimeType(ext);
       });
+      
+      if (allowed_types.indexOf(fileInfo.type) < 0 || cfg.max_size_kb < (fileInfo.size / 1024)) {
+        finish(new Error('Wrong file size or file type on upload'));
+        return;
+      }
+
+      env.data.upload_file_info = fileInfo;
+      callback();
     });
   });
 
