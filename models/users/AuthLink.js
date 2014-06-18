@@ -71,6 +71,10 @@ module.exports = function (N, collectionName) {
     }
     var self = this;
     password.hash(pass, function(err, hash) {
+      if (err) {
+        callback(err);
+        return;
+      }
       self.pass = hash;
       callback();
     });
