@@ -125,6 +125,8 @@ module.exports = function (N, collectionName) {
         async.eachSeries(mediaSizes.slice(1), function (size, next) {
           // Resize
           resizeImage(origTmp, size, function (err, gm) {
+            if (err) { return next(err); }
+
             gm.toBuffer(function (err, buffer) {
               if (err) { return next(err); }
 
@@ -169,8 +171,9 @@ module.exports = function (N, collectionName) {
 
     // Check is ImageMagick or GraphicsMagick installed
     // GraphicsMagick prefered
-    exec('gm version', function (err, stdout) {
-      if (stdout.indexOf('GraphicsMagick') >= 0) {
+    exec('gm version', function (__, stdout) {
+      // Don't check error because condition below is most strict
+      if (stdout.indexOf('GraphicsMagick') !== -1) {
         // GraphicsMagick installed continue loading
         gmConfigOptions = {};
         N.wire.emit('init:models.' + collectionName, Media, callback);
@@ -178,8 +181,9 @@ module.exports = function (N, collectionName) {
       }
 
       // Check ImageMagick if GraphicsMagick not found
-      exec('convert -version', function (err, stdout) {
-        if (stdout.indexOf('ImageMagick') >= 0) {
+      exec('convert -version', function (__, stdout) {
+        // Don't check error because condition below is most strict
+        if (stdout.indexOf('ImageMagick') !== -1) {
           // ImageMagick installed continue loading
           gmConfigOptions = { 'imageMagick': true };
           N.wire.emit('init:models.' + collectionName, Media, callback);

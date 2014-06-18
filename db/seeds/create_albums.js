@@ -10,7 +10,7 @@ var numCPUs = require('os').cpus().length;
 var statuses = require('../../server/users/_lib/statuses.js');
 
 var ALBUMS_COUNT = 14;
-var MIN_ALBUM_PHOTOS_= 0;
+var MIN_ALBUM_PHOTOS = 0;
 var MAX_ALBUM_PHOTOS = 5;
 var MIN_COMMENTS = 3;
 var MAX_COMMENTS = 20;
@@ -57,7 +57,7 @@ var createAlbum = function (userId, callback) {
       album.save(next);
     },
     function (next) {
-      async.timesSeries(Charlatan.Helpers.rand(MIN_ALBUM_PHOTOS_, MAX_ALBUM_PHOTOS), function (id, cb) {
+      async.timesSeries(Charlatan.Helpers.rand(MIN_ALBUM_PHOTOS, MAX_ALBUM_PHOTOS), function (id, cb) {
         createMedia(userId, album, cb);
       }, next);
     },
@@ -153,7 +153,7 @@ var createComment = function (mediaId, userId, callback) {
 //
 var createMultipleComments = function (mediaId, usersId, callback) {
   async.timesSeries(Charlatan.Helpers.rand(MIN_COMMENTS, MAX_COMMENTS), function (id, cb) {
-    createComment(mediaId, usersId[Charlatan.Helpers.rand(0, usersId.length-1)], cb);
+    createComment(mediaId, usersId[Charlatan.Helpers.rand(0, usersId.length - 1)], cb);
   }, callback);
 };
 
