@@ -6,6 +6,7 @@
 
 // comment statuses
 var commentStatuses = require('../_lib/statuses.js');
+var fields = require('./_fields.js');
 
 
 module.exports = function (N, apiPath) {
@@ -20,6 +21,10 @@ module.exports = function (N, apiPath) {
       format: 'mongo'
     }
   });
+
+
+  // shortcuts
+  var Comment = N.models.users.Comment;
 
 
   // Fetch owner by hid
@@ -107,7 +112,7 @@ module.exports = function (N, apiPath) {
     env.res.media = env.data.media;
 
     N.models.users.Comment
-      .find({ 'media_id': env.params.media_id })
+      .find({ 'media_id': env.params.media_id }, fields.post_in.join(' '))
       .where('st').in(env.data.statuses)
       .lean(true)
       .exec(function (err, result) {
@@ -149,12 +154,42 @@ module.exports = function (N, apiPath) {
     callback();
   });
 
+  // Sanitize response info. We should not show hellbanned status to users
+  // that cannot view hellbanned content.
+  //
+  N.wire.after(apiPath, function sanitize_statuses(env, callback) {
+
+    env.extras.puncher.start('fetch setting (\'can_see_hellbanned\')');
+
+    env.extras.settings.fetch(['can_see_hellbanned'], function (err, settings) {
+      env.extras.puncher.stop();
+
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      //sanitize commets statuses
+      var comments = env.res.comments;
+      comments.forEach(function (comment) {
+        Comment.sanitize(comment, {
+          keep_statuses: settings.can_see_hellbanned
+        });
+      });
+
+      callback();
+    });
+  });
+
 
   // Fill head meta
   //
   N.wire.after(apiPath, function fill_head(env) {
+    var user = env.data.user;
+    var username = env.runtime.is_member ? user.name : user.nick;
+
     env.res.head = env.res.head || {};
-    env.res.head.title = env.t('title');
+    env.res.head.title = env.t('title', { album: env.data.album.title, username: username });
   });
 
 

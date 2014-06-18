@@ -11,10 +11,30 @@
   p= self.media.description
   p= self.date(self.media.created_at, 'date')
 
-  ul.user-media__comments
-    each comment in self.comments
-        - commentUser=self.users[comment.user_id]
-        li
-            span=comment.text
-            a= commentUser.name
-            span= self.date(comment.created_at, 'date')
+  div.row
+    div.col-lg-6
+      textarea
+  div.row
+    div.col-lg-6
+      a Отправить
+  div.row
+    div.col-lg-6
+      ul.user-media__comments
+       each comment in self.comments
+         - commentUser=self.users[comment.user_id]
+           li
+             div.row
+               div.col-lg-12
+                 span=comment.text
+               div.row
+                 div.col-lg-5
+                   a= commentUser.name
+                 div.col-lg-4
+                   span= self.date(comment.created_at, 'date')
+                 div.col-lg-1
+                   a Edit
+                 div.col-lg-1
+                   a Delte
+                 div.col-lg-1
+                   a Complain
+

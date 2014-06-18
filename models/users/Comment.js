@@ -6,6 +6,9 @@
 var Mongoose = require('mongoose');
 var Schema   = Mongoose.Schema;
 
+// Comment statuses
+var statuses = require('../../server/users/_lib/statuses.js');
+
 
 module.exports = function (N, collectionName) {
 
@@ -46,4 +49,21 @@ module.exports = function (N, collectionName) {
   N.wire.on('init:models.' + collectionName, function init_model_Comment(schema) {
     N.models[collectionName] = Mongoose.model(collectionName, schema);
   });
+
+  // Hide hellbanned info for regular users for security reasons.
+  // This method works with raw object.
+  //
+  // options:
+  //
+  // - `keep_statuses` (boolean) - when false, set st = VISIBLE. Default - false.
+  Comment.statics.sanitize = function sanitize(comment, options) {
+    options = options || {};
+
+    if (comment.st !== statuses.comment.HB) {
+      return;
+    }
+    if (!options.keep_statuses) {
+      comment.st = statuses.comment.VISIBLE;
+    }
+  };
 };
