@@ -9,7 +9,7 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function (env) {
 
     if (!env.user_info.is_guest) {
-      return {
+      throw {
         code: N.io.REDIRECT,
         head: {
           'Location': '/'

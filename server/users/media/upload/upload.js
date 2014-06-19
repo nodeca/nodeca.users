@@ -42,7 +42,10 @@ module.exports = function (N, apiPath) {
       .findOne({ '_id': env.params.album_id })
       .lean(true)
       .exec(function (err, album) {
-        if (err) { return callback(err); }
+        if (err) {
+          callback(err);
+          return;
+        }
 
         if (!album) {
           callback(N.io.NOT_FOUND);
