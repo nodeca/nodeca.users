@@ -21,18 +21,10 @@ help:
 
 
 lint:
-	if test ! `which jshint` ; then \
-		echo "You need 'jshint' installed in order to run lint." >&2 ; \
-		echo "Make sure parent app is installed right" >&2 ; \
-		exit 128 ; \
-		fi
-	jshint . --show-non-errors
-
-eslint:
 	@cd ../.. && NODECA_APP_PATH=./node_modules/${NPM_PACKAGE} $(MAKE) eslint
 
 
-test: lint
+test: eslint
 	cd ../.. && NODECA_APP=${NPM_PACKAGE} $(MAKE) test
 
 
