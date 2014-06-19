@@ -24,7 +24,7 @@ lint:
 	@cd ../.. && NODECA_APP_PATH=./node_modules/${NPM_PACKAGE} $(MAKE) eslint
 
 
-test: eslint
+test: lint
 	cd ../.. && NODECA_APP=${NPM_PACKAGE} $(MAKE) test
 
 
