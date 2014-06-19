@@ -28,7 +28,7 @@ module.exports = function (N, collectionName) {
     secret_key:      { type: String, 'default': generateSecretKey },
     create_ts:       { type: Date,   'default': Date, expires: TOKEN_EXPIRE_TIMEOUT },
     authlink_id:     Schema.Types.ObjectId,
-    authprovider_id: Schema.Types.ObjectId,
+    authprovider_id: Schema.Types.ObjectId
   },
   {
     versionKey : false

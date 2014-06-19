@@ -30,7 +30,7 @@ module.exports = function (N, collectionName) {
     raw_settings : { type: Schema.Types.Mixed, 'default': {} },
 
     // Settings storage. Used only the the UsergroupStore.
-    settings     : { type: Schema.Types.Mixed, 'default': {} },
+    settings     : { type: Schema.Types.Mixed, 'default': {} }
   },
   {
     versionKey : false
