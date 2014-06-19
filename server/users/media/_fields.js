@@ -1,5 +1,5 @@
 // List of fields to fetch from comments.
-// Placed in separate file, to be modifiable via hooks 
+// Placed in separate file, to be modifiable via hooks
 
 
 exports.post_in = [

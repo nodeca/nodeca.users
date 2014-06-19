@@ -75,7 +75,7 @@ $(function () {
           return;
         }
 
-        html = N.runtime.render(module.apiPath, _.extend(data, {
+        html = N.runtime.render(module.apiPath, _.assign(data, {
           popover_id: popover_id
         }));
 

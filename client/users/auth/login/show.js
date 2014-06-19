@@ -11,7 +11,7 @@ var redirect_id;
 
 N.wire.on('navigate.done:' + module.apiPath, function setup_page(data, callback) {
   redirect_id = data.params.redirect_id;
-  
+
   var captchaRequired = N.runtime.page_data.captcha_required;
 
   view = {

@@ -42,7 +42,7 @@ module.exports = function (N, apiPath) {
     async.each(res.usergroups, function (group, next) {
       N.models.users.User.count({ usergroups: group._id }, function (err, members_count) {
         if (err) { return next(err); }
-        
+
         res.members_count[group._id] = members_count;
         next();
       });

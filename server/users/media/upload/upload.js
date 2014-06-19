@@ -124,7 +124,7 @@ module.exports = function (N, apiPath) {
       var allowed_types = _.map(cfg.allowed_extensions, function (ext) {
         return mimoza.getMimeType(ext);
       });
-      
+
       if (allowed_types.indexOf(fileInfo.type) < 0 || cfg.max_size_kb < (fileInfo.size / 1024)) {
         finish(new Error('Wrong file size or file type on upload'));
         return;

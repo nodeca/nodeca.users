@@ -220,7 +220,7 @@ function UserGroup(form, data) {
 
   // Collect category models.
   _(form.setting_schemas).pluck('category_key').unique().forEach(function (name) {
-    var category = new SettingCategory(form, name, _.select(this.settings, { categoryKey: name }));
+    var category = new SettingCategory(form, name, _.filter(this.settings, { categoryKey: name }));
 
     this.categories.push(category);
   }, this);
@@ -314,7 +314,7 @@ function Form(page_data) {
 
   // Select groups suitable for 'inherits' list.
   // Excludes current group and it's descendants.
-  this.otherGroups = _.select(this.groups, function (group) {
+  this.otherGroups = _.filter(this.groups, function (group) {
     return group.id !== this.currentGroup.id &&
            !group.isDescendantOf(this.currentGroup);
   }, this);

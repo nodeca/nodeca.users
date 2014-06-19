@@ -37,13 +37,13 @@ module.exports = function updateStoreSettings(N, callback) {
       // Now override defaults with value of current group
       // (root one will have full list)
       if (group.raw_settings) {
-        _.extend(result, group.raw_settings);
+        _.assign(result, group.raw_settings);
       }
 
       return result;
     }
 
-    async.forEach(groups, function (group, next) {
+    async.each(groups, function (group, next) {
       store.set(fetchSettings(group.id), { usergroup_id: group._id }, next);
     }, callback);
   });

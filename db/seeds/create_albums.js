@@ -109,8 +109,8 @@ var createAlbums = function (callback) {
 
           // Prepare each moderator in subsections
           var usersId = [];
-          _.each(sections, function (section) {
-            _.each(section.moderators, function (moderatorId) {
+          _.forEach(sections, function (section) {
+            _.forEach(section.moderators, function (moderatorId) {
               usersId.push(moderatorId);
             });
           });
@@ -124,7 +124,7 @@ var createAlbums = function (callback) {
     if (err) { return callback(err); }
 
     var usersId = [];
-    _.each(results, function (result) {
+    _.forEach(results, function (result) {
       usersId = _.union(usersId, result);
     });
 

@@ -18,7 +18,7 @@ module.exports.up = function (N, cb) {
             return;
           }
 
-          group.raw_settings = _.extend({}, group.raw_settings, {
+          group.raw_settings = _.assign({}, group.raw_settings, {
             can_access_acp: { value: true },
             can_see_hellbanned: { value: true },
             can_see_deleted_users: { value: true }

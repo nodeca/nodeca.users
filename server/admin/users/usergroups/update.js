@@ -14,7 +14,7 @@ module.exports = function (N, apiPath) {
   var UserGroup = N.models.users.UserGroup;
 
 
-  N.validate(apiPath, _.extend({
+  N.validate(apiPath, _.assign({
     _id: { format: 'mongo', required: true }
   }, PARAMS_SCHEMA));
 
