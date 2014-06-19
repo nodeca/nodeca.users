@@ -21,19 +21,21 @@ help:
 
 
 lint:
-	@cd ../.. && NODECA_APP_PATH=./node_modules/${NPM_PACKAGE} $(MAKE) eslint
+	cd ../.. && NODECA_APP_PATH=./node_modules/${NPM_PACKAGE} $(MAKE) eslint
 
 
 test: lint
 	cd ../.. && NODECA_APP=${NPM_PACKAGE} $(MAKE) test
 
 
-test-ci: lint
+test-ci:
 	rm -rf ${TMP_PATH}
 	git clone git://github.com/nodeca/nodeca.git ${TMP_PATH}
 	mkdir -p ${TMP_PATH}/node_modules
 	cp -r . ${TMP_PATH}/node_modules/${NPM_PACKAGE}
-	cd ${TMP_PATH} && npm install && NODECA_APP=${NPM_PACKAGE} $(MAKE) test
+	cd ${TMP_PATH} && npm install
+	cd ${TMP_PATH} && NODECA_APP_PATH=./node_modules/${NPM_PACKAGE} $(MAKE) eslint
+	cd ${TMP_PATH} && NODECA_APP=${NPM_PACKAGE} $(MAKE) test
 	rm -rf ${TMP_PATH}
 
 
