@@ -1,5 +1,5 @@
 en-US:
-  title_with_user: "Albums - #{user}"
+  title_with_user: "Albums - #{username}"
   albums_breadcrumbs_title: Albums
-  title_album_with_user: "#{album} - #{user}"
+  title_album_with_user: "#{album} - #{username}"
   default_name: Unsorted

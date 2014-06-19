@@ -32,6 +32,7 @@ N.wire.on('users.album:dragdrop', function (event) {
         N.wire.emit('users.uploader:add', event.dataTransfer.files);
       }
       break;
+    default:
   }
 });
 

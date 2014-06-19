@@ -41,9 +41,9 @@ module.exports = function detectCircular(groupId, parentId, callback) {
 
       if (group.parent_group) {
         return checkGroup(group.parent_group.toString());
-      } else {
-        return null;
       }
+
+      return null;
     }
 
     callback(null, checkGroup(String(parentId)));

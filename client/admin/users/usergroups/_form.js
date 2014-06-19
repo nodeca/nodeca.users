@@ -37,9 +37,8 @@ function Setting(form, name, schema, config) {
   this.parentSetting = ko.computed(function () {
     if (this.ownerGroup && this.ownerGroup.parentGroup()) {
       return this.ownerGroup.parentGroup().settingsByName[this.name];
-    } else {
-      return null;
     }
+    return null;
   }, this);
 
   // Private writable slots.
@@ -73,10 +72,9 @@ function Setting(form, name, schema, config) {
 
       } else if (this.parentSetting()) {
         return this.parentSetting().value();
-
-      } else {
-        return this.defaultValue;
       }
+
+      return this.defaultValue;
     }
   , write: function (newValue) {
       this.overriden(true);
@@ -99,9 +97,9 @@ function Setting(form, name, schema, config) {
     } else if ('forced' === filter) {
       return this.forced();
 
-    } else {
-      return true;
     }
+
+    return true;
   }, this);
 
   this.isDirty = ko.computed(function () {
@@ -242,9 +240,8 @@ UserGroup.prototype.isDescendantOf = function isDescendantOf(group) {
   if (this.parentGroup()) {
     return this.parentId() === group.id ||
            this.parentGroup().isDescendantOf(group);
-  } else {
-    return false;
   }
+  return false;
 };
 
 // Marks all trackable data slots and related settings as saved.

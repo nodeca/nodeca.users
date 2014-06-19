@@ -66,16 +66,15 @@ module.exports = function (N, apiPath) {
   // Fill head meta
   //
   N.wire.after(apiPath, function fill_head(env) {
-    var user = env.data.user;
+    var username = env.runtime.is_member ? env.data.user.name : env.data.user.nick;
 
     env.res.head = env.res.head || {};
 
     if (env.data.album) {
-      env.res.head.title = env.t('title_album_with_user', { album: env.data.album.title, user: env.runtime.is_member ? user.name : user.nick });
-      return;
+      env.res.head.title = env.t('title_album_with_user', { album: env.data.album.title, username: username });
+    } else {
+      env.res.head.title = env.t('title_with_user', { username: username });
     }
-
-    env.res.head.title = env.t('title_with_user', { user: env.runtime.is_member ? user.name : user.nick });
   });
 
 

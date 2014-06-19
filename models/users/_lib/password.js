@@ -27,7 +27,7 @@ exports.check = function checkPassword(pass, hash, callback) {
   var parts = hash.split('$');
   parts.shift();
 
-  var itCount = parseInt(parts[1]);
+  var itCount = parseInt(parts[1], 10);
   var salt = new Buffer(parts[2],'base64');
   var test = parts[3];
   var keyLen = (new Buffer(test, 'base64')).length;

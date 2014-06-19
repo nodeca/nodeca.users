@@ -190,7 +190,7 @@ module.exports = function (N, collectionName) {
           return;
         }
 
-        callback(new Error('You need GraphicsMagick or ImageMagick to run. Make sure that one of packages is installed and can be found via search path.'));
+        callback(new Error('You need GraphicsMagick or ImageMagick to run this application. Can\'t find any.'));
       });
     });
   });
