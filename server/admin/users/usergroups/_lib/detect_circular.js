@@ -9,7 +9,7 @@
 var _ = require('lodash');
 
 
-module.exports = function detectCircular(groupId, parentId, callback) {
+module.exports = function detectCircular(N, groupId, parentId, callback) {
   if (!parentId) {
     // No parent - skip.
     callback();

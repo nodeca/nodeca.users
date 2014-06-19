@@ -56,7 +56,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      detectCircular(group._id, env.params.parent_group, function (err, circularGroup) {
+      detectCircular(N, group._id, env.params.parent_group, function (err, circularGroup) {
         if (err) {
           callback(err);
           return;

@@ -1,0 +1,10 @@
+env:
+  node: false
+  browser: true
+
+globals:
+  $: false
+  N: false
+  module: false
+  require: false
+  t: false
