@@ -57,11 +57,15 @@ module.exports = function (N, collectionName) {
         Media.findOne({ 'album_id': album._id }).sort('-created_at').lean(true).exec(function (err, result) {
           if (err) { return callback(err); }
 
-          // Set results
           if (result) {
+            // Set results
             album.cover_id = result.file_id;
             album.last_at = result.created_at;
+          } else {
+            // To show "No cover" for album, if it has no photo
+            album.cover_id = null;
           }
+
           album.count = cnt;
 
           album.save(callback);
