@@ -83,6 +83,8 @@ var createMultipleAlbums = function (userId, callback) {
 
 var createAlbums = function (callback) {
 
+  var user_ids = [];
+
   async.series([
     function (next) {
 
@@ -90,47 +92,36 @@ var createAlbums = function (callback) {
       models.users.User.findOne({ 'nick': 'admin' }).lean(true).exec(function (err, user) {
         if (err) { return next(err); }
 
-        if (!user) { return next(new Error('No such user: admin')); }
+        if (user) {
+          user_ids.push(user._id);
+        }
 
-        next(null, [user._id]);
+        next();
       });
 
     },
     function (next) {
       // Create demo albums for moderators in first forum section
 
-      // Fetch forum section with smallest hid
-      models.forum.Section.findOne({}).sort('hid').lean(true).exec(function (err, parentSection) {
+      // Fetch all sections & collect moderators
+      models.forum.Section.find().lean(true).exec(function (err, sections) {
         if (err) { return next(err); }
 
-        // Fetch subsections
-        models.forum.Section.find({ 'parent': parentSection._id }).lean(true).exec(function (err, sections) {
-          if (err) { return next(err); }
-
-          // Prepare each moderator in subsections
-          var usersId = [];
-          _.forEach(sections, function (section) {
-            _.forEach(section.moderators, function (moderatorId) {
-              usersId.push(moderatorId);
-            });
-          });
-          next(null, usersId);
-
+        // Prepare each moderator in subsections
+        _.forEach(sections, function (section) {
+          user_ids = user_ids.concat(section.moderators);
         });
+        next();
       });
-
     }
-  ], function (err, results) {
+  ], function (err) {
     if (err) { return callback(err); }
 
-    var usersId = [];
-    _.forEach(results, function (result) {
-      usersId = _.union(usersId, result);
-    });
+    user_ids = _.uniq(user_ids.map(String));
 
     // Create albums for prepared user list
-    async.eachLimit(usersId, numCPUs, function (userId, next) {
-      createMultipleAlbums(userId, next);
+    async.eachLimit(user_ids, numCPUs, function (uid, next) {
+      createMultipleAlbums(uid, next);
     }, callback);
   });
 };

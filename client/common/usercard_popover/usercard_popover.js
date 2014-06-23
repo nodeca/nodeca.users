@@ -27,6 +27,55 @@ $.fn.powerTip.smartPlacementLists.usercard = [
 ];
 
 
+// Show user unfo for selected dom element
+//
+function showUserInfo($el) {
+  var popover_id = 'usercard_popover_' + POPOVER_IDX++;
+
+  $el.data('powertip', N.runtime.render(module.apiPath, {
+    popover_id: popover_id,
+    loading: true
+  }));
+
+  // assign powertip handlers
+  $el.powerTip({
+    placement:          'usercard',
+    smartPlacement:     true,
+    mouseOnToPopup:     true,
+    popupId:            'ucard-popover',
+    offset:             15,
+    closeDelay:         500,
+    intentPollInterval: DELAY
+  });
+
+  // show popover
+  $.powerTip.showTip($el);
+
+  // fetch data
+  getUserInfo($el.data('user-id'), function (data) {
+    var html;
+
+    if (!data) {
+      // no user -- destroy powertip and set powertip data attribute
+      // to not reinitiate it next time
+      $el.powerTip('destroy').data('powertip', true);
+      return;
+    }
+
+    html = N.runtime.render(module.apiPath, _.assign(data, {
+      popover_id: popover_id
+    }));
+
+    // set powertip contents
+    $el.data('powertip', html);
+
+    // try to replace already shown "loading" stub
+    $('#' + popover_id).replaceWith(html);
+
+    $.powerTip.resetPosition($el);
+  });
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -43,50 +92,7 @@ $(function () {
     }
 
     TIMEOUT = setTimeout(function () {
-      var popover_id = 'usercard_popover_' + POPOVER_IDX++;
-
-      $this.data('powertip', N.runtime.render(module.apiPath, {
-        popover_id: popover_id,
-        loading: true
-      }));
-
-      // assign powertip handlers
-      $this.powerTip({
-        placement:          'usercard',
-        smartPlacement:     true,
-        mouseOnToPopup:     true,
-        popupId:            'ucard-popover',
-        offset:             15,
-        closeDelay:         500,
-        intentPollInterval: DELAY
-      });
-
-      // show popover
-      $.powerTip.showTip($this);
-
-      // fetch data
-      getUserInfo(id, function (data) {
-        var html;
-
-        if (!data) {
-          // no user -- destroy powertip and set powertip data attribute
-          // to not reinitiate it next time
-          $this.powerTip('destroy').data('powertip', true);
-          return;
-        }
-
-        html = N.runtime.render(module.apiPath, _.assign(data, {
-          popover_id: popover_id
-        }));
-
-        // set powertip contents
-        $this.data('powertip', html);
-
-        // try to replace already shown "loading" stub
-        $('#' + popover_id).replaceWith(html);
-
-        $.powerTip.resetPosition($this);
-      });
+      showUserInfo($this);
     }, DELAY);
   });
 
