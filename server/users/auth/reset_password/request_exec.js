@@ -21,7 +21,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function (env, callback) {
+  N.wire.before(apiPath, function verify_captcha(env, callback) {
     var privateKey = N.config.options.recaptcha.private_key
       , clientIp   = env.req.ip
       , challenge  = env.params.recaptcha_challenge_field
@@ -36,55 +36,73 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      N.models.users.AuthLink.findOne({
-        'providers.email': env.params.email
-      , 'providers.type': 'plain'
-      }, function (err, authlink) {
+      callback();
+    });
+  });
+
+
+  // Search auth record
+  //
+  N.wire.before(apiPath, function fetch_auth_link(env, callback) {
+    N.models.users.AuthLink.findOne({
+      'providers.email': env.params.email
+    , 'providers.type': 'plain'
+    }, function (err, authlink) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      if (!authlink) {
+        callback({
+          code:    N.io.CLIENT_ERROR
+        , message: env.t('unknown_email')
+        });
+        return;
+      }
+
+      env.data.authlink = authlink;
+
+      callback();
+    });
+  });
+
+
+  // Main
+  //
+  N.wire.on(apiPath, function create_reset_confirmation(env, callback) {
+    var authlink = env.data.authlink;
+
+    var provider = _.find(authlink.providers, {
+      type: 'plain'
+    , email: env.params.email
+    });
+
+    N.models.users.TokenResetPassword.create({
+      authlink_id:     authlink._id
+    , authprovider_id: provider._id
+    }, function (err, token) {
+
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      N.settings.get('general_project_name', function (err, projectName) {
         if (err) {
           callback(err);
           return;
         }
 
-        if (!authlink) {
-          callback({
-            code:    N.io.CLIENT_ERROR
-          , message: env.t('unknown_email')
-          });
-          return;
-        }
-
-        var provider = _.find(authlink.providers, {
-          type: 'plain'
-        , email: env.params.email
+        var link = env.helpers.url_to('users.auth.reset_password.change_show', {
+          secret_key: token.secret_key
         });
 
-        N.models.users.TokenResetPassword.create({
-          authlink_id:     authlink._id
-        , authprovider_id: provider._id
-        }, function (err, token) {
-
-          if (err) {
-            callback(err);
-            return;
-          }
-
-          N.settings.get('general_project_name', function (err, projectName) {
-            if (err) {
-              callback(err);
-              return;
-            }
-
-            var link = env.helpers.url_to('users.auth.reset_password.change_show', {
-              secret_key: token.secret_key
-            });
-
-            N.mailer.send({
-              to:      provider.email
-            , subject: env.t('confirmation_email_subject', { project_name: projectName })
-            , text:    env.t('confirmation_email_text',    { link: link })
-            }, callback);
-          });
-        });
+        N.mailer.send({
+          to:      provider.email
+        , subject: env.t('confirmation_email_subject', { project_name: projectName })
+        , text:    env.t('confirmation_email_text',    { link: link })
+        }, callback);
       });
     });
   });

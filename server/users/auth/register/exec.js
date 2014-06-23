@@ -227,7 +227,7 @@ module.exports = function (N, apiPath) {
 
   // Auto login to the new account.
   //
-  N.wire.after(apiPath, function create_user_privider(env, callback) {
+  N.wire.after(apiPath, function autologin(env, callback) {
 
     var user = env.data.user;
     var provider =  env.data.provider;
