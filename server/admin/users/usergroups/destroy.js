@@ -13,8 +13,12 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function (env, callback) {
+  // Search group & check protection
+  //
+  N.wire.before(apiPath, function usergroup_search(env, callback) {
+
     UserGroup.findById(env.params._id).exec(function(err, group) {
+
       if (err) {
         callback(err);
         return;
@@ -36,41 +40,58 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      // Try to find any child.
-      UserGroup.findOne({ parent_group: group._id }).exec(function(err, child) {
-        if (err) {
-          callback(err);
-          return;
-        }
+      env.data.userGroup = group;
 
-        if (child) {
-          callback({
-            code: N.io.BAD_REQUEST
-          , message: env.t('error_has_children', {
-              name: child.short_name
-            })
-          });
-          return;
-        }
+      callback();
+    });
+  });
 
-        // Count users associated with the group.
-        User.count({ usergroups: group._id }).exec(function(err, usersCount) {
-          if (err) {
-            callback(err);
-            return;
-          }
 
-          if (0 !== usersCount) {
-            callback({
-              code: N.io.BAD_REQUEST
-            , message: env.t('error_not_empty')
-            });
-            return;
-          }
+  // Check that no inherited groups exists
+  //
+  N.wire.before(apiPath, function usergroup_check_childs(env, callback) {
 
-          group.remove(callback);
+    UserGroup.findOne({ parent_group: env.data.userGroup._id })
+        .lean(true)
+        .exec(function(err, child) {
+
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      if (child) {
+        callback({
+          code: N.io.BAD_REQUEST,
+          message: env.t('error_has_children', { name: child.short_name })
         });
-      });
+        return;
+      }
+
+      callback();
+    });
+  });
+
+
+  N.wire.on(apiPath, function usergroup_delete(env, callback) {
+    var group = env.data.userGroup;
+
+    // Delete only if no users in group.
+    User.count({ usergroups: group._id }).exec(function(err, usersCount) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      if (0 !== usersCount) {
+        callback({
+          code: N.io.BAD_REQUEST
+        , message: env.t('error_not_empty')
+        });
+        return;
+      }
+
+      group.remove(callback);
     });
   });
 };

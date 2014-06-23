@@ -13,6 +13,7 @@ en-US:
     error_short_name_busy: This name is occupied, select another one.
 
   update:
+    error_not_exists: Group does not exists.
     error_nonexistent_parent_group: Given parent does not exists.
     error_circular_dependency: Can't inherit this parent (circular dependency)
 
