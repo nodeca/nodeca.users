@@ -21,9 +21,9 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function resend_activation(env, callback) {
-    env.res.head.title = env.t('title');
-
+  // Check permissions & try to find user
+  //
+  N.wire.before(apiPath, function resend_check_permissions(env, callback) {
     if (!env.session.user_id) {
       callback(N.io.NOT_AUTHORIZED);
       return;
@@ -44,38 +44,51 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      N.models.users.AuthLink
-          .findOne({ user_id: user._id })
-          .lean(true)
-          .exec(function (err, authlink) {
+      env.data.user = user;
 
+      callback();
+    });
+  });
+
+
+  // Process token
+  //
+  N.wire.on(apiPath, function resend_activation(env, callback) {
+    var user = env.data.user;
+
+    env.res.head.title = env.t('title');
+
+    N.models.users.AuthLink
+        .findOne({ user_id: user._id })
+        .lean(true)
+        .exec(function (err, authlink) {
+
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      if (!authlink) {
+        callback(N.io.NOT_AUTHORIZED);
+        return;
+      }
+
+      var plainProvider = _.find(authlink.providers, function (provider) {
+        return 'plain' === provider.type;
+      });
+
+      if (!plainProvider) {
+        callback(N.io.NOT_AUTHORIZED);
+        return;
+      }
+
+      N.models.users.TokenActivationEmail.create({ user_id: user._id }, function (err, token) {
         if (err) {
           callback(err);
           return;
         }
 
-        if (!authlink) {
-          callback(N.io.NOT_AUTHORIZED);
-          return;
-        }
-
-        var plainProvider = _.find(authlink.providers, function (provider) {
-          return 'plain' === provider.type;
-        });
-
-        if (!plainProvider) {
-          callback(N.io.NOT_AUTHORIZED);
-          return;
-        }
-
-        N.models.users.TokenActivationEmail.create({ user_id: user._id }, function (err, token) {
-          if (err) {
-            callback(err);
-            return;
-          }
-
-          sendActivationEmail(N, env, plainProvider.email, token, callback);
-        });
+        sendActivationEmail(N, env, plainProvider.email, token, callback);
       });
     });
   });

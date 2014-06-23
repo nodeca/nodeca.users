@@ -11,6 +11,8 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Get id of 'validating' group
+  //
   N.wire.before(apiPath, function find_validating_group_id(env, callback) {
     N.models.users.UserGroup.findIdByName('validating', function(err, id) {
       env.data.validatingGroupId = id;
@@ -19,7 +21,9 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.before(apiPath, function find_validated_group_id(env, callback) {
+  // Get id of group to move after registration
+  //
+  N.wire.before(apiPath, function find_after_register_group_id(env, callback) {
     N.settings.get('register_user_validated_group', function (err, id) {
       env.data.validatedGroupId = id;
       callback(err);
@@ -27,9 +31,17 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function register_activate(env, callback) {
+  // Greate default response (with failing state)
+  //
+  N.wire.before(apiPath, function prepare_response(env) {
     env.res.head.title = env.t('title');
     env.res.success = false; // Just initial value.
+  });
+
+
+  // Check auth token & try to load user
+  //
+  N.wire.before(apiPath, function check_activation_token_and_user(env, callback) {
 
     N.models.users.TokenActivationEmail
         .findOne({ secret_key: env.params.secret_key })
@@ -65,39 +77,54 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        user.usergroups.remove(env.data.validatingGroupId);
+        env.data.user = user;
+      });
+    });
+  });
 
-        // Push the validated group only if user isn't already member of that.
-        if (-1 === user.usergroups.indexOf(env.data.validatedGroupId)) {
-          user.usergroups.push(env.data.validatedGroupId);
+
+  // Update user group on success
+  //
+  N.wire.on(apiPath, function register_activate(env, callback) {
+    var user = env.data.user;
+
+    // If no user loaded - return with default prapaired 'failing' reply
+    if (!user) {
+      callback();
+      return;
+    }
+
+    user.usergroups.remove(env.data.validatingGroupId);
+
+    // Push the validated group only if user isn't already member of that.
+    if (-1 === user.usergroups.indexOf(env.data.validatedGroupId)) {
+      user.usergroups.push(env.data.validatedGroupId);
+    }
+
+    // Ensure all ever created tokens are deleted *before* saving
+    // the account and auto-login.
+    N.models.users.TokenActivationEmail.find({ user_id: user._id }).remove(function (err) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      user.save(function (err, user) {
+        if (err) {
+          callback(err);
+          return;
         }
 
-        // Ensure all ever created tokens are deleted *before* saving
-        // the account and auto-login.
-        N.models.users.TokenActivationEmail.find({ user_id: user._id }).remove(function (err) {
-          if (err) {
-            callback(err);
-            return;
-          }
+        env.res.success = true;
 
-          user.save(function (err, user) {
-            if (err) {
-              callback(err);
-              return;
-            }
+        // Auto-login.
+        if (!env.session.user_id) {
+          env.data.user = user;
+          N.wire.emit('internal:users.login', env, callback);
+          return;
+        }
 
-            env.res.success = true;
-
-            // Auto-login.
-            if (!env.session.user_id) {
-              env.data.user = user;
-              N.wire.emit('internal:users.login', env, callback);
-              return;
-            }
-
-            callback();
-          });
-        });
+        callback();
       });
     });
   });

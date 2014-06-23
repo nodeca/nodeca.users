@@ -97,6 +97,8 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Check recaptcha
+  //
   N.wire.before(apiPath, function validate_recaptcha(env, callback) {
     if (!_.isEmpty(env.data.errors)) {
       // Skip if some other fields are incorrect in order to not change
@@ -120,6 +122,8 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Get id of 'validating' group
+  //
   N.wire.before(apiPath, function find_validating_group_id(env, callback) {
     N.models.users.UserGroup.findIdByName('validating', function(err, id) {
       env.data.validatingGroupId = id;
@@ -128,7 +132,19 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function register(env, callback) {
+  // Get id of group to move after registration
+  //
+  N.wire.before(apiPath, function find_after_register_group_id(env, callback) {
+    N.settings.get('register_user_validated_group', function (err, id) {
+      env.data.validatedGroupId = id;
+      callback(err);
+    });
+  });
+
+
+  // Create user record
+  //
+  N.wire.on(apiPath, function create_user(env, callback) {
     env.res.head.title = env.t('title');
 
     if (!_.isEmpty(env.data.errors)) {
@@ -136,88 +152,111 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    N.settings.get('register_user_initial_group', function (err, groupId) {
+    // Find highest user hid. (plain number)
+    N.models.core.Increment.next('user', function (err, newUserHid) {
       if (err) {
         callback(err);
         return;
       }
 
-      // Find highest user hid. (plain number)
-      N.models.core.Increment.next('user', function (err, newUserHid) {
+      var user = new N.models.users.User();
+
+      user.hid         = newUserHid;
+      user.nick       = env.params.nick;
+      user.usergroups = [ env.data.validatedGroupId ];
+      user.joined_ip  = env.req.ip;
+      user.joined_ts  = new Date();
+      user.locale     = env.runtime.locale || N.config.locales['default'];
+
+      user.save(function (err, user) {
         if (err) {
           callback(err);
           return;
         }
 
-        var user = new N.models.users.User();
+        env.data.user = user;
+        callback();
+      });
+    });
+  });
 
-        user.hid         = newUserHid;
-        user.nick       = env.params.nick;
-        user.usergroups = [ groupId ];
-        user.joined_ip  = env.req.ip;
-        user.joined_ts  = new Date();
-        user.locale     = env.runtime.locale || N.config.locales['default'];
 
-        user.save(function (err, user) {
+  // Add auth provider record
+  //
+  N.wire.after(apiPath, function create_user_privider(env, callback) {
+
+    var user = env.data.user;
+
+    var authlink = new N.models.users.AuthLink({ 'user_id': user._id });
+
+    var provider = authlink.providers.create({
+      type: 'plain',
+      email: env.params.email
+    });
+
+    function fail(err) {
+      user.remove(function () {
+        callback(err);
+      });
+    }
+
+    provider.setPass(env.params.pass, function (err) {
+      if (err) {
+        // Can't fill hash - delete the user.
+        // Should not happen in real life
+        fail(err);
+        return;
+      }
+
+      authlink.providers.push(provider);
+      authlink.save(function (err) {
+        if (err) {
+          // Can't create authlink - delete the user.
+          // Should not happen in real life
+          fail(err);
+          return;
+        }
+
+        env.data.provider = provider;
+
+        callback();
+      });
+    });
+  });
+
+
+  // Auto login to the new account.
+  //
+  N.wire.after(apiPath, function create_user_privider(env, callback) {
+
+    var user = env.data.user;
+    var provider =  env.data.provider;
+
+
+    N.wire.emit('internal:users.login', env, function (err) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      // If the user is in 'validating' group according to global settings,
+      // send activation token by email.
+      if (env.data.validatingGroupId.equals(env.data.validatedGroupId)) {
+        env.res.redirect_url = N.runtime.router.linkTo('users.auth.register.done_show');
+
+        N.models.users.TokenActivationEmail.create({ user_id: user._id }, function (err, token) {
           if (err) {
             callback(err);
             return;
           }
 
-          var authlink, provider;
-
-          authlink = new N.models.users.AuthLink({ 'user_id': user._id });
-
-          provider = authlink.providers.create({
-            type: 'plain'
-          , email: env.params.email
-          });
-
-          provider.setPass(env.params.pass, function (err) {
-            if (err) {
-              user.remove(callback); // Can't fill hash - delete the user.
-              return;
-            }
-
-            authlink.providers.push(provider);
-            authlink.save(function (err) {
-              if (err) {
-                user.remove(callback); // Can't create authlink - delete the user.
-                return;
-              }
-
-              // Auto log-in to the new account.
-              env.data.user = user;
-              N.wire.emit('internal:users.login', env, function (err) {
-                if (err) {
-                  callback(err);
-                  return;
-                }
-
-                // If the user is in 'validating' group according to global settings,
-                // send activation token by email.
-                if (env.data.validatingGroupId.equals(groupId)) {
-                  env.res.redirect_url = N.runtime.router.linkTo('users.auth.register.done_show');
-
-                  N.models.users.TokenActivationEmail.create({ user_id: user._id }, function (err, token) {
-                    if (err) {
-                      callback(err);
-                      return;
-                    }
-
-                    sendActivationEmail(N, env, provider.email, token, callback);
-                    return;
-                  });
-                } else {
-                  env.res.redirect_url = N.runtime.router.linkTo('users.profile');
-                  callback();
-                  return;
-                }
-              });
-            });
-          });
+          sendActivationEmail(N, env, provider.email, token, callback);
         });
-      });
+        return;
+      }
+
+      env.res.redirect_url = N.runtime.router.linkTo('users.profile');
+      callback();
     });
   });
 };
