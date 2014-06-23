@@ -88,25 +88,24 @@ module.exports = function (N, apiPath) {
     form.parse(env.origin.req, function (err, fields, files) {
       files = _.toArray(files);
 
-      var finish = function (err) {
+      function fail(err) {
         async.each(_.pluck(files, 'path'), function (path, next) {
           fs.unlink(path, next);
-        }, function (/*__*/) {
+        }, function () {
           // Don't care unlink result, forward previous error
           callback(err);
         });
-        return;
-      };
+      }
 
       // In this callback also will be 'aborted' error
       if (err) {
-        finish(err);
+        fail(err);
         return;
       }
 
       // Check CSRF
       if (!env.session.csrf || !fields.csrf || (env.session.csrf !== fields.csrf)) {
-        finish({
+        fail({
           code: N.io.INVALID_CSRF_TOKEN,
           data: { token: env.session.csrf }
         });
@@ -115,7 +114,7 @@ module.exports = function (N, apiPath) {
 
       // Should never happens - uploader send only one file
       if (files.length !== 1) {
-        finish(new Error('Only one file allowed on single upload request'));
+        fail(new Error('Only one file allowed on single upload request'));
         return;
       }
 
@@ -129,7 +128,7 @@ module.exports = function (N, apiPath) {
       });
 
       if (allowed_types.indexOf(fileInfo.type) < 0 || cfg.max_size_kb < (fileInfo.size / 1024)) {
-        finish(new Error('Wrong file size or file type on upload'));
+        fail(new Error('Wrong file size or file type on upload'));
         return;
       }
 
@@ -139,39 +138,49 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Create previews and save
+  // Create image (previews are created on save)
   //
-  N.wire.on(apiPath, function prepare_media(env, callback) {
+  N.wire.on(apiPath, function save_media(env, callback) {
     var Media = N.models.users.Media;
     var fileInfo = env.data.upload_file_info;
 
     Media.createImage(fileInfo.path, function (err, fileId) {
       // Remove file anyway after upload to gridfs
       fs.unlink(fileInfo.path, function () {
-        if (err) { return callback(err); }
+
+        if (err) {
+          callback(err);
+          return;
+        }
 
         var media = new Media();
         media.user_id = env.session.user_id;
         media.album_id = env.data.album._id;
         media.file_id = fileId;
 
-        media.save(function (err) {
-          if (err) { return callback(err); }
+        env.data.media = media;
 
-          // Update album info after save
-          N.models.users.Album.updateInfo(env.data.album._id, function (err) {
-            if (err) {
-              // Remove dirty media
-              media.remove(function () {
-                callback(err);
-              });
-              return;
-            }
-
-            callback();
-          });
-        });
+        media.save(callback);
       });
+    });
+  });
+
+
+  // Update album info
+  //
+  N.wire.after(apiPath, function update_album_info(env, callback) {
+    var media = env.data.media;
+
+    N.models.users.Album.updateInfo(env.data.album._id, function (err) {
+      if (err) {
+        // Remove dirty media
+        media.remove(function () {
+          callback(err);
+        });
+        return;
+      }
+
+      callback();
     });
   });
 };
