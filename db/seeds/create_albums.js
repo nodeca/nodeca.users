@@ -104,14 +104,26 @@ var createAlbums = function (callback) {
       // Create demo albums for moderators in first forum section
 
       // Fetch all sections & collect moderators
-      models.forum.Section.find().lean(true).exec(function (err, sections) {
+      models.forum.Section.getChildren(null, 2, function (err, sections) {
         if (err) { return next(err); }
 
-        // Prepare each moderator in subsections
-        _.forEach(sections, function (section) {
-          user_ids = user_ids.concat(section.moderators);
+        models.forum.Section.find()
+            .where('_id').in(_.pluck(sections, '_id'))
+            .select('moderators')
+            .lean(true)
+            .exec(function(err, data) {
+
+          if (err) {
+            next(err);
+            return;
+          }
+
+          user_ids = user_ids.concat(_(data)
+                                        .pluck('moderators')
+                                        .flatten()
+                                        .valueOf());
+          next();
         });
-        next();
       });
     }
   ], function (err) {
