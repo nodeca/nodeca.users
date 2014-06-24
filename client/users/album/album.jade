@@ -15,7 +15,6 @@
       #users-album__upload-button-wrapper
         span#users-album__upload-button.btn.btn-default= self.t('select_files')
           input(name='files[]', type='file', multiple)#users-album__upload-files
-    != self.partial('@users.uploader')
 
   #users-medias-list
     != self.partial('@users.album.media_list')

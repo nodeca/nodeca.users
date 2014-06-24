@@ -1,4 +1,4 @@
 en-US:
   title_progress: Upload in progress
-  upload_error: Upload failed
-  unsupported_error: "Unsupported file: #{file_name}"
+  upload_error: "#{file_name}: upload failed"
+  error_invalid_ext: "#{file_name}: you can't upload this file types"

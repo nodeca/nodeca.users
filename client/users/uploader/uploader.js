@@ -1,16 +1,71 @@
 // File uploader with client side image resizing - used jQuery-File-Upload
+//
+// Ex.:
+//
+// Initialize
+//
+// N.wire.emit('users.uploader:init', {
+//   inputSelector: '#upload',
+//   uploadUrl: /url/to/upload/method,
+//   onDone: 'users.album:uploaded'
+// });
+//
+// Add files (from drop event)
+//
+// N.wire.emit('users.uploader:add', event.dataTransfer.files);
+//
 
 'use strict';
 
-
 var $uploadDialog;
 var $uploader;
-// XHR uploading handlers
-var uploadHandlers;
 var settings;
-var onDone;
-// To track uploading progress, increases for for each file
-var lastFileId = 1;
+var onDoneEvent;
+
+
+// Will rise when one file fail
+//
+var onFileFail = function (event, data) {
+  // User abort
+  if (data.errorThrown === 'abort') {
+    return;
+  }
+
+  var $progressInfo = $('#file_' + data.uploaderFileId);
+  $progressInfo.addClass('fail');
+  $progressInfo.find('.progress').removeClass('active');
+  $progressInfo.find('.progress-bar').addClass('progress-bar-danger');
+
+  N.wire.emit('notify', { type: 'error', message: t('upload_error', { file_name: data.files[0].name }) });
+};
+
+
+var onProgress = function (event, data) {
+  var progress = parseInt(data.loaded / data.total * 100, 10) + '%';
+  $('#file_' + data.uploaderFileId + ' .progress-bar').width(progress);
+};
+
+
+// Will rise when one file done
+//
+var onFileDone = function (event, data) {
+  var $progressInfo = $('#file_' + data.uploaderFileId);
+  $progressInfo.addClass('done');
+  $progressInfo.find('.progress').removeClass('active');
+  $progressInfo.find('.progress-bar').addClass('progress-bar-success');
+};
+
+
+// Will rise when all files will be done or fail
+//
+var onStop = function () {
+  if ($uploadDialog) {
+    $uploadDialog.modal('hide');
+  }
+  // Reload medias
+  N.wire.emit(onDoneEvent);
+};
+
 
 // Add files to uploader
 //
@@ -25,64 +80,19 @@ N.wire.on('users.uploader:add', function add_files(files) {
 });
 
 
-var onAddFile = function (event, data) {
-  // onAddFile will be called for each file independently
-  // data.files array always contains only one item
-  var file = data.files[0];
-  data.fileId = lastFileId++;
-
-  // Check files extensions
-  var allowedFileExt = new RegExp('(.)(' + settings.allowed_extensions.join('|') + ')$', 'i');
-  if (!allowedFileExt.test(file.name)) {
-    N.wire.emit('notify', { type: 'error', message: t('unsupported_error', { 'file_name': file.name }) });
-    return;
-  }
-
-  $('<li/>')
-    .appendTo('#users-uploader__files')
-    .append('<div class="users-uploader__file">' + file.name + '</div>')
-    .append('<div class="users-uploader__bar img-rounded"><div class="users-uploader__progress"></div></div>')
-    .attr('id', 'file_' + data.fileId);
-
-  // Show progress dialog
-  var $this = $(this);
-  $uploadDialog
-    .on('shown.bs.modal.add_file', function () {
-      data.process(function () {
-        return $this.fileupload('process', data);
-      }).done(function () {
-        $uploadDialog.off('shown.bs.modal.add_file');
-        // Run query
-        uploadHandlers.push(data.submit());
-      });
-    })
-    .modal('show');
-};
-
-
-var onProgress = function (event, data) {
-  var progress = parseInt(data.loaded / data.total * 100, 10) + '%';
-  $('#file_' + data.fileId + ' .users-uploader__progress').width(progress);
-};
-
-
-var onFail = function (event, data) {
-  // User abort
-  if (data.errorThrown === 'abort') {
-    return;
-  }
-
-  N.wire.emit('notify', { type: 'error', message: t('upload_error') });
-};
-
-
-var onStop = function () {
-  uploadHandlers = [];
-  $('#users-uploader__files').empty();
-  $uploadDialog.modal('hide');
-  // Reload medias
-  N.wire.emit(onDone);
-};
+// Fetch uploader settings
+// TODO: get settings through 'init' event (on server through internal method)
+//
+N.wire.before('users.uploader:init', function fetch_settings(params, callback) {
+  N.io.rpc('users.uploader_config', {}, function (err, uploaderSettings) {
+    if (err) {
+      callback(err);
+      return false;
+    }
+    settings = uploaderSettings;
+    callback();
+  });
+});
 
 
 // Initialize uploader
@@ -93,50 +103,21 @@ var onStop = function () {
 //   - onDone - name of event, emit when uploads finish
 //
 N.wire.on('users.uploader:init', function init_uploader(params) {
-  N.io.rpc('users.uploader_config', {}, function (err, uploaderSettings) {
-    if (err) { return false; }
-    settings = uploaderSettings;
-    onDone = params.onDone;
+  onDoneEvent = params.onDone;
 
-    $uploadDialog = $('#users-uploader__dialog');
-    uploadHandlers = [];
-    $('#users-uploader__files').empty();
-
-    $uploadDialog.on('hidden.bs.modal', function () {
-      // Abort query if user closes dialog
-      $.each(uploadHandlers, function (index, handler) {
-        handler.abort();
-      });
-    });
-
-    $uploader = $(params.inputSelector).fileupload({
-      formData: { csrf: N.runtime.csrf },
-      sequentialUploads: true,
-      singleFileUploads: true,
-      url: params.uploadUrl,
-      dataType: 'json',
-      dropZone: null,
-      maxFileSize: settings.max_size_kb * 1024, // Need size in bytes
-      processQueue: [
-        {
-          action: 'loadImage',
-          fileTypes: new RegExp('^' + settings.resize_types.join('|') + '$')
-        },
-        {
-          action: 'resizeImage',
-          maxWidth: settings.width,
-          maxHeight: settings.height,
-          imageCrop: false
-        },
-        {
-          action: 'saveImage'
-        }
-      ],
-      add: onAddFile,
-      progress: onProgress,
-      stop: onStop,
-      fail: onFail
-    });
+  $uploader = $(params.inputSelector).fileupload({
+    formData: { csrf: N.runtime.csrf },
+    sequentialUploads: true,
+    singleFileUploads: true,
+    url: params.uploadUrl,
+    dataType: 'json',
+    dropZone: null,
+    maxFileSize: settings.max_size_kb * 1024, // Need size in bytes
+    add: function (e, data) { N.wire.emit('users.uploader:startFile', data); },
+    progress: onProgress,
+    stop: onStop,
+    fail: onFileFail,
+    done: onFileDone
   });
 });
 
@@ -147,4 +128,100 @@ N.wire.on('navigate.exit', function teardown_page() {
   if ($uploadDialog) {
     $uploadDialog.modal('hide');
   }
+});
+
+
+// Validate file and create unique id
+//
+N.wire.before('users.uploader:startFile', function check_file(data, callback) {
+  // data.files array always contains only one item
+  var file = data.files[0];
+  data.uploaderFileId = Math.random().toString().split('.')[1]; // Create unique file id
+
+  // Check files extensions
+  var allowedFileExt = new RegExp('\.(' + settings.allowed_extensions.join('|') + ')$', 'i');
+  if (!allowedFileExt.test(file.name)) {
+    var message = t('error_invalid_ext', { 'file_name': file.name });
+    N.wire.emit('notify', { type: 'error', message: message });
+    callback(new Error(message));
+    return;
+  }
+  callback();
+});
+
+
+// Init uploader dialog if it is not exists
+//
+N.wire.before('users.uploader:startFile', function init_uploader_dialog(data, callback) {
+  if (!$uploadDialog) {
+    $uploadDialog = $(N.runtime.render('users.uploader'));
+    $('body').append($uploadDialog);
+    $uploadDialog
+      .on('shown.bs.modal', function () {
+        callback();
+      })
+      .on('hidden.bs.modal', function () {
+        $uploadDialog.remove();
+        $uploadDialog = null;
+      })
+      .modal('show');
+    return;
+  }
+  callback();
+});
+
+
+// Add initial progress info to dialog
+//
+N.wire.before('users.uploader:startFile', function add_file_progress(data, callback) {
+  var file = data.files[0];
+  $(N.runtime.render(
+    'users.uploader.progress',
+    {
+      fileName: file.name,
+      elementId: 'file_' + data.uploaderFileId
+    }
+  )).appendTo('#users-uploader__files');
+
+  callback();
+});
+
+
+// Resize image if needed
+//
+N.wire.before('users.uploader:startFile', function resize_file(data, callback) {
+  var file = data.files[0];
+
+  // Check type
+  var resizeTypeCheck = new RegExp('^' + settings.resize_types.join('|') + '$');
+  if (!resizeTypeCheck.test(file.type)) {
+    callback(); // Skip resize
+    return;
+  }
+
+  // 'window.loadImage' defined in 'JavaScript Load Image' plugin
+  // https://github.com/blueimp/JavaScript-Load-Image
+  window.loadImage(file, function (canvas) {
+    canvas.toBlob(function (blob) {
+      blob.name = data.files[0].name;
+      data.files[0] = blob;
+      callback();
+    });
+  }, {
+    maxWidth: settings.width,
+    maxHeight: settings.height,
+    crop: false,
+    canvas: true
+  });
+});
+
+
+// Start uploading
+//
+N.wire.on('users.uploader:startFile', function resize_file(data, callback) {
+  var handler = data.submit();
+  $uploadDialog.on('hidden.bs.modal', function () {
+    handler.abort();
+  });
+  callback();
 });
