@@ -17,16 +17,20 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
 
 
 N.wire.on('users.album:dragdrop', function (event) {
-  var $target = $(event.target);
+  var $dropZone = $('#users-album__upload');
   switch (event.type) {
+    case 'dragover':
+      // To activate drop zone when cursor above upload button
+      $dropZone.addClass('active');
+      break;
     case 'dragenter':
-      $target.addClass('active');
+      $dropZone.addClass('active');
       break;
     case 'dragleave':
-      $target.removeClass('active');
+      $dropZone.removeClass('active');
       break;
     case 'drop':
-      $target.removeClass('active');
+      $dropZone.removeClass('active');
 
       if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
         N.wire.emit('users.uploader:add', event.dataTransfer.files);

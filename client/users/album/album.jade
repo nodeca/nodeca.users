@@ -10,7 +10,8 @@
     p.page-head__descr.hidden-xs(itemprop='description')
 
   if own_page
-    #users-album__upload(data-on-dragdrop='users.album:dragdrop')= self.t('drag_to_upload')
+    #users-album__upload(data-on-dragdrop='users.album:dragdrop')
+      span#users-album__upload-text= self.t('drag_to_upload')
       #users-album__upload-button-wrapper
         span#users-album__upload-button.btn.btn-default= self.t('select_files')
           input(name='files[]', type='file', multiple)#users-album__upload-files

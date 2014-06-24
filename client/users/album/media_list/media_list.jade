@@ -1,14 +1,15 @@
 - var own = (self.runtime.user_hid === self.user_hid)
 ul.user-medias-list.row
   each media in self.medias
-    li.user-media.col-md-3
-      .user-media__image-wrapper
-        -// TODO: check is it really image
-        a(href=self.link_to('users.media', { 'user_hid': self.user_hid, 'media_id': media._id }))
-          - var imageUrl = self.link_to('core.gridfs', { 'bucket': media.file_id + '_md' })
-          img.user-media__image(src=imageUrl)
+    li.col-md-3
+      .user-media
         if own
           a.user-media__edit.btn.btn-default.btn-sm(href='#', data-_id=media._id)= self.t('edit')
           a.user-media__delete.btn.btn-default.btn-sm(href='#', data-_id=media._id, data-on-click='users.album.media_list:delete')= self.t('delete')
-      .user-media__description=media.description
-      .user-media__date= self.date(media.created_at, 'date')
+        .user-media__image-wrapper
+          -// TODO: check is it really image
+          a(href=self.link_to('users.media', { 'user_hid': self.user_hid, 'media_id': media._id }))
+            - var imageUrl = self.link_to('core.gridfs', { 'bucket': media.file_id + '_md' })
+            img.user-media__image(src=imageUrl)
+        .user-media__description=media.description
+        .user-media__date= self.date(media.created_at, 'date')
