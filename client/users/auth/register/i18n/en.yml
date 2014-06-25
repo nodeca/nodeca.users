@@ -6,6 +6,7 @@ en-US:
     pass_help: Must contain both digits and letters (other symbols also possible). Also, should have > 8 symbols.
     nick: Nickname
     nick_help: How to show you on forum
+    oauth_info: If you wish, link account with your profile for fast login
 
     login: Login
     register: Register

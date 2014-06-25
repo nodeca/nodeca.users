@@ -3,6 +3,8 @@
 
 'use strict';
 
+var _ = require('lodash');
+
 
 module.exports = function (N, apiPath) {
   var rateLimit = require('./_rate_limit')(N);
@@ -32,5 +34,19 @@ module.exports = function (N, apiPath) {
       env.res.captcha_required = isExceeded;
       callback();
     });
+  });
+
+
+  // Fill oauth providers
+  //
+  N.wire.after(apiPath, function fill_head_and_breadcrumbs(env) {
+
+    var oauth = {};
+    var providers = N.config.oauth;
+    _.forEach(providers, function (provider, name) {
+      oauth[name] = provider.client;
+    });
+
+    env.res.blocks.oauth = oauth;
   });
 };

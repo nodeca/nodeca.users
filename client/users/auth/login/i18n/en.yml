@@ -7,3 +7,4 @@ en-US:
     enter: Login
     forgot: forgot?
     not_filled: Please fill this field
+    oauth_info: Log in via
