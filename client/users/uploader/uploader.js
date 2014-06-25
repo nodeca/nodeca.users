@@ -12,7 +12,9 @@
 //
 // Add files (from drop event)
 //
-// N.wire.emit('users.uploader:add', event.dataTransfer.files);
+// N.wire.emit('users.uploader:add', { files: event.dataTransfer.files, url: '/url/to/upload/method' });
+// - files - required
+// - url - optional
 //
 
 'use strict';
@@ -71,9 +73,12 @@ var onStop = function () {
 //
 // - files - array of File or Blob objects
 //
-N.wire.on('users.uploader:add', function add_files(files) {
+N.wire.on('users.uploader:add', function add_files(data) {
   if ($uploader) {
-    $uploader.fileupload('add', {files: files});
+    if (data.url) {
+      $uploader.fileupload('option', { url: data.url });
+    }
+    $uploader.fileupload('add', {files: data.files});
     return;
   }
   throw new Error('You must init uploader first');

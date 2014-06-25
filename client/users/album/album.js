@@ -19,19 +19,21 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
 
 
 N.wire.on('users.album:dragdrop', function (event) {
+  var x0, y0, x1, y1, ex, ey;
+
   switch (event.type) {
     case 'dragenter':
       $dropZone.addClass('active');
       break;
     case 'dragleave':
-      var x0 = $dropZone.offset().left;
-      var y0 = $dropZone.offset().top;
-      var x1 = x0 + $dropZone.outerWidth();
-      var y1 = y0 + $dropZone.outerHeight();
-      var ex = event.originalEvent.pageX;
-      var ey = event.originalEvent.pageY;
+      x0 = $dropZone.offset().left;
+      y0 = $dropZone.offset().top;
+      x1 = x0 + $dropZone.outerWidth();
+      y1 = y0 + $dropZone.outerHeight();
+      ex = event.originalEvent.pageX;
+      ey = event.originalEvent.pageY;
 
-      if(ex > x1 || ex < x0 || ey > y1 || ey < y0) {
+      if (ex > x1 || ex < x0 || ey > y1 || ey < y0) {
         $dropZone.removeClass('active');
       }
       break;
@@ -39,7 +41,7 @@ N.wire.on('users.album:dragdrop', function (event) {
       $dropZone.removeClass('active');
 
       if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
-        N.wire.emit('users.uploader:add', event.dataTransfer.files);
+        N.wire.emit('users.uploader:add', { files: event.dataTransfer.files });
       }
       break;
     default:

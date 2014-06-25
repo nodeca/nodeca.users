@@ -2,7 +2,7 @@
 .row
   each album in self.albums
     .col-md-3
-      .user-album
+      .user-album(data-on-dragdrop='users.albums_root.list:dragdrop', data-album-id=album._id, data-user-hid=self.user_hid)
         if own && !album.default
           a.update-album.btn.btn-default.btn-sm(href='#', data-_id=album._id, data-title=album.title)= self.t('edit')
           a.destroy-album.btn.btn-default.btn-sm(href='#', data-_id=album._id)= self.t('delete')
