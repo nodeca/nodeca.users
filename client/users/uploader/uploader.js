@@ -20,7 +20,7 @@
 'use strict';
 
 var $uploadDialog;
-var $uploader;
+var uploaderSelector;
 var settings;
 var onDoneEvent;
 
@@ -74,11 +74,11 @@ var onStop = function () {
 // - files - array of File or Blob objects
 //
 N.wire.on('users.uploader:add', function add_files(data) {
-  if ($uploader) {
+  if (uploaderSelector) {
     if (data.url) {
-      $uploader.fileupload('option', { url: data.url });
+      $(uploaderSelector).fileupload('option', { url: data.url });
     }
-    $uploader.fileupload('add', {files: data.files});
+    $(uploaderSelector).fileupload('add', {files: data.files});
     return;
   }
   throw new Error('You must init uploader first');
@@ -109,8 +109,9 @@ N.wire.before('users.uploader:init', function fetch_settings(params, callback) {
 //
 N.wire.on('users.uploader:init', function init_uploader(params) {
   onDoneEvent = params.onDone;
+  uploaderSelector = params.inputSelector;
 
-  $uploader = $(params.inputSelector).fileupload({
+  $(uploaderSelector).fileupload({
     formData: { csrf: N.runtime.csrf },
     sequentialUploads: true,
     singleFileUploads: true,
