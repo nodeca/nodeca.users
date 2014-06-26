@@ -55,6 +55,11 @@ var reloadAlbums = function () {
 
     var $list = $(N.runtime.render('users.album.media_list', mediaList));
     $('#users-medias-list').html($list);
+
+    N.wire.emit('navigate.replace', {
+      href: window.location.href,
+      title: ''
+    });
   });
 };
 
