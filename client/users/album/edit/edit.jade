@@ -1,0 +1,18 @@
+- self.add_raw_data('profile_tab', true)
+
+#content
+  != self.partial('@common.blocks.breadcrumbs')
+
+  header.page-head.albums-head
+    h1.page-head__title(itemprop='name')= self.head.title
+    p.page-head__descr.hidden-xs(itemprop='description')
+
+  form(data-on-submit='users.album.edit:save')
+    input(type='hidden', value=self.album._id, name='album_id')
+    .form-group
+      label= self.t('title_input_name')
+      input.form-control(name='title',  placeholder=self.t('title_input_placeholder'), value=self.album.title)
+    .form-group
+      button.btn.btn-default(type='submit')= self.t('save')
+      &nbsp;
+      button.btn.btn-warning(type='button', data-on-click='users.album.edit:delete', data-album-id=self.album._id)= self.t('delete')

@@ -60,7 +60,9 @@ module.exports = function (N, collectionName) {
           if (result) {
             // Set results
             album.cover_id = result.file_id;
-            album.last_at = result.created_at;
+            if (album.last_at < result.created_at) {
+              album.last_at = result.created_at;
+            }
           } else {
             // To show "No cover" for album, if it has no photo
             album.cover_id = null;

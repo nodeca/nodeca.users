@@ -1,0 +1,7 @@
+en-US:
+  title_input_name: Title
+  title_input_placeholder: Enter title
+  save: Save
+  delete: Delete
+  delete_confirmation: Are you sure want to delete this album and all photos?
+  err_empty_name: Album name should not be empty

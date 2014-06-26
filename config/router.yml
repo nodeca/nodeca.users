@@ -27,6 +27,14 @@ router:
           match: /\d+/
           type: 'integer'
 
+    users.album.edit:
+      "/member{user_hid}/album/{album_id}/edit":
+        user_hid:
+          match: /\d+/
+          type: 'integer'
+        album_id:
+          match: /[0-9a-f]{24}/
+
     users.media:
       "/member{user_hid}/media/{media_id}":
         user_hid:
