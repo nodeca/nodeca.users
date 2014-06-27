@@ -108,12 +108,6 @@ module.exports = function (N, apiPath) {
       'params': { 'user_hid': user.hid, 'album_id': album._id }
     });
 
-    breadcrumbs.push({
-      'text': env.t('title'),
-      'route': 'users.album.edit',
-      'params': { 'user_hid': user.hid, 'album_id': album._id }
-    });
-
     env.res.blocks.breadcrumbs = breadcrumbs;
   });
 };

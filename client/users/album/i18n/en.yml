@@ -3,3 +3,4 @@ en-US:
   title_with_album: "Album: #{album}"
   drag_to_upload: Drag photos here to upload.
   select_files: Browse
+  edit: Edit album

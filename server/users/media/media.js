@@ -110,6 +110,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, function prepare_comment(env, callback) {
     env.res.media = env.data.media;
+    env.res.user_hid = env.data.user.hid;
 
     N.models.users.Comment
       .find({ 'media_id': env.params.media_id }, fields.post_in.join(' '))

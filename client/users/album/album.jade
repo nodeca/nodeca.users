@@ -4,6 +4,10 @@
 #content
   != self.partial('@common.blocks.breadcrumbs')
 
+  .breadcrumbs
+    if own_page && self.album && !self.album.default
+      a.btn.btn-default.btn-sm(href=self.link_to('users.album.edit', { 'user_hid': self.user_hid, 'album_id': self.album._id }))= self.t('edit')
+
   header.page-head.albums-head
     h1.page-head__title(itemprop='name')
       =self.album ? self.t('title_with_album', { album: self.album.title }) : self.t('title_all_files')

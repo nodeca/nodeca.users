@@ -14,5 +14,5 @@
       input.form-control(name='title',  placeholder=self.t('title_input_placeholder'), value=self.album.title)
     .form-group
       button.btn.btn-default(type='submit')= self.t('save')
-      |  
-      button.btn.btn-warning(type='button', data-on-click='users.album.edit:delete', data-album-id=self.album._id)= self.t('delete')
+      | 
+      button.btn.btn-link(type='button', data-on-click='users.album.edit:delete', data-album-id=self.album._id)= self.t('delete')

@@ -1,10 +1,9 @@
 'use strict';
 
-var user_hid;
-
+var pageParams;
 
 N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
-  user_hid = data.params.user_hid;
+  pageParams = data.params;
 });
 
 
@@ -20,7 +19,7 @@ N.wire.on('users.album.edit:save', function save_album(form) {
     if (err) {
       return false;
     }
-    window.location = N.runtime.router.linkTo('users.albums_root', { 'user_hid': user_hid });
+    window.location = N.runtime.router.linkTo('users.album', pageParams);
   });
 });
 
@@ -31,7 +30,7 @@ N.wire.on('users.album.edit:delete', function delete_album(event) {
       if (err) {
         return false;
       }
-      window.location = N.runtime.router.linkTo('users.albums_root', { 'user_hid': user_hid });
+      window.location = N.runtime.router.linkTo('users.albums_root', { 'user_hid': pageParams.user_hid });
     });
   }
 });

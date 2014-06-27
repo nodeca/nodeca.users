@@ -3,6 +3,12 @@
 
 #content
   != self.partial('@common.blocks.breadcrumbs')
+
+  .breadcrumbs
+    if own_page
+      a.btn.btn-default.btn-sm(href='#', data-media-id=self.media._id, data-user-hid=self.user_hid, data-album-id=self.media.album_id, data-on-click='users.media:delete')= self.t('delete')
+
+
   header.page-head.albums-head
     p.page-head__descr.hidden-xs(itemprop='description')
 
@@ -37,4 +43,3 @@
                    a Delte
                  div.col-lg-1
                    a Complain
-

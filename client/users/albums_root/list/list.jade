@@ -1,10 +1,7 @@
-- var own = (self.runtime.user_hid === self.user_hid)
 .row
   each album in self.albums
     .col-md-3
       .user-album(data-on-dragdrop='users.albums_root.list:dragdrop', data-album-id=album._id, data-user-hid=self.user_hid)
-        if own && !album.default
-          a.update-album.btn.btn-default.btn-sm(href=self.link_to('users.album.edit', { 'user_hid': self.user_hid, 'album_id': album._id }))= self.t('edit')
         .user-album__image-wrapper
           a(href=self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id }))
             if album.cover_id
