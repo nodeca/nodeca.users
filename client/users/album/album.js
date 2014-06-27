@@ -50,7 +50,7 @@ N.wire.on('users.album:dragdrop', function user_album_dd(event) {
 
 
 var reloadAlbums = function () {
-  N.io.rpc('users.media.list', pageParams, function (err, mediaList) {
+  N.io.rpc('users.album.media_list', pageParams, function (err, mediaList) {
     if (err) { return false; }
 
     var $list = $(N.runtime.render('users.album.media_list', mediaList));
