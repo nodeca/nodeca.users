@@ -14,8 +14,9 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, PARAMS_SCHEMA);
 
 
-  // Check do wanted parent_group exists or not.
-  N.wire.before(apiPath, function (env, callback) {
+  // Check if parent_group exists or is root.
+  //
+  N.wire.before(apiPath, function check_usergroup_parent_ok(env, callback) {
     if (!env.params.parent_group) {
       callback(); // This is a root group.
       return;
@@ -39,7 +40,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function (env, callback) {
+  N.wire.on(apiPath, function usergroup_create(env, callback) {
 
     // Check if any group with the specified name exists.
     UserGroup.count({ short_name: env.params.short_name }).exec(function (err, count) {

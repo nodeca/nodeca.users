@@ -7,7 +7,7 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, {});
 
 
-  N.wire.on(apiPath, function (env, callback) {
+  N.wire.on(apiPath, function usergroup_create_form(env, callback) {
     var res = env.res;
 
     res.head.title = env.t('title');

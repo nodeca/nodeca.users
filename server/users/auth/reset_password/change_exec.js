@@ -102,7 +102,7 @@ module.exports = function (N, apiPath) {
 
   // Update password & remove used token
   //
-  N.wire.on(apiPath, function (env, callback) {
+  N.wire.on(apiPath, function update_password(env, callback) {
     var provider = env.data.provider;
 
     provider.setPass(env.params.new_password, function (err) {

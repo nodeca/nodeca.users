@@ -1,7 +1,7 @@
 'use strict';
 
 
-N.wire.on('admin.users.usergroups.destroy', function (event) {
+N.wire.on('admin.users.usergroups.destroy', function delete_usergroup(event) {
   var $element = $(event.currentTarget)
     , _id      = $element.data('usergroupId');
 

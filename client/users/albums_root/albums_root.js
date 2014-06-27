@@ -43,7 +43,7 @@ N.wire.on('users.albums_root:uploaded', function update_list() {
 });
 
 
-N.wire.on('users.albums_root.list:dragdrop', function (event) {
+N.wire.on('users.albums_root.list:dragdrop', function albums_root_dd(event) {
   var $dropZone, x0, y0, x1, y1, ex, ey, hid, id;
 
   switch (event.type) {

@@ -222,7 +222,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function (env, callback) {
+  N.wire.on(apiPath, function login_do(env, callback) {
     // user not found or doesn't have authlink record for plain login
     if (!env.data.user || !env.data.provider) {
       updateRateLimits(env.req.ip);

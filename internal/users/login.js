@@ -6,7 +6,7 @@
 
 module.exports = function (N, apiPath) {
 
-  N.wire.on(apiPath, function (env) {
+  N.wire.on(apiPath, function user_internal_login(env) {
 
     // delete old session (don't wait until compleete)
     if (env.session_id) {

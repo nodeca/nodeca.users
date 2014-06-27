@@ -1,7 +1,7 @@
 
 'use strict';
 
-N.wire.on('users.album.media_list:delete', function (event) {
+N.wire.on('users.album.media_list:delete', function medialist_delete(event) {
   if (window.confirm(t('delete_confirmation'))) {
     N.io.rpc('users.media.destroy', { 'media_id': $(event.target).data('_id') }, function (err) {
       if (err) { return false; }

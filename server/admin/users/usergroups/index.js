@@ -10,7 +10,7 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, {});
 
 
-  N.wire.on(apiPath, function (env, callback) {
+  N.wire.on(apiPath, function usergroups_list(env, callback) {
     var res = env.res;
 
     res.head.title = env.t('title');
@@ -34,7 +34,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.after(apiPath, function (env, callback) {
+  N.wire.after(apiPath, function usergroups_list_join_members_count(env, callback) {
     var res = env.res;
 
     res.members_count = {};

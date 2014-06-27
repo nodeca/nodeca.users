@@ -15,7 +15,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function (env, callback) {
+  N.wire.on(apiPath, function show_change_result(env, callback) {
     env.res.head.title = env.t('title');
     env.res.secret_key = env.params.secret_key;
 

@@ -13,7 +13,7 @@ module.exports = function (N, apiPath) {
     }
   });
 
-  N.wire.on(apiPath, function (env, callback) {
+  N.wire.on(apiPath, function check_nick_busy(env, callback) {
     env.res.error   = false;
     env.res.message = null;
 

@@ -6,7 +6,7 @@
 
 module.exports = function (N, apiPath) {
 
-  N.wire.on(apiPath, function (env) {
+  N.wire.on(apiPath, function user_internal_redirect_members(env) {
 
     if (!env.user_info.is_guest) {
       throw {

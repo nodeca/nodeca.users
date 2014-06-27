@@ -7,7 +7,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function (env, callback) {
+  N.wire.on(apiPath, function member_search(env, callback) {
     //FIXME implement me
     callback();
   });

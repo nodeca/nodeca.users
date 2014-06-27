@@ -27,7 +27,7 @@ module.exports = function (N, apiPath) {
 
   // Fetch user by hid
   //
-  N.wire.on(apiPath, function (env, callback) {
+  N.wire.on(apiPath, function fetch_user_by_hid(env, callback) {
     // This method can be called multiple times (from page & subcalls).
     // Check if data already loaded.
     if (env.data.user) { return callback(); }

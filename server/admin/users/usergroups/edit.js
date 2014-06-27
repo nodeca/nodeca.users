@@ -12,7 +12,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function (env, callback) {
+  N.wire.on(apiPath, function usergroup_edit(env, callback) {
     var res = env.res;
 
     // Fill Default settings and their configuration

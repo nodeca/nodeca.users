@@ -40,7 +40,7 @@ module.exports = function (N, apiPath) {
   //
   // - `id`   User._id
   //
-  N.wire.on(apiPath, function (env, callback) {
+  N.wire.on(apiPath, function user_popover_info(env, callback) {
 
     var query = N.models.users.User
       .findOne({ _id: env.params.id })

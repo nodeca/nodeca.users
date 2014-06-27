@@ -9,7 +9,7 @@
 'use strict';
 
 
-N.wire.on(module.apiPath, function (event, callback) {
+N.wire.on(module.apiPath, function set_language_init(event, callback) {
   var locale = $(event.currentTarget).data('locale');
 
   if (!locale) {

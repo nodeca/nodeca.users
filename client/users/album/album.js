@@ -18,7 +18,7 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
 });
 
 
-N.wire.on('users.album:dragdrop', function (event) {
+N.wire.on('users.album:dragdrop', function user_album_dd(event) {
   var x0, y0, x1, y1, ex, ey;
 
   switch (event.type) {
