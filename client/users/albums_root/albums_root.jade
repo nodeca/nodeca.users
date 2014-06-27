@@ -8,6 +8,7 @@
     a.btn.btn-default.btn-sm(href=self.link_to('users.album', { 'user_hid': self.user_hid }))
       =self.t('all_media')
     if own_page
+      |  
       button.btn.btn-default.btn-sm(data-on-click='users.album.create')= self.t('create_album')
 
 
