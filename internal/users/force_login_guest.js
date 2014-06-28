@@ -31,7 +31,9 @@ module.exports = function (N, apiPath) {
     // because in dev environment we have different ports for http and https
 
     var loginRedirect = new N.models.users.LoginRedirect();
+
     loginRedirect.url = backUrl;
+    loginRedirect.ip  = env.req.ip;
 
     loginRedirect.save(function (err, loginRedirect) {
       if (err) {

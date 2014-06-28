@@ -17,14 +17,54 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // This page is for guests only
+  //
   N.wire.before(apiPath, function login_guest_only(env, callback) {
     N.wire.emit('internal:users.redirect_not_guest', env, callback);
   });
 
 
-  N.wire.on(apiPath, function login_show(env, callback) {
-    env.res.head.title = env.t('title');
+  // Check that requested redirect if valid
+  //
+  N.wire.before(apiPath, function login_check_redirect(env, callback) {
 
+    // if no redirect id passed - skip checks
+    if (!env.params.redirect_id) {
+      callback();
+      return;
+    }
+
+    N.models.users.LoginRedirect
+        .findOne({ '_id': env.params.redirect_id })
+        .lean(true)
+        .exec(function (err, link) {
+
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      // redirect if passed id is not correct
+      if (!link || link.used || !link.ip || link.ip !== env.req.ip) {
+        callback({
+          code: N.io.REDIRECT_PERMANENT,
+          head: {
+            'Location': N.runtime.router.linkTo('users.auth.login.show')
+          }
+        });
+        return;
+      }
+
+      callback();
+    });
+  });
+
+
+  // If page is requested too often, require to fill captcha.
+  //
+  // TODO: check if we should remember captcha requirement in session
+  //
+  N.wire.before(apiPath, function login_protect_with_captcha(env, callback) {
     rateLimit.total.check(function (err, isExceeded) {
       if (err) {
         callback(err);
@@ -34,6 +74,11 @@ module.exports = function (N, apiPath) {
       env.res.captcha_required = isExceeded;
       callback();
     });
+  });
+
+
+  N.wire.on(apiPath, function login_show(env) {
+    env.res.head.title = env.t('title');
   });
 
 

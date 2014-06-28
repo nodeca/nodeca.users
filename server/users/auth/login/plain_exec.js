@@ -263,24 +263,49 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function get_redirect_url(env, callback) {
 
-    // TODO: add setting
-    var defaultUrl = N.runtime.router.linkTo('users.profile_redirect');
+    // TODO: add setting for default redirect url ?
 
+    // fill redirect with default value
+    env.res.redirect_url = N.runtime.router.linkTo('users.profile_redirect');
+
+    // if no specific redirect requested - redirect to default
     if (!env.params.redirect_id) {
-      env.res.redirect_url = defaultUrl;
       callback();
       return;
     }
 
-    // Fetch back url
     N.models.users.LoginRedirect
-      .findOne({ '_id': env.params.redirect_id })
-      .lean(true)
-      .exec(function (err, redirectData) {
-        if (err) { return callback(err); }
+        .findOne({ '_id': env.params.redirect_id })
+        .lean(true)
+        .exec(function (err, link) {
 
-        env.res.redirect_url = redirectData ? redirectData.url : defaultUrl;
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      // If redirect requested, but not found - redirect to default.
+      // In other case, we have to mark redirect as used.
+
+      if (!link) {
         callback();
+        return;
+      }
+
+      // update redirect if conditions are valid
+
+      if (!link.used && link.ip && link.ip === env.req.ip) {
+        env.res.redirect_url = link.url;
+      }
+
+      // mark link as used and return
+
+      N.models.users.LoginRedirect
+          .findByIdAndUpdate(env.params.redirect_id, { $set: { used: true } })
+          .lean(true)
+          .exec(function (err) {
+        callback(err);
       });
+    });
   });
 };
