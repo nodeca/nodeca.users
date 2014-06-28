@@ -8,7 +8,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function oauth_callback(env, callback) {
-    console.log('callback');
+  N.wire.on(apiPath, function oauth_callback(/*env, callback*/) {
+    //console.log('callback');
   });
 };
