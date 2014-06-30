@@ -2,93 +2,34 @@
 //
 // Ex.:
 //
-// Initialize
-//
-// N.wire.emit('users.uploader:init', {
-//   inputSelector: '#upload',
-//   uploadUrl: /url/to/upload/method,
-//   onDone: 'users.album:uploaded'
-// });
-//
 // Add files (from drop event)
 //
 // N.wire.emit('users.uploader:add', { files: event.dataTransfer.files, url: '/url/to/upload/method' });
 // - files - required
-// - url - optional
+// - url - required
 //
 
 'use strict';
 
-var $uploadDialog;
-var uploaderSelector;
+
+var async = require('async');
+
 var settings;
-var onDoneEvent;
+var $uploadDialog;
+var aborted;
 
 
-// Will rise when one file fail
-//
-var onFileFail = function (event, data) {
-  // User abort
-  if (data.errorThrown === 'abort') {
-    return;
-  }
-
-  var $progressInfo = $('#file_' + data.uploaderFileId);
-  $progressInfo.addClass('fail');
-  $progressInfo.find('.progress').removeClass('active');
-  $progressInfo.find('.progress-bar').addClass('progress-bar-danger');
-
-  N.wire.emit('notify', { type: 'error', message: t('upload_error', { file_name: data.files[0].name }) });
-};
-
-
-var onProgress = function (event, data) {
-  var progress = parseInt(data.loaded / data.total * 100, 10) + '%';
-  $('#file_' + data.uploaderFileId + ' .progress-bar').width(progress);
-};
-
-
-// Will rise when one file done
-//
-var onFileDone = function (event, data) {
-  var $progressInfo = $('#file_' + data.uploaderFileId);
-  $progressInfo.addClass('done');
-  $progressInfo.find('.progress').removeClass('active');
-  $progressInfo.find('.progress-bar').addClass('progress-bar-success');
-};
-
-
-// Will rise when all files will be done or fail
-//
-var onStop = function () {
-  if ($uploadDialog) {
-    $uploadDialog.modal('hide');
-  }
-  // Reload medias
-  N.wire.emit(onDoneEvent);
-};
-
-
+////////////////////////////////////////////////////////////////////////////////
 // Add files to uploader
 //
-// - files - array of File or Blob objects
+// - data Object
+//   - url - upload url
+//   - files - array of files (DOM File API)
+// - callback - function when upload done
 //
-N.wire.on('users.uploader:add', function add_files(data) {
-  if (uploaderSelector) {
-    if (data.url) {
-      $(uploaderSelector).fileupload('option', { url: data.url });
-    }
-    $(uploaderSelector).fileupload('add', {files: data.files});
-    return;
-  }
-  throw new Error('You must init uploader first');
-});
 
-
-// Fetch uploader settings
-// TODO: get settings through 'init' event (on server through internal method)
-//
-N.wire.before('users.uploader:init', function fetch_settings(params, callback) {
+// Load configuration from server
+N.wire.before('users.uploader:add', function load_config(data, callback) {
   N.io.rpc('users.uploader_config', {}, function (err, uploaderSettings) {
     if (err) {
       callback(err);
@@ -100,32 +41,53 @@ N.wire.before('users.uploader:init', function fetch_settings(params, callback) {
 });
 
 
-// Initialize uploader
-//
-// - params Object
-//   - inputSelector - selector of input[type=file]
-//   - uploadUrl - request url
-//   - onDone - name of event, emit when uploads finish
-//
-N.wire.on('users.uploader:init', function init_uploader(params) {
-  onDoneEvent = params.onDone;
-  uploaderSelector = params.inputSelector;
-
-  $(uploaderSelector).fileupload({
-    formData: { csrf: N.runtime.csrf },
-    sequentialUploads: true,
-    singleFileUploads: true,
-    url: params.uploadUrl,
-    dataType: 'json',
-    dropZone: null,
-    maxFileSize: settings.max_size_kb * 1024, // Need size in bytes
-    add: function (e, data) { N.wire.emit('users.uploader:startFile', data); },
-    progress: onProgress,
-    stop: onStop,
-    fail: onFileFail,
-    done: onFileDone
-  });
+// Init upload dialog
+N.wire.before('users.uploader:add', function init_upload_dialog(data, callback) {
+  $uploadDialog = $(N.runtime.render('users.uploader'));
+  $('body').append($uploadDialog);
+  $uploadDialog
+    .on('shown.bs.modal', function () {
+      callback();
+    })
+    .on('hidden.bs.modal', function () {
+      $uploadDialog.remove();
+      $uploadDialog = null;
+      aborted = true;
+    })
+    .modal('show');
 });
+
+
+// Resize files if needed, upload files
+N.wire.on('users.uploader:add', function add_files(data, callback) {
+  aborted = false;
+
+  async.eachLimit(
+    data.files,
+    4, // max parallel files upload
+    function (file, callback) {
+      // Check if user termintae upload
+      if (aborted) {
+        callback(new Error('aborted'));
+        return;
+      }
+
+      N.wire.emit('users.uploader:startFile', { url: data.url, file: file }, function () {
+        callback();
+      });
+    },
+    function () {
+      if ($uploadDialog) {
+        $uploadDialog.modal('hide');
+      }
+
+      callback();
+    }
+  );
+});
+
+
+////////////////////////////////////////////////////////////////////////////////
 
 
 // Close dialog on sudden page exit (if user click back button in browser)
@@ -137,40 +99,16 @@ N.wire.on('navigate.exit', function teardown_page() {
 });
 
 
-// Validate file and create unique id
+// Check files extension and create unique id
 //
 N.wire.before('users.uploader:startFile', function check_file(data, callback) {
-  // data.files array always contains only one item
-  var file = data.files[0];
-  data.uploaderFileId = Math.random().toString().split('.')[1]; // Create unique file id
+  data.uploaderFileId = 'file_' + Math.random().toString().split('.')[1]; // Create unique file id
 
-  // Check files extensions
   var allowedFileExt = new RegExp('\.(' + settings.allowed_extensions.join('|') + ')$', 'i');
-  if (!allowedFileExt.test(file.name)) {
-    var message = t('error_invalid_ext', { 'file_name': file.name });
+  if (!allowedFileExt.test(data.file.name)) {
+    var message = t('error_invalid_ext', { 'file_name': data.file.name });
     N.wire.emit('notify', { type: 'error', message: message });
     callback(new Error(message));
-    return;
-  }
-  callback();
-});
-
-
-// Init uploader dialog if it is not exists
-//
-N.wire.before('users.uploader:startFile', function init_uploader_dialog(data, callback) {
-  if (!$uploadDialog) {
-    $uploadDialog = $(N.runtime.render('users.uploader'));
-    $('body').append($uploadDialog);
-    $uploadDialog
-      .on('shown.bs.modal', function () {
-        callback();
-      })
-      .on('hidden.bs.modal', function () {
-        $uploadDialog.remove();
-        $uploadDialog = null;
-      })
-      .modal('show');
     return;
   }
   callback();
@@ -180,12 +118,11 @@ N.wire.before('users.uploader:startFile', function init_uploader_dialog(data, ca
 // Add initial progress info to dialog
 //
 N.wire.before('users.uploader:startFile', function add_file_progress(data, callback) {
-  var file = data.files[0];
   $(N.runtime.render(
     'users.uploader.progress',
     {
-      fileName: file.name,
-      elementId: 'file_' + data.uploaderFileId
+      fileName: data.file.name,
+      elementId: data.uploaderFileId
     }
   )).appendTo('#users-uploader__files');
 
@@ -196,38 +133,94 @@ N.wire.before('users.uploader:startFile', function add_file_progress(data, callb
 // Resize image if needed
 //
 N.wire.before('users.uploader:startFile', function resize_file(data, callback) {
-  var file = data.files[0];
+  if (aborted) {
+    callback(new Error('aborted'));
+    return;
+  }
 
-  // Check type
+  // Check can we resize this file type
   var resizeTypeCheck = new RegExp('^' + settings.resize_types.join('|') + '$');
-  if (!resizeTypeCheck.test(file.type)) {
+  if (!resizeTypeCheck.test(data.file.type)) {
     callback(); // Skip resize
     return;
   }
 
-  // 'window.loadImage' defined in 'JavaScript Load Image' plugin
-  // https://github.com/blueimp/JavaScript-Load-Image
-  window.loadImage(file, function (canvas) {
+  var img = new Image();
+  img.src = window.URL.createObjectURL(data.file);
+  img.onload = function() {
+    if (img.width <= settings.width || img.height <= settings.height) {
+      callback();
+      return;
+    }
+    var width = img.width * settings.height / img.height;
+    var height = settings.height;
+    var canvas = document.createElement('canvas');
+
+    canvas.width = width;
+    canvas.height = height;
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, width, height);
     canvas.toBlob(function (blob) {
-      blob.name = data.files[0].name;
-      data.files[0] = blob;
+      blob.name = data.file.name;
+      data.file = blob;
       callback();
     });
-  }, {
-    maxWidth: settings.width,
-    maxHeight: settings.height,
-    crop: false,
-    canvas: true
-  });
+  };
 });
 
 
 // Start uploading
 //
 N.wire.on('users.uploader:startFile', function resize_file(data, callback) {
-  var handler = data.submit();
+  if (aborted) {
+    callback(new Error('aborted'));
+    return;
+  }
+
+  var formData = new FormData();
+  formData.append('file', data.file);
+  formData.append('csrf', N.runtime.csrf);
+
+  var $progressInfo = $('#' + data.uploaderFileId);
+
+  var jqXhr = $.ajax({
+    url: data.url,
+    type: 'POST',
+    data: formData,
+    dataType: 'json',
+    processData: false,
+    contentType: false,
+    xhr: function() {
+      var xhr = $.ajaxSettings.xhr();
+      if (xhr.upload) {
+        xhr.upload.addEventListener('progress', function (e) {
+          if (e.lengthComputable) {
+            var progress = Math.round((e.loaded * 100) / e.total);
+            $progressInfo.find('.progress-bar').width(progress + '%');
+          }
+        }, false);
+      }
+      return xhr;
+    }
+  })
+  .done(function () {
+    $progressInfo.find('.users-uploader__file').addClass('text-success');
+    $progressInfo.find('.progress-bar').addClass('progress-bar-success');
+  })
+  .fail(function (jqXHR, textStatus, errorThrown) {
+    // Don't show error if user terminate file upload
+    if (errorThrown === 'abort') {
+      return;
+    }
+
+    $progressInfo.find('.users-uploader__file').addClass('text-danger');
+    $progressInfo.find('.progress-bar').addClass('progress-bar-danger');
+
+    N.wire.emit('notify', { type: 'error', message: t('upload_error', { file_name: data.file.name }) });
+  })
+  .always(callback);
+
   $uploadDialog.on('hidden.bs.modal', function () {
-    handler.abort();
+    jqXhr.abort();
   });
-  callback();
 });

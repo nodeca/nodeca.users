@@ -6,11 +6,6 @@ var pageParams;
 
 N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
   pageParams = data.params;
-  // Init uploader
-  N.wire.emit('users.uploader:init', {
-    inputSelector: 'body',
-    onDone: 'users.albums_root:uploaded'
-  });
 });
 
 
@@ -29,20 +24,15 @@ var updateAlbumList = function () {
 };
 
 
-// listen successeful album creation & reload albums list
+// Reload album list when album successful created
 //
 N.wire.on('users.album.create:done', function update_list() {
   updateAlbumList();
 });
 
 
-// listen successeful photo upload & reload albums list
+// Handles the event when user drag file to album
 //
-N.wire.on('users.albums_root:uploaded', function update_list() {
-  updateAlbumList();
-});
-
-
 N.wire.on('users.albums_root.list:dragdrop', function albums_root_dd(event) {
   var $dropZone, x0, y0, x1, y1, ex, ey, hid, id;
 
@@ -52,6 +42,9 @@ N.wire.on('users.albums_root.list:dragdrop', function albums_root_dd(event) {
       $dropZone.addClass('active');
       break;
     case 'dragleave':
+      // 'dragleave' occurs when user move cursor over child HTML element
+      // track this situation and don't remove 'active' class
+      // http://stackoverflow.com/questions/10867506/
       $dropZone = $(event.target).closest('.user-album');
       x0 = $dropZone.offset().left;
       y0 = $dropZone.offset().top;
@@ -75,7 +68,7 @@ N.wire.on('users.albums_root.list:dragdrop', function albums_root_dd(event) {
         N.wire.emit('users.uploader:add', {
           files: event.dataTransfer.files,
           url: N.runtime.router.linkTo('users.media.upload', { user_hid: hid, album_id: id })
-        });
+        }, updateAlbumList);
       }
       break;
     default:
