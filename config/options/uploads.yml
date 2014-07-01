@@ -1,11 +1,43 @@
 options:
   users:
-    media_uploads:
-      max_size_kb: 20000
-      client_resize_types:
-        - "image/jpeg"
-      allowed_extensions:
-        - "jpg"
-        - "jpeg"
-        - "png"
-        - "gif"
+    media:
+      extentions: [ jpg, jpeg, png, gif, zip, svg ]
+      jpeg_quality: 75
+      gif_animation: true
+      max_size: 2000000
+
+      resize:
+        orig:
+          width: 1280
+          skip_size: 300000
+        md:
+          width: 640
+        sm:
+          max_width: 170
+          height: 150
+
+      types:
+        png:
+          resize:
+            orig:
+              skip_size: 1000000
+              type: png
+        gif:
+          max_size: 100000
+
+    avatars:
+      extentions: [ jpg, jpeg ]
+      jpeg_quality: 85
+
+      resize:
+        orig:
+          width: 200
+          height: 200
+        md:
+          width: 100
+          height: 100
+        sm:
+          width: 50
+          height: 50
+          type: png
+          from: md

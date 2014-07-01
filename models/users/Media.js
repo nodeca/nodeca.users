@@ -13,7 +13,7 @@ var exec      = require('child_process').exec;
 var Mongoose  = require('mongoose');
 var Schema    = Mongoose.Schema;
 
-var configReader  = require('./_lib/size_config_reader');
+var configReader  = require('./_lib/uploads_config_reader');
 
 
 module.exports = function (N, collectionName) {
@@ -163,7 +163,9 @@ module.exports = function (N, collectionName) {
 
   N.wire.on('init:models', function emit_init_Media(__, callback) {
     // Read config
-    mediaSizes = configReader(((N.config.options || {}).users || {}).media_sizes || {});
+
+    // TODO: rewrite configuration usage
+    mediaSizes = configReader(((N.config.options || {}).users || {}).media || {});
     if (mediaSizes instanceof Error) {
       callback(mediaSizes);
       return;
