@@ -8,6 +8,7 @@ var gm        = require('gm');
 var mimoza    = require('mimoza');
 var fstools   = require('fs-tools');
 var fs        = require('fs');
+var extname   = require('path').extname;
 var exec      = require('child_process').exec;
 
 var Mongoose  = require('mongoose');
@@ -15,10 +16,9 @@ var Schema    = Mongoose.Schema;
 
 var configReader  = require('./_lib/uploads_config_reader');
 
-
 module.exports = function (N, collectionName) {
 
-  var mediaSizes;
+  var mediaConfig;
   // Need different options, depending on ImageMagick or GraphicsMagick used.
   var gmConfigOptions;
 
@@ -56,106 +56,245 @@ module.exports = function (N, collectionName) {
   });
 
 
-  // Reads image and prepare gm instance
+  // Create preview for image
   //
-  // - path - path of image file. Required.
-  // - size (Object) - size description from config. Required.
+  // - path - Image file path.
+  // - resizeConfig
+  //   - width
+  //   - height
+  //   - max_width
+  //   - max_height
+  //   - jpeg_quality
+  //   - gif_animation
+  //   - skip_size
+  // - imageType - gif, jpeg, png, etc
   //
-  // callback(err, gm, contentType)
+  // - callback - function (err, { path, type })
   //
-  var resizeImage = function (path, size, callback) {
-    // Get image size
-    gm(path).options(gmConfigOptions).size(function(err, imageSize) {
-      if (err) { return callback(err); }
-
-      // Get image format
-      this.format(function (err, imageFormat) {
-        if (err) { return callback(err); }
-        var contentType = mimoza.getMimeType(imageFormat);
-
-        // Resize if image bigger than preview size
-        if (imageSize.width > size.width || imageSize.height > size.height) {
-          // Resize by height and crop extra
-          this
-            .quality(size.quality)
-            .gravity('Center')
-            .resize(null, size.height)
-            .crop(size.width, size.height);
-        }
-
-        callback(null, this, contentType);
-      });
-    });
-  };
-
-
-  // Create original image with previews
-  //
-  // - path - path of image file. Required.
-  //
-  // callback(err, originalFileId)
-  //
-  Media.statics.createImage = function (path, callback) {
-    var origTmp = fstools.tmpdir();
-    var origContentType, origId;
-
-    async.series([
-
-      // First - create orig tmp image (first size in mediaSizes)
-      function (next) {
-        resizeImage(path, mediaSizes[0], function (err, gm, contentType) {
-          if (err) { return next(err); }
-
-          origContentType = contentType;
-          gm.write(origTmp, next);
-        });
-      },
-
-      // Save orig file to gridfs to get
-      function (next) {
-        N.models.core.File.put(origTmp, { 'contentType': origContentType }, function (err, file) {
-          if (err) { return next(err); }
-          origId = file._id;
-          next();
-        });
-      },
-
-      // Create previews for all sizes exclude orig (first)
-      function (next) {
-        async.eachSeries(mediaSizes.slice(1), function (size, next) {
-          // Resize
-          resizeImage(origTmp, size, function (err, gm) {
-            if (err) { return next(err); }
-
-            gm.toBuffer(function (err, buffer) {
-              if (err) { return next(err); }
-
-              // Save
-              var params = { 'contentType': origContentType, 'filename': origId + '_' + size.size };
-              N.models.core.File.put(buffer, params, function (err) {
-                next(err);
-              });
-            });
-          });
-        }, next);
+  var createPreview = function (path, resizeConfig, imageType, callback) {
+    fs.stat(path, function (err, stats) {
+      if (err) {
+        callback(err);
+        return;
       }
-    ], function (err) {
-      fs.unlink(origTmp, function () {
-        if (err) {
-          // Try to clean up dirty data on error
-          if (origId) {
-            N.models.core.File.remove(origId, true, function () {
+
+      var outType = resizeConfig.type || imageType;
+
+      // To determine output image type, we must specify file extention
+      var tmpFilePath = fstools.tmpdir() + '.' + outType;
+
+      // If animation not allowed - take first frame of gif image
+      path = (imageType === 'gif' && resizeConfig.gif_animation === false) ? path + '[0]' : path;
+      var gmInstance = gm(path).options(gmConfigOptions);
+
+      // Set quality only for jpeg image
+      if (outType === 'jpeg') {
+        gmInstance.quality(resizeConfig.jpeg_quality);
+      }
+
+      // Is image size smaller than 'skip_size' - skip resizing
+      if (resizeConfig.skip_size && stats.size < resizeConfig.skip_size) {
+
+        // Save file and return result
+        gmInstance.write(tmpFilePath, function (err) {
+          if (err) {
+            // Remove temporary file if error
+            fs.unlink(tmpFilePath, function () {
               callback(err);
             });
             return;
           }
 
-          // origId not created
-          callback(err);
+          callback(null, { path: tmpFilePath, type: outType });
+        });
+        return;
+      }
+
+      gmInstance.gravity('Center').size(function(err, imgSz) {
+        if (err) {
+          fs.unlink(tmpFilePath, function () {
+            callback(err);
+          });
           return;
         }
 
-        callback(null, origId);
+        // To scale image we calculate new width and height, resize image by height and crop by width
+        var scaledHeight, scaledWidth;
+
+        if (resizeConfig.height && !resizeConfig.width) {
+          // If only height defined - scale to fit height,
+          // and crop by max_width
+          scaledHeight = resizeConfig.height;
+          var proportionalWidth = Math.floor(imgSz.width * scaledHeight / imgSz.height);
+          scaledWidth = (!resizeConfig.max_width || resizeConfig.max_width > proportionalWidth) ?
+                        proportionalWidth :
+                        resizeConfig.max_width;
+
+        } else if (!resizeConfig.height && resizeConfig.width) {
+          // If only width defined - scale to fit width,
+          // and crop by max_height
+          scaledWidth = resizeConfig.width;
+          var proportionalHeight = Math.floor(imgSz.height * scaledWidth / imgSz.width);
+          scaledHeight = (!resizeConfig.max_height || resizeConfig.max_height > proportionalHeight) ?
+                         proportionalHeight :
+                         resizeConfig.max_height;
+
+        } else {
+          // If determine both width and height
+          scaledWidth = resizeConfig.width;
+          scaledHeight = resizeConfig.height;
+        }
+
+        // Don't resize (only crop) image if height smaller than scaledHeight
+        if (imgSz.height > scaledHeight) {
+          gmInstance.resize(null, scaledHeight);
+        }
+
+        // Save file
+        gmInstance.crop(scaledWidth, scaledHeight).write(tmpFilePath, function (err) {
+          if (err) {
+            // Remove temporary file if error
+            fs.unlink(tmpFilePath, function () {
+              callback(err);
+            });
+            return;
+          }
+          callback(null, { path: tmpFilePath, type: outType });
+        });
+      });
+    });
+  };
+
+
+  // Save previews to database
+  //
+  // - previews - { orig: { path, type }, ... }
+  // - maxSize - maximum size to save to database
+  //
+  // - callback - function (err, originalFileId)
+  //
+  var savePreviews = function (previews, maxSize, callback) {
+    async.each(previews, function (preview, next) {
+
+      // Check file size
+      fs.stat(preview.path, function (err, stats) {
+        if (err) {
+          next(err);
+          return;
+        }
+
+        if (stats.size > maxSize) {
+          next(new Error('Can\'t resize image: max size exceeded'));
+          return;
+        }
+
+        next();
+      });
+    }, function (err) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      // Create new ObjectId for orig file
+      var origId = new Mongoose.Types.ObjectId();
+      async.each(
+        Object.keys(previews),
+        function (key, next) {
+          var data = previews[key];
+
+          var params = { 'contentType': mimoza.getMimeType(data.type) };
+          if (key === 'orig') {
+            params._id = origId;
+          } else {
+            params.filename = origId + '_' + key;
+          }
+
+          N.models.core.File.put(data.path, params, function (err) {
+            next(err);
+          });
+        },
+        function (err) {
+          if (err) {
+            callback(err);
+            return;
+          }
+
+          callback(null, origId);
+        }
+      );
+    });
+  };
+
+  // Create original image with previews
+  //
+  // - path - path of file with extention. Required.
+  //
+  // callback(err, originalFileId)
+  //
+  Media.statics.createImage = function (path, callback) {
+    var format = extname(path).replace('.', '').toLowerCase();
+
+    // Is config for this type exists
+    if (!mediaConfig.types[format]) {
+      callback(new Error('Can\'t resize image: \'' + format + '\' images not supported'));
+      return;
+    }
+
+    var supportedImageFormats = [ 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'ept', 'fax', 'ppm', 'pgm', 'pbm', 'pnm' ];
+    if (supportedImageFormats.indexOf(format) === -1) {
+      // TODO: just save file - without resize
+    }
+
+    var typeConfig = mediaConfig.types[format];
+    var previews = {};
+    async.eachSeries(Object.keys(typeConfig.resize), function (resizeConfigKey, next) {
+      // Create preview for each size
+
+      var resizeConfig = typeConfig.resize[resizeConfigKey];
+      // Next preview will be based on preview in 'from' property
+      // by default next preview generated from 'orig'
+      var from = (previews[resizeConfig.from || ''] || previews.orig || {});
+      var filePath = from.path || path;
+      createPreview(filePath, resizeConfig, from.type || format, function (err, data) {
+        if (err) {
+          next(err);
+          return;
+        }
+
+        previews[resizeConfigKey] = data;
+        next();
+      });
+    }, function (err) {
+      // Delete all tmp files
+      var deleteTmpPreviews = function (callback) {
+        async.each(
+          previews,
+          function (data, next) {
+            fs.unlink(data.path, function () { next(); });
+          },
+          function () {
+            callback();
+          }
+        );
+      };
+
+      if (err) {
+        deleteTmpPreviews(function () {
+          callback(err);
+        });
+        return;
+      }
+
+      // Save all previews
+      savePreviews(previews, typeConfig.max_size, function (err, origId) {
+        deleteTmpPreviews(function () {
+          if (err) {
+            callback(err);
+            return;
+          }
+          callback(null, origId);
+        });
       });
     });
   };
@@ -163,11 +302,10 @@ module.exports = function (N, collectionName) {
 
   N.wire.on('init:models', function emit_init_Media(__, callback) {
     // Read config
-
-    // TODO: rewrite configuration usage
-    mediaSizes = configReader(((N.config.options || {}).users || {}).media || {});
-    if (mediaSizes instanceof Error) {
-      callback(mediaSizes);
+    try {
+      mediaConfig = configReader(((N.config.options || {}).users || {}).media || {});
+    } catch (e) {
+      callback(e);
       return;
     }
 
