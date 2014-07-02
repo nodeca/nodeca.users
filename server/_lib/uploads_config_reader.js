@@ -69,7 +69,7 @@ var resizeConfigRules = {
   }
 };
 
-module.exports = function (uploadsConfig) {
+module.exports = _.memoize(function (uploadsConfig) {
   var config = _.cloneDeep(uploadsConfig);
 
   config.types = config.types || {};
@@ -152,4 +152,4 @@ module.exports = function (uploadsConfig) {
   config.types = typesOptions;
 
   return config;
-};
+});

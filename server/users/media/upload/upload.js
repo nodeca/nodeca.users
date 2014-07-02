@@ -4,15 +4,18 @@
 'use strict';
 
 
-var formidable = require('formidable');
-var tmpDir = require('os').tmpdir();
-var fs = require('fs');
-var async = require('async');
-var _ = require('lodash');
-var mimoza = require('mimoza');
+var formidable    = require('formidable');
+var tmpDir        = require('os').tmpdir();
+var fs            = require('fs');
+var async         = require('async');
+var _             = require('lodash');
+var mimoza        = require('mimoza');
+var configReader  = require('../../../_lib/uploads_config_reader');
 
 
 module.exports = function (N, apiPath) {
+
+  var config = configReader(((N.config.options || {}).users || {}).media || {});
 
   // CSRF comes in post data and checked separately
   N.validate(apiPath, {
@@ -84,6 +87,8 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function upload_media(env, callback) {
     var form = new formidable.IncomingForm();
     form.uploadDir = tmpDir;
+    // 20MB is maximum request size
+    form.maxFieldsSize = 20 * 1024 * 1024;
 
     form.parse(env.origin.req, function (err, fields, files) {
       files = _.toArray(files);
@@ -122,13 +127,12 @@ module.exports = function (N, apiPath) {
 
       // Usually file size and type are checked on client side,
       // but we must check it on server side for security reasons
-      var cfg = N.config.options.users.media_uploads;
-      var allowed_types = _.map(cfg.allowed_extensions, function (ext) {
+      var allowedTypes = _.map(config.extentions, function (ext) {
         return mimoza.getMimeType(ext);
       });
 
-      if (allowed_types.indexOf(fileInfo.type) < 0 || cfg.max_size_kb < (fileInfo.size / 1024)) {
-        fail(new Error('Wrong file size or file type on upload'));
+      if (allowedTypes.indexOf(fileInfo.type) === -1) {
+        fail(new Error('Wrong file type on upload'));
         return;
       }
 
@@ -144,7 +148,7 @@ module.exports = function (N, apiPath) {
     var Media = N.models.users.Media;
     var fileInfo = env.data.upload_file_info;
 
-    Media.createImage(fileInfo.path, function (err, fileId) {
+    Media.createImage(fileInfo.path, fileInfo.type.split('/').pop(), function (err, fileId) {
       // Remove file anyway after upload to gridfs
       fs.unlink(fileInfo.path, function () {
 

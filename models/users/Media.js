@@ -14,7 +14,7 @@ var exec      = require('child_process').exec;
 var Mongoose  = require('mongoose');
 var Schema    = Mongoose.Schema;
 
-var configReader  = require('./_lib/uploads_config_reader');
+var configReader  = require('../../server/_lib/uploads_config_reader');
 
 module.exports = function (N, collectionName) {
 
@@ -174,10 +174,10 @@ module.exports = function (N, collectionName) {
   // - callback - function (err, originalFileId)
   //
   var savePreviews = function (previews, maxSize, callback) {
-    async.each(previews, function (preview, next) {
+    async.each(Object.keys(previews), function (key, next) {
 
       // Check file size
-      fs.stat(preview.path, function (err, stats) {
+      fs.stat(previews[key].path, function (err, stats) {
         if (err) {
           next(err);
           return;
@@ -229,11 +229,18 @@ module.exports = function (N, collectionName) {
   // Create original image with previews
   //
   // - path - path of file with extention. Required.
+  // - ext - file format (extension). Optional.
+  //         If not set, get from path.
   //
-  // callback(err, originalFileId)
+  // - callback(err, originalFileId)
   //
-  Media.statics.createImage = function (path, callback) {
-    var format = extname(path).replace('.', '').toLowerCase();
+  Media.statics.createImage = function (path, ext, callback) {
+    if (!callback) {
+      callback = ext;
+      ext = null;
+    }
+
+    var format = ext || extname(path).replace('.', '').toLowerCase();
 
     // Is config for this type exists
     if (!mediaConfig.types[format]) {
@@ -241,10 +248,10 @@ module.exports = function (N, collectionName) {
       return;
     }
 
-    var supportedImageFormats = [ 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'ept', 'fax', 'ppm', 'pgm', 'pbm', 'pnm' ];
-    if (supportedImageFormats.indexOf(format) === -1) {
-      // TODO: just save file - without resize
-    }
+    //var supportedImageFormats = [ 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'ept', 'fax', 'ppm', 'pgm', 'pbm', 'pnm' ];
+    //if (supportedImageFormats.indexOf(format) === -1) {
+      // TODO: just check size and save file - without resize
+    //}
 
     var typeConfig = mediaConfig.types[format];
     var previews = {};
@@ -269,9 +276,9 @@ module.exports = function (N, collectionName) {
       // Delete all tmp files
       var deleteTmpPreviews = function (callback) {
         async.each(
-          previews,
-          function (data, next) {
-            fs.unlink(data.path, function () { next(); });
+          Object.keys(previews),
+          function (key, next) {
+            fs.unlink(previews[key].path, function () { next(); });
           },
           function () {
             callback();
