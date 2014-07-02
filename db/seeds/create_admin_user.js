@@ -6,16 +6,16 @@ module.exports = function (N, cb) {
   var models = N.models;
 
   var user     = new models.users.User();
-  var auth     = new models.users.AuthLink();
+  var authLink     = new models.users.AuthLink();
 
   async.series([
     // create admin user
-    function (callback) {
+    function (next) {
       // get administrators group Id
       models.users.UserGroup.findOne({ short_name: 'administrators' })
         .exec(function(err, group) {
           if (err) {
-            callback(err);
+            next(err);
             return;
           }
           user.hid = 1;
@@ -25,27 +25,24 @@ module.exports = function (N, cb) {
           user.post_count = 1;
           user.usergroups = [group];
 
-          user.save(callback);
+          user.save(next);
         });
     },
 
     // create auth link
-    function (callback) {
-      var provider = auth.providers.create({
-        'type': 'plain',
-        'email': 'admin@example.com'
-      });
+    function (next) {
 
-      provider.setPass('admin', function (err) {
+      authLink.type = 'plain';
+      authLink.email = 'admin@example.com';
+      authLink.setPass('admin', function (err) {
         if (err) {
-          callback(err);
+          next(err);
           return;
         }
 
-        auth.user_id = user._id;
-        auth.providers.push(provider);
+        authLink.user_id = user._id;
 
-        auth.save(callback);
+        authLink.save(next);
       });
     }
   ], cb);

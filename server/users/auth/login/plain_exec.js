@@ -131,27 +131,27 @@ module.exports = function (N, apiPath) {
   // Try to find auth data using `email_or_nick` as an email.
   //
   N.wire.on(apiPath, function find_authlink_by_email(env, callback) {
-    if (env.data.user && env.data.provider) {
+    if (env.data.user && env.data.authLink) {
       callback();
       return;
     }
 
     N.models.users.AuthLink
-      .findOne({ 'providers.email': env.params.email_or_nick, 'providers.type': 'plain' })
-      .exec(function (err, authlink) {
+      .findOne({ 'email': env.params.email_or_nick, 'type': 'plain', 'exist' : true })
+      .exec(function (err, authLink) {
 
       if (err) {
         callback(err);
         return;
       }
 
-      if (!authlink) {
+      if (!authLink) {
         callback(); // There is no error - let next hooks do their job.
         return;
       }
 
       N.models.users.User
-        .findOne({ '_id': authlink.user_id })
+        .findOne({ '_id': authLink.user_id })
         .lean(true)
         .exec(function (err, user) {
 
@@ -166,10 +166,7 @@ module.exports = function (N, apiPath) {
         }
 
         env.data.user     = user;
-        env.data.provider = _.find(authlink.providers, {
-          type: 'plain'
-        , email: env.params.email_or_nick
-        });
+        env.data.authLink = authLink;
 
         callback();
       });
@@ -180,7 +177,7 @@ module.exports = function (N, apiPath) {
   // Try to find auth data using `email_or_nick` as a nick.
   //
   N.wire.on(apiPath, function find_authlink_by_nick(env, callback) {
-    if (env.data.user && env.data.provider) {
+    if (env.data.user && env.data.authLink) {
       callback();
       return;
     }
@@ -201,20 +198,20 @@ module.exports = function (N, apiPath) {
       }
 
       N.models.users.AuthLink
-        .findOne({ 'user_id': user._id, 'providers.type': 'plain' })
-        .exec(function (err, authlink) {
+        .findOne({ 'user_id': user._id, 'type': 'plain', 'exist': true })
+        .exec(function (err, authLink) {
 
         if (err) {
           callback(err);
           return;
         }
 
-        if (!authlink) {
+        if (!authLink) {
           callback(); // There is no error - let next hooks do their job.
         }
 
         env.data.user     = user;
-        env.data.provider = _.find(authlink.providers, { type: 'plain' });
+        env.data.authLink = authLink;
 
         callback();
       });
@@ -224,7 +221,7 @@ module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, function login_do(env, callback) {
     // user not found or doesn't have authlink record for plain login
-    if (!env.data.user || !env.data.provider) {
+    if (!env.data.user || !env.data.authLink) {
       updateRateLimits(env.req.ip);
       callback({
         code:    N.io.CLIENT_ERROR,
@@ -235,7 +232,7 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    env.data.provider.checkPass(env.params.pass, function(err, success) {
+    env.data.authLink.checkPass(env.params.pass, function(err, success) {
       if (err) {
         callback(err);
         return;

@@ -42,15 +42,12 @@ describe('User', function () {
     it('"plain" provider set/check password', function (done) {
       var authLink = new global.TEST_N.models.users.AuthLink();
 
-      var provider = authLink.providers.create({
-        type: 'plain',
-        email: '123@123.123.123'
-      });
+      authLink.type = 'plain';
 
       var pass = 'Qwerty123';
-      provider.setPass(pass, function (err) {
+      authLink.setPass(pass, function (err) {
         if (err) { return done(err); }
-        provider.checkPass(pass, function (err, ok) {
+        authLink.checkPass(pass, function (err, ok) {
           if (err) { return done(err); }
           assert.equal(ok, true);
           done();

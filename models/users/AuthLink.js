@@ -16,44 +16,51 @@ module.exports = function (N, collectionName) {
 
   // Provider sub-document schema
   //
-  var AuthProvider = new Schema({
-    // Provider types. We plan to support:
+  var AuthLink = new Schema({
+
+    user_id          : Schema.Types.ObjectId,
+
+    // Provider types.
     //
     // - `plain` - just email/password pair
-    // - `yandex`, `facebook`, `vkontakte`, `twitter` - different oauth (not supported now)
-    type   : String,
-
-    // Provider state
-    // FIXME: define states (active/validating)
-    state  : Number,
+    // - `yandex`, `facebook`, `vkontakte`, `twitter` - different oauth
+    type             : String,
 
     // Email is mandatory to `email` provider
     // We also will require it everywhere, when possible (twitter don't have it)
-    email  : String,
-
-    // Password/Salt hash - for email provider only
-    // Salt is stored right in hash string
-    pass   : String,
+    email            : String,
 
     // For oauth providers only, external user id
-    ext_id : String,
+    provider_user_id : String,
+
+    // true if active, false when deleted
+    exist            : { 'type': Boolean, 'default': true },
+
+    // Creation date
+    created_at       : { 'type': Date, 'default': Date.now },
+
+    // Last login date
+    last_at          : Date,
+
+    // Last login ip
+    last_ip          : String,
 
     // metadata, if we like to extract extended info from oauth providers
-    meta   : {}
+    // pass, first_name, last_name
+    meta             : {}
   },
   {
     versionKey : false
   });
 
-  // Indexes (subdocuments)
+  // Indexes
   //////////////////////////////////////////////////////////////////////////////
 
-  // - login by email
-  // - check that email is unique
-  AuthProvider.index({ email: 1, provider: 1 });
+  // - plain login
+  AuthLink.index({ user_id: 1, type: 1, exist: 1 });
 
   // used in login via oauth
-  AuthProvider.index({ ext_id: 1, provider: 1 });
+  AuthLink.index({ provider_user_id: 1, exist: 1 });
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -64,9 +71,9 @@ module.exports = function (N, collectionName) {
    *
    * Generate password hash and put in property
    **/
-  AuthProvider.methods.setPass = function (pass, callback) {
+  AuthLink.methods.setPass = function (pass, callback) {
     if (this.type !== 'plain') {
-      callback(new Error('Can\'t set password for non plain peovider'));
+      callback(new Error('Can\'t set password for non plain provider'));
       return;
     }
     var self = this;
@@ -75,7 +82,10 @@ module.exports = function (N, collectionName) {
         callback(err);
         return;
       }
-      self.pass = hash;
+      if (!self.meta) {
+        self.meta = {};
+      }
+      self.meta.pass = hash;
       callback();
     });
   };
@@ -87,38 +97,14 @@ module.exports = function (N, collectionName) {
    *
    * Compare word with stored password
    **/
-  AuthProvider.methods.checkPass = function (pass, callback) {
+  AuthLink.methods.checkPass = function (pass, callback) {
     if (this.type !== 'plain') {
-      callback(new Error('Can\'t set password for non plain peovider'));
+      callback(new Error('Can\'t set password for non plain provider'));
       return;
     }
-    password.check(pass, this.pass, callback);
+    password.check(pass, this.meta.pass, callback);
   };
 
-  //////////////////////////////////////////////////////////////////////////////
-
-  /**
-   *  new models.users.AuthLink()
-   *
-   *  Create new odm object
-   **/
-  var AuthLink = new Schema({
-    user_id   : Schema.ObjectId
-  , providers : [AuthProvider]
-  },
-  {
-    versionKey : false
-  });
-
-  // Indexes
-  //////////////////////////////////////////////////////////////////////////////
-
-  // used in:
-  // - login via nickname
-  // - extract auth info in other cases
-  AuthLink.index({
-    user_id: 1
-  });
 
   //////////////////////////////////////////////////////////////////////////////
 

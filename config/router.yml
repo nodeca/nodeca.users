@@ -91,7 +91,7 @@ router:
 
     users.auth.callback:
       "/auth/oa/{provider}":
-        provider: /[0-9a-f]+/
+        provider: /[0-9a-zA-Z]+/
 
   http.post:
     users.media.upload:

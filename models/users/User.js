@@ -15,6 +15,7 @@ module.exports = function (N, collectionName) {
     first_name     : String,
     last_name      : String,
     nick           : String,
+    email          : String,
     usergroups     : [ Schema.Types.ObjectId ],
     joined_ts      : Date,
     joined_ip      : String,

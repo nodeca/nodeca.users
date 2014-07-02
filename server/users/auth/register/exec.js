@@ -57,7 +57,7 @@ module.exports = function (N, apiPath) {
 
   N.wire.before(apiPath, function check_email_uniqueness(env, callback) {
     N.models.users.AuthLink
-        .findOne({ 'providers.email': env.params.email, 'providers.type': 'plain' })
+        .findOne({ 'email': env.params.email, 'type': 'plain', 'exist': true })
         .select('_id')
         .lean(true)
         .exec(function (err, authlink) {
@@ -167,6 +167,7 @@ module.exports = function (N, apiPath) {
       user.joined_ip  = env.req.ip;
       user.joined_ts  = new Date();
       user.locale     = env.runtime.locale || N.config.locales['default'];
+      user.email      = env.params.email;
 
       user.save(function (err, user) {
         if (err) {
@@ -187,11 +188,10 @@ module.exports = function (N, apiPath) {
 
     var user = env.data.user;
 
-    var authlink = new N.models.users.AuthLink({ 'user_id': user._id });
-
-    var provider = authlink.providers.create({
-      type: 'plain',
-      email: env.params.email
+    var authlink = new N.models.users.AuthLink({
+      'user_id': user._id,
+      'type' : 'plain',
+      'email' : env.params.email
     });
 
     function fail(err) {
@@ -200,7 +200,7 @@ module.exports = function (N, apiPath) {
       });
     }
 
-    provider.setPass(env.params.pass, function (err) {
+    authlink.setPass(env.params.pass, function (err) {
       if (err) {
         // Can't fill hash - delete the user.
         // Should not happen in real life
@@ -208,7 +208,6 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      authlink.providers.push(provider);
       authlink.save(function (err) {
         if (err) {
           // Can't create authlink - delete the user.
@@ -217,7 +216,7 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        env.data.provider = provider;
+        env.data.authLink = authlink;
 
         callback();
       });
@@ -230,8 +229,7 @@ module.exports = function (N, apiPath) {
   N.wire.after(apiPath, function autologin(env, callback) {
 
     var user = env.data.user;
-    var provider =  env.data.provider;
-
+    var authLink =  env.data.authLink;
 
     N.wire.emit('internal:users.login', env, function (err) {
       if (err) {
@@ -250,12 +248,12 @@ module.exports = function (N, apiPath) {
             return;
           }
 
-          sendActivationEmail(N, env, provider.email, token, callback);
+          sendActivationEmail(N, env, authLink.email, token, callback);
         });
         return;
       }
 
-      env.res.redirect_url = N.runtime.router.linkTo('users.profile');
+      env.res.redirect_url = N.runtime.router.linkTo('users.profile_redirect');
       callback();
     });
   });
