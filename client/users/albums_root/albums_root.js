@@ -28,10 +28,7 @@ var updateAlbumList = function () {
     var $list = $(N.runtime.render('users.albums_root.list', albumsList));
     $('#users-albums-list').html($list);
 
-    N.wire.emit('navigate.replace', {
-      href: window.location.href,
-      title: ''
-    });
+    N.wire.emit('navigate.replace', {});
   });
 };
 
