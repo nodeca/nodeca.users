@@ -43,9 +43,6 @@ router:
         media_id:
           match: /[0-9a-f]{24}/
 
-    admin.core.user_lookup:
-     "/user_lookup": ~
-
     admin.users.usergroups.index:
       "/usergroups": ~
 
