@@ -24,13 +24,16 @@ N.wire.on('users.album.edit:save', function save_album(form) {
 });
 
 
+N.wire.before('users.album.edit:delete', function confirm_delete_album(event, callback) {
+  N.wire.emit('common.blocks.confirm', t('delete_confirmation'), callback);
+});
+
+
 N.wire.on('users.album.edit:delete', function delete_album(event) {
-  if (window.confirm(t('delete_confirmation'))) {
-    N.io.rpc('users.album.destroy', { 'album_id': $(event.target).data('albumId') }, function (err) {
-      if (err) {
-        return false;
-      }
-      window.location = N.runtime.router.linkTo('users.albums_root', { 'user_hid': pageParams.user_hid });
-    });
-  }
+  N.io.rpc('users.album.destroy', { 'album_id': $(event.target).data('albumId') }, function (err) {
+    if (err) {
+      return false;
+    }
+    window.location = N.runtime.router.linkTo('users.albums_root', { 'user_hid': pageParams.user_hid });
+  });
 });

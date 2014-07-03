@@ -1,17 +1,24 @@
 'use strict';
 
 
+N.wire.before('admin.users.usergroups.destroy', function confirm_delete_usergroup(event, callback) {
+  N.wire.emit(
+    'admin.core.blocks.confirm',
+    t('delete_confirm', { group_name: $(event.target).data('usergroupName') }),
+    callback
+  );
+});
+
+
 N.wire.on('admin.users.usergroups.destroy', function delete_usergroup(event) {
-  var $element = $(event.currentTarget)
+  var $element = $(event.target)
     , _id      = $element.data('usergroupId');
 
-  if (window.confirm(t('delete_confirm', { group_name: $element.data('usergroupName') }))) {
-    N.io.rpc('admin.users.usergroups.destroy', { _id: _id }, function (err) {
-      if (err) {
-        return false;
-      }
+  N.io.rpc('admin.users.usergroups.destroy', { _id: _id }, function (err) {
+    if (err) {
+      return false;
+    }
 
-      $element.parents('tr').remove();
-    });
-  }
+    $element.parents('tr').remove();
+  });
 });
