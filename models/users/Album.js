@@ -3,6 +3,7 @@
 'use strict';
 
 
+var async = require('async');
 var Mongoose = require('mongoose');
 var Schema   = Mongoose.Schema;
 
@@ -40,39 +41,88 @@ module.exports = function (N, collectionName) {
   // Update album fields
   // - 'last_at'
   // - 'cover_id'
+  // - 'custom_cover'
   // - 'count'
   //
   Album.statics.updateInfo = function (albumId, callback) {
     var Media = N.models.users.Media;
+    var self = this;
+    var album;
+    var cnt;
+    var media;
+    var coverExists;
 
-    // Fetch album by id
-    this.findOne({ '_id': albumId }).exec(function (err, album) {
-      if (err) { return callback(err); }
+    async.series([
+
+      // Fetch album by id
+      function (next) {
+        self.findOne({ '_id': albumId }).exec(function (err, result) {
+          if (err) {
+            next(err);
+            return;
+          }
+          album = result;
+          next();
+        });
+      },
 
       // Fetch count of media in album
-      Media.count({ 'album_id': album._id }, function (err, cnt) {
-        if (err) { return callback(err); }
-
-        // Fetch newest media in album
-        Media.findOne({ 'album_id': album._id }).sort('-created_at').lean(true).exec(function (err, result) {
-          if (err) { return callback(err); }
-
-          if (result) {
-            // Set results
-            album.cover_id = result.file_id;
-            if (album.last_at < result.created_at) {
-              album.last_at = result.created_at;
-            }
-          } else {
-            // To show "No cover" for album, if it has no photo
-            album.cover_id = null;
+      function (next) {
+        Media.count({ 'album_id': album._id }, function (err, result) {
+          if (err) {
+            next(err);
+            return;
           }
-
-          album.count = cnt;
-
-          album.save(callback);
+          cnt = result;
+          next();
         });
-      });
+      },
+
+      // Fetch newest media in album
+      function (next) {
+        Media.findOne({ 'album_id': album._id }).sort('-created_at').lean(true).exec(function (err, result) {
+          if (err) {
+            next(err);
+            return;
+          }
+          media = result;
+          next();
+        });
+      },
+
+      // Check cover file exists
+      function (next) {
+        Media.count({ 'file_id': album.cover_id }, function (err, result) {
+          if (err) {
+            next(err);
+            return;
+          }
+          coverExists = result;
+          next();
+        });
+      }
+    ], function (err) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      if (media) {
+        if (!album.cover_id || coverExists === 0) {
+          album.cover_id = media.file_id;
+        }
+
+        if (album.last_at < media.created_at) {
+          album.last_at = media.created_at;
+        }
+      } else {
+        // To show "No cover" for album, if it has no photo
+        album.cover_id = null;
+      }
+
+      album.count = cnt;
+
+      album.save(callback);
     });
   };
 

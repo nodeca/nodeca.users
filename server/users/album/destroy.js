@@ -1,4 +1,4 @@
-// Show album edit form
+// Delete album
 
 
 'use strict';

@@ -87,8 +87,6 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function upload_media(env, callback) {
     var form = new formidable.IncomingForm();
     form.uploadDir = tmpDir;
-    // 20MB is maximum request size
-    form.maxFieldsSize = 20 * 1024 * 1024;
 
     form.parse(env.origin.req, function (err, fields, files) {
       files = _.toArray(files);
