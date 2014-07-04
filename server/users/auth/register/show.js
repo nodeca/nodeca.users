@@ -21,8 +21,12 @@ module.exports = function (N, apiPath) {
 
 
   // Fill oauth providers
-  //
   N.wire.after(apiPath, function fill_head_and_breadcrumbs(env) {
+
+    if (env.data.oauth) {
+      env.res.selected_provider = env.data.oauth.provider;
+      env.res.email = env.session.oauth.email;
+    }
 
     var oauth = {};
     var providers = N.config.oauth;

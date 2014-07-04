@@ -37,6 +37,10 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
     }
   };
 
+  if (N.runtime.page_data.email) {
+    view.email.value(N.runtime.page_data.email);
+  }
+
   // Reset nick CSS class and message on every change.
   view.nick.value.subscribe(function () {
     this.css('');

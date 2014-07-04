@@ -1,0 +1,3 @@
+en-US:
+  error_show:
+    oauth_error: Error while retrieving data from yours provider

@@ -85,7 +85,6 @@ module.exports = function (N, apiPath) {
   // Fill oauth providers
   //
   N.wire.after(apiPath, function fill_head_and_breadcrumbs(env) {
-
     var oauth = {};
     var providers = N.config.oauth;
     _.forEach(providers, function (provider, name) {

@@ -3,7 +3,7 @@ span.oauth-btns__item
   -   'https://accounts.google.com/o/oauth2/auth' +
   -   '?scope=email%20profile' +
   -   '&state=/profile' +
-  -   '&redirect_uri=' + self.link_to('users.auth.callback', { provider: 'google' }) +
+  -   '&redirect_uri=' + self.link_to('users.auth.oauth.callback', { provider: 'google' }) +
   -   '&response_type=code' +
   -   '&client_id=' + self.blocks.oauth['google'] +
   -   '&approval_prompt=force'
