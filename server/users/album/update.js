@@ -100,7 +100,6 @@ module.exports = function (N, apiPath) {
 
     album.cover_id = cover.file_id;
     album.title = env.params.title;
-    album.last_at = new Date();
     album.save(callback);
   });
 };

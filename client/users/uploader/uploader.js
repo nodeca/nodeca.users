@@ -237,7 +237,11 @@ N.wire.on('users.uploader:add', function add_files(data, callback) {
       var uploadInfo = { url: data.url, file: file };
       async.series([
         function (next) { next(checkFile(uploadInfo)); },
-        async.apply(resizeImage, uploadInfo),
+        function (next) {
+          async.nextTick(function () {
+            resizeImage(uploadInfo, next);
+          });
+        },
         function (next) { next(checkFileSize(uploadInfo)); },
         async.apply(startUpload, uploadInfo)
       ], function () {
