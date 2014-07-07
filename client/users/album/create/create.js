@@ -35,15 +35,15 @@ N.wire.on('users.album.create:submit', function submit_album_create_dlg(form) {
     return;
   }
 
-  N.io.rpc('users.album.create', { 'title': title }, function (err) {
-    $dialog.modal('hide');
-
-    if (err) { return false; }
-
-    // Emit event on success
-    N.wire.emit('users.album.create:done');
-  });
-
+  N.io.rpc('users.album.create', { 'title': title })
+    .done(function () {
+      $dialog.modal('hide');
+      // Emit event on success
+      N.wire.emit('users.album.create:done');
+    })
+    .fail(function () {
+      $dialog.modal('hide');
+    });
 });
 
 

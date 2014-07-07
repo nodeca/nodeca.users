@@ -39,11 +39,7 @@ N.wire.after('users.album.edit.select_cover_dlg', function load_photos(data, cal
   onCoverSelected = callback;
   dialogData = data;
 
-  N.io.rpc('users.album.media_list', { user_hid: data.user_hid, album_id: data.album_id }, function (err, mediaList) {
-    if (err) {
-      return false;
-    }
-
+  N.io.rpc('users.album.media_list', { user_hid: data.user_hid, album_id: data.album_id }).done(function (mediaList) {
     var $list = $(N.runtime.render('users.album.edit.select_cover_dlg.media_list', { medias: mediaList.medias }));
     $('#users-album-edit-select_cover_dlg__media-list').html($list);
   });

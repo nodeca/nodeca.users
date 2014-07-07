@@ -46,8 +46,11 @@ N.wire.on('users.auth.login.plain_exec', function login(form) {
     loginParams.redirect_id = redirect_id;
   }
 
-  N.io.rpc('users.auth.login.plain_exec', loginParams, function (err, res) {
-    if (err && N.io.CLIENT_ERROR) {
+  N.io.rpc('users.auth.login.plain_exec', loginParams)
+    .done(function (res) {
+      window.location = res.redirect_url;
+    })
+    .fail(function (err) {
       if (err.captcha) {
         // If ReCaptcha is already created, just update it. Create otherwise.
         if (view.recaptcha_response_field.visible()) {
@@ -59,13 +62,5 @@ N.wire.on('users.auth.login.plain_exec', function login(form) {
 
       view.message(err.message);
       view.recaptcha_response_field.visible(err.captcha);
-      return;
-    }
-
-    if (err) {
-      return false;
-    }
-
-    window.location = res.redirect_url;
-  });
+    });
 });

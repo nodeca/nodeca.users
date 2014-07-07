@@ -32,18 +32,13 @@ N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
 
 N.wire.on('users.auth.reset_password.request_exec', function reset_password(form) {
 
-  N.io.rpc('users.auth.reset_password.request_exec', form.fields, function (err) {
-    N.wire.emit('common.blocks.recaptcha.update');
-
-    if (err && err.message) {
+  N.io.rpc('users.auth.reset_password.request_exec', form.fields)
+    .done(function () {
+      N.wire.emit('common.blocks.recaptcha.update');
+      N.wire.emit('navigate.to', { apiPath: 'users.auth.reset_password.request_done_show' });
+    })
+    .fail(function (err) {
+      N.wire.emit('common.blocks.recaptcha.update');
       view.message(err.message);
-      return;
-    }
-
-    if (err) {
-      return false;
-    }
-
-    N.wire.emit('navigate.to', { apiPath: 'users.auth.reset_password.request_done_show' });
-  });
+    });
 });

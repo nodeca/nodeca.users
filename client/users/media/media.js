@@ -12,9 +12,7 @@ N.wire.on('users.media:delete', function medialist_delete(event) {
   var userHid = $target.data('userHid');
   var albumId = $target.data('albumId');
 
-  N.io.rpc('users.media.destroy', { 'media_id': mediaId }, function (err) {
-    if (err) { return false; }
-
+  N.io.rpc('users.media.destroy', { 'media_id': mediaId }).done(function () {
     window.location = N.runtime.router.linkTo('users.album', { user_hid: userHid, album_id: albumId });
   });
 });

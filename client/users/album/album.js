@@ -12,9 +12,7 @@ var reloadAlbums = function () {
     return;
   }
 
-  N.io.rpc('users.album.media_list', pageParams, function (err, mediaList) {
-    if (err) { return false; }
-
+  N.io.rpc('users.album.media_list', pageParams).done(function (mediaList) {
     var $list = $(N.runtime.render('users.album.media_list', mediaList));
     $('#users-medias-list').html($list);
 

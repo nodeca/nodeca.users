@@ -192,11 +192,7 @@ function startUpload(data, callback) {
 
 // Load configuration from server
 N.wire.before('users.uploader:add', function load_config(data, callback) {
-  N.io.rpc(data.config, {}, function (err, uploaderSettings) {
-    if (err) {
-      callback(err);
-      return false;
-    }
+  N.io.rpc(data.config).done(function (uploaderSettings) {
     settings = uploaderSettings;
     callback();
   });

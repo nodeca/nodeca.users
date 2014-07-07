@@ -55,11 +55,7 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
 
     var self = this;
 
-    N.io.rpc('users.auth.check_nick', { nick: text }, function (err, res) {
-      if (err) {
-        return false;
-      }
-
+    N.io.rpc('users.auth.check_nick', { nick: text }).done(function (res) {
       self.css(res.error ? 'has-error' : '');
       self.message(res.message);
     });
@@ -83,8 +79,12 @@ N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
 //
 N.wire.on('users.auth.register.exec', function register(form) {
 
-  N.io.rpc('users.auth.register.exec', form.fields, function (err, res) {
-    if (err && N.io.CLIENT_ERROR === err.code) {
+  N.io.rpc('users.auth.register.exec', form.fields)
+    .done(function (res) {
+      // Reload page in order to apply auto-login after the registration.
+      window.location = res.redirect_url;
+    })
+    .fail(function (err) {
       // Update classes and messages on all input fields.
       _.forEach(view, function (field, name) {
         field.css(_.has(err.data, name) ? 'has-error' : '');
@@ -95,15 +95,5 @@ N.wire.on('users.auth.register.exec', function register(form) {
       if (_.has(err.data, 'recaptcha_response_field')) {
         N.wire.emit('common.blocks.recaptcha.update');
       }
-
-      return;
-    }
-
-    if (err) {
-      return false;
-    }
-
-    // Reload page in order to apply auto-login after the registration.
-    window.location = res.redirect_url;
-  });
+    });
 });

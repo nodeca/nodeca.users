@@ -21,17 +21,12 @@ N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
 
 N.wire.on('users.auth.reset_password.change_exec', function reset_password(form) {
 
-  N.io.rpc('users.auth.reset_password.change_exec', form.fields, function (err) {
-    if (err && N.io.CLIENT_ERROR === err.code) {
+  N.io.rpc('users.auth.reset_password.change_exec', form.fields)
+    .done(function () {
+      // Reload the page in order to apply auto login.
+      window.location = N.runtime.router.linkTo('users.auth.reset_password.change_done_show');
+    })
+    .fail(function (err) {
       view.status(err.bad_password ? 'error' : null);
-      return;
-    }
-
-    if (err && err.message) {
-      return false;
-    }
-
-    // Reload the page in order to apply auto login.
-    window.location = N.runtime.router.linkTo('users.auth.reset_password.change_done_show');
-  });
+    });
 });

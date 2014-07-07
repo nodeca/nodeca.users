@@ -22,9 +22,7 @@ var updateAlbumList = function () {
     return;
   }
 
-  N.io.rpc('users.albums_root.list', pageParams, function (err, albumsList) {
-    if (err) { return false; }
-
+  N.io.rpc('users.albums_root.list', pageParams).done(function (albumsList) {
     var $list = $(N.runtime.render('users.albums_root.list', albumsList));
     $('#users-albums-list').html($list);
 

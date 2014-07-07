@@ -14,11 +14,7 @@ N.wire.on('admin.users.usergroups.destroy', function delete_usergroup(event) {
   var $element = $(event.target)
     , _id      = $element.data('usergroupId');
 
-  N.io.rpc('admin.users.usergroups.destroy', { _id: _id }, function (err) {
-    if (err) {
-      return false;
-    }
-
+  N.io.rpc('admin.users.usergroups.destroy', { _id: _id }).done(function () {
     $element.parents('tr').remove();
   });
 });
