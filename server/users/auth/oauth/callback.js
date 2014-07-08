@@ -18,10 +18,12 @@ module.exports = function (N, apiPath) {
 
     // if user cancelled authorization
     if (env.params.error) {
+      var location = (env.session.oauth_action === 'register') ? 'users.auth.register.show' : 'users.auth.login.show';
+
       callback({
         code: N.io.REDIRECT,
         head: {
-          'Location': N.runtime.router.linkTo('users.auth.oauth.error_show')
+          'Location': N.runtime.router.linkTo(location)
         }
       });
       return;
@@ -33,36 +35,14 @@ module.exports = function (N, apiPath) {
   // Redirect to login or registration
   N.wire.after(apiPath, function continue_auth(env, callback) {
 
-    // FIXME: Will be changed
-    N.models.users.AuthLink
-      .findOne({ 'provider_user_id': env.session.oauth.provider_user_id, 'type': env.params.provider, 'exist': true })
-      .select('_id')
-      .lean(true)
-      .exec(function (err, authlink) {
+    var location = (env.session.oauth_action === 'register') ? 'users.auth.register.show' : 'users.auth.login.show';
 
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        // If user exist - redirect to login
-        if (authlink) {
-          callback({
-            code: N.io.REDIRECT,
-            head: {
-              'Location': N.runtime.router.linkTo('users.auth.login.show')
-            }
-          });
-          return;
-        }
-
-        callback({
-          code: N.io.REDIRECT,
-          head: {
-            'Location': N.runtime.router.linkTo('users.auth.register.show')
-          }
-        });
-      });
+    callback({
+      code: N.io.REDIRECT,
+      head: {
+        'Location': N.runtime.router.linkTo(location)
+      }
+    });
   });
 
 };

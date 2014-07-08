@@ -8,4 +8,4 @@ span.oauth-btns__item
   -   '&client_id=' + self.blocks.oauth['google'] +
   -   '&approval_prompt=force'
 
-  a.oauth__link.icon-google(href= link, title=self.t('name')) g
+  a.oauth__link.icon-google(data-url= link, title=self.t('name'), data-on-click='common.blocks.oauth_bottoms.google') g
