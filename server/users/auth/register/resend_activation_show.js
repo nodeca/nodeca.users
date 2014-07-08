@@ -25,7 +25,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function resend_check_permissions(env, callback) {
     if (!env.session.user_id) {
-      callback(N.io.NOT_AUTHORIZED);
+      callback(N.io.FORBIDDEN);
       return;
     }
 
@@ -69,7 +69,7 @@ module.exports = function (N, apiPath) {
       }
 
       if (!authlink) {
-        callback(N.io.NOT_AUTHORIZED);
+        callback(N.io.FORBIDDEN);
         return;
       }
 
@@ -78,7 +78,7 @@ module.exports = function (N, apiPath) {
       });
 
       if (!plainProvider) {
-        callback(N.io.NOT_AUTHORIZED);
+        callback(N.io.FORBIDDEN);
         return;
       }
 

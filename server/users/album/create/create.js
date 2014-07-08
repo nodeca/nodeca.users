@@ -20,7 +20,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function check_user_auth(env) {
     if (env.user_info.is_guest) {
-      return N.io.NOT_AUTHORIZED;
+      return N.io.FORBIDDEN;
     }
   });
 

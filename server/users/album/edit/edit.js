@@ -64,12 +64,8 @@ module.exports = function (N, apiPath) {
       return N.io.NOT_FOUND;
     }
 
-    if (env.user_info.is_guest) {
-      return N.io.NOT_AUTHORIZED;
-    }
-
-    if (env.session.user_id.toString() !== album.user_id.toString()) {
-      return N.io.NOT_AUTHORIZED; // Forbidden
+    if (!env.session.user_id || env.session.user_id.toString() !== album.user_id.toString()) {
+      return N.io.FORBIDDEN;
     }
   });
 

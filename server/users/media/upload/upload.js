@@ -73,8 +73,8 @@ module.exports = function (N, apiPath) {
     }
 
     // Check is current user owner of album
-    if (env.user_info.is_guest || env.session.user_id.toString() !== env.data.album.user_id.toString()) {
-      callback(N.io.NOT_AUTHORIZED);
+    if (!env.session.user_id || env.session.user_id.toString() !== env.data.album.user_id.toString()) {
+      callback(N.io.FORBIDDEN);
       return;
     }
 

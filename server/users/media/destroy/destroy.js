@@ -16,11 +16,6 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.before(apiPath, function fetch_user_media (env, callback) {
-    if (env.user_info.is_guest) {
-      callback(N.io.NOT_AUTHORIZED);
-      return;
-    }
-
     N.models.users.Media.findOne({ '_id': env.params.media_id }).exec(function (err, media) {
       if (err) {
         callback(err);
@@ -33,8 +28,8 @@ module.exports = function (N, apiPath) {
       }
 
       // Check media owner
-      if (media.user_id.toString() !== env.session.user_id.toString()) {
-        callback(N.io.NOT_AUTHORIZED);
+      if (!env.session.user_id || media.user_id.toString() !== env.session.user_id.toString()) {
+        callback(N.io.FORBIDDEN);
         return;
       }
 
