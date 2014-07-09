@@ -55,9 +55,18 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Check email uniqueness. Used emails from input and oauth provider
+  //
   N.wire.before(apiPath, function check_email_uniqueness(env, callback) {
+
+    var emails = [env.params.email];
+    if (env.session.oauth) {
+      emails.push(env.session.oauth.email);
+    }
+
     N.models.users.AuthLink
-        .findOne({ 'email': env.params.email, 'type': 'plain', 'exist': true })
+        .findOne({ 'exist': true })
+        .where('email').in(emails)
         .select('_id')
         .lean(true)
         .exec(function (err, authlink) {
@@ -68,7 +77,7 @@ module.exports = function (N, apiPath) {
       }
 
       if (authlink) {
-        env.data.errors.email = env.t('message_busy_email');
+        env.data.errors.email = env.t('err_busy_email');
       }
 
       callback();
@@ -89,7 +98,7 @@ module.exports = function (N, apiPath) {
       }
 
       if (user) {
-        env.data.errors.nick = env.t('message_busy_nick');
+        env.data.errors.nick = env.t('err_busy_nick');
       }
 
       callback();
@@ -114,7 +123,7 @@ module.exports = function (N, apiPath) {
 
     recaptcha.verify(privateKey, clientIp, challenge, response, function (err, result) {
       if (err || !result) {
-        env.data.errors.recaptcha_response_field = env.t('message_wrong_captcha_solution');
+        env.data.errors.recaptcha_response_field = env.t('err_wrong_captcha_solution');
       }
 
       callback();
@@ -224,6 +233,37 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Add oauth provider record
+  //
+  N.wire.after(apiPath, function create_oauth_privider(env, callback) {
+
+    if (!env.session.oauth) {
+      callback();
+      return;
+    }
+
+    var user = env.data.user;
+    var plain = env.data.authlink;
+
+    var authlink = new N.models.users.AuthLink(env.session.oauth.data);
+    authlink.user_id = user.id;
+
+    authlink.save(function (err) {
+      if (err) {
+        // Remove user and plain record
+        user.remove(function () {
+          plain.remove(function () {
+            callback(err);
+          });
+        });
+        return;
+      }
+
+      callback();
+    });
+  });
+
+
   // Auto login to the new account.
   //
   N.wire.after(apiPath, function autologin(env, callback) {
@@ -239,6 +279,7 @@ module.exports = function (N, apiPath) {
 
       // If the user is in 'validating' group according to global settings,
       // send activation token by email.
+      env.data.redirect_id = env.params.redirect_id;
       if (env.data.validatingGroupId.equals(env.data.validatedGroupId)) {
         env.res.redirect_url = N.runtime.router.linkTo('users.auth.register.done_show');
 
@@ -253,7 +294,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      env.res.redirect_url = N.runtime.router.linkTo('users.profile_redirect');
+      env.res.redirect_url = env.data.redirect_url;
       callback();
     });
   });

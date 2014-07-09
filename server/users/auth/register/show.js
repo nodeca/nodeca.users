@@ -20,11 +20,49 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Check oauth email uniqueness
+  //
+  N.wire.after(apiPath, function fill_head_and_breadcrumbs(env, callback) {
+
+    env.session.redirect_id = env.params.redirect_id;
+
+    if (!env.session.oauth) {
+      callback();  // No oauth data
+      return;
+    }
+
+    N.models.users.AuthLink
+        .findOne({ 'email' : env.session.oauth.email, 'exist': true })
+        .lean(true)
+        .exec(function (err, authlink) {
+
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      if (authlink) {
+        callback({
+          code: N.io.REDIRECT,
+          head: {
+            'Location': N.runtime.router.linkTo('users.auth.oauth.error_show')
+          }
+        });
+        return;
+      }
+
+      callback();
+    });
+  });
+
   // Fill oauth providers
+  //
   N.wire.after(apiPath, function fill_head_and_breadcrumbs(env) {
 
-    if (env.data.oauth) {
-      env.res.selected_provider = env.data.oauth.provider;
+    env.session.redirect_id = env.params.redirect_id;
+
+    if (env.session.oauth) {
+      env.res.selected_provider = env.session.oauth.provider;
       env.res.email = env.session.oauth.email;
     }
 
