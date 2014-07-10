@@ -12,14 +12,14 @@ module.exports = function (N, apiPath) {
   // Fetch permission to see deleted users
   //
   N.wire.before(apiPath, function fetch_can_see_deleted_users(env, callback) {
-    env.extras.settings.fetch(['can_see_deleted_users'], function (err, settings) {
+    env.extras.settings.fetch('can_see_deleted_users', function (err, can_see_deleted_users) {
       if (err) {
         callback(err);
         return;
       }
 
       env.data.settings = env.data.settings || {};
-      env.data.settings.can_see_deleted_users = settings.can_see_deleted_users;
+      env.data.settings.can_see_deleted_users = can_see_deleted_users;
       callback();
     });
   });

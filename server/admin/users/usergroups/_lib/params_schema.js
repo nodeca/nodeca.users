@@ -11,7 +11,7 @@ module.exports = {
   , minLength: 1
   }
 , parent_group: {
-    type: ['string', 'null']
+    type: [ 'string', 'null' ]
   , required: true
   }
 , raw_settings: {

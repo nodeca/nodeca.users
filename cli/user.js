@@ -18,14 +18,14 @@ module.exports.parserParameters = {
 
 module.exports.commandLineArguments = [
   {
-    args: ['action']
+    args: [ 'action' ]
   , options: {
       help: 'cli command add/update'
-    , choices: ['add', 'update']
+    , choices: [ 'add', 'update' ]
     }
   }
 , {
-    args: ['-g', '--group']
+    args: [ '-g', '--group' ]
   , options: {
       dest: 'mark_to_add'
     , help: 'add user to group'
@@ -35,7 +35,7 @@ module.exports.commandLineArguments = [
     }
   }
 , {
-    args: ['-G', '--no-group']
+    args: [ '-G', '--no-group' ]
   , options: {
       dest: 'mark_to_remove'
     , help: 'remove user from group'
@@ -45,7 +45,7 @@ module.exports.commandLineArguments = [
     }
   }
 , {
-    args: ['-u', '--user']
+    args: [ '-u', '--user' ]
   , options: {
       help: 'target user'
     , type: 'string'
@@ -53,14 +53,14 @@ module.exports.commandLineArguments = [
     }
   }
 , {
-    args: ['-p', '--pass']
+    args: [ '-p', '--pass' ]
   , options: {
       help: 'user passsword. required only for add command'
     , type: 'string'
     }
   }
 , {
-    args: ['-e', '--email']
+    args: [ '-e', '--email' ]
   , options: {
       help: 'user email. required only for add command'
     , type: 'string'
@@ -152,7 +152,7 @@ module.exports.run = function (N, args, callback) {
           return;
         }
 
-        User.findOne({nick: args.user}).exec(function (err, doc) {
+        User.findOne({ nick: args.user }).exec(function (err, doc) {
           if (err) {
             next(err);
             return;

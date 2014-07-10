@@ -10,7 +10,7 @@ module.exports.up = function (N, cb) {
   async.series([
     //add usergroup settings for administrators, members
     function (callback) {
-      models.users.UserGroup.find({ short_name: { $in: ['administrators', 'members'] } })
+      models.users.UserGroup.find({ short_name: { $in: [ 'administrators', 'members' ] } })
         .exec(function (err, groups) {
 
           if (err) {

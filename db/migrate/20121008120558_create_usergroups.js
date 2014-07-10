@@ -6,7 +6,7 @@ var async = require('async');
 
 exports.up = function (N, callback) {
   // FIXME implement sets of real group items
-  async.eachSeries(['administrators', 'guests', 'validating', 'members'], function(name, next) {
+  async.eachSeries([ 'administrators', 'guests', 'validating', 'members' ], function(name, next) {
     var usergroup = new N.models.users.UserGroup({
       short_name:   name
     , is_protected: true
