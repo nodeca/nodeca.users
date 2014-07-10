@@ -132,7 +132,7 @@ module.exports = function (N, collectionName) {
       return;
     }
 
-    var album = N.models.users.Album();
+    var album = new N.models.users.Album();
     album.default = true;
     // this._id generates automatically before first pre('save') call
     album.user_id = this._id;
