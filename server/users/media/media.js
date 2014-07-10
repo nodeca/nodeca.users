@@ -62,14 +62,14 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function define_visible_statuses(env, callback) {
 
-    env.extras.settings.fetch(['can_see_hellbanned'], function (err, settings) {
+    env.extras.settings.fetch([ 'can_see_hellbanned' ], function (err, settings) {
 
       if (err) {
         callback(err);
         return;
       }
 
-      env.data.statuses = [commentStatuses.comment.VISIBLE];
+      env.data.statuses = [ commentStatuses.comment.VISIBLE ];
       var st = env.data.statuses;
 
       // if user can see HB post than can see HB content
@@ -162,7 +162,7 @@ module.exports = function (N, apiPath) {
 
     env.extras.puncher.start('fetch setting (\'can_see_hellbanned\')');
 
-    env.extras.settings.fetch(['can_see_hellbanned'], function (err, settings) {
+    env.extras.settings.fetch([ 'can_see_hellbanned' ], function (err, settings) {
       env.extras.puncher.stop();
 
       if (err) {
