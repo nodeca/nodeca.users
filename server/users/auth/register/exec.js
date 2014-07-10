@@ -59,7 +59,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function check_email_uniqueness(env, callback) {
 
-    var emails = [env.params.email];
+    var emails = [ env.params.email ];
     if (env.session.oauth) {
       emails.push(env.session.oauth.email);
     }
@@ -245,7 +245,11 @@ module.exports = function (N, apiPath) {
     var user = env.data.user;
     var plain = env.data.authlink;
 
-    var authlink = new N.models.users.AuthLink(env.session.oauth.data);
+    var authlink = new N.models.users.AuthLink();
+    authlink.provider_user_id = env.session.oauth.provider_user_id;
+    authlink.email = env.session.oauth.email;
+    authlink.meta = env.session.oauth.meta;
+    authlink.type = env.session.oauth.type;
     authlink.user_id = user.id;
 
     authlink.save(function (err) {
@@ -264,6 +268,14 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Clear data user for oauth.
+  //
+  N.wire.after(apiPath, function clear_oauth_data(env) {
+    env.session = _.omit(env.session, 'state');
+    env.session = _.omit(env.session, 'oauth');
+  });
+
+
   // Auto login to the new account.
   //
   N.wire.after(apiPath, function autologin(env, callback) {
@@ -279,7 +291,6 @@ module.exports = function (N, apiPath) {
 
       // If the user is in 'validating' group according to global settings,
       // send activation token by email.
-      env.data.redirect_id = env.params.redirect_id;
       if (env.data.validatingGroupId.equals(env.data.validatedGroupId)) {
         env.res.redirect_url = N.runtime.router.linkTo('users.auth.register.done_show');
 

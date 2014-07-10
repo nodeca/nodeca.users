@@ -43,7 +43,7 @@ module.exports = function (N, apiPath) {
       return {
         code:    N.io.CLIENT_ERROR
       , message: env.t('login_failed')
-      , fields:  ['email_or_nick', 'pass']
+      , fields:  [ 'email_or_nick', 'pass' ]
       , captcha: false
       };
     }
@@ -90,7 +90,7 @@ module.exports = function (N, apiPath) {
           callback({
             code:    N.io.CLIENT_ERROR
           , message: env.t('wrong_captcha_solution')
-          , fields:  ['recaptcha_response_field']
+          , fields:  [  'recaptcha_response_field' ]
           , captcha: env.data.captcha_required
           });
           return;
@@ -117,7 +117,7 @@ module.exports = function (N, apiPath) {
         callback({
           code:    N.io.CLIENT_ERROR
         , message: env.t('too_many_attempts')
-        , fields:  ['recaptcha_response_field']
+        , fields: [ 'recaptcha_response_field' ]
         , captcha: env.data.captcha_required
         });
         return;
@@ -226,7 +226,7 @@ module.exports = function (N, apiPath) {
       callback({
         code:    N.io.CLIENT_ERROR,
         message: env.t('login_failed'),
-        fields:  ['email_or_nick', 'pass'],
+        fields:  [ 'email_or_nick', 'pass' ],
         captcha: env.data.captcha_required
       });
       return;
@@ -244,7 +244,7 @@ module.exports = function (N, apiPath) {
         callback({
           code:    N.io.CLIENT_ERROR
         , message: env.t('login_failed')
-        , fields:  ['email_or_nick', 'pass']
+        , fields:  [ 'email_or_nick', 'pass' ]
         , captcha: env.data.captcha_required
         });
         return;
@@ -257,6 +257,14 @@ module.exports = function (N, apiPath) {
         callback();
       });
     });
+  });
+
+
+  // Clear data user for oauth.
+  //
+  N.wire.after(apiPath, function clear_oauth_data(env) {
+    env.session = _.omit(env.session, 'state');
+    env.session = _.omit(env.session, 'oauth');
   });
 
 };

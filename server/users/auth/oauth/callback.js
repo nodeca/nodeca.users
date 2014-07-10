@@ -1,6 +1,8 @@
 
 'use strict';
 
+var _ = require('lodash');
+
 
 module.exports = function (N, apiPath) {
 
@@ -14,32 +16,64 @@ module.exports = function (N, apiPath) {
 
   // Redirects to specified URL
   //
-  function redirectTo(location, callback) {
-    callback({
+  function createRedirect(apiPath) {
+    return ({
       code: N.io.REDIRECT,
       head: {
-        'Location': location
+        'Location': N.runtime.router.linkTo(apiPath)
       }
     });
   }
 
 
-  N.wire.before(apiPath, function register_guest_only(env, callback) {
+  N.wire.before(apiPath, { proiroty: -15 }, function register_guest_only(env, callback) {
     N.wire.emit('internal:users.redirect_not_guest', env, callback);
   });
 
 
   // If provider return error. Example: user cancelled authorization
   //
-  N.wire.before(apiPath, { proiroty: -100 }, function check_oauth_error(env, callback) {
+  N.wire.before(apiPath, { proiroty: -15 }, function check_oauth_error(env, callback) {
 
     if (env.params.error) {
-      var location = (env.session.oauth_action === 'register') ? 'users.auth.register.show' : 'users.auth.login.show';
+      var location = (env.session.state.oauth_action === 'register')
+                        ? 'users.auth.register.show'
+                        : 'users.auth.login.show';
 
-      redirectTo(N.runtime.router.linkTo(location), callback);
+      callback(createRedirect(location));
       return;
     }
     callback();
+  });
+
+
+  // Check oauth email uniqueness
+  //
+  N.wire.before(apiPath, { proiroty: -5 }, function check_email_uniqueness(env, callback) {
+
+    if ((env.session.state.oauth_action === 'login')){
+      callback();
+      return;
+    }
+
+    N.models.users.AuthLink
+      .findOne({ 'email' : env.data.oauth.email, 'exist': true })
+      .lean(true)
+      .exec(function (err, authlink) {
+
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        if (authlink) {
+          env.session = _.omit(env.session, 'state');
+          callback(createRedirect('users.auth.oauth.error_show'));
+          return;
+        }
+
+        callback();
+      });
   });
 
 
@@ -65,13 +99,13 @@ module.exports = function (N, apiPath) {
       }
 
       if (!authLink) {
-        redirectTo(N.runtime.router.linkTo('users.auth.register.show'), callback);
+        callback(createRedirect('users.auth.register.show'));
         return;
       }
 
         // Find user for oauth data
       N.models.users.User
-          .findOne({ '_id': authLink.user_id })
+          .findOne({ '_id': authLink.user_id, exists: 'true' })
           .lean(true)
           .exec(function (err, user) {
 
@@ -81,16 +115,20 @@ module.exports = function (N, apiPath) {
         }
 
         if (!user) {
-          redirectTo(N.runtime.router.linkTo('users.auth.register.show'), callback);
+          callback(createRedirect('users.auth.register.show'));
           return;
         }
 
         env.data.user     = user;
-        env.data.authLink = authLink;
 
-        env.data.redirect_id = env.session.redirect_id;
+        env.data.redirect_id = env.session.state.redirect_id;
         N.wire.emit('internal:users.login', env, function redirect() {
-          redirectTo(env.data.redirect_url, callback);
+          callback({
+            code: N.io.REDIRECT,
+            head: {
+              'Location': env.data.redirect_url
+            }
+          });
         });
       });
     });
@@ -101,7 +139,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function continue_auth(env, callback) {
 
-    redirectTo(N.runtime.router.linkTo('users.auth.register.show'), callback);
+    callback(createRedirect('users.auth.register.show'));
 
   });
 

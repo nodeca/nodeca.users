@@ -43,7 +43,6 @@ module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, function login_show(env) {
     env.res.head.title = env.t('title');
-    env.session.redirect_id = env.params.redirect_id;
   });
 
 
