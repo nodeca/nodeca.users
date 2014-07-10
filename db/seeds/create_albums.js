@@ -40,6 +40,7 @@ var createMedia = function (userId, album, callback) {
     media.album_id = album;
     media.created_at = new Date();
     media.file_id = file;
+    media.type = 'image';
     media.save(callback);
   });
 };

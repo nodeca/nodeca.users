@@ -1,0 +1,3 @@
+en-US:
+  err_invalid_url: Invalid URL
+  err_cannot_parse: URL is unreachable. Try again later

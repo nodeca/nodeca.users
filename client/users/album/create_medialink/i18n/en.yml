@@ -1,0 +1,7 @@
+en-US:
+  title: Add video
+  input_url: Video URL
+  err_empty_url: 'Video URL should not be empty'
+  create: OK
+  cancel: Cancel
+  available_providers: "You can add video from: #{providers}"

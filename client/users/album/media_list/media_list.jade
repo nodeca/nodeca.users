@@ -1,11 +1,18 @@
 ul.user-medias-list.row
   each media in self.medias
+    - href = self.link_to('users.media', { 'user_hid': self.user_hid, 'media_id': media._id })
     li.col-md-3
       .user-media
         .user-media__image-wrapper
-          -// TODO: check is it really image
-          a(href=self.link_to('users.media', { 'user_hid': self.user_hid, 'media_id': media._id }))
+          if media.type === 'image'
             - var imageUrl = self.link_to('core.gridfs', { 'bucket': media.file_id + '_md' })
-            img.user-media__image(src=imageUrl)
-        .user-media__description=media.description
-        .user-media__date= self.date(media.created_at, 'date')
+            a(href=href)
+              img.user-media__image(src=imageUrl)
+          else if media.type === 'medialink'
+            != media.medialink_html
+          else if media.type === 'file'
+            -// TODO
+        .user-media__description
+          a(href=href)= media.description
+        .user-media__date
+          a(href=href)= self.date(media.created_at, 'date')

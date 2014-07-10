@@ -109,7 +109,9 @@ module.exports = function (N, collectionName) {
 
       if (media) {
         if (!album.cover_id || coverExists === 0) {
-          album.cover_id = media.file_id;
+          if (media.type === 'image') {
+            album.cover_id = media.file_id;
+          }
         }
 
         if (album.last_at < media.created_at) {

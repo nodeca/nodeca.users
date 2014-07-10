@@ -159,6 +159,7 @@ module.exports = function (N, apiPath) {
         media.user_id = env.session.user_id;
         media.album_id = env.data.album._id;
         media.file_id = fileId;
+        media.type = 'image';
 
         env.data.media = media;
 

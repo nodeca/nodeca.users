@@ -1,7 +1,6 @@
 @import "nodeca.core/client/common/_variables"
 
 .user-media
-  list-style none
   display inline-block
   height 240px
   position relative
@@ -18,6 +17,11 @@
   border 1px solid #666
   position relative
   z-index 10
+
+.user-media__image-wrapper .medialink-video iframe
+  border none
+  width 240px
+  height 180px
 
 .user-media__image
   height 180px

@@ -12,8 +12,15 @@
   header.page-head.albums-head
     p.page-head__descr.hidden-xs(itemprop='description')
 
-  - var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.file_id })
-  img.user-media--large-photo(src=imageUrl)
+  if self.media.type === 'image'
+    - var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.file_id })
+    img.user-media__large-photo(src=imageUrl)
+  else if self.media.type === 'medialink'
+    .user-media__video
+      != self.media.medialink_html
+  else if self.media.type === 'file'
+    -// TODO
+
   p= self.media.description
   p= self.date(self.media.created_at, 'date')
 

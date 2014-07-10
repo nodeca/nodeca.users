@@ -24,11 +24,13 @@ module.exports = function (N, collectionName) {
 
 
   var Media = new Schema({
-    'file_id'     : Schema.Types.ObjectId,
-    'user_id'     : Schema.Types.ObjectId,
-    'album_id'    : Schema.Types.ObjectId,
-    'created_at'  : { 'type': Date, 'default': Date.now },
-    'description' : String
+    'file_id'        : Schema.Types.ObjectId,
+    'user_id'        : Schema.Types.ObjectId,
+    'album_id'       : Schema.Types.ObjectId,
+    'created_at'     : { 'type': Date, 'default': Date.now },
+    'type'           : { 'type': String, 'enum': [ 'image', 'medialink', 'file' ], 'default': 'file' },
+    'medialink_html' : String,
+    'description'    : String
   }, {
     versionKey: false
   });
@@ -52,6 +54,11 @@ module.exports = function (N, collectionName) {
   // Remove files with previews
   //
   Media.pre('remove', function (callback) {
+    if (this.type === 'medialink') {
+      callback();
+      return;
+    }
+
     N.models.core.File.remove(this.file_id, true, callback);
   });
 

@@ -54,6 +54,18 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Fill available medialink providers
+  //
+  N.wire.before(apiPath, function fill_providers(env) {
+
+    if (N.config.medialinks.albums === true) {
+      env.res.medialink_providers = Object.keys(N.config.medialinks.providers);
+    } else {
+      env.res.medialink_providers = N.config.medialinks.albums;
+    }
+  });
+
+
   // Get medias list (subcall)
   //
   N.wire.on(apiPath, function get_user_albums(env, callback) {

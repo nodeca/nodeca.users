@@ -1,6 +1,6 @@
 en-US:
   title: New album
-  create: Apply
+  create: OK
   cancel: Cancel
   input_name: Album name
   err_empty_name: 'Album name should not be empty'

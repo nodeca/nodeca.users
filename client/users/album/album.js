@@ -6,7 +6,7 @@ var $dropZone;
 var isOnPage;
 
 
-var reloadAlbums = function () {
+var reloadMedia = function () {
   // Check user still on page
   if (!isOnPage) {
     return;
@@ -19,6 +19,12 @@ var reloadAlbums = function () {
     N.wire.emit('navigate.replace', {});
   });
 };
+
+
+N.wire.on('users.album:create_medialink', function create_medialink (event) {
+  var params = { album_id: pageParams.album_id, providers: $(event.target).data('providers') };
+  N.wire.emit('users.album.create_medialink', params, reloadMedia);
+});
 
 
 N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
@@ -36,7 +42,7 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
           url: N.runtime.router.linkTo('users.media.upload', pageParams),
           config: 'users.uploader_config'
         },
-        reloadAlbums
+        reloadMedia
       );
     }
   });
@@ -82,7 +88,7 @@ N.wire.on('users.album:dd_area', function user_album_dd(event) {
             url: N.runtime.router.linkTo('users.media.upload', pageParams),
             config: 'users.uploader_config'
           },
-          reloadAlbums
+          reloadMedia
         );
       }
       break;
