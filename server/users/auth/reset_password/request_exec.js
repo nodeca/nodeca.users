@@ -4,7 +4,6 @@
 'use strict';
 
 
-var _         = require('lodash');
 var recaptcha = require('nodeca.core/lib/recaptcha');
 
 
@@ -45,8 +44,8 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function fetch_auth_link(env, callback) {
     N.models.users.AuthLink.findOne({
-      'providers.email': env.params.email
-    , 'providers.type': 'plain'
+      'email': env.params.email
+    , 'type': 'plain'
     }, function (err, authlink) {
       if (err) {
         callback(err);
@@ -73,14 +72,8 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function create_reset_confirmation(env, callback) {
     var authlink = env.data.authlink;
 
-    var provider = _.find(authlink.providers, {
-      type: 'plain'
-    , email: env.params.email
-    });
-
     N.models.users.TokenResetPassword.create({
       authlink_id:     authlink._id
-    , authprovider_id: provider._id
     }, function (err, token) {
 
       if (err) {
@@ -99,7 +92,7 @@ module.exports = function (N, apiPath) {
         });
 
         N.mailer.send({
-          to:      provider.email
+          to:      authlink.email
         , subject: env.t('confirmation_email_subject', { project_name: projectName })
         , text:    env.t('confirmation_email_text',    { link: link })
         }, callback);

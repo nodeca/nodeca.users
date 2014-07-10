@@ -27,8 +27,7 @@ module.exports = function (N, collectionName) {
   var TokenResetPassword = new Schema({
     secret_key:      { type: String, 'default': generateSecretKey },
     create_ts:       { type: Date,   'default': Date, expires: TOKEN_EXPIRE_TIMEOUT },
-    authlink_id:     Schema.Types.ObjectId,
-    authprovider_id: Schema.Types.ObjectId
+    authlink_id:     Schema.Types.ObjectId
   },
   {
     versionKey : false
@@ -39,8 +38,6 @@ module.exports = function (N, collectionName) {
 
   // used when user clicks reset link in email
   TokenResetPassword.index({ secret_key: 1 });
-  // used to clear all tokens for user's auth provider
-  TokenResetPassword.index({ authprovider_id: 1 });
 
   //////////////////////////////////////////////////////////////////////////////
 

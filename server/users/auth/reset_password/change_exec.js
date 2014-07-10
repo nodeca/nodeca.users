@@ -4,9 +4,6 @@
 'use strict';
 
 
-var _     = require('lodash');
-
-
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     secret_key:   { type: 'string', required: true }
@@ -81,20 +78,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      var provider = _.find(authlink.providers, function (provider) {
-        return provider._id.equals(token.authprovider_id);
-      });
-
-      if (!provider) {
-        callback({
-          code:         N.io.CLIENT_ERROR,
-          message:      env.t('broken_token'),
-          bad_password: false
-        });
-        return;
-      }
-
-      env.data.provider = provider;
+      env.data.authlink = authlink;
       callback();
     });
   });
@@ -103,9 +87,9 @@ module.exports = function (N, apiPath) {
   // Update password & remove used token
   //
   N.wire.on(apiPath, function update_password(env, callback) {
-    var provider = env.data.provider;
+    var authlink = env.data.authlink;
 
-    provider.setPass(env.params.new_password, function (err) {
+    authlink.setPass(env.params.new_password, function (err) {
       if (err) {
         callback(err);
         return;
@@ -113,7 +97,7 @@ module.exports = function (N, apiPath) {
 
       // Remove current and all other password reset tokens for this provider.
       N.models.users.TokenResetPassword.remove({
-        authprovider_id: provider._id
+        authlink_id: authlink._id
       }, function (err) {
         if (err) {
           callback(err);
