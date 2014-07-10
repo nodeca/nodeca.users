@@ -90,7 +90,6 @@ module.exports = function (N, apiPath) {
           'type': env.params.provider,
           'exist' : true
         })
-        .lean(true)
         .exec(function (err, authLink) {
 
       if (err) {
@@ -120,6 +119,7 @@ module.exports = function (N, apiPath) {
         }
 
         env.data.user     = user;
+        env.data.authLink = authLink;
 
         env.data.redirect_id = env.session.state.redirect_id;
         N.wire.emit('internal:users.login', env, function redirect() {
@@ -131,6 +131,19 @@ module.exports = function (N, apiPath) {
           });
         });
       });
+    });
+  });
+
+
+  // Remembers login ip and date
+  //
+  N.wire.after(apiPath, function remember_auth_data(env, callback) {
+    var authLink = env.data.authLink;
+    authLink.last_at = Date.now();
+    authLink.last_ip = env.req.ip;
+
+    authLink.save(function (err) {
+      callback(err);
     });
   });
 

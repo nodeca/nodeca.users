@@ -260,6 +260,19 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Remembers login ip and date
+  //
+  N.wire.after(apiPath, function remember_auth_data(env, callback) {
+    var authLink = env.data.authLink;
+    authLink.last_at = Date.now();
+    authLink.last_ip = env.req.ip;
+
+    authLink.save(function (err) {
+      callback(err);
+    });
+  });
+
+
   // Clear data user for oauth.
   //
   N.wire.after(apiPath, function clear_oauth_data(env) {
