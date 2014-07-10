@@ -16,7 +16,7 @@ N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
 });
 
 
-var updateAlbumList = function () {
+var updateAlbumList = function (albumId) {
   // Check user still on page
   if (!isOnPage) {
     return;
@@ -24,7 +24,14 @@ var updateAlbumList = function () {
 
   N.io.rpc('users.albums_root.list', pageParams).done(function (albumsList) {
     var $list = $(N.runtime.render('users.albums_root.list', albumsList));
-    $('#users-albums-list').html($list);
+    var $listContainer = $('#users-albums-list');
+
+    if (albumId) {
+      var albumSelector = '[data-album-id=' + albumId + ']';
+      $listContainer.find(albumSelector).replaceWith($list.find(albumSelector));
+    } else {
+      $listContainer.html($list);
+    }
 
     N.wire.emit('navigate.replace', {});
   });
@@ -76,7 +83,9 @@ N.wire.on('users.albums_root.list:dragdrop', function albums_root_dd(event) {
           files: event.dataTransfer.files,
           url: N.runtime.router.linkTo('users.media.upload', { user_hid: hid, album_id: id }),
           config: 'users.uploader_config'
-        }, updateAlbumList);
+        }, function () {
+          updateAlbumList(id);
+        });
       }
       break;
     default:
