@@ -44,6 +44,6 @@ module.exports = function (N, apiPath) {
       'params': { 'user_hid': env.data.user.hid }
     });
 
-    env.res.blocks.breadcrumbs = breadcrumbs;
+    env.res.breadcrumbs = breadcrumbs;
   });
 };
