@@ -13,9 +13,9 @@ i18n:
         setting_names:
           general_ssl_mode: SSL mode
 
-          register_user_initial_group: Group after registration
+          validate_email: Should validate email after registration
 
-          register_user_validated_group: Group after activation
+          registered_user_group: Group after activation
 
           can_access_acp: Can access ACP
 

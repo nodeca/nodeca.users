@@ -17,7 +17,7 @@ module.exports = function (N, collectionName) {
     nick           : String,
     email          : String,
     usergroups     : [ Schema.Types.ObjectId ],
-    joined_ts      : Date,
+    joined_ts      : { type: Date, 'default': Date.now },
     joined_ip      : String,
 
     // false -> deleted accounts

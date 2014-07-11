@@ -76,13 +76,10 @@ router:
     users.auth.register.show:
       "/auth/register": ~
 
-    users.auth.register.done_show:
+    users.auth.register.activate_show:
       "/auth/register/done": ~
 
-    users.auth.register.resend_activation_show:
-      "/auth/register/resend": ~
-
-    users.auth.register.activate_show:
+    users.auth.register.activate_exec:
       "/auth/register/activate/{secret_key}":
         secret_key: /[0-9a-f]+/
 

@@ -5,7 +5,7 @@
 
 
 module.exports = function sendActivationEmail(N, env, email, token, callback) {
-  var link = env.helpers.url_to('users.auth.register.activate_show', {
+  var link = env.helpers.url_to('users.auth.register.activate_exec', {
     secret_key: token.secret_key
   });
 

@@ -1,4 +1,6 @@
-// Register a new user.
+// Register a new user. If email validation needed store
+// reg info in TokenActivationEmail. Else save user
+//
 
 
 'use strict';
@@ -55,7 +57,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Check email uniqueness. Used emails from input and oauth provider
+  // Check email uniqueness. User email and oauth provider email should be unique
   //
   N.wire.before(apiPath, function check_email_uniqueness(env, callback) {
 
@@ -85,6 +87,8 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Check nick uniqueness
+  //
   N.wire.before(apiPath, function check_nick_uniqueness(env, callback) {
     N.models.users.User
         .findOne({ 'nick': env.params.nick })
@@ -131,182 +135,110 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Get id of 'validating' group
+  // If previos checks failed terminate with client error
   //
-  N.wire.before(apiPath, function find_validating_group_id(env, callback) {
-    N.models.users.UserGroup.findIdByName('validating', function(err, id) {
-      env.data.validatingGroupId = id;
-      callback(err);
-    });
-  });
-
-
-  // Get id of group to move after registration
-  //
-  N.wire.before(apiPath, function find_after_register_group_id(env, callback) {
-    N.settings.get('register_user_validated_group', function (err, id) {
-      env.data.validatedGroupId = id;
-      callback(err);
-    });
-  });
-
-
-  // Create user record
-  //
-  N.wire.on(apiPath, function create_user(env, callback) {
-    env.res.head.title = env.t('title');
-
+  N.wire.before(apiPath, function check_errors(env, callback) {
     if (!_.isEmpty(env.data.errors)) {
       callback({ code: N.io.CLIENT_ERROR, data: env.data.errors });
       return;
     }
+    callback();
+  });
 
-    // Find highest user hid. (plain number)
-    N.models.core.Increment.next('user', function (err, newUserHid) {
+
+  // Check if need email validation step or should create user directly
+  //
+  N.wire.before(apiPath, function check_need_validation(env, callback) {
+    N.settings.get('validate_email', function (err, validate_email) {
+
+      if (err) {
+        callback(err);
+      }
+
+      env.data.validate_email = validate_email;
+
+      if (validate_email) {
+        callback();
+        return;
+      }
+
+      // If there is information about oauth provider then check trusted setting
+      if (!env.session.oauth) {
+        callback();
+        return;
+      }
+
+      env.data.validate_email = !N.config.oauth[env.session.oauth.type].trusted;
+
+      callback();
+    });
+  });
+
+
+  // Create user record and login
+  //
+  function create_user(env, callback) {
+    env.res.head.title = env.t('title');
+
+    N.wire.emit('internal:users.user_create', env, function (err) {
       if (err) {
         callback(err);
         return;
       }
 
-      var user = new N.models.users.User();
-
-      user.hid         = newUserHid;
-      user.nick       = env.params.nick;
-      user.usergroups = [ env.data.validatedGroupId ];
-      user.joined_ip  = env.req.ip;
-      user.joined_ts  = new Date();
-      user.locale     = env.runtime.locale || N.config.locales['default'];
-      user.email      = env.params.email;
-
-      user.save(function (err, user) {
+      N.wire.emit('internal:users.login', env, function (err) {
         if (err) {
           callback(err);
           return;
         }
 
-        env.data.user = user;
+        env.res.redirect_url = env.data.redirect_url;
         callback();
       });
     });
-  });
+  }
 
 
-  // Add auth provider record
+  // If the user need to activate email, send activation token by email.
   //
-  N.wire.after(apiPath, function create_user_privider(env, callback) {
+  function send_activation(env, callback) {
 
-    var user = env.data.user;
+    env.res.redirect_url = N.runtime.router.linkTo('users.auth.register.activate_show');
 
-    var authlink = new N.models.users.AuthLink({
-      'user_id': user._id,
-      'type' : 'plain',
-      'email' : env.params.email
-    });
-
-    function fail(err) {
-      user.remove(function () {
-        callback(err);
-      });
-    }
-
-    authlink.setPass(env.params.pass, function (err) {
+    N.models.users.TokenActivationEmail.create({
+      ip: env.req.ip,
+      reg_info: env.data.reg_info,
+      oauth_info: env.data.oauth_info
+    }, function (err, token) {
       if (err) {
-        // Can't fill hash - delete the user.
-        // Should not happen in real life
-        fail(err);
-        return;
+        callback(err);
       }
 
-      authlink.save(function (err) {
-        if (err) {
-          // Can't create authlink - delete the user.
-          // Should not happen in real life
-          fail(err);
-          return;
-        }
-
-        env.data.authLink = authlink;
-
-        callback();
-      });
+      sendActivationEmail(N, env, env.data.reg_info.email, token, callback);
     });
-  });
+  }
 
 
-  // Add oauth provider record
+  // If the user need to activate email, create token.
+  // Else save user
   //
-  N.wire.after(apiPath, function create_oauth_privider(env, callback) {
+  N.wire.on(apiPath, function finish_registration(env, callback) {
 
-    if (!env.session.oauth) {
-      callback();
+    env.data.reg_info = {
+      nick: env.params.nick,
+      email: env.params.email,
+      pass: env.params.pass
+    };
+
+    env.data.oauth_info = env.session.oauth;
+    env.session = _.omit(env.session, [ 'state', 'oauth' ]);
+
+    if (env.data.validate_email) {
+      send_activation(env, callback);
       return;
     }
 
-    var user = env.data.user;
-    var plain = env.data.authlink;
-
-    var authlink = new N.models.users.AuthLink();
-    authlink.provider_user_id = env.session.oauth.provider_user_id;
-    authlink.email = env.session.oauth.email;
-    authlink.meta = env.session.oauth.meta;
-    authlink.type = env.session.oauth.type;
-    authlink.user_id = user.id;
-
-    authlink.save(function (err) {
-      if (err) {
-        // Remove user and plain record
-        user.remove(function () {
-          plain.remove(function () {
-            callback(err);
-          });
-        });
-        return;
-      }
-
-      callback();
-    });
+    create_user(env, callback);
   });
 
-
-  // Clear data user for oauth.
-  //
-  N.wire.after(apiPath, function clear_oauth_data(env) {
-    env.session = _.omit(env.session, 'state');
-    env.session = _.omit(env.session, 'oauth');
-  });
-
-
-  // Auto login to the new account.
-  //
-  N.wire.after(apiPath, function autologin(env, callback) {
-
-    var user = env.data.user;
-    var authLink =  env.data.authLink;
-
-    N.wire.emit('internal:users.login', env, function (err) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      // If the user is in 'validating' group according to global settings,
-      // send activation token by email.
-      if (env.data.validatingGroupId.equals(env.data.validatedGroupId)) {
-        env.res.redirect_url = N.runtime.router.linkTo('users.auth.register.done_show');
-
-        N.models.users.TokenActivationEmail.create({ user_id: user._id, ip: env.req.ip }, function (err, token) {
-          if (err) {
-            callback(err);
-            return;
-          }
-
-          sendActivationEmail(N, env, authLink.email, token, callback);
-        });
-        return;
-      }
-
-      env.res.redirect_url = env.data.redirect_url;
-      callback();
-    });
-  });
 };

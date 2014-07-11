@@ -7,13 +7,13 @@ en-US:
     err_busy_nick: This nick is already used.
     err_wrong_captcha_solution: Wrong CAPTCHA solution.
 
-  done_show:
+  activate_show:
     title: Registration
 
   resend_activation_show:
     title: Resend activation
 
-  activate_show:
+  activate_exec:
     title: Registration
 
   activation_email:

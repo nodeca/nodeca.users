@@ -20,7 +20,7 @@ module.exports = function (N, collectionName) {
     short_name   : { type: String, unique: true },
 
     // Can be deleted?
-    // Groups like `admin`, `guests`, `members`, `validating` are protected
+    // Groups like `admin`, `guests`, `members` are protected
     is_protected : { type: Boolean, 'default': false },
 
     // Parent group, all non-overriden settings will be inherited from it.
