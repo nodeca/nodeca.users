@@ -44,7 +44,7 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function check_activation_token_and_user(env, callback) {
 
     N.models.users.TokenActivationEmail
-        .findOne({ secret_key: env.params.secret_key })
+        .findOne({ secret_key: env.params.secret_key, ip: env.req.ip })
         .exec(function (err, token) {
 
       if (err) {
@@ -78,6 +78,7 @@ module.exports = function (N, apiPath) {
         }
 
         env.data.user = user;
+        callback();
       });
     });
   });

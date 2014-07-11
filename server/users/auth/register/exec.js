@@ -294,7 +294,7 @@ module.exports = function (N, apiPath) {
       if (env.data.validatingGroupId.equals(env.data.validatedGroupId)) {
         env.res.redirect_url = N.runtime.router.linkTo('users.auth.register.done_show');
 
-        N.models.users.TokenActivationEmail.create({ user_id: user._id }, function (err, token) {
+        N.models.users.TokenActivationEmail.create({ user_id: user._id, ip: env.req.ip }, function (err, token) {
           if (err) {
             callback(err);
             return;

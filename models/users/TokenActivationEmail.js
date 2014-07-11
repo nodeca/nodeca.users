@@ -27,7 +27,8 @@ module.exports = function (N, collectionName) {
   var TokenActivationEmail = new Schema({
     secret_key: { type: String, 'default': generateSecretKey },
     create_ts:  { type: Date,   'default': Date.now, expires: TOKEN_EXPIRE_TIMEOUT },
-    user_id:    Schema.Types.ObjectId
+    user_id:    Schema.Types.ObjectId,
+    ip:         { type: String }
   },
   {
     versionKey : false

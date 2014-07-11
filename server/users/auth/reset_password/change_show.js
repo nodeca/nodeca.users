@@ -27,7 +27,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      env.res.valid_token = token && !token.isExpired();
+      env.res.valid_token = token && !token.isExpired() && (token.ip === env.req.ip);
       callback();
     });
   });

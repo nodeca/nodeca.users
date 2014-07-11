@@ -82,7 +82,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      N.models.users.TokenActivationEmail.create({ user_id: user._id }, function (err, token) {
+      N.models.users.TokenActivationEmail.create({ user_id: user._id, ip: env.req.ip }, function (err, token) {
         if (err) {
           callback(err);
           return;

@@ -73,7 +73,8 @@ module.exports = function (N, apiPath) {
     var authlink = env.data.authlink;
 
     N.models.users.TokenResetPassword.create({
-      authlink_id:     authlink._id
+      authlink_id:     authlink._id,
+      ip: env.req.ip
     }, function (err, token) {
 
       if (err) {

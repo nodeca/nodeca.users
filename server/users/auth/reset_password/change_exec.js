@@ -51,6 +51,15 @@ module.exports = function (N, apiPath) {
         return;
       }
 
+      if (token.ip !== env.req.ip) {
+        callback({
+          code:         N.io.CLIENT_ERROR,
+          message:      env.t('broken_token'),
+          bad_password: false
+        });
+        return;
+      }
+
       env.data.token = token;
 
       callback();
