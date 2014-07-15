@@ -5,9 +5,6 @@
   != self.partial('@common.blocks.breadcrumbs')
 
   .breadcrumbs
-    if own_page && self.album
-      button.btn.btn-default.btn-sm(data-on-click='users.album:create_medialink' data-providers=self.medialink_providers.join(', '))= self.t('create_medialink')
-      | 
     if own_page && self.album && !self.album.default
       a.btn.btn-default.btn-sm(href=self.link_to('users.album.edit', { 'user_hid': self.user_hid, 'album_id': self.album._id }))= self.t('edit')
 
@@ -22,6 +19,7 @@
       #users-album__upload-button-wrapper
         span#users-album__upload-button.btn.btn-default= self.t('select_files')
           input(name='files[]' type='file' multiple)#users-album__upload-files
+        button.btn.btn-default(data-on-click='users.album:create_medialink' data-providers=self.medialink_providers.join(', '))= self.t('create_medialink')
 
   #users-medias-list._affix(data-affix={ 'bottom': 160, 'wire': 'users.album:append_more_photos', 'class': 'append-more-photos' })
     != self.partial('@users.album.media_list')

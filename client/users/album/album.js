@@ -23,10 +23,9 @@ var reloadMedia = function () {
 };
 
 
-N.wire.on('users.album:create_medialink', function create_medialink (event) {
-  var params = { album_id: pageParams.album_id, providers: $(event.target).data('providers') };
-  N.wire.emit('users.album.create_medialink', params, reloadMedia);
-});
+////////////////////////////////////////////////////////////////////////////////
+// Uploader
+//
 
 
 N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
@@ -54,6 +53,7 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
 N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
   isOnPage = false;
 });
+
 
 // Handles the event when user drag file to drag drop zone
 //
@@ -100,6 +100,19 @@ N.wire.on('users.album:dd_area', function user_album_dd(event) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// Create medialink button handler
+//
+
+
+N.wire.on('users.album:create_medialink', function create_medialink (event) {
+  var params = { album_id: pageParams.album_id, providers: $(event.target).data('providers') };
+  N.wire.emit('users.album.create_medialink', params, reloadMedia);
+});
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Lazy load photos on scroll down
+//
 
 var nextPage;
 var appendParams;
@@ -120,9 +133,11 @@ N.wire.after('navigate.done:' + module.apiPath, function setup_append(data) {
 
 // Append more photos
 //
+// If callback not executed, no new event happen
+//
 N.wire.on('users.album:append_more_photos', function append_more_photos (__, callback) {
-  // If you don't call 'callback' will no longer events
   if (nextPage === -1) {
+    // Skip callback to stop new attempts
     return;
   }
 
