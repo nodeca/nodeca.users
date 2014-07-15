@@ -4,8 +4,10 @@
 'use strict';
 
 
-module.exports = function (N, apiPath) {
+var PHOTOS_PER_PAGE = 16;
 
+
+module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
     user_hid: {
@@ -15,6 +17,9 @@ module.exports = function (N, apiPath) {
     },
     album_id: {
       format: 'mongo'
+    },
+    page: {
+      type: 'integer'
     }
   });
 
@@ -37,6 +42,12 @@ module.exports = function (N, apiPath) {
     // If album_id not set, will fetch all user medias
     if (env.params.album_id) {
       query.where({ 'album_id': env.params.album_id });
+    }
+
+    var page = env.params.page || env.data.media_page;
+    if (page) {
+      query.skip((page - 1) * PHOTOS_PER_PAGE).limit(PHOTOS_PER_PAGE);
+      env.res.photos_per_page = PHOTOS_PER_PAGE;
     }
 
     query.exec(function (err, result) {

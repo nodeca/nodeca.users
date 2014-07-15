@@ -23,5 +23,5 @@
         span#users-album__upload-button.btn.btn-default= self.t('select_files')
           input(name='files[]' type='file' multiple)#users-album__upload-files
 
-  #users-medias-list
+  #users-medias-list._affix(data-affix={ 'bottom': 160, 'wire': 'users.album:append_more_photos', 'class': 'append-more-photos' })
     != self.partial('@users.album.media_list')

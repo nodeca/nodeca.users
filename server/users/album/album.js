@@ -29,6 +29,8 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function fetch_album(env, callback) {
     if (!env.params.album_id) {
+      // Paginate 'all photos' page
+      env.data.media_page = 1;
       callback();
       return;
     }

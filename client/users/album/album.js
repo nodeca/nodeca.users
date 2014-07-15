@@ -1,5 +1,7 @@
 'use strict';
 
+var _ = require('lodash');
+
 
 var pageParams;
 var $dropZone;
@@ -94,4 +96,47 @@ N.wire.on('users.album:dd_area', function user_album_dd(event) {
       break;
     default:
   }
+});
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+var nextPage;
+var appendParams;
+
+
+// Init photos append when user scroll page down
+//
+N.wire.after('navigate.done:' + module.apiPath, function setup_append(data) {
+  appendParams = _.clone(data.params);
+
+  if (!appendParams.album_id) {
+    nextPage = 2;
+  } else {
+    nextPage = -1;
+  }
+});
+
+
+// Append more photos
+//
+N.wire.on('users.album:append_more_photos', function append_more_photos (__, callback) {
+  // If you don't call 'callback' will no longer events
+  if (nextPage === -1) {
+    return;
+  }
+
+  N.io.rpc('users.album.media_list', _.assign({}, appendParams, { page: nextPage })).done(function (mediaList) {
+    var $list = $(N.runtime.render('users.album.media_list', mediaList));
+    $('#users-medias-list').append($list);
+
+    if (mediaList.medias.length < mediaList.photos_per_page) {
+      // No more available media
+      nextPage = -1;
+    } else {
+      nextPage++;
+    }
+
+    callback();
+  });
 });
