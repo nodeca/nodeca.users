@@ -5,7 +5,7 @@
         .user-album__image-wrapper
           a(href=self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id }))
             if album.cover_id
-              - var imageUrl = self.link_to('core.gridfs', { 'bucket': album.cover_id + '_md' })
+              - var imageUrl = self.link_to('core.gridfs', { 'bucket': album.cover_id + '_sm' })
               img.user-album__image(src=imageUrl)
             else
               .user-album__no-cover No cover

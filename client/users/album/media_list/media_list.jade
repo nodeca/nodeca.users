@@ -5,7 +5,7 @@ ul.user-medias-list.row
       .user-media
         .user-media__image-wrapper
           if media.type === 'image'
-            - var imageUrl = self.link_to('core.gridfs', { 'bucket': media.file_id + '_md' })
+            - var imageUrl = self.link_to('core.gridfs', { 'bucket': media.file_id + '_sm' })
             a(href=href)
               img.user-media__image(src=imageUrl)
           else if media.type === 'medialink'
