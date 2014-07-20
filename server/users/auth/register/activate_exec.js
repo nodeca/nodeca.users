@@ -14,6 +14,13 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Kick logged-in members
+  //
+  N.wire.before(apiPath, function register_guest_only(env, callback) {
+    N.wire.emit('internal:users.redirect_not_guest', env, callback);
+  });
+
+
   // Create default response (with failing state)
   //
   N.wire.before(apiPath, function prepare_response(env) {

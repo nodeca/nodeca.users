@@ -25,16 +25,22 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Kick logged-in members
+  //
   N.wire.before(apiPath, function register_guest_only(env, callback) {
     N.wire.emit('internal:users.redirect_not_guest', env, callback);
   });
 
 
+  // Create sndbox for form errors
+  //
   N.wire.before(apiPath, function prepare_env_data(env) {
     env.data.errors = env.data.errors || {};
   });
 
 
+  // Validate form data
+  //
   N.wire.before(apiPath, function validate_params(env) {
     var report = revalidator.validate(env.params, {
       type: 'object'

@@ -15,11 +15,14 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.before(apiPath, function rquest_pass_guest_only(env, callback) {
-    N.wire.emit('internal:users.redirect_not_guest', env, callback);
-  });
+  //
+  // Don't limit logged-in users to change pass. Because
+  // user can forget password, but still have cookies to remember him.
+  //
 
 
+  // check captcha
+  //
   N.wire.before(apiPath, function verify_captcha(env, callback) {
     var privateKey = N.config.options.recaptcha.private_key
       , clientIp   = env.req.ip
@@ -67,14 +70,14 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Main
+  // Create token & send email
   //
   N.wire.on(apiPath, function create_reset_confirmation(env, callback) {
     var authlink = env.data.authlink;
 
     N.models.users.TokenResetPassword.create({
-      authlink_id:     authlink._id,
-      ip: env.req.ip
+      authlink_id: authlink._id,
+      ip:          env.req.ip
     }, function (err, token) {
 
       if (err) {

@@ -8,10 +8,10 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, {});
 
 
-  N.wire.before(apiPath, function rquest_pass_guest_only(env, callback) {
-    N.wire.emit('internal:users.redirect_not_guest', env, callback);
-  });
-
+  //
+  // Don't limit logged-in users to change pass. Because
+  // user can forget password, but still have cookies to remember him.
+  //
 
   N.wire.on(apiPath, function fill_page_head(env) {
     env.res.head.title = env.t('title');

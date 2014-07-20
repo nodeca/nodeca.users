@@ -11,9 +11,10 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.before(apiPath, function change_pass_guest_only(env, callback) {
-    N.wire.emit('internal:users.redirect_not_guest', env, callback);
-  });
+  //
+  // Don't limit logged-in users to change pass. Because
+  // user can forget password, but still have cookies to hemember him.
+  //
 
 
   // Validate new password

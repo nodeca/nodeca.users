@@ -12,7 +12,9 @@ module.exports = function (N, apiPath) {
   var rateLimit = require('./_rate_limit')(N);
 
 
-  // Don't set "required" flag, to manually fill
+  // Don't set "required" flag, to manually check data &
+  // fill form errors
+  //
   N.validate(apiPath, {
     email_or_nick: { type: 'string' }
   , pass:          { type: 'string' }
@@ -30,6 +32,8 @@ module.exports = function (N, apiPath) {
   }
 
 
+  // Kick logged-in members
+  //
   N.wire.before(apiPath, function login_guest_only(env, callback) {
     N.wire.emit('internal:users.redirect_not_guest', env, callback);
   });
@@ -219,8 +223,10 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Check that user & plain authlink are ok
+  //
   N.wire.on(apiPath, function login_do(env, callback) {
-    // user not found or doesn't have authlink record for plain login
+
     if (!env.data.user || !env.data.authLink) {
       updateRateLimits(env.req.ip);
       callback({
@@ -231,6 +237,14 @@ module.exports = function (N, apiPath) {
       });
       return;
     }
+
+    callback();
+  });
+
+
+  // Do login
+  //
+  N.wire.on(apiPath, function login_do(env, callback) {
 
     env.data.authLink.checkPass(env.params.pass, function(err, success) {
       if (err) {
