@@ -10,7 +10,7 @@ module.exports = function (N, apiPath) {
 
     // delete old session (don't wait until compleete)
     if (env.session_id) {
-      N.runtime.redis.del('sess:' + env.session_id);
+      N.redis.del('sess:' + env.session_id);
     }
 
     env.session_id      = null; // Generate new sid on session save.
