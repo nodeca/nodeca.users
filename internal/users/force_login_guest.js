@@ -9,7 +9,7 @@ module.exports = function (N, apiPath) {
     return {
       code: N.io.REDIRECT,
       head: {
-        'Location': N.runtime.router.linkTo('users.auth.login.show', loginParams)
+        'Location': N.router.linkTo('users.auth.login.show', loginParams)
       }
     };
   };
@@ -20,7 +20,7 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    var backUrl = N.runtime.router.linkTo(env.method, env.params);
+    var backUrl = N.router.linkTo(env.method, env.params);
     if (!backUrl) {
       // Should never happens. Can't build url - just redirect to login page
       callback(createRedirect());

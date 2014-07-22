@@ -25,7 +25,7 @@ module.exports = function (N, apiPath) {
       callback({
         code: N.io.REDIRECT,
         head: {
-          'Location': N.runtime.router.linkTo('users.member', { 'user_hid': user.hid })
+          'Location': N.router.linkTo('users.member', { 'user_hid': user.hid })
         }
       });
     });

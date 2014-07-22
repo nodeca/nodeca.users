@@ -209,7 +209,7 @@ module.exports = function (N, apiPath) {
   //
   function send_activation(env, callback) {
 
-    env.res.redirect_url = N.runtime.router.linkTo('users.auth.register.activate_show');
+    env.res.redirect_url = N.router.linkTo('users.auth.register.activate_show');
 
     N.models.users.TokenActivationEmail.create({
       ip: env.req.ip,

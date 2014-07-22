@@ -20,7 +20,7 @@ module.exports = function (N, apiPath) {
     return ({
       code: N.io.REDIRECT,
       head: {
-        'Location': N.runtime.router.linkTo(apiPath)
+        'Location': N.router.linkTo(apiPath)
       }
     });
   }

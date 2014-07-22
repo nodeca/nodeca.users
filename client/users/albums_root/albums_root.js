@@ -81,7 +81,7 @@ N.wire.on('users.albums_root.list:dragdrop', function albums_root_dd(event) {
       if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
         N.wire.emit('users.uploader:add', {
           files: event.dataTransfer.files,
-          url: N.runtime.router.linkTo('users.media.upload', { user_hid: hid, album_id: id }),
+          url: N.router.linkTo('users.media.upload', { user_hid: hid, album_id: id }),
           config: 'users.uploader_config'
         }, function () {
           updateAlbumList(id);

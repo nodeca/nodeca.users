@@ -18,7 +18,7 @@ module.exports = function (N, apiPath) {
 
 
     // fill redirect with default value
-    env.data.redirect_url = N.runtime.router.linkTo('users.profile_redirect');
+    env.data.redirect_url = N.router.linkTo('users.profile_redirect');
 
     // if no specific redirect requested - redirect to default
     if (!env.data.redirect_id) {
