@@ -8,7 +8,7 @@
     if own_page && self.album && !self.album.default
       a.btn.btn-default.btn-sm(href=self.link_to('users.album.edit', { 'user_hid': self.user_hid, 'album_id': self.album._id }))= self.t('edit')
 
-  header.page-head.albums-head
+  header.page-head
     h1.page-head__title(itemprop='name')
       =self.album ? self.album.title : self.t('title_all_files')
     p.page-head__descr.hidden-xs(itemprop='description')
@@ -21,5 +21,5 @@
           input(name='files[]' type='file' multiple)#users-album__upload-files
         button.btn.btn-default(data-on-click='users.album:create_medialink' data-providers=self.medialink_providers.join(', '))= self.t('create_medialink')
 
-  #users-medias-list._affix(data-affix={ 'bottom': 160, 'wire': 'users.album:append_more_photos', 'class': 'append-more-photos' })
+  ul#users-medias-list.users-medialist._affix(data-affix={ 'bottom': 160, 'wire': 'users.album:append_more_photos', 'class': 'append-more-photos' })
     != self.partial('@users.album.media_list')
