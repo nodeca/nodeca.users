@@ -18,8 +18,9 @@
   else if self.media.type === 'medialink'
     .user-media__video
       != self.media.medialink_html
-  else if self.media.type === 'file'
-    -// TODO
+  else if self.media.type === 'binary'
+    .user-media__binary
+      a(href=self.link_to('core.gridfs', { bucket: self.media.file_id }))=self.media.file_name
 
   p= self.media.description
   p= self.date(self.media.ts, 'date')

@@ -24,13 +24,14 @@ module.exports = function (N, collectionName) {
 
 
   var Media = new Schema({
-    'file_id'        : Schema.Types.ObjectId,
-    'user_id'        : Schema.Types.ObjectId,
-    'album_id'       : Schema.Types.ObjectId,
-    'ts'             : { 'type': Date, 'default': Date.now },
-    'type'           : { 'type': String, 'enum': [ 'image', 'medialink', 'file' ], 'default': 'file' },
-    'medialink_html' : String,
-    'description'    : String
+    file_id        : Schema.Types.ObjectId,
+    user_id        : Schema.Types.ObjectId,
+    album_id       : Schema.Types.ObjectId,
+    ts             : { 'type': Date, 'default': Date.now },
+    type           : { 'type': String, 'enum': [ 'image', 'medialink', 'binary' ], 'default': 'binary' },
+    medialink_html : String,
+    file_name      : String,
+    description    : String
   }, {
     versionKey: false
   });
@@ -173,14 +174,14 @@ module.exports = function (N, collectionName) {
   };
 
 
-  // Save previews to database
+  // Save files to database
   //
   // - previews - { orig: { path, type }, ... }
   // - maxSize - maximum size to save to database
   //
   // - callback - function (err, originalFileId)
   //
-  var savePreviews = function (previews, maxSize, callback) {
+  var saveFiles = function (previews, maxSize, callback) {
     async.each(Object.keys(previews), function (key, next) {
 
       // Check file size
@@ -191,7 +192,7 @@ module.exports = function (N, collectionName) {
         }
 
         if (stats.size > maxSize) {
-          next(new Error('Can\'t resize image: max size exceeded'));
+          next(new Error('Can\'t save file: max size exceeded'));
           return;
         }
 
@@ -233,15 +234,16 @@ module.exports = function (N, collectionName) {
     });
   };
 
-  // Create original image with previews
+
+  // Create original image with previews or binary file
   //
   // - path - path of file with extention. Required.
   // - ext - file format (extension). Optional.
   //         If not set, get from path.
   //
-  // - callback(err, originalFileId)
+  // - callback(err, { fileId, type: image|binary })
   //
-  Media.statics.createImage = function (path, ext, callback) {
+  Media.statics.createFile = function (path, ext, callback) {
     if (!callback) {
       callback = ext;
       ext = null;
@@ -251,16 +253,26 @@ module.exports = function (N, collectionName) {
 
     // Is config for this type exists
     if (!mediaConfig.types[format]) {
-      callback(new Error('Can\'t resize image: \'' + format + '\' images not supported'));
+      callback(new Error('Can\'t save file: \'' + format + '\' not supported'));
       return;
     }
 
-    //var supportedImageFormats = [ 'bmp', 'gif', 'jpg', 'jpeg', 'png', 'ept', 'fax', 'ppm', 'pgm', 'pbm', 'pnm' ];
-    //if (supportedImageFormats.indexOf(format) === -1) {
-      // TODO: just check size and save file - without resize
-    //}
-
     var typeConfig = mediaConfig.types[format];
+    var supportedImageFormats = [ 'bmp', 'gif', 'jpg', 'jpeg', 'png' ];
+
+    // Just save if file is not an image
+    if (supportedImageFormats.indexOf(format) === -1) {
+      saveFiles({ orig: { path: path, type: format } }, typeConfig.max_size, function (err, fileId) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        callback(null, { fileId: fileId, type: 'binary' });
+      });
+      return;
+    }
+
     var previews = {};
     async.eachSeries(Object.keys(typeConfig.resize), function (resizeConfigKey, next) {
       // Create preview for each size
@@ -301,13 +313,13 @@ module.exports = function (N, collectionName) {
       }
 
       // Save all previews
-      savePreviews(previews, typeConfig.max_size, function (err, origId) {
+      saveFiles(previews, typeConfig.max_size, function (err, origId) {
         deleteTmpPreviews(function () {
           if (err) {
             callback(err);
             return;
           }
-          callback(null, origId);
+          callback(null, { fileId: origId, type: 'image' });
         });
       });
     });

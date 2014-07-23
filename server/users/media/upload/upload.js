@@ -146,7 +146,7 @@ module.exports = function (N, apiPath) {
     var Media = N.models.users.Media;
     var fileInfo = env.data.upload_file_info;
 
-    Media.createImage(fileInfo.path, fileInfo.type.split('/').pop(), function (err, fileId) {
+    Media.createFile(fileInfo.path, fileInfo.type.split('/').pop(), function (err, data) {
       // Remove file anyway after upload to gridfs
       fs.unlink(fileInfo.path, function () {
 
@@ -158,8 +158,9 @@ module.exports = function (N, apiPath) {
         var media = new Media();
         media.user_id = env.session.user_id;
         media.album_id = env.data.album._id;
-        media.file_id = fileId;
-        media.type = 'image';
+        media.file_id = data.fileId;
+        media.type = data.type;
+        media.file_name = fileInfo.name || '';
 
         env.data.media = media;
 

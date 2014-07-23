@@ -10,9 +10,10 @@ ul.user-medias-list
               img.thumb-image(src=imageUrl)
         else if media.type === 'medialink'
           != media.medialink_html
-        else if media.type === 'file'
-          -// TODO
+        else if media.type === 'binary'
+          .user-media__binary
+            a(href=self.link_to('core.gridfs', { bucket: media.file_id }))=media.file_name
       .user-media__description
-        a(href=href)= media.description
+        a(href=href)=media.description
       .user-media__date
-        a(href=href)= self.date(media.ts, 'date')
+        a(href=href)=self.date(media.ts, 'date')
