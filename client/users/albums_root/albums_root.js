@@ -24,7 +24,7 @@ var updateAlbumList = function (albumId) {
 
   N.io.rpc('users.albums_root.list', pageParams).done(function (albumsList) {
     var $list = $(N.runtime.render('users.albums_root.list', albumsList));
-    var $listContainer = $('#users-albums-list');
+    var $listContainer = $('.user-albumlist');
 
     if (albumId) {
       var albumSelector = '[data-album-id=' + albumId + ']';
@@ -52,14 +52,14 @@ N.wire.on('users.albums_root.list:dragdrop', function albums_root_dd(event) {
 
   switch (event.type) {
     case 'dragenter':
-      $dropZone = $(event.target).closest('.user-album');
+      $dropZone = $(event.target).closest('.user-albumlist__item');
       $dropZone.addClass('active');
       break;
     case 'dragleave':
       // 'dragleave' occurs when user move cursor over child HTML element
       // track this situation and don't remove 'active' class
       // http://stackoverflow.com/questions/10867506/
-      $dropZone = $(event.target).closest('.user-album');
+      $dropZone = $(event.target).closest('.user-albumlist__item');
       x0 = $dropZone.offset().left;
       y0 = $dropZone.offset().top;
       x1 = x0 + $dropZone.outerWidth();
@@ -72,7 +72,7 @@ N.wire.on('users.albums_root.list:dragdrop', function albums_root_dd(event) {
       }
       break;
     case 'drop':
-      $dropZone = $(event.target).closest('.user-album');
+      $dropZone = $(event.target).closest('.user-albumlist__item');
       $dropZone.removeClass('active');
 
       id = $dropZone.data('albumId');

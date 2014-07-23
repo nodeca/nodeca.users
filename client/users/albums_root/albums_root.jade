@@ -12,9 +12,9 @@
       button.btn.btn-default.btn-sm(data-on-click='users.album.create')= self.t('create_album')
 
 
-  header.page-head.albums-head
+  header.page-head
     h1.page-head__title(itemprop='name')= self.t('title')
     p.page-head__descr.hidden-xs(itemprop='description')
 
-  #users-albums-list
+  ul.user-albumlist
     != self.partial('@users.albums_root.list')

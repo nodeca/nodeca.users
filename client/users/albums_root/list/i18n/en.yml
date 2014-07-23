@@ -1,3 +1,4 @@
 en-US:
   count: "#{count} ((photo|photos))"
   default_name: Unsorted
+  empty: No cover

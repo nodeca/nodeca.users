@@ -1,0 +1,47 @@
+@import "nodeca.core/client/common/_variables"
+
+thumbWidth  = '$$ N.config.options.users.media.resize.sm.max_width + 6 + "px" $$'
+thumbHeight = '$$ N.config.options.users.media.resize.sm.height + 6 + "px" $$'
+
+thumbImageWidth  = '$$ N.config.options.users.media.resize.sm.max_width + "px" $$'
+thumbImageHeight = '$$ N.config.options.users.media.resize.sm.height + "px" $$'
+
+.thumb
+  width thumbWidth
+  height thumbHeight
+  display block
+  border 1px solid grayLighter
+  border-radius 2px
+  padding 2px
+  position relative
+
+a.thumb
+  text-decoration none
+
+.thumb__image
+  max-width thumbImageWidth
+  height thumbImageHeight
+  border-radius 2px
+
+.thumb__content
+  text-align center
+  height thumbImageHeight
+  line-height thumbImageHeight
+
+.thumb__icon
+  position absolute
+  top 20px
+  right 20px
+  &:before
+    margin-left 0
+
+//- helper classes to limit texts under image
+.thumb-caption
+  width thumbWidth
+  padding 0 5px 0 3px
+  display block
+
+.thumb-caption__m-inline
+  overflow hidden
+  white-space nowrap
+  text-overflow ellipsis

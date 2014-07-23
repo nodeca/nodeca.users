@@ -1,20 +1,22 @@
-ul.user-albums-list
-  each album in self.albums
-    .user-album(data-on-dragdrop='users.albums_root.list:dragdrop', data-album-id=album._id, data-user-hid=self.user_hid)
-      .user-album__image-wrapper
-        a(href=self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id }))
-          if album.cover_id
-            - var imageUrl = self.link_to('core.gridfs', { 'bucket': album.cover_id + '_sm' })
-            .thumb
-              img.thumb-image(src=imageUrl)
-          else
-            .user-album__no-cover No cover
-      .user-album__title
+each album in self.albums
+  li.user-albumlist__item(data-on-dragdrop='users.albums_root.list:dragdrop', data-album-id=album._id, data-user-hid=self.user_hid)
+    a.thumb(
+      href=self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id })
+    )
+      if album.cover_id
+        - var imageUrl = self.link_to('core.gridfs', { 'bucket': album.cover_id + '_sm' })
+        img.thumb__image(src=imageUrl)
+      else
+        .thumb__content= self.t('empty')
+
+    .user-albumlist__item-title.thumb-caption.thumb-caption__m-inline
+      a(href=self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id }))
         if !album.default
           =album.title
         else
           =self.t('default_name')
-      .user-album__date= self.date(album.last_ts, 'date')
+
+    .user-albumlist__item-meta.thumb-caption.clearfix
       if album.count > 0
-        div.user-album__count= self.t('count', album.count)
-      .user-album__footer
+        .pull-right= self.t('count', album.count)
+      .pull-left= self.date(album.last_ts, 'date')
