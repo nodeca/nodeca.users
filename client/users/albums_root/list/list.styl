@@ -1,5 +1,13 @@
 @import "nodeca.core/client/common/_variables"
 
+.thumb
+  height '$$ N.config.options.users.media.resize.sm.height + "px" $$'
+  width '$$ N.config.options.users.media.resize.sm.max_width + "px" $$'
+
+.thumb-image
+  height '$$ N.config.options.users.media.resize.sm.height + "px" $$'
+  max-width '$$ N.config.options.users.media.resize.sm.max_width + "px" $$'
+
 .user-albums-list
   list-style none
 
@@ -17,9 +25,6 @@
   border 1px solid gray
   position relative
   z-index 10
-
-.user-album__image
-  height 180px
 
 .user-album__date
   width 50%

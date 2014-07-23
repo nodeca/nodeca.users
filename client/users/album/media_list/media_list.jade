@@ -6,7 +6,8 @@ ul.user-medias-list
         if media.type === 'image'
           - var imageUrl = self.link_to('core.gridfs', { 'bucket': media.file_id + '_sm' })
           a(href=href)
-            img.user-media__image(src=imageUrl)
+            .thumb
+              img.thumb-image(src=imageUrl)
         else if media.type === 'medialink'
           != media.medialink_html
         else if media.type === 'file'
