@@ -1,20 +1,19 @@
-.row
+ul.user-albums-list
   each album in self.albums
-    .col-md-3
-      .user-album(data-on-dragdrop='users.albums_root.list:dragdrop', data-album-id=album._id, data-user-hid=self.user_hid)
-        .user-album__image-wrapper
-          a(href=self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id }))
-            if album.cover_id
-              - var imageUrl = self.link_to('core.gridfs', { 'bucket': album.cover_id + '_sm' })
-              img.user-album__image(src=imageUrl)
-            else
-              .user-album__no-cover No cover
-        .user-album__title
-          if !album.default
-            =album.title
+    .user-album(data-on-dragdrop='users.albums_root.list:dragdrop', data-album-id=album._id, data-user-hid=self.user_hid)
+      .user-album__image-wrapper
+        a(href=self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id }))
+          if album.cover_id
+            - var imageUrl = self.link_to('core.gridfs', { 'bucket': album.cover_id + '_sm' })
+            img.user-album__image(src=imageUrl)
           else
-            =self.t('default_name')
-        .user-album__date= self.date(album.last_ts, 'date')
-        if album.count > 0
-          div.user-album__count= self.t('count', album.count)
-        .user-album__footer
+            .user-album__no-cover No cover
+      .user-album__title
+        if !album.default
+          =album.title
+        else
+          =self.t('default_name')
+      .user-album__date= self.date(album.last_ts, 'date')
+      if album.count > 0
+        div.user-album__count= self.t('count', album.count)
+      .user-album__footer
