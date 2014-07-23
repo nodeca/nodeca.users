@@ -29,7 +29,7 @@ module.exports = function (N, apiPath) {
     var album = new N.models.users.Album();
     album.user_id = env.session.user_id;
     album.title = env.params.title;
-    album.last_at = new Date();
+    album.last_ts = new Date();
     album.save(callback);
   });
 };

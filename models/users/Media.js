@@ -27,7 +27,7 @@ module.exports = function (N, collectionName) {
     'file_id'        : Schema.Types.ObjectId,
     'user_id'        : Schema.Types.ObjectId,
     'album_id'       : Schema.Types.ObjectId,
-    'created_at'     : { 'type': Date, 'default': Date.now },
+    'ts'             : { 'type': Date, 'default': Date.now },
     'type'           : { 'type': String, 'enum': [ 'image', 'medialink', 'file' ], 'default': 'file' },
     'medialink_html' : String,
     'description'    : String
@@ -46,7 +46,7 @@ module.exports = function (N, collectionName) {
   Media.index({ album_id: 1 });
 
   // "All medias" page, medias list, sorted by date
-  Media.index({ user_id: 1, created_at: -1 });
+  Media.index({ user_id: 1, ts: -1 });
 
   //////////////////////////////////////////////////////////////////////////////
 

@@ -9,5 +9,5 @@ exports.post_in = [
   'user_id',
   'media_id',
   'st',
-  'created_at'
+  'ts'
 ];

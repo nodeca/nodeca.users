@@ -38,7 +38,7 @@ var createMedia = function (userId, album, callback) {
     var media = new models.users.Media();
     media.user_id = userId;
     media.album_id = album;
-    media.created_at = new Date();
+    media.ts = new Date();
     media.file_id = file;
     media.type = 'image';
     media.save(callback);
@@ -146,7 +146,7 @@ var createComment = function (mediaId, userId, callback) {
   var comment = new models.users.Comment();
   comment.user_id = userId;
   comment.media_id = mediaId;
-  comment.created_at = new Date();
+  comment.ts = new Date();
   comment.text = Charlatan.Lorem.paragraph(Charlatan.Helpers.rand(1, 2));
   comment.st = statuses.comment.VISIBLE;
   comment.save(callback);

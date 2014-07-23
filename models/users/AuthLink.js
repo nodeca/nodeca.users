@@ -37,10 +37,10 @@ module.exports = function (N, collectionName) {
     exist            : { 'type': Boolean, 'default': true },
 
     // Creation date
-    created_at       : { 'type': Date, 'default': Date.now },
+    ts               : { 'type': Date, 'default': Date.now },
 
     // Last login date
-    last_at          : Date,
+    last_ts          : Date,
 
     // Last login ip
     last_ip          : String,

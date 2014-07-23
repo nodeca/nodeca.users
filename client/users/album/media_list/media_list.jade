@@ -15,4 +15,4 @@ ul.user-medias-list.row
         .user-media__description
           a(href=href)= media.description
         .user-media__date
-          a(href=href)= self.date(media.created_at, 'date')
+          a(href=href)= self.date(media.ts, 'date')

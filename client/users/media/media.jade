@@ -22,7 +22,7 @@
     -// TODO
 
   p= self.media.description
-  p= self.date(self.media.created_at, 'date')
+  p= self.date(self.media.ts, 'date')
 
   div.row
     div.col-lg-6
@@ -43,7 +43,7 @@
                  div.col-lg-5
                    a= commentUser.name
                  div.col-lg-4
-                   span= self.date(comment.created_at, 'date')
+                   span= self.date(comment.ts, 'date')
                  div.col-lg-1
                    a Edit
                  div.col-lg-1

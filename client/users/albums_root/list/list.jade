@@ -14,7 +14,7 @@
             =album.title
           else
             =self.t('default_name')
-        .user-album__date= self.date(album.last_at, 'date')
+        .user-album__date= self.date(album.last_ts, 'date')
         if album.count > 0
           div.user-album__count= self.t('count', album.count)
         .user-album__footer

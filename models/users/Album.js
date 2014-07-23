@@ -13,7 +13,7 @@ module.exports = function (N, collectionName) {
   var Album = new Schema({
     'title'         : String,
     'user_id'       : Schema.Types.ObjectId,
-    'last_at'       : { 'type': Date, 'default': Date.now },
+    'last_ts'       : { 'type': Date, 'default': Date.now },
 
     // Source file '_id'. Use thumbnail to show cover.
     'cover_id'      : Schema.Types.ObjectId,
@@ -45,7 +45,7 @@ module.exports = function (N, collectionName) {
 
 
   // Update album fields
-  // - 'last_at'
+  // - 'last_ts'
   // - 'cover_id'
   // - 'custom_cover'
   // - 'count'
@@ -86,7 +86,7 @@ module.exports = function (N, collectionName) {
 
       // Fetch newest media in album
       function (next) {
-        Media.findOne({ 'album_id': album._id }).sort('-created_at').lean(true).exec(function (err, result) {
+        Media.findOne({ 'album_id': album._id }).sort('-ts').lean(true).exec(function (err, result) {
           if (err) {
             next(err);
             return;
@@ -120,8 +120,8 @@ module.exports = function (N, collectionName) {
           }
         }
 
-        if (album.last_at < media.created_at) {
-          album.last_at = media.created_at;
+        if (album.last_ts < media.ts) {
+          album.last_ts = media.ts;
         }
       } else {
         // To show "No cover" for album, if it has no photo

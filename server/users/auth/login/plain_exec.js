@@ -278,7 +278,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function remember_auth_data(env, callback) {
     var authLink = env.data.authLink;
-    authLink.last_at = Date.now();
+    authLink.last_ts = Date.now();
     authLink.last_ip = env.req.ip;
 
     authLink.save(function (err) {

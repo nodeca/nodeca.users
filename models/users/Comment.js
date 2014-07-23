@@ -17,7 +17,7 @@ module.exports = function (N, collectionName) {
     user_id         : Schema.ObjectId,
     media_id        : Schema.ObjectId,
     to              : Schema.ObjectId,
-    created_at      : { type: Date, 'default': Date.now },
+    ts              : { type: Date, 'default': Date.now },
     ip              : String,
     text            : String,
     // Comment status (visible, deleted, hellbanned)
@@ -34,7 +34,7 @@ module.exports = function (N, collectionName) {
   Comment.index({
     media_id   : 1,
     st         : 1,
-    created_at : -1
+    ts         : -1
   });
 
 

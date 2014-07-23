@@ -29,7 +29,7 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function get_user_albums(env, callback) {
     Album
       .find({ 'user_id': env.data.user._id })
-      .sort('-default -last_at')
+      .sort('-default -last_ts')
       .lean(true)
       .exec(function (err, result) {
         if (err) {
