@@ -23,6 +23,7 @@ a.thumb
   max-width thumbImageWidth
   height thumbImageHeight
   border-radius 2px
+  background-color grayLighter
 
 .thumb__content
   text-align center
@@ -31,10 +32,14 @@ a.thumb
 
 .thumb__icon
   position absolute
-  top 20px
-  right 20px
+  font-size 25px
+  top 10px
+  right 15px
+  color grayLighter
   &:before
-    margin-left 0
+    text-shadow 0px 0px 1px grayDark
+    margin 0
+    opacity 1
 
 //- helper classes to limit texts under image
 .thumb-caption
@@ -46,4 +51,3 @@ a.thumb
   overflow hidden
   white-space nowrap
   text-overflow ellipsis
-  

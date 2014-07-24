@@ -11,6 +11,7 @@ each media in self.medias
       else if media.type === 'medialink'
         .thumb
           != media.medialink_html
+          .thumb__icon.icon-video
 
       else if media.type === 'binary'
         a.thumb(href=self.link_to('core.gridfs', { bucket: media.file_id }))
