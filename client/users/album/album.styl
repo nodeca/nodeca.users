@@ -16,41 +16,10 @@
 .user-medialist__item-title
   font-size 12px
 
+.user-album-upload
+  &.active
+    border 1px dashed black
 
-#users-album__upload
-  text-align center
-  margin 0 auto
-  height 50px
-  padding-top 15px
-  margin-bottom 20px
-  border-radius 3px
-  background-color #f8f8f8
-  position relative
-
-#users-album__upload-button
-  position relative
-  overflow hidden
-  margin-right 10px
-
-#users-album__upload-button input[type=file]
+.user-album-upload__files
   position absolute
-  top 0
-  right 0
-  min-width 100%
-  min-height 100%
-  font-size 999px
-  text-align right
-  filter unquote('alpha(opacity = 0)')
-  opacity 0
-  outline none
-  background white
-  cursor inherit
-  display block
-
-#users-album__upload-button-wrapper
-  position absolute
-  right 10px
-  top 8px
-
-#users-album__upload.active
-  border 1px dashed black
+  left -1000px

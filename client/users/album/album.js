@@ -30,10 +30,10 @@ var reloadMedia = function () {
 
 N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
   isOnPage = true;
-  $dropZone = $('#users-album__upload');
+  $dropZone = $('.user-album-upload');
   pageParams = data.params;
 
-  $('#users-album__upload-files').on('change', function () {
+  $('.user-album-upload__files').on('change', function () {
     var files = $(this).get(0).files;
     if (files.length > 0) {
       N.wire.emit(
@@ -47,6 +47,11 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
       );
     }
   });
+});
+
+
+N.wire.on('users.album:select_files', function select_files() {
+  $('.user-album-upload__files').click();
 });
 
 
