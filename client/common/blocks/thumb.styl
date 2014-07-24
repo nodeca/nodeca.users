@@ -1,3 +1,6 @@
+// Thumbnails generic classes
+//
+
 @import "nodeca.core/client/common/_variables"
 
 thumbWidth  = '$$ N.config.options.users.media.resize.sm.max_width + 6 + "px" $$'
@@ -10,26 +13,50 @@ thumbImageHeight = '$$ N.config.options.users.media.resize.sm.height + "px" $$'
   width thumbWidth
   height thumbHeight
   display block
+  text-align center
   border 1px solid grayLighter
   border-radius 2px
   padding 2px
   position relative
-  overflow hidden
 
-a.thumb
-  text-decoration none
+  &:before
+    content ''
+    height 100%
+    display inline-block;
+    vertical-align middle
 
 .thumb__image
   max-width thumbImageWidth
-  height thumbImageHeight
+  max-height thumbImageHeight
   border-radius 2px
   background-color grayLighter
-
-.thumb__content
+  display inline-block
+  vertical-align middle
   text-align center
-  height thumbImageHeight
-  line-height thumbImageHeight
 
+
+// Black background for resized video previews
+.thumb__overlay
+  position absolute
+  top 2px
+  left 2px
+  bottom 2px
+  right 2px
+  background-color #000
+  border-radius 2px
+  z-index -1
+
+// Text content
+.thumb__content
+  display inline-block
+  vertical-align middle
+  max-width 100%
+
+  overflow hidden
+  white-space nowrap
+  text-overflow ellipsis
+
+// Icon marker
 .thumb__icon
   position absolute
   font-size 25px
@@ -37,16 +64,19 @@ a.thumb
   right 15px
   color grayLighter
   &:before
-    text-shadow 0px 0px 1px grayDark
     margin 0
     opacity 1
 
-//- helper classes to limit texts under image
+// Texts under thumbnail
 .thumb-caption
   width thumbWidth
   padding 0 5px 0 3px
   display block
 
+.thumb + .thumb-caption
+  margin-top 4px
+
+// Single-line modifier
 .thumb-caption__m-inline
   overflow hidden
   white-space nowrap

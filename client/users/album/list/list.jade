@@ -1,23 +1,25 @@
 each media in self.medias
-  - href = self.link_to('users.media', { 'user_hid': self.user_hid, 'media_id': media._id })
+  - href = self.link_to('users.media', { user_hid: self.user_hid, media_id: media._id })
   li.user-medialist__item
-    .user-media__image-wrapper
+    if media.type === 'image'
+      - var imageUrl = self.link_to('core.gridfs', { bucket: media.file_id + '_sm' })
+      a.thumb(href=href)
+        img.thumb__image(src=imageUrl)
 
-      if media.type === 'image'
-        - var imageUrl = self.link_to('core.gridfs', { 'bucket': media.file_id + '_sm' })
-        a.thumb(href=href)
-          img.thumb__image(src=imageUrl)
+    else if media.type === 'medialink'
+      a.thumb(href=href)
+        img.thumb__image(src=media.medialink_data.thumb)
+        .thumb__overlay
+        .thumb__icon.icon-video
 
-      else if media.type === 'medialink'
-        a.thumb(href=href)
-          img.thumb__image(src=media.medialink_data.thumb)
+    else if media.type === 'binary'
+      //-a.thumb(href=self.link_to('core.gridfs', { bucket: media.file_id }))
+      a.thumb(href=href)
+        .thumb__content=media.file_name
+        .thumb__icon.icon-binary
 
-      else if media.type === 'binary'
-        a.thumb(href=self.link_to('core.gridfs', { bucket: media.file_id }))
-          =media.file_name
-
-    .user-medialist__item-title.thumb-caption.thumb-caption__m-inline
+    .thumb-caption.user-medialist__item-title.thumb-caption__m-inline
       a(href=href)=media.description
 
-    .user-medialist__item-meta
+    .thumb-caption.user-medialist__item-meta
       = self.date(media.ts, 'date')

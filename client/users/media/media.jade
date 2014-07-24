@@ -5,7 +5,7 @@
   != self.partial('@common.blocks.breadcrumbs')
 
 
-  header.page-head.albums-head
+  //-header.page-head.albums-head
     p.page-head__descr.hidden-xs(itemprop='description')
 
 
@@ -20,38 +20,37 @@
       a(href=self.link_to('core.gridfs', { bucket: self.media.file_id }))=self.media.file_name
 
   if own_page
-    a.user-mediapage__delete(href='#' data-media-id=self.media._id data-on-click='users.media:delete')=self.t('delete')
+    a.user-mediapage__delete(
+      href='#'
+      data-media-id=self.media._id
+      data-on-click='users.media:delete'
+    )=self.t('delete')
 
 
   p= self.media.description
   p= self.date(self.media.ts, 'date')
 
-  div.row
-    div.col-lg-6
+  .row
+    .col-md-8.col-md-offset-2
+
       textarea
-  div.row
-    div.col-lg-6
       a Отправить
-  div.row
-    div.col-lg-6
+
       ul.user-media__comments
-       each comment in self.comments
-         - commentUser=self.users[comment.user_id]
-           li
-             div.row
-               div.col-lg-12
-                 span=comment.text
-               div.row
-                 div.col-lg-5
-                   a= commentUser.name
-                 div.col-lg-4
-                   span= self.date(comment.ts, 'date')
-                 div.col-lg-1
-                   a Edit
-                 div.col-lg-1
-                   a Delte
-                 div.col-lg-1
-                   a Complain
+        each comment in self.comments
+          - commentUser=self.users[comment.user_id]
+            li
+              div=comment.text
+              div
+                a= commentUser.name
+                span= self.date(comment.ts, 'date')
+                a Edit
+                a Delte
+                a Complain
 
   if own_page
-    a.user-mediapage__restore(href='#' data-media-id=self.media._id data-on-click='users.media:restore')=self.t('restore')
+    a.user-mediapage__restore(
+      href='#'
+      data-media-id=self.media._id
+      data-on-click='users.media:restore'
+    )=self.t('restore')

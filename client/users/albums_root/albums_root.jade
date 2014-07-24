@@ -14,7 +14,7 @@
 
   header.page-head
     h1.page-head__title(itemprop='name')= self.t('title')
-    p.page-head__descr.hidden-xs(itemprop='description')
+    //-p.page-head__descr.hidden-xs(itemprop='description')
 
   ul.user-albumlist
     != self.partial('@users.albums_root.list')

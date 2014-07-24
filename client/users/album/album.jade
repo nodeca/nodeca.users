@@ -11,7 +11,7 @@
   header.page-head
     h1.page-head__title(itemprop='name')
       =self.album ? self.album.title : self.t('title_all_files')
-    p.page-head__descr.hidden-xs(itemprop='description')
+    //-p.page-head__descr.hidden-xs(itemprop='description')
 
   if own_page && self.album
     .user-album-upload.panel.panel-default(data-on-dragdrop='users.album:dd_area')
