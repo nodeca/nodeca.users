@@ -15,13 +15,16 @@
 
   if own_page && self.album
     .user-album-upload.panel.panel-default(data-on-dragdrop='users.album:dd_area')
-      .panel-body
-        .pull-left
-          p=self.t('drag_to_upload')
-        .pull-right.btn-toolbar
-          button.btn.btn-default(data-on-click='users.album:select_files')=self.t('select_files')
-          input(name='files[]' type='file' multiple).user-album-upload__files
-          button.btn.btn-default(data-on-click='users.album:create_medialink' data-providers=self.medialink_providers.join(', '))=self.t('create_medialink')
+      .pull-right
+        button.btn.btn-default(data-on-click='users.album:select_files')=self.t('select_files')
+        |  
+        button.btn.btn-default(data-on-click='users.album:create_medialink' data-providers=self.medialink_providers.join(', '))=self.t('create_medialink')
+        //- Hidden
+        input(name='files[]' type='file' multiple).user-album-upload__files
+
+      .user-album-upload__text
+        =self.t('drag_to_upload')
+
 
   ul#users-medias-list.user-medialist._affix(data-affix={ 'bottom': 160, 'wire': 'users.album:append_more_photos', 'class': 'append-more-photos' })
     != self.partial('@users.album.list')
