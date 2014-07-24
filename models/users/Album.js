@@ -74,7 +74,7 @@ module.exports = function (N, collectionName) {
 
       // Fetch count of media in album
       function (next) {
-        Media.count({ 'album_id': album._id }, function (err, result) {
+        Media.count({ 'album_id': album._id, 'exists': true }, function (err, result) {
           if (err) {
             next(err);
             return;
@@ -86,7 +86,7 @@ module.exports = function (N, collectionName) {
 
       // Fetch newest media in album
       function (next) {
-        Media.findOne({ 'album_id': album._id }).sort('-ts').lean(true).exec(function (err, result) {
+        Media.findOne({ 'album_id': album._id, 'exists': true }).sort('-ts').lean(true).exec(function (err, result) {
           if (err) {
             next(err);
             return;
@@ -98,7 +98,7 @@ module.exports = function (N, collectionName) {
 
       // Check cover file exists
       function (next) {
-        Media.count({ 'file_id': album.cover_id }, function (err, result) {
+        Media.count({ 'file_id': album.cover_id, 'exists': true }, function (err, result) {
           if (err) {
             next(err);
             return;

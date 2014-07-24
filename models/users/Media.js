@@ -31,7 +31,8 @@ module.exports = function (N, collectionName) {
     type           : { 'type': String, 'enum': [ 'image', 'medialink', 'binary' ], 'default': 'binary' },
     medialink_html : String,
     file_name      : String,
-    description    : String
+    description    : String,
+    exists         : { 'type': Boolean, 'default': true }
   }, {
     versionKey: false
   });
@@ -47,7 +48,7 @@ module.exports = function (N, collectionName) {
   Media.index({ album_id: 1 });
 
   // "All medias" page, medias list, sorted by date
-  Media.index({ user_id: 1, ts: -1 });
+  Media.index({ user_id: 1, exists: 1, ts: -1 });
 
   //////////////////////////////////////////////////////////////////////////////
 

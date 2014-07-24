@@ -10,17 +10,9 @@ var PHOTOS_PER_PAGE = 16;
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
-    user_hid: {
-      type: 'integer',
-      minimum: 1,
-      required: true
-    },
-    album_id: {
-      format: 'mongo'
-    },
-    page: {
-      type: 'integer'
-    }
+    user_hid: { type: 'integer', minimum: 1, required: true },
+    album_id: { format: 'mongo' },
+    page: { type: 'integer' }
   });
 
 
@@ -35,9 +27,9 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, function get_user_medias(env, callback) {
     var query = N.models.users.Media
-                  .find({ 'user_id': env.data.user._id })
+                  .find({ 'user_id': env.data.user._id, exists: true })
                   .lean(true)
-                  .sort('-_id');
+                  .sort('-ts');
 
     // If album_id not set, will fetch all user medias
     if (env.params.album_id) {

@@ -8,15 +8,13 @@ module.exports = function (N, apiPath) {
 
 
   N.validate(apiPath, {
-    media_id: {
-      format: 'mongo',
-      required: true
-    }
+    media_id: { format: 'mongo', required: true },
+    restore:  { type: 'boolean' }
   });
 
 
   N.wire.before(apiPath, function fetch_user_media (env, callback) {
-    N.models.users.Media.findOne({ '_id': env.params.media_id }).exec(function (err, media) {
+    N.models.users.Media.findOne({ '_id': env.params.media_id }).lean(true).exec(function (err, media) {
       if (err) {
         callback(err);
         return;
@@ -44,7 +42,8 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function delete_media(env, callback) {
     var media = env.data.media;
 
-    media.remove(function (err) {
+    var exists = env.params.restore ? true : false;
+    N.models.users.Media.update({ _id: media._id }, { exists: exists }, function (err) {
       if (err) {
         callback(err);
         return;

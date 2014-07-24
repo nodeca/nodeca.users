@@ -12,14 +12,8 @@ var fields = require('./_fields.js');
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
-    user_hid: {
-      type: 'integer',
-      minimum: 1,
-      required: true
-    },
-    media_id: {
-      format: 'mongo'
-    }
+    user_hid: { type: 'integer', minimum: 1, required: true },
+    media_id: { format: 'mongo' }
   });
 
 
@@ -48,6 +42,11 @@ module.exports = function (N, apiPath) {
         }
 
         if (!result) {
+          callback(N.io.NOT_FOUND);
+          return;
+        }
+
+        if (!result.exists && env.session.user_id !== result.user_id.toString()) {
           callback(N.io.NOT_FOUND);
           return;
         }

@@ -1,18 +1,21 @@
 'use strict';
 
 
-N.wire.before('users.media:delete', function confirm_medialist_delete(event, callback) {
-  N.wire.emit('common.blocks.confirm', t('delete_confirmation'), callback);
+N.wire.on('users.media:delete', function media_delete(event) {
+  var $target = $(event.target);
+  var mediaId = $target.data('mediaId');
+
+  N.io.rpc('users.media.destroy', { 'media_id': mediaId }).done(function () {
+    $('.user-mediapage').addClass('user-mediapage__m-deleted');
+  });
 });
 
 
-N.wire.on('users.media:delete', function medialist_delete(event) {
+N.wire.on('users.media:restore', function media_restore(event) {
   var $target = $(event.target);
   var mediaId = $target.data('mediaId');
-  var userHid = $target.data('userHid');
-  var albumId = $target.data('albumId');
 
-  N.io.rpc('users.media.destroy', { 'media_id': mediaId }).done(function () {
-    window.location = N.router.linkTo('users.album', { user_hid: userHid, album_id: albumId });
+  N.io.rpc('users.media.destroy', { 'media_id': mediaId, restore: true }).done(function () {
+    $('.user-mediapage').removeClass('user-mediapage__m-deleted');
   });
 });

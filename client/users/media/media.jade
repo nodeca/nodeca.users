@@ -1,16 +1,13 @@
 - var own_page = (self.runtime.user_hid === self.user_hid)
 - self.add_raw_data('profile_tab', own_page)
 
-#content
+#content(class=self.media.exists ? '' : 'user-mediapage__m-deleted').user-mediapage
   != self.partial('@common.blocks.breadcrumbs')
-
-  .breadcrumbs
-    if own_page
-      a.btn.btn-default.btn-sm(href='#', data-media-id=self.media._id, data-user-hid=self.user_hid, data-album-id=self.media.album_id, data-on-click='users.media:delete')= self.t('delete')
 
 
   header.page-head.albums-head
     p.page-head__descr.hidden-xs(itemprop='description')
+
 
   if self.media.type === 'image'
     - var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.file_id })
@@ -21,6 +18,10 @@
   else if self.media.type === 'binary'
     .user-media__binary
       a(href=self.link_to('core.gridfs', { bucket: self.media.file_id }))=self.media.file_name
+
+  if own_page
+    a.user-mediapage__delete(href='#' data-media-id=self.media._id data-on-click='users.media:delete')=self.t('delete')
+
 
   p= self.media.description
   p= self.date(self.media.ts, 'date')
@@ -51,3 +52,6 @@
                    a Delte
                  div.col-lg-1
                    a Complain
+
+  if own_page
+    a.user-mediapage__restore(href='#' data-media-id=self.media._id data-on-click='users.media:restore')=self.t('restore')
