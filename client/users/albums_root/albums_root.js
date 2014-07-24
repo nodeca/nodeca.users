@@ -1,5 +1,6 @@
 'use strict';
 
+var _ = require('lodash');
 
 var pageParams;
 var isOnPage;
@@ -23,14 +24,16 @@ var updateAlbumList = function (albumId) {
   }
 
   N.io.rpc('users.albums_root.list', pageParams).done(function (albumsList) {
-    var $list = $(N.runtime.render('users.albums_root.list', albumsList));
     var $listContainer = $('.user-albumlist');
 
     if (albumId) {
-      var albumSelector = '[data-album-id=' + albumId + ']';
-      $listContainer.find(albumSelector).replaceWith($list.find(albumSelector));
+      albumsList.albums = _.filter(albumsList.albums, { _id: albumId });
+
+      $listContainer.find('[data-album-id=' + albumId + ']').replaceWith(
+        $(N.runtime.render('users.albums_root.list', albumsList))
+      );
     } else {
-      $listContainer.html($list);
+      $listContainer.html($(N.runtime.render('users.albums_root.list', albumsList)));
     }
 
     N.wire.emit('navigate.replace', {});

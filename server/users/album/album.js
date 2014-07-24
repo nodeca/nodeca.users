@@ -73,7 +73,7 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function get_user_albums(env, callback) {
     env.res.album = env.data.album;
 
-    N.wire.emit('server:users.album.media_list', env, callback);
+    N.wire.emit('server:users.album.list', env, callback);
   });
 
 

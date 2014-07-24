@@ -42,7 +42,7 @@ N.wire.after('users.album.edit.select_cover_dlg', function load_photos(data, cal
   onCoverSelected = callback;
   dialogData = data;
 
-  N.io.rpc('users.album.media_list', { user_hid: data.user_hid, album_id: data.album_id }).done(function (mediaList) {
+  N.io.rpc('users.album.list', { user_hid: data.user_hid, album_id: data.album_id }).done(function (mediaList) {
     var medias = _.filter(mediaList.medias, function (media) {
       return media.type === 'image';
     });

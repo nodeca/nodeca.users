@@ -14,8 +14,8 @@ var reloadMedia = function () {
     return;
   }
 
-  N.io.rpc('users.album.media_list', pageParams).done(function (mediaList) {
-    var $list = $(N.runtime.render('users.album.media_list', mediaList));
+  N.io.rpc('users.album.list', pageParams).done(function (mediaList) {
+    var $list = $(N.runtime.render('users.album.list', mediaList));
     $('#users-medias-list').html($list);
 
     N.wire.emit('navigate.replace', {});
@@ -141,8 +141,8 @@ N.wire.on('users.album:append_more_photos', function append_more_photos (__, cal
     return;
   }
 
-  N.io.rpc('users.album.media_list', _.assign({}, appendParams, { page: nextPage })).done(function (mediaList) {
-    var $list = $(N.runtime.render('users.album.media_list', mediaList));
+  N.io.rpc('users.album.list', _.assign({}, appendParams, { page: nextPage })).done(function (mediaList) {
+    var $list = $(N.runtime.render('users.album.list', mediaList));
     $('#users-medias-list').append($list);
 
     if (mediaList.medias.length < mediaList.photos_per_page) {

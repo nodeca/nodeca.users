@@ -22,4 +22,4 @@
         button.btn.btn-default(data-on-click='users.album:create_medialink' data-providers=self.medialink_providers.join(', '))= self.t('create_medialink')
 
   ul#users-medias-list.user-medialist._affix(data-affix={ 'bottom': 160, 'wire': 'users.album:append_more_photos', 'class': 'append-more-photos' })
-    != self.partial('@users.album.media_list')
+    != self.partial('@users.album.list')
