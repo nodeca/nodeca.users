@@ -30,6 +30,19 @@ module.exports = function (N, collectionName) {
     ts             : { 'type': Date, 'default': Date.now },
     type           : { 'type': String, 'enum': [ 'image', 'medialink', 'binary' ], 'default': 'binary' },
     medialink_html : String,
+
+    // medialink_data contains:
+    //
+    // {
+    //   provider     : String,
+    //   src          : String,
+    //   thumb        : String,
+    //   thumb_width  : Number,
+    //   thumb_height : Number,
+    //   video_url    : String
+    // }
+    medialink_data : Schema.Types.Mixed,
+
     file_name      : String,
     description    : String,
     exists         : { 'type': Boolean, 'default': true }

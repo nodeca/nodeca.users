@@ -9,9 +9,8 @@ each media in self.medias
           img.thumb__image(src=imageUrl)
 
       else if media.type === 'medialink'
-        .thumb
-          != media.medialink_html
-          .thumb__icon.icon-video
+        a.thumb(href=href)
+          img.thumb__image(src=media.medialink_data.thumb)
 
       else if media.type === 'binary'
         a.thumb(href=self.link_to('core.gridfs', { bucket: media.file_id }))

@@ -80,14 +80,15 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    provider.parse(url, function (err, data) {
+    provider.fetch(url, function (err, data) {
       if (err) {
         callback({ code: N.io.CLIENT_ERROR, message: env.t('err_cannot_parse') });
         return;
       }
 
       var media = new N.models.users.Media();
-      media.medialink_html = data;
+      media.medialink_html = _.template(provider.template, data);
+      media.medialink_data = data;
       media.user_id = env.data.album.user_id;
       media.album_id = env.data.album._id;
       media.type = 'medialink';
