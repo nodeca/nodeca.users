@@ -10,6 +10,7 @@ var fstools   = require('fs-tools');
 var fs        = require('fs');
 var extname   = require('path').extname;
 var exec      = require('child_process').exec;
+var _         = require('lodash');
 
 var Mongoose  = require('mongoose');
 var Schema    = Mongoose.Schema;
@@ -25,6 +26,15 @@ module.exports = function (N, collectionName) {
 
   var Media = new Schema({
     file_id        : Schema.Types.ObjectId,
+
+    // image_sizes contains list of previews size:
+    //
+    // {
+    //   orig: { width: 1280, height: 800 },
+    //   md: { width: 640, height: 400 },
+    //   ...
+    // }
+    image_sizes    : Schema.Types.Mixed,
     user_id        : Schema.Types.ObjectId,
     album_id       : Schema.Types.ObjectId,
     ts             : { 'type': Date, 'default': Date.now },
@@ -37,8 +47,8 @@ module.exports = function (N, collectionName) {
     //   provider     : String,
     //   src          : String,
     //   thumb        : String,
-    //   thumb_width  : Number,
-    //   thumb_height : Number,
+    //   video_width  : Number,
+    //   video_height : Number,
     //   video_url    : String
     // }
     medialink_data : Schema.Types.Mixed,
@@ -255,7 +265,7 @@ module.exports = function (N, collectionName) {
   // - ext - file format (extension). Optional.
   //         If not set, get from path.
   //
-  // - callback(err, { fileId, type: image|binary })
+  // - callback(err, { fileId, type: image|binary, sizes: { orig: { width, height } } })
   //
   Media.statics.createFile = function (path, ext, callback) {
     if (!callback) {
@@ -303,7 +313,17 @@ module.exports = function (N, collectionName) {
         }
 
         previews[resizeConfigKey] = data;
-        next();
+
+        // Get real size after resize
+        gm(data.path).options(gmConfigOptions).size(function(err, imgSz) {
+          if (err) {
+            next(err);
+            return;
+          }
+
+          previews[resizeConfigKey].size = { width: imgSz.width, height: imgSz.height };
+          next();
+        });
       });
     }, function (err) {
       // Delete all tmp files
@@ -333,7 +353,12 @@ module.exports = function (N, collectionName) {
             callback(err);
             return;
           }
-          callback(null, { fileId: origId, type: 'image' });
+
+          var sizes = {};
+          _.forEach(previews, function (val, key) {
+            sizes[key] = val.size;
+          });
+          callback(null, { fileId: origId, type: 'image', sizes: sizes });
         });
       });
     });

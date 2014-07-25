@@ -41,6 +41,7 @@ var createMedia = function (userId, album, callback) {
     media.ts = new Date();
     media.file_id = data.fileId;
     media.type = data.type;
+    media.image_sizes = data.sizes;
     media.save(callback);
   });
 };

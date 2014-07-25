@@ -156,6 +156,9 @@ module.exports = function (N, apiPath) {
         }
 
         var media = new Media();
+        if (data.type === 'image') {
+          media.image_sizes = data.sizes;
+        }
         media.user_id = env.session.user_id;
         media.album_id = env.data.album._id;
         media.file_id = data.fileId;
