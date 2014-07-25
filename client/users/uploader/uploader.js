@@ -13,7 +13,8 @@
 'use strict';
 
 
-var async = require('async');
+var async    = require('async');
+var readExif = require('./_exif');
 
 var settings;
 var $uploadDialog;
@@ -42,6 +43,61 @@ function checkFile(data) {
 }
 
 
+// Rotate canvas to orientation
+//
+function updateOrientation(canvas, ctx, orientation) {
+
+  var width = canvas.width;
+  var height = canvas.height;
+
+  if (orientation > 4) {
+    canvas.width = height;
+    canvas.height = width;
+  }
+
+  switch (orientation) {
+    case 2:
+      // horizontal flip
+      ctx.translate(width, 0);
+      ctx.scale(-1, 1);
+      break;
+    case 3:
+      // 180° rotate left
+      ctx.translate(width, height);
+      ctx.rotate(Math.PI);
+      break;
+    case 4:
+      // vertical flip
+      ctx.translate(0, height);
+      ctx.scale(1, -1);
+      break;
+    case 5:
+      // vertical flip + 90 rotate right
+      ctx.rotate(0.5 * Math.PI);
+      ctx.scale(1, -1);
+      break;
+    case 6:
+      // 90° rotate right
+      ctx.rotate(0.5 * Math.PI);
+      ctx.translate(0, -height);
+      break;
+    case 7:
+      // horizontal flip + 90 rotate right
+      ctx.rotate(0.5 * Math.PI);
+      ctx.translate(width, -height);
+      ctx.scale(-1, 1);
+      break;
+    case 8:
+      // 90° rotate left
+      ctx.rotate(-0.5 * Math.PI);
+      ctx.translate(-width, 0);
+      break;
+    default:
+      // case 1 - no need to change anything
+  }
+}
+
+
 // Resize image if needed
 //
 function resizeImage(data, callback) {
@@ -62,8 +118,8 @@ function resizeImage(data, callback) {
     return;
   }
 
+  var orientation;
   var img = new Image();
-  img.src = window.URL.createObjectURL(data.file);
   img.onload = function() {
     // To scale image we calculate new width and height, resize image by height and crop by width
     var scaledHeight, scaledWidth;
@@ -92,7 +148,6 @@ function resizeImage(data, callback) {
       scaledHeight = resizeConfig.height;
     }
 
-    // TODO: orientation
     var canvas = document.createElement('canvas');
     canvas.width = scaledWidth;
     canvas.height = scaledHeight;
@@ -100,13 +155,27 @@ function resizeImage(data, callback) {
     var width = img.width * scaledHeight / img.height;
     var cropX = (scaledWidth - width) / 2;
     var quality = (ext === 'jpeg' || ext === 'jpg') ? resizeConfig.jpeg_quality : undefined;
+
+    if (orientation) {
+      updateOrientation(canvas, ctx, orientation);
+    }
+
     ctx.drawImage(img, cropX, 0, width, scaledHeight);
+
     canvas.toBlob(function (blob) {
       blob.name = data.file.name;
       data.file = blob;
       callback();
     }, typeConfig.mime_type, quality);
   };
+
+  readExif(data.file, function (tags) {
+    if (tags) {
+      orientation = tags.orientation;
+    }
+
+    img.src = window.URL.createObjectURL(data.file);
+  });
 }
 
 
