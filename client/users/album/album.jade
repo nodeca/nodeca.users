@@ -20,7 +20,7 @@
         |  
         button.btn.btn-default(data-on-click='users.album:create_medialink' data-providers=self.medialink_providers.join(', '))=self.t('create_medialink')
         //- Hidden
-        input(name='files[]' type='file' multiple).user-album-upload__files
+        input(name='files[]' type='file' style='position absolute; left -2000px' multiple)
 
       .user-album-upload__text
         =self.t('drag_to_upload')
