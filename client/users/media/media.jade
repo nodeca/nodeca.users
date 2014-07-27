@@ -8,16 +8,17 @@
   //-header.page-head.albums-head
     p.page-head__descr.hidden-xs(itemprop='description')
 
-
-  if self.media.type === 'image'
-    - var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.file_id })
-    img.user-media__large-photo(src=imageUrl)
-  else if self.media.type === 'medialink'
-    .user-media__video
-      != self.media.medialink_html
-  else if self.media.type === 'binary'
-    .user-media__binary
-      a(href=self.link_to('core.gridfs', { bucket: self.media.file_id }))=self.media.file_name
+  .user-media
+    if self.media.type === 'image'
+      - var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.file_id })
+      img.img-respoisive(src=imageUrl)
+    else if self.media.type === 'medialink'
+      .user-media__video
+        .embed-responsive.embed-responsive.embed-responsive-16by9
+          != self.media.medialink_html
+    else if self.media.type === 'binary'
+      .user-media__binary
+        a(href=self.link_to('core.gridfs', { bucket: self.media.file_id }))=self.media.file_name
 
   if own_page
     a.user-mediapage__delete(
