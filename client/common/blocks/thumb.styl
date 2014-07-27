@@ -3,15 +3,12 @@
 
 @import "nodeca.core/client/common/_variables"
 
-thumbWidth  = '$$ N.config.options.users.media.resize.sm.max_width + 6 + "px" $$'
-thumbHeight = '$$ N.config.options.users.media.resize.sm.height + 6 + "px" $$'
-
-thumbImageWidth  = '$$ N.config.options.users.media.resize.sm.max_width + "px" $$'
-thumbImageHeight = '$$ N.config.options.users.media.resize.sm.height + "px" $$'
+thumbImageWidth  = '$$ N.config.options.users.media.resize.sm.max_width $$'px
+thumbImageHeight = '$$ N.config.options.users.media.resize.sm.height $$'px
 
 .thumb
-  width thumbWidth
-  height thumbHeight
+  width thumbImageWidth + 6
+  height thumbImageHeight + 6
   display block
   text-align center
   border 1px solid grayLighter
@@ -69,7 +66,7 @@ thumbImageHeight = '$$ N.config.options.users.media.resize.sm.height + "px" $$'
 
 // Texts under thumbnail
 .thumb-caption
-  width thumbWidth
+  width thumbImageWidth + 6
   padding 0 5px 0 3px
   display block
 
@@ -81,3 +78,15 @@ thumbImageHeight = '$$ N.config.options.users.media.resize.sm.height + "px" $$'
   overflow hidden
   white-space nowrap
   text-overflow ellipsis
+
+@media (max-width: screenSm - 1)
+  .thumb.thumb-sm
+    width (thumbImageWidth / 1.4) + 6
+    height (thumbImageHeight / 1.4) + 6
+
+  .thumb__image.thumb-sm
+    max-width (thumbImageWidth / 1.4)
+    max-height (thumbImageHeight / 1.4)
+
+  .thumb-caption.thumb-sm
+    width (thumbImageWidth / 1.4) + 6

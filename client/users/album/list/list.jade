@@ -3,23 +3,23 @@ each media in self.medias
   li.user-medialist__item
     if media.type === 'image'
       - var imageUrl = self.link_to('core.gridfs', { bucket: media.file_id + '_sm' })
-      a.thumb(href=href)
-        img.thumb__image(src=imageUrl)
+      a.thumb.thumb-sm(href=href)
+        img.thumb__image.thumb-sm(src=imageUrl)
 
     else if media.type === 'medialink'
-      a.thumb(href=href)
-        img.thumb__image(src=media.medialink_data.thumb)
+      a.thumb.thumb-sm(href=href)
+        img.thumb__image.thumb-sm(src=media.medialink_data.thumb)
         .thumb__overlay
         .thumb__icon.icon-video
 
     else if media.type === 'binary'
       //-a.thumb(href=self.link_to('core.gridfs', { bucket: media.file_id }))
-      a.thumb(href=href)
+      a.thumb.thumb-sm(href=href)
         .thumb__content=media.file_name
         .thumb__icon.icon-binary
 
-    .thumb-caption.user-medialist__item-title.thumb-caption__m-inline
+    .thumb-caption.thumb-sm.user-medialist__item-title.thumb-caption__m-inline
       a(href=href)=media.description
 
-    .thumb-caption.user-medialist__item-meta
+    .thumb-caption.thumb-sm.user-medialist__item-meta
       = self.date(media.ts, 'date')
