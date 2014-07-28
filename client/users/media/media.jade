@@ -14,8 +14,7 @@
         img.img-responsive(src=imageUrl)
     else if self.media.type === 'medialink'
       .user-media__video
-        .embed-responsive.embed-responsive.embed-responsive-16by9
-          != self.media.medialink_html
+        != self.media.medialink_html
     else if self.media.type === 'binary'
       .user-media__binary
         a(href=self.link_to('core.gridfs', { bucket: self.media.file_id }))=self.media.file_name
