@@ -2,18 +2,12 @@
 
 'use strict';
 
-
-var async     = require('async');
-var gm        = require('gm');
-var mimoza    = require('mimoza');
-var fstools   = require('fs-tools');
 var fs        = require('fs');
 var extname   = require('path').extname;
 var exec      = require('child_process').exec;
-var _         = require('lodash');
-
 var Mongoose  = require('mongoose');
 var Schema    = Mongoose.Schema;
+var resize    = require('./_lib/resize');
 
 var configReader  = require('../../server/_lib/uploads_config_reader');
 
@@ -53,6 +47,7 @@ module.exports = function (N, collectionName) {
     // }
     medialink_data : Schema.Types.Mixed,
 
+    file_size      : Number,
     file_name      : String,
     description    : String,
     exists         : { 'type': Boolean, 'default': true }
@@ -88,192 +83,60 @@ module.exports = function (N, collectionName) {
   });
 
 
-  // Create preview for image
-  //
-  // - path - Image file path.
-  // - resizeConfig
-  //   - width
-  //   - height
-  //   - max_width
-  //   - max_height
-  //   - jpeg_quality
-  //   - gif_animation
-  //   - skip_size
-  // - imageType - gif, jpeg, png, etc
-  //
-  // - callback - function (err, { path, type })
-  //
-  var createPreview = function (path, resizeConfig, imageType, callback) {
+  var saveFile = function (path, name, maxSize, callback) {
     fs.stat(path, function (err, stats) {
       if (err) {
         callback(err);
         return;
       }
 
-      var outType = resizeConfig.type || imageType;
-
-      // To determine output image type, we must specify file extention
-      var tmpFilePath = fstools.tmpdir() + '.' + outType;
-
-      // If animation not allowed - take first frame of gif image
-      path = (imageType === 'gif' && resizeConfig.gif_animation === false) ? path + '[0]' : path;
-      var gmInstance = gm(path).options(gmConfigOptions);
-
-      // Set quality only for jpeg image
-      if (outType === 'jpeg') {
-        gmInstance.quality(resizeConfig.jpeg_quality);
-      }
-
-      // Is image size smaller than 'skip_size' - skip resizing
-      if (resizeConfig.skip_size && stats.size < resizeConfig.skip_size) {
-
-        // Save file and return result
-        gmInstance.write(tmpFilePath, function (err) {
-          if (err) {
-            // Remove temporary file if error
-            fs.unlink(tmpFilePath, function () {
-              callback(err);
-            });
-            return;
-          }
-
-          callback(null, { path: tmpFilePath, type: outType });
-        });
+      if (stats.size > maxSize) {
+        callback(new Error('Can\'t save file: max size exceeded'));
         return;
       }
 
-      gmInstance.gravity('Center').size(function(err, imgSz) {
+      var storeOptions = {
+        metadata: {
+          origName: name
+        }
+      };
+
+      N.models.core.File.put(path, storeOptions, function (err, info) {
         if (err) {
-          fs.unlink(tmpFilePath, function () {
-            callback(err);
-          });
+          callback(err);
           return;
         }
 
-        // To scale image we calculate new width and height, resize image by height and crop by width
-        var scaledHeight, scaledWidth;
-
-        if (resizeConfig.height && !resizeConfig.width) {
-          // If only height defined - scale to fit height,
-          // and crop by max_width
-          scaledHeight = resizeConfig.height;
-          var proportionalWidth = Math.floor(imgSz.width * scaledHeight / imgSz.height);
-          scaledWidth = (!resizeConfig.max_width || resizeConfig.max_width > proportionalWidth) ?
-                        proportionalWidth :
-                        resizeConfig.max_width;
-
-        } else if (!resizeConfig.height && resizeConfig.width) {
-          // If only width defined - scale to fit width,
-          // and crop by max_height
-          scaledWidth = resizeConfig.width;
-          var proportionalHeight = Math.floor(imgSz.height * scaledWidth / imgSz.width);
-          scaledHeight = (!resizeConfig.max_height || resizeConfig.max_height > proportionalHeight) ?
-                         proportionalHeight :
-                         resizeConfig.max_height;
-
-        } else {
-          // If determine both width and height
-          scaledWidth = resizeConfig.width;
-          scaledHeight = resizeConfig.height;
-        }
-
-        // Don't resize (only crop) image if height smaller than scaledHeight
-        if (imgSz.height > scaledHeight) {
-          gmInstance.resize(null, scaledHeight);
-        }
-
-        // Save file
-        gmInstance.crop(scaledWidth, scaledHeight).write(tmpFilePath, function (err) {
-          if (err) {
-            // Remove temporary file if error
-            fs.unlink(tmpFilePath, function () {
-              callback(err);
-            });
-            return;
-          }
-          callback(null, { path: tmpFilePath, type: outType });
-        });
+        callback(null, { id: info._id, size: stats.size });
       });
     });
   };
 
 
-  // Save files to database
+  // Create media with original image with previews or binary file
   //
-  // - previews - { orig: { path, type }, ... }
-  // - maxSize - maximum size to save to database
+  // - options
+  //   - album_id
+  //   - user_id
+  //   - path - file path
+  //   - name - (optional) original file name (required for binary files).
+  //   - ext  - (optional) file extension (needed only if path without extension)
   //
-  // - callback - function (err, originalFileId)
+  // - callback(err, media_id)
   //
-  var saveFiles = function (previews, maxSize, callback) {
-    async.each(Object.keys(previews), function (key, next) {
+  Media.statics.createFile = function (options, callback) {
+    var media = new N.models.users.Media();
+    media._id = new Mongoose.Types.ObjectId();
+    media.user_id = options.user_id;
+    media.album_id = options.album_id;
 
-      // Check file size
-      fs.stat(previews[key].path, function (err, stats) {
-        if (err) {
-          next(err);
-          return;
-        }
-
-        if (stats.size > maxSize) {
-          next(new Error('Can\'t save file: max size exceeded'));
-          return;
-        }
-
-        next();
-      });
-    }, function (err) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      // Create new ObjectId for orig file
-      var origId = new Mongoose.Types.ObjectId();
-      async.each(
-        Object.keys(previews),
-        function (key, next) {
-          var data = previews[key];
-
-          var params = { 'contentType': mimoza.getMimeType(data.type) };
-          if (key === 'orig') {
-            params._id = origId;
-          } else {
-            params.filename = origId + '_' + key;
-          }
-
-          N.models.core.File.put(data.path, params, function (err) {
-            next(err);
-          });
-        },
-        function (err) {
-          if (err) {
-            callback(err);
-            return;
-          }
-
-          callback(null, origId);
-        }
-      );
-    });
-  };
-
-
-  // Create original image with previews or binary file
-  //
-  // - path - path of file with extention. Required.
-  // - ext - file format (extension). Optional.
-  //         If not set, get from path.
-  //
-  // - callback(err, { fileId, type: image|binary, sizes: { orig: { width, height } } })
-  //
-  Media.statics.createFile = function (path, ext, callback) {
-    if (!callback) {
-      callback = ext;
-      ext = null;
+    var format;
+    // Format (extension) taken from options.name, options.ext or options.path in same order
+    if (options.ext) {
+      format = options.ext;
+    } else {
+      format = extname(options.path).replace('.', '').toLowerCase();
     }
-
-    var format = ext || extname(path).replace('.', '').toLowerCase();
 
     // Is config for this type exists
     if (!mediaConfig.types[format]) {
@@ -286,82 +149,65 @@ module.exports = function (N, collectionName) {
 
     // Just save if file is not an image
     if (supportedImageFormats.indexOf(format) === -1) {
-      saveFiles({ orig: { path: path, type: format } }, typeConfig.max_size, function (err, fileId) {
-        if (err) {
-          callback(err);
-          return;
-        }
 
-        callback(null, { fileId: fileId, type: 'binary' });
-      });
-      return;
-    }
-
-    var previews = {};
-    async.eachSeries(Object.keys(typeConfig.resize), function (resizeConfigKey, next) {
-      // Create preview for each size
-
-      var resizeConfig = typeConfig.resize[resizeConfigKey];
-      // Next preview will be based on preview in 'from' property
-      // by default next preview generated from 'orig'
-      var from = (previews[resizeConfig.from || ''] || previews.orig || {});
-      var filePath = from.path || path;
-      createPreview(filePath, resizeConfig, from.type || format, function (err, data) {
-        if (err) {
-          next(err);
-          return;
-        }
-
-        previews[resizeConfigKey] = data;
-
-        // Get real size after resize
-        gm(data.path).options(gmConfigOptions).size(function(err, imgSz) {
-          if (err) {
-            next(err);
-            return;
-          }
-
-          previews[resizeConfigKey].size = { width: imgSz.width, height: imgSz.height };
-          next();
-        });
-      });
-    }, function (err) {
-      // Delete all tmp files
-      var deleteTmpPreviews = function (callback) {
-        async.each(
-          Object.keys(previews),
-          function (key, next) {
-            fs.unlink(previews[key].path, function () { next(); });
-          },
-          function () {
-            callback();
-          }
-        );
-      };
-
-      if (err) {
-        deleteTmpPreviews(function () {
-          callback(err);
-        });
+      if (!options.name) {
+        callback(new Error('Can\'t save file: you must specify options.name for binary files'));
         return;
       }
 
-      // Save all previews
-      saveFiles(previews, typeConfig.max_size, function (err, origId) {
-        deleteTmpPreviews(function () {
+      saveFile(options.path, options.name, typeConfig.max_size || mediaConfig.max_size, function (err, data) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        media.type = 'binary';
+        media.file_id = data.id;
+        media.file_size = data.size;
+        media.file_name = options.name;
+
+        media.save(function (err) {
           if (err) {
             callback(err);
             return;
           }
 
-          var sizes = {};
-          _.forEach(previews, function (val, key) {
-            sizes[key] = val.size;
-          });
-          callback(null, { fileId: origId, type: 'image', sizes: sizes });
+          callback(null, media._id);
         });
       });
-    });
+      return;
+    }
+
+    resize(
+      options.path,
+      {
+        store: N.models.core.File,
+        imageMagick: gmConfigOptions.imageMagick,
+        ext: format,
+        maxSize: typeConfig.max_size || mediaConfig.max_size,
+        resize: typeConfig.resize
+      },
+      function (err, data) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        media.type = 'image';
+        media.image_sizes = data.images;
+        media.file_id = data.id;
+        media.file_size = data.size;
+
+        media.save(function (err) {
+          if (err) {
+            callback(err);
+            return;
+          }
+
+          callback(null, media._id);
+        });
+      }
+    );
   };
 
 

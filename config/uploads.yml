@@ -13,6 +13,7 @@ options:
         md:
           width: 640
         sm:
+          from: md
           max_width: 170
           height: 150
 

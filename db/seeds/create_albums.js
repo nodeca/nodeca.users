@@ -29,21 +29,11 @@ var models;
 var createMedia = function (userId, album, callback) {
   var photoPath = PHOTOS[Charlatan.Helpers.rand(0, PHOTOS.length)];
 
-  models.users.Media.createFile(photoPath, function (err, data) {
-    if (err) {
-      callback(err);
-      return;
-    }
-
-    var media = new models.users.Media();
-    media.user_id = userId;
-    media.album_id = album;
-    media.ts = new Date();
-    media.file_id = data.fileId;
-    media.type = data.type;
-    media.image_sizes = data.sizes;
-    media.save(callback);
-  });
+  models.users.Media.createFile({
+    album_id: album,
+    user_id: userId,
+    path: photoPath
+  }, callback);
 };
 
 

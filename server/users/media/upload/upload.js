@@ -19,15 +19,8 @@ module.exports = function (N, apiPath) {
 
   // CSRF comes in post data and checked separately
   N.validate(apiPath, {
-    user_hid: {
-      type: 'integer',
-      minimum: 1,
-      required: true
-    },
-    album_id: {
-      format: 'mongo',
-      required: true
-    }
+    user_hid: { type: 'integer', minimum: 1, required: true },
+    album_id: { format: 'mongo', required: true }
   });
 
 
@@ -82,7 +75,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Upload files via formidable
+  // Fetch post body with files via formidable
   //
   N.wire.before(apiPath, function upload_media(env, callback) {
     var form = new formidable.IncomingForm();
@@ -140,13 +133,20 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Create image (previews are created on save)
+  // Create image/binary (for images previews created automatically)
   //
   N.wire.on(apiPath, function save_media(env, callback) {
-    var Media = N.models.users.Media;
     var fileInfo = env.data.upload_file_info;
 
-    Media.createFile(fileInfo.path, fileInfo.type.split('/').pop(), function (err, data) {
+    N.models.users.Media.createFile({
+      album_id: env.data.album._id,
+      user_id: env.session.user_id,
+      path: fileInfo.path,
+      name: fileInfo.name,
+      // In case of blob fileInfo.name will be 'blob'.
+      // Get extension from fileInfo.type.
+      ext: fileInfo.type.split('/').pop()
+    }, function (err) {
       // Remove file anyway after upload to gridfs
       fs.unlink(fileInfo.path, function () {
 
@@ -155,19 +155,7 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        var media = new Media();
-        if (data.type === 'image') {
-          media.image_sizes = data.sizes;
-        }
-        media.user_id = env.session.user_id;
-        media.album_id = env.data.album._id;
-        media.file_id = data.fileId;
-        media.type = data.type;
-        media.file_name = fileInfo.name || '';
-
-        env.data.media = media;
-
-        media.save(callback);
+        callback();
       });
     });
   });
@@ -176,14 +164,10 @@ module.exports = function (N, apiPath) {
   // Update album info
   //
   N.wire.after(apiPath, function update_album_info(env, callback) {
-    var media = env.data.media;
 
     N.models.users.Album.updateInfo(env.data.album._id, function (err) {
       if (err) {
-        // Remove dirty media
-        media.remove(function () {
-          callback(err);
-        });
+        callback(err);
         return;
       }
 
