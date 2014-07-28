@@ -1,0 +1,3 @@
+medialinks:
+  # Allowed providers for albums
+  albums: [ youtube, vimeo, rutube ]
