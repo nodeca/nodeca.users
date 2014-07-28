@@ -49,15 +49,22 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      // After delete media update album cover and date
-      N.models.users.Album.updateInfo(media.album_id, function (err) {
-        if (err) {
-          callback(err);
-          return;
-        }
+      callback();
+    });
+  });
 
-        callback();
-      });
+
+  // Update album info
+  //
+  N.wire.after(apiPath, function update_album(env, callback) {
+
+    N.models.users.Album.updateInfo(env.data.media.album_id, true, function (err) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      callback();
     });
   });
 };

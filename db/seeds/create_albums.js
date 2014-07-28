@@ -54,7 +54,7 @@ var createAlbum = function (userId, callback) {
       }, next);
     },
     function (next) {
-      models.users.Album.updateInfo(album._id, next);
+      models.users.Album.updateInfo(album._id, true, next);
     }
   ], callback);
 };

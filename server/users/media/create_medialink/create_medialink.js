@@ -7,14 +7,8 @@ var _ = require('lodash');
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
-    album_id: {
-      format: 'mongo',
-      required: true
-    },
-    media_url: {
-      type: 'string',
-      required: true
-    }
+    album_id: { format: 'mongo', required: true },
+    media_url: { type: 'string', required: true }
   });
 
 
@@ -100,6 +94,7 @@ module.exports = function (N, apiPath) {
   // Update album info
   //
   N.wire.after(apiPath, function update_album_info(env, callback) {
+
     N.models.users.Album.updateInfo(env.data.album._id, function (err) {
       if (err) {
         callback(err);

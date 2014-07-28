@@ -7,19 +7,9 @@
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
-    album_id: {
-      format: 'mongo',
-      required: true
-    },
-    title: {
-      type: 'string',
-      minLength: 1,
-      required: true
-    },
-    cover_id: {
-      format: 'mongo',
-      required: true
-    }
+    album_id: { format: 'mongo', required: true },
+    title: { type: 'string', minLength: 1, required: true },
+    cover_id: { format: 'mongo', required: true }
   });
 
 
@@ -28,7 +18,7 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function fetch_album(env, callback) {
     N.models.users.Album
       .findOne({ '_id': env.params.album_id })
-      .lean(false) // Use as mongoose model
+      .lean(true)
       .exec(function (err, album) {
         if (err) {
           callback(err);
@@ -94,8 +84,10 @@ module.exports = function (N, apiPath) {
     var cover = env.data.cover;
     var album = env.data.album;
 
-    album.cover_id = cover.file_id;
-    album.title = env.params.title;
-    album.save(callback);
+    N.models.users.Album.update(
+      { _id: album._id },
+      { cover_id: cover.file_id, title: env.params.title, last_ts: Date.now() },
+      callback
+    );
   });
 };

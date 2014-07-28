@@ -7,15 +7,8 @@
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
-    user_hid: {
-      type: 'integer',
-      minimum: 1,
-      required: true
-    },
-    album_id: {
-      format: 'mongo',
-      required: true
-    }
+    user_hid: { type: 'integer', minimum: 1, required: true },
+    album_id: { format: 'mongo', required: true }
   });
 
 
