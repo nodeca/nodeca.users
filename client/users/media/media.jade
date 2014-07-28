@@ -11,7 +11,7 @@
   .user-media
     if self.media.type === 'image'
       - var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.file_id })
-      img.img-respoisive(src=imageUrl)
+        img.img-responsive(src=imageUrl)
     else if self.media.type === 'medialink'
       .user-media__video
         .embed-responsive.embed-responsive.embed-responsive-16by9
