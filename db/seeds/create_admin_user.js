@@ -1,6 +1,7 @@
 'use strict';
 
 var async = require('async');
+var prompt = require('prompt');
 
 module.exports = function (N, cb) {
   var models = N.models;
@@ -8,7 +9,32 @@ module.exports = function (N, cb) {
   var user     = new models.users.User();
   var authLink     = new models.users.AuthLink();
 
+  var login, password;
+
   async.series([
+    function (next) {
+      prompt.message = '';
+      prompt.delimiter = '';
+      prompt.start();
+
+      var schema = [
+        { name: 'login', description: 'Administrator login? (admin)' },
+        { name: 'password', description: 'Administrator password? (admin)', hidden: true }
+      ];
+
+      prompt.get(schema, function (err, result) {
+        if (err) {
+          next(err);
+          return;
+        }
+
+        login = result.login || 'admin';
+        password = result.password || 'admin';
+
+        next();
+      });
+    },
+
     // create admin user
     function (next) {
       // get administrators group Id
@@ -19,7 +45,7 @@ module.exports = function (N, cb) {
             return;
           }
           user.hid = 1;
-          user.nick = 'admin';
+          user.nick = login;
           user.email = 'admin@localhost';
           user.joined_ts = new Date();
           user.post_count = 1;
@@ -34,7 +60,7 @@ module.exports = function (N, cb) {
 
       authLink.type = 'plain';
       authLink.email = 'admin@example.com';
-      authLink.setPass('admin', function (err) {
+      authLink.setPass(password, function (err) {
         if (err) {
           next(err);
           return;

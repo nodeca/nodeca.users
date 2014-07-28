@@ -90,8 +90,8 @@ var createAlbums = function (callback) {
   async.series([
     function (next) {
 
-      // Get 'admin' user id to use it as reference for albums and media
-      models.users.User.findOne({ 'nick': 'admin' }).lean(true).exec(function (err, user) {
+      // Get first user id to use it as reference for albums and media
+      models.users.User.findOne({ 'hid': 1 }).lean(true).exec(function (err, user) {
         if (err) { return next(err); }
 
         if (user) {
