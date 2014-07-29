@@ -40,7 +40,7 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
         'users.uploader:add',
         {
           files: files,
-          url: N.router.linkTo('users.media.upload', pageParams),
+          url: N.router.linkTo('users.media.upload', { album_id: pageParams.album_id }),
           config: 'users.uploader_config'
         },
         reloadMedia
@@ -92,7 +92,7 @@ N.wire.on('users.album:dd_area', function user_album_dd(event) {
           'users.uploader:add',
           {
             files: event.dataTransfer.files,
-            url: N.router.linkTo('users.media.upload', pageParams),
+            url: N.router.linkTo('users.media.upload', { album_id: pageParams.album_id }),
             config: 'users.uploader_config'
           },
           reloadMedia

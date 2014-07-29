@@ -19,15 +19,7 @@ module.exports = function (N, apiPath) {
 
   // CSRF comes in post data and checked separately
   N.validate(apiPath, {
-    user_hid: { type: 'integer', minimum: 1, required: true },
     album_id: { format: 'mongo', required: true }
-  });
-
-
-  // Fetch owner by hid
-  //
-  N.wire.before(apiPath, function fetch_user_by_hid(env, callback) {
-    N.wire.emit('internal:users.fetch_user_by_hid', env, callback);
   });
 
 
@@ -59,14 +51,8 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function check_permissions(env, callback) {
     // TODO: check quota and permissions
 
-    // Wrong member_hid parameter
-    if (env.data.user._id.toString() !== env.data.album.user_id.toString()) {
-      callback(N.io.NOT_FOUND);
-      return;
-    }
-
     // Check is current user owner of album
-    if (!env.session.user_id || env.session.user_id.toString() !== env.data.album.user_id.toString()) {
+    if (env.session.user_id !== env.data.album.user_id.toString()) {
       callback(N.io.FORBIDDEN);
       return;
     }

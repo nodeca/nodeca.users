@@ -92,9 +92,6 @@ router:
 
   http.post:
     users.media.upload:
-      "/member{user_hid}/album/{album_id}/upload":
-        user_hid:
-          match: /\d+/
-          type: 'integer'
+      "/upload/{album_id}":
         album_id:
           match: /[0-9a-f]{24}/

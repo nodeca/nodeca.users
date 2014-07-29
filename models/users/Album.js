@@ -80,14 +80,17 @@ module.exports = function (N, collectionName) {
       }
 
       // Check cover exists
-      Media.count({ file_id: album.cover_id, exists: true }, function (err, count) {
+
+      // album.cover_id may be null. Set it to zero fill to avoid find medialinks.
+      var fileId = album.cover_id || '000000000000000000000000';
+      Media.findOne({ file_id: fileId, exists: true }).select('file_id').lean(true).exec(function (err, cover) {
         if (err) {
           callback(err);
           return;
         }
 
         // Do nothing if cover exists
-        if (count !== 0) {
+        if (cover) {
           callback();
           return;
         }

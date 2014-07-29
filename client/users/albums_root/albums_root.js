@@ -51,7 +51,7 @@ N.wire.on('users.album.create:done', function update_list() {
 // Handles the event when user drag file to album
 //
 N.wire.on('users.albums_root.list:dragdrop', function albums_root_dd(event) {
-  var $dropZone, x0, y0, x1, y1, ex, ey, hid, id;
+  var $dropZone, x0, y0, x1, y1, ex, ey, id;
 
   switch (event.type) {
     case 'dragenter':
@@ -79,12 +79,11 @@ N.wire.on('users.albums_root.list:dragdrop', function albums_root_dd(event) {
       $dropZone.removeClass('active');
 
       id = $dropZone.data('albumId');
-      hid = $dropZone.data('userHid');
 
       if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
         N.wire.emit('users.uploader:add', {
           files: event.dataTransfer.files,
-          url: N.router.linkTo('users.media.upload', { user_hid: hid, album_id: id }),
+          url: N.router.linkTo('users.media.upload', { album_id: id }),
           config: 'users.uploader_config'
         }, function () {
           updateAlbumList(id);
