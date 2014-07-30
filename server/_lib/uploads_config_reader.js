@@ -152,4 +152,6 @@ module.exports = _.memoize(function (uploadsConfig) {
   config.types = typesOptions;
 
   return config;
+}, function (uploadsConfig) {
+  return JSON.stringify(uploadsConfig);
 });

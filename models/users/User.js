@@ -1,12 +1,17 @@
 'use strict';
 
 
-var Mongoose = require('mongoose');
-var Schema   = Mongoose.Schema;
-var xregexp  = require('xregexp').XRegExp;
-
+var Mongoose      = require('mongoose');
+var Schema        = Mongoose.Schema;
+var xregexp       = require('xregexp').XRegExp;
+var retricon      = require('retricon');
+var configReader  = require('../../server/_lib/uploads_config_reader');
+var _             = require('lodash');
+var async         = require('async');
 
 module.exports = function (N, collectionName) {
+
+  var avatarConfig;
 
   var User = new Schema({
     // user-friendly id (autoincremented)
@@ -27,7 +32,10 @@ module.exports = function (N, collectionName) {
 
     locale         : String,
     name           : String,
-    post_count     : { type: Number, 'default': 0 }
+    post_count     : { type: Number, 'default': 0 },
+
+    avatar_exists  : Boolean,
+    avatar_id      : Schema.Types.ObjectId
   },
   {
     versionKey : false
@@ -103,6 +111,85 @@ module.exports = function (N, collectionName) {
   });
 
 
+  // Creates default album for new user
+  //
+  User.pre('save', function (callback) {
+    if (!this.isNew) {
+      callback();
+      return;
+    }
+
+    var album = new N.models.users.Album();
+    album.default = true;
+    // this._id generates automatically before first pre('save') call
+    album.user_id = this._id;
+    album.save(callback);
+  });
+
+
+  // Generate default avatar (identicon) by nick name.
+  // Set 'avatar_default' to true.
+  //
+  User.methods.createIdenticon = function (callback) {
+    var self = this;
+
+    var sizes = avatarConfig.types[avatarConfig.extentions[0]].resize;
+    var avatars = {};
+
+    _.forEach(sizes, function (val, key) {
+      var size = val.width || val.max_width;
+      var style = _.clone(retricon.style.github);
+
+      var halfTileSize = Math.floor(size / ((style.tiles + 1) * 2));
+      var borderExtra = size % halfTileSize / 2;
+
+      style.pixelPadding = 0;
+      style.imagePadding = halfTileSize + borderExtra;
+      style.pixelSize = halfTileSize * 2;
+
+      avatars[key] = retricon(self._id.toString(), style).toBuffer();
+    });
+
+    var origId = new Mongoose.Types.ObjectId();
+
+    async.each(Object.keys(avatars), function (key, cb) {
+      var opt = {
+        contentType: 'image/png'
+      };
+
+      if (key === 'orig') {
+        opt._id = origId;
+      } else {
+        opt.filename = origId + '_' + key;
+      }
+
+      N.models.core.File.put(avatars[key], opt, cb);
+    }, function (err) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      self.avatar_exists = false;
+      self.avatar_id = origId;
+
+      callback();
+    });
+  };
+
+
+  // Creates default avatar if avatar_id isn't set
+  //
+  User.pre('save', function (callback) {
+    if (this.avatar_id) {
+      callback();
+      return;
+    }
+
+    this.createIdenticon(callback);
+  });
+
+
   // Set 'hid' for the new user. This hook should always be
   // the last one to avoid counter increment on error
   //
@@ -124,23 +211,15 @@ module.exports = function (N, collectionName) {
   });
 
 
-  // Creates default album for new user
-  //
-  User.pre('save', function (callback) {
-    if (!this.isNew) {
-      callback();
+  N.wire.on('init:models', function emit_init_User(__, callback) {
+    // Read config
+    try {
+      avatarConfig = configReader(((N.config.options || {}).users || {}).avatars || {});
+    } catch (e) {
+      callback(e);
       return;
     }
 
-    var album = new N.models.users.Album();
-    album.default = true;
-    // this._id generates automatically before first pre('save') call
-    album.user_id = this._id;
-    album.save(callback);
-  });
-
-
-  N.wire.on('init:models', function emit_init_User(__, callback) {
     N.wire.emit('init:models.' + collectionName, User, callback);
   });
 

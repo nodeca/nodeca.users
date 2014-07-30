@@ -9,7 +9,8 @@ var user_in_fields = [
   'joined_ts',
   'name',
   'nick',
-  'post_count'
+  'post_count',
+  'avatar_id'
 ];
 
 module.exports = function (N, apiPath) {

@@ -5,7 +5,7 @@
     .ucard-head.cleafix #{self.name}
     aside.ucard-sidebar
       a.ucard-avatar(href='#')
-        img.av-l(alt='#{self.name}',src='http://lorempixel.com/150/150/sports/a' + '#{self.hid}')
+        img.av-l(alt='#{self.name}',src=self.link_to('core.gridfs', { bucket: self.avatar_id }))
 
       a.btn.btn-default.btn-xs.btn-block= self.t('find_posts')  
       a.btn.btn-default.btn-xs.btn-block= self.t('send_message')  
