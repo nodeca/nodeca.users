@@ -5,7 +5,7 @@
 
   header.page-head.albums-head
     h1.page-head__title(itemprop='name')= self.head.title
-    p.page-head__descr.hidden-xs(itemprop='description')
+    //-p.page-head__descr.hidden-xs(itemprop='description')
 
   form(data-on-submit='users.album.edit:save')
     .row
@@ -16,13 +16,29 @@
             img#users-album-edit__cover-img(src=imageUrl)
           else
             #users-album-edit__no-cover No cover
-          input(type='hidden', value=self.album.cover_id || '', name='cover_id')
+          input(
+            type='hidden'
+            value=self.album.cover_id || ''
+            name='cover_id'
+          )
       .col-md-9
-        input(type='hidden', value=self.album._id, name='album_id')
+        input(
+          type='hidden'
+          value=self.album._id
+          name='album_id'
+        )
         .form-group
           label= self.t('title_input_name')
-          input.form-control(name='title',  placeholder=self.t('title_input_placeholder'), value=self.album.title)
+          input.form-control(
+            name='title'
+            placeholder=self.t('title_input_placeholder')
+            value=self.album.title
+          )
         .form-group
           button.btn.btn-default(type='submit')= self.t('save')
-          |&nbsp;
-          button.btn.btn-link(type='button', data-on-click='users.album.edit:delete', data-album-id=self.album._id)= self.t('delete')
+          |  
+          button.btn.btn-link(
+            type='button'
+            data-on-click='users.album.edit:delete'
+            data-album-id=self.album._id
+          )= self.t('delete')

@@ -12,9 +12,9 @@ each album in self.albums
     .user-albumlist__item-title.thumb-caption.thumb-caption__m-inline.thumb-sm
       a(href=self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id }))
         if !album.default
-          =album.title
+          = album.title
         else
-          =self.t('default_name')
+          = self.t('default_name')
 
     .user-albumlist__item-meta.thumb-caption.thumb-sm.clearfix
       if album.count > 0

@@ -6,25 +6,44 @@
 
   .breadcrumbs
     if own_page && self.album && !self.album.default
-      a.btn.btn-default.btn-sm(href=self.link_to('users.album.edit', { 'user_hid': self.user_hid, 'album_id': self.album._id }))= self.t('edit')
+      a.btn.btn-default.btn-sm.btn-icon-only.icon-edit(
+        href=self.link_to('users.album.edit', { 'user_hid': self.user_hid, 'album_id': self.album._id })
+        title=self.t('edit')
+      )
 
   header.page-head
     h1.page-head__title(itemprop='name')
-      =self.album ? self.album.title : self.t('title_all_files')
+      = self.album ? self.album.title : self.t('title_all_files')
     //-p.page-head__descr.hidden-xs(itemprop='description')
 
   if own_page && self.album
     .user-album-upload.panel.panel-default(data-on-dragdrop='users.album:dd_area')
       .pull-right
-        button.btn.btn-default(data-on-click='users.album:select_files')=self.t('select_files')
-        |  
-        button.btn.btn-default(data-on-click='users.album:create_medialink' data-providers=self.medialink_providers.join(', '))=self.t('create_medialink')
+        button.btn.btn-default(
+          data-on-click='users.album:select_files'
+        )= self.t('select_files')
+
+        button.btn.btn-default(
+          data-on-click='users.album:create_medialink'
+          data-providers=self.medialink_providers.join(', ')
+        )= self.t('create_medialink')
+
         //- Hidden
-        input.user-album-upload__files(name='files[]' type='file' style='position: absolute; left: -2000px' multiple)
+        input.user-album-upload__files(
+          name='files[]'
+          type='file'
+          style='position: absolute; left: -2000px'
+          multiple
+        )
 
       .user-album-upload__text
-        =self.t('drag_to_upload')
+        = self.t('drag_to_upload')
 
 
-  ul#users-medias-list.user-medialist._affix(data-affix={ 'bottom': 160, 'wire': 'users.album:append_more_photos', 'class': 'append-more-photos' })
-    != self.partial('@users.album.list')
+  ul#users-medias-list.user-medialist._affix(
+    data-affix={
+      'bottom': 160,
+      'wire': 'users.album:append_more_photos',
+      'class': 'append-more-photos'
+    }
+  )!= self.partial('@users.album.list')

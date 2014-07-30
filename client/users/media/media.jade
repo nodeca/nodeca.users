@@ -12,12 +12,15 @@
     if self.media.type === 'image'
       - var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.file_id })
         img.img-responsive(src=imageUrl)
+
     else if self.media.type === 'medialink'
       .user-media__video
         != self.media.medialink_html
+
     else if self.media.type === 'binary'
       .user-media__binary
-        a(href=self.link_to('core.gridfs', { bucket: self.media.file_id }))=self.media.file_name
+        a(href=self.link_to('core.gridfs', { bucket: self.media.file_id }))
+          = self.media.file_name
 
   .hidden-deleted
     if own_page
@@ -39,11 +42,11 @@
 
         ul.user-media__comments
           each comment in self.comments
-            - commentUser=self.users[comment.user_id]
+            - var user = self.users[comment.user_id]
               li
-                div=comment.text
+                div= comment.text
                 div
-                  a= commentUser.name
+                  a= user.name
                   span= self.date(comment.ts, 'date')
                   a Edit
                   a Delte
@@ -55,4 +58,4 @@
         href='#'
         data-media-id=self.media._id
         data-on-click='users.media:restore'
-      )=self.t('restore')
+      )= self.t('restore')

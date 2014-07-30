@@ -1,6 +1,8 @@
 each media in self.medias
-  - href = self.link_to('users.media', { user_hid: self.user_hid, media_id: media._id })
+  - var href = self.link_to('users.media', { user_hid: self.user_hid, media_id: media._id })
+
   li.user-medialist__item
+
     if media.type === 'image'
       - var imageUrl = self.link_to('core.gridfs', { bucket: media.file_id + '_sm' })
       a.thumb.thumb-sm(href=href)
@@ -15,11 +17,11 @@ each media in self.medias
     else if media.type === 'binary'
       //-a.thumb(href=self.link_to('core.gridfs', { bucket: media.file_id }))
       a.thumb.thumb-sm(href=href)
-        .thumb__content=media.file_name
+        .thumb__content= media.file_name
         .thumb__icon.icon-binary
 
     .thumb-caption.thumb-sm.user-medialist__item-title.thumb-caption__m-inline
-      a(href=href)=media.description
+      a(href=href)= media.description
 
     .thumb-caption.thumb-sm.user-medialist__item-meta
       = self.date(media.ts, 'date')
