@@ -154,6 +154,7 @@ module.exports = function (N, apiPath) {
     callback();
   });
 
+
   // Sanitize response info. We should not show hellbanned status to users
   // that cannot view hellbanned content.
   //
@@ -179,6 +180,54 @@ module.exports = function (N, apiPath) {
 
       callback();
     });
+  });
+
+
+  // Fill previous media _id
+  //
+  N.wire.after(apiPath, function fill_previous(env, callback) {
+    var media = env.data.media;
+
+    N.models.users.Media
+      .findOne({ album_id: media.album_id, exists: true, _id: { $gt: media._id } })
+      .sort('_id')
+      .select('_id')
+      .lean(true)
+      .exec(function (err, result) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        if (result) {
+          env.res.previous = result._id;
+        }
+        callback();
+      });
+  });
+
+
+  // Fill next media _id
+  //
+  N.wire.after(apiPath, function fill_next(env, callback) {
+    var media = env.data.media;
+
+    N.models.users.Media
+      .findOne({ album_id: media.album_id, exists: true, _id: { $lt: media._id } })
+      .sort('-_id')
+      .select('_id')
+      .lean(true)
+      .exec(function (err, result) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        if (result) {
+          env.res.next = result._id;
+        }
+        callback();
+      });
   });
 
 

@@ -1,3 +1,5 @@
 en-US:
   delete: Delete file
   restore: deleted, click here to restore
+  next: Next
+  prev: Previous
