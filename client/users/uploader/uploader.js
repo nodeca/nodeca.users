@@ -43,61 +43,6 @@ function checkFile(data) {
 }
 
 
-// Rotate canvas to orientation
-//
-function updateOrientation(canvas, ctx, orientation) {
-
-  var width = canvas.width;
-  var height = canvas.height;
-
-  if (orientation > 4) {
-    canvas.width = height;
-    canvas.height = width;
-  }
-
-  switch (orientation) {
-    case 2:
-      // horizontal flip
-      ctx.translate(width, 0);
-      ctx.scale(-1, 1);
-      break;
-    case 3:
-      // 180° rotate left
-      ctx.translate(width, height);
-      ctx.rotate(Math.PI);
-      break;
-    case 4:
-      // vertical flip
-      ctx.translate(0, height);
-      ctx.scale(1, -1);
-      break;
-    case 5:
-      // vertical flip + 90 rotate right
-      ctx.rotate(0.5 * Math.PI);
-      ctx.scale(1, -1);
-      break;
-    case 6:
-      // 90° rotate right
-      ctx.rotate(0.5 * Math.PI);
-      ctx.translate(0, -height);
-      break;
-    case 7:
-      // horizontal flip + 90 rotate right
-      ctx.rotate(0.5 * Math.PI);
-      ctx.translate(width, -height);
-      ctx.scale(-1, 1);
-      break;
-    case 8:
-      // 90° rotate left
-      ctx.rotate(-0.5 * Math.PI);
-      ctx.translate(-width, 0);
-      break;
-    default:
-      // case 1 - no need to change anything
-  }
-}
-
-
 // Resize image if needed
 //
 function resizeImage(data, callback) {
@@ -118,7 +63,8 @@ function resizeImage(data, callback) {
     return;
   }
 
-  var orientation;
+  var jpegHeader;
+
   var img = new Image();
   img.onload = function() {
     // To scale image we calculate new width and height, resize image by height and crop by width
@@ -156,22 +102,28 @@ function resizeImage(data, callback) {
     var cropX = (scaledWidth - width) / 2;
     var quality = (ext === 'jpeg' || ext === 'jpg') ? resizeConfig.jpeg_quality : undefined;
 
-    if (orientation) {
-      updateOrientation(canvas, ctx, orientation);
-    }
-
     ctx.drawImage(img, cropX, 0, width, scaledHeight);
 
     canvas.toBlob(function (blob) {
-      blob.name = data.file.name;
-      data.file = blob;
+      var jpegBlob;
+
+      if (jpegHeader) {
+        var slice = blob.slice || blob.webkitSlice || blob.mozSlice;
+        var jpegBody = slice.call(blob, 20);
+
+        jpegBlob = new Blob([ jpegHeader, jpegBody ], { type: typeConfig.mime_type });
+      }
+
+      var name = data.file.name;
+      data.file = jpegBlob || blob;
+      data.file.name = name;
       callback();
     }, typeConfig.mime_type, quality);
   };
 
-  readExif(data.file, function (tags) {
-    if (tags) {
-      orientation = tags.orientation;
+  readExif(data.file, function (exifData) {
+    if (exifData) {
+      jpegHeader = exifData.header;
     }
 
     img.src = window.URL.createObjectURL(data.file);

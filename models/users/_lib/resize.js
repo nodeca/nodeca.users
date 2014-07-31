@@ -74,7 +74,7 @@ var createPreview = function (path, resizeConfig, imageType, callback) {
 
     // Set quality only for jpeg image
     if (outType === 'jpeg') {
-      gmInstance.quality(resizeConfig.jpeg_quality);
+      gmInstance.quality(resizeConfig.jpeg_quality).autoOrient();
     }
 
     // Is image size smaller than 'skip_size' - skip resizing
