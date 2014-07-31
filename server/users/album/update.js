@@ -9,6 +9,7 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     album_id: { format: 'mongo', required: true },
     title: { type: 'string', minLength: 1, required: true },
+    description: { type: 'string', required: true },
     cover_id: { format: 'mongo', required: true }
   });
 
@@ -86,7 +87,12 @@ module.exports = function (N, apiPath) {
 
     N.models.users.Album.update(
       { _id: album._id },
-      { cover_id: cover.file_id, title: env.params.title, last_ts: Date.now() },
+      {
+        cover_id: cover.file_id,
+        title: env.params.title,
+        description: env.params.description,
+        last_ts: Date.now()
+      },
       callback
     );
   });

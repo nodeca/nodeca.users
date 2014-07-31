@@ -18,6 +18,7 @@ module.exports = function (N, collectionName) {
     // Source file '_id'. Use thumbnail to show cover.
     'cover_id'      : Schema.Types.ObjectId,
     'count'         : { 'type': Number, 'default': 0 },
+    'description'   : String,
 
     // true if almum is default, for incoming medias.
     // Such albums can not be deleted

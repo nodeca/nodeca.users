@@ -34,6 +34,14 @@
             placeholder=self.t('title_input_placeholder')
             value=self.album.title
           )
+
+        .form-group
+          label= self.t('description_input_name')
+          textarea.form-control(
+            name='description'
+            placeholder=self.t('description_input_placeholder')
+          )= self.album.description
+
         .form-group
           button.btn.btn-default(type='submit')= self.t('save')
           |  
