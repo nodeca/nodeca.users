@@ -20,8 +20,8 @@ var dialogData;
 
 // Init dialog on event
 //
-N.wire.on('users.album.edit.select_cover_dlg', function show_select_cover_dlg() {
-  $dialog = $(N.runtime.render('users.album.edit.select_cover_dlg'));
+N.wire.on('users.album.edit.select_cover', function show_select_cover() {
+  $dialog = $(N.runtime.render('users.album.edit.select_cover'));
   $('body').append($dialog);
 
   // When dialog closes - remove it from body
@@ -38,7 +38,7 @@ N.wire.on('users.album.edit.select_cover_dlg', function show_select_cover_dlg() 
 
 // Load album photos
 //
-N.wire.after('users.album.edit.select_cover_dlg', function load_photos(data, callback) {
+N.wire.after('users.album.edit.select_cover', function load_photos(data, callback) {
   onCoverSelected = callback;
   dialogData = data;
 
@@ -46,15 +46,15 @@ N.wire.after('users.album.edit.select_cover_dlg', function load_photos(data, cal
     var medias = _.filter(mediaList.medias, function (media) {
       return media.type === 'image';
     });
-    var $list = $(N.runtime.render('users.album.edit.select_cover_dlg.media_list', { medias: medias }));
-    $('#users-album-edit-select_cover_dlg__media-list').html($list);
+    var $list = $(N.runtime.render('users.album.edit.select_cover.media_list', { medias: medias }));
+    $('#users-album-edit-select_cover__media-list').html($list);
   });
 });
 
 
 // Click to cover
 //
-N.wire.on('users.album.edit.select_cover_dlg:select', function select_cover(event) {
+N.wire.on('users.album.edit.select_cover:select', function select_cover(event) {
   var $item = $(event.target);
   dialogData.cover_id = $item.data('file_id');
   onCoverSelected();

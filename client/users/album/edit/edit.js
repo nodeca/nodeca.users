@@ -35,7 +35,7 @@ N.wire.on('users.album.edit:delete', function delete_album(event) {
 
 N.wire.on('users.album.edit:select_cover', function select_cover() {
   var data = { user_hid: pageParams.user_hid, album_id: pageParams.album_id, cover_id: null };
-  N.wire.emit('users.album.edit.select_cover_dlg', data, function () {
+  N.wire.emit('users.album.edit.select_cover', data, function () {
     $('#users-album-edit__cover input[name="cover_id"]').val(data.cover_id);
     var imageUrl = N.router.linkTo('core.gridfs', { 'bucket': data.cover_id + '_md' });
     $('#users-album-edit__cover-img').attr('src', imageUrl);

@@ -1,0 +1,8 @@
+if self.medias.length > 0
+  ul#users-album-edit-select_cover__photos
+    each media in self.medias
+      li.users-album-edit-select_cover__photo
+        - var imageUrl = self.link_to('core.gridfs', { 'bucket': media.file_id + '_md' })
+          img.user-media__image(src=imageUrl data-on-click='users.album.edit.select_cover:select' data-file_id=media.file_id)
+else
+  #users-album-edit-select_cover__empty= self.t('@users.album.edit.select_cover.empty_album')
