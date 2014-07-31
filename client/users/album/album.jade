@@ -24,9 +24,9 @@
         )= self.t('select_files')
 
         button.btn.btn-default(
-          data-on-click='users.album:create_medialink'
+          data-on-click='users.album:add_medialink'
           data-providers=self.medialink_providers.join(', ')
-        )= self.t('create_medialink')
+        )= self.t('add_medialink')
 
         //- Hidden
         input.user-album-upload__files(

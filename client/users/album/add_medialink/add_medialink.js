@@ -10,10 +10,10 @@ var doneCallback;
 
 // Init dialog on event
 //
-N.wire.on('users.album.create_medialink', function show_create_medialink_dlg(data, callback) {
+N.wire.on('users.album.add_medialink', function show_add_medialink_dlg(data, callback) {
   params = data;
   doneCallback = callback;
-  $dialog = $(N.runtime.render('users.album.create_medialink', { providers: params.providers }));
+  $dialog = $(N.runtime.render('users.album.add_medialink', { providers: params.providers }));
 
   $('body').append($dialog);
 
@@ -30,8 +30,8 @@ N.wire.on('users.album.create_medialink', function show_create_medialink_dlg(dat
 
 // Listen submit button
 //
-N.wire.on('users.album.create_medialink:submit', function submit_create_medialink_dlg(form) {
-  N.io.rpc('users.media.create_medialink', { album_id: params.album_id, media_url: form.fields.media_url })
+N.wire.on('users.album.add_medialink:submit', function submit_add_medialink_dlg(form) {
+  N.io.rpc('users.media.add_medialink', { album_id: params.album_id, media_url: form.fields.media_url })
     .done(function () {
       $dialog.modal('hide');
 

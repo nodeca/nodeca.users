@@ -109,9 +109,9 @@ N.wire.on('users.album:dd_area', function user_album_dd(event) {
 //
 
 
-N.wire.on('users.album:create_medialink', function create_medialink (event) {
+N.wire.on('users.album:add_medialink', function add_medialink (event) {
   var params = { album_id: pageParams.album_id, providers: $(event.target).data('providers') };
-  N.wire.emit('users.album.create_medialink', params, reloadMedia);
+  N.wire.emit('users.album.add_medialink', params, reloadMedia);
 });
 
 
