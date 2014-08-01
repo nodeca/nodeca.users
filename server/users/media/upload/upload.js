@@ -132,7 +132,7 @@ module.exports = function (N, apiPath) {
       // In case of blob fileInfo.name will be 'blob'.
       // Get extension from fileInfo.type.
       ext: fileInfo.type.split('/').pop()
-    }, function (err) {
+    }, function (err, media) {
       // Remove file anyway after upload to gridfs
       fs.unlink(fileInfo.path, function () {
 
@@ -141,6 +141,7 @@ module.exports = function (N, apiPath) {
           return;
         }
 
+        env.data.media = media;
         callback();
       });
     });
@@ -159,5 +160,24 @@ module.exports = function (N, apiPath) {
 
       callback();
     });
+  });
+
+
+  // Update cover for default album
+  //
+  N.wire.after(apiPath, function update_default(env, callback) {
+    if (!env.data.album.default) {
+      callback();
+      return;
+    }
+
+    var media = env.data.media;
+
+    if (media.type !== 'image') {
+      callback();
+      return;
+    }
+
+    N.models.users.Album.update({ _id: env.data.album._id }, { cover_id: media.file_id }, callback);
   });
 };

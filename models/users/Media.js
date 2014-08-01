@@ -122,7 +122,7 @@ module.exports = function (N, collectionName) {
   //   - name - (optional) original file name (required for binary files).
   //   - ext  - (optional) file extension (needed only if path without extension)
   //
-  // - callback(err, media_id)
+  // - callback(err, media)
   //
   Media.statics.createFile = function (options, callback) {
     var media = new N.models.users.Media();
@@ -172,7 +172,7 @@ module.exports = function (N, collectionName) {
             return;
           }
 
-          callback(null, media._id);
+          callback(null, media);
         });
       });
       return;
@@ -204,7 +204,7 @@ module.exports = function (N, collectionName) {
             return;
           }
 
-          callback(null, media._id);
+          callback(null, media);
         });
       }
     );
