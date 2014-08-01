@@ -3,26 +3,14 @@
 var _ = require('lodash');
 
 var pageParams;
-var isOnPage;
 
 
 N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
   pageParams = data.params;
-  isOnPage = true;
-});
-
-
-N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
-  isOnPage = false;
 });
 
 
 var updateAlbumList = function (albumId) {
-  // Check user still on page
-  if (!isOnPage) {
-    return;
-  }
-
   N.io.rpc('users.albums_root.list', pageParams).done(function (albumsList) {
     var $listContainer = $('.user-albumlist');
 

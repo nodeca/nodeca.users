@@ -270,7 +270,9 @@ N.wire.on('users.uploader:add', function add_files(data, callback) {
         $uploadDialog.modal('hide');
       }
 
-      callback();
+      if (!aborted) {
+        callback();
+      }
     }
   );
 });

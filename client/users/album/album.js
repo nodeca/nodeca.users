@@ -5,15 +5,9 @@ var _ = require('lodash');
 
 var pageParams;
 var $dropZone;
-var isOnPage;
 
 
 var reloadMedia = function () {
-  // Check user still on page
-  if (!isOnPage) {
-    return;
-  }
-
   N.io.rpc('users.album.list', pageParams).done(function (mediaList) {
     var $list = $(N.runtime.render('users.album.list', mediaList));
     $('#users-medias-list').html($list);
@@ -29,7 +23,6 @@ var reloadMedia = function () {
 
 
 N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
-  isOnPage = true;
   $dropZone = $('.user-album-upload');
   pageParams = data.params;
 
@@ -52,11 +45,6 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
 
 N.wire.on('users.album:select_files', function select_files() {
   $('.user-album-upload__files').click();
-});
-
-
-N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
-  isOnPage = false;
 });
 
 
