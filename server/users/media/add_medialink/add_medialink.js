@@ -38,7 +38,7 @@ module.exports = function (N, apiPath) {
   // Check is current user owner of album
   //
   N.wire.before(apiPath, function check_permissions(env) {
-    if (!env.session.user_id || env.session.user_id.toString() !== env.data.album.user_id.toString()) {
+    if (env.session.user_id !== String(env.data.album.user_id)) {
       return N.io.FORBIDDEN;
     }
   });

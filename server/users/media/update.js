@@ -28,7 +28,7 @@ module.exports = function (N, apiPath) {
       }
 
       // Check media owner
-      if (!env.session.user_id || media.user_id.toString() !== env.session.user_id.toString()) {
+      if (env.session.user_id !== String(media.user_id)) {
         callback(N.io.FORBIDDEN);
         return;
       }
@@ -55,7 +55,7 @@ module.exports = function (N, apiPath) {
       }
 
       // Check album owner
-      if (!env.session.user_id || album.user_id.toString() !== env.session.user_id.toString()) {
+      if (env.session.user_id !== String(album.user_id)) {
         callback(N.io.FORBIDDEN);
         return;
       }

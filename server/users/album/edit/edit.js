@@ -57,7 +57,7 @@ module.exports = function (N, apiPath) {
       return N.io.NOT_FOUND;
     }
 
-    if (!env.session.user_id || env.session.user_id.toString() !== album.user_id.toString()) {
+    if (env.session.user_id !== String(album.user_id)) {
       return N.io.FORBIDDEN;
     }
   });
