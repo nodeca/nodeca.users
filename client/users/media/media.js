@@ -1,6 +1,19 @@
 'use strict';
 
+var pageParams;
+var isOnPage;
 
+
+// Page setup
+//
+N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
+  isOnPage = true;
+  pageParams = data.params;
+});
+
+
+// Delete media
+//
 N.wire.on('users.media:delete', function media_delete(event) {
   var $target = $(event.target);
   var mediaId = $target.data('mediaId');
@@ -11,6 +24,8 @@ N.wire.on('users.media:delete', function media_delete(event) {
 });
 
 
+// Restore media
+//
 N.wire.on('users.media:restore', function media_restore(event) {
   var $target = $(event.target);
   var mediaId = $target.data('mediaId');
@@ -18,4 +33,28 @@ N.wire.on('users.media:restore', function media_restore(event) {
   N.io.rpc('users.media.destroy', { 'media_id': mediaId, restore: true }).done(function () {
     $('.user-mediapage').removeClass('deleted');
   });
+});
+
+
+// Edit media
+//
+N.wire.on('users.media:edit', function media_edit() {
+  N.wire.emit('users.media.edit', { media_id: pageParams.media_id }, function () {
+
+    // Check user still on page
+    if (!isOnPage) {
+      return;
+    }
+
+    N.io.rpc('users.media', pageParams).done(function (data) {
+      $('#content').html($(N.runtime.render('users.media', data)));
+    });
+  });
+});
+
+
+// Page leave
+//
+N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
+  isOnPage = false;
 });

@@ -4,6 +4,12 @@
 #content.user-mediapage(class=self.media.exists ? '' : 'deleted')
   != self.partial('@common.blocks.breadcrumbs')
 
+  .breadcrumbs.hidden-deleted
+    if own_page
+      a.btn.btn-default.btn-sm.btn-icon-only.icon-edit(
+        data-on-click='users.media:edit'
+        title=self.t('edit')
+      )
 
   //-header.page-head.albums-head
     p.page-head__descr.hidden-xs(itemprop='description')

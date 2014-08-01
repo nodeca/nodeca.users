@@ -84,30 +84,34 @@ module.exports = function (N, collectionName) {
 
       // album.cover_id may be null. Set it to zero fill to avoid find medialinks.
       var fileId = album.cover_id || '000000000000000000000000';
-      Media.findOne({ file_id: fileId, exists: true }).select('file_id').lean(true).exec(function (err, cover) {
-        if (err) {
-          callback(err);
-          return;
-        }
+      Media
+        // album_id used to check if media moved to another album
+        .findOne({ file_id: fileId, exists: true, album_id: album._id })
+        .select('file_id')
+        .lean(true)
+        .exec(function (err, cover) {
+          if (err) {
+            callback(err);
+            return;
+          }
 
-        // Do nothing if cover exists
-        if (cover) {
-          callback();
-          return;
-        }
+          // Do nothing if cover exists
+          if (cover) {
+            callback();
+            return;
+          }
 
-        // Update cover
-        Media.findOne({ album_id: album._id, exists: true, type: 'image' })
-          .sort('-ts').lean(true).exec(function (err, result) {
-            if (err) {
-              callback(err);
-              return;
-            }
+          // Update cover
+          Media.findOne({ album_id: album._id, exists: true, type: 'image' })
+            .sort('-ts').lean(true).exec(function (err, result) {
+              if (err) {
+                callback(err);
+                return;
+              }
 
-            Album.update({ _id: albumId }, { cover_id: result ? result.file_id : null }, callback);
-          });
-      });
-
+              Album.update({ _id: albumId }, { cover_id: result ? result.file_id : null }, callback);
+            });
+        });
     });
   };
 
