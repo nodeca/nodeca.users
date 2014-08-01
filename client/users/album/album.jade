@@ -14,7 +14,7 @@
   header.page-head
     h1.page-head__title(itemprop='name')
       = self.album ? self.album.title : self.t('title_all_files')
-    if self.album.description
+    if self.album && self.album.description
       p.page-head__descr.hidden-xs(itemprop='description')= self.album.description
 
   if own_page && self.album
