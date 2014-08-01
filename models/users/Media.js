@@ -61,9 +61,9 @@ module.exports = function (N, collectionName) {
   // Media page, routing
   Media.index({ file_id: 1 });
 
-  // Album page, fetch medias
-  // !!! sorting done in memory, because medias count per album is small
-  Media.index({ album_id: 1 });
+  // - Album page, fetch medias
+  // - Media page, fetch next and prev _id's
+  Media.index({ album_id: 1, exists: 1, _id: 1 });
 
   // "All medias" page, medias list, sorted by date
   Media.index({ user_id: 1, exists: 1, ts: -1 });
