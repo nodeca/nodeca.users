@@ -9,6 +9,9 @@ var _  = require('lodash');
 var ko = require('knockout');
 
 
+var N;
+
+
 // Single setting of a usergroup.
 //
 // form (Form): Root form object. See below for Form class.
@@ -360,4 +363,9 @@ Form.prototype.submit = function submit() {
 };
 
 
-module.exports = Form;
+module.exports = function (_N) {
+  /*eslint no-undef:0*/
+  if (!N) { N = _N; }
+
+  return Form;
+};
