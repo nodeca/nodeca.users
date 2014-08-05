@@ -40,16 +40,16 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, function fetch_user_by_hid(env, callback) {
     env.res.user = {};
+    env.res.user._id = env.data.user._id;
     env.res.user.hid = env.data.user.hid;
-    env.res.user.avatar_id = env.data.user.avatar_id;
-    callback();
-  });
 
-  // Fill menu and blocks
-  //
-  N.wire.after(apiPath, function fill_menu_config(env) {
     env.res.menu_ordered = menu;
     env.res.blocks_ordered = blocks;
+
+    env.data.users = env.data.users || [];
+    env.data.users.push(env.data.user._id);
+
+    callback();
   });
 
 

@@ -34,8 +34,10 @@ module.exports = function (N, collectionName) {
     name           : String,
     post_count     : { type: Number, 'default': 0 },
 
-    avatar_exists  : Boolean,
-    avatar_id      : Schema.Types.ObjectId
+    avatar_id      : Schema.Types.ObjectId,
+
+    // id of default avatar with identicon
+    avatar_fallback: Schema.Types.ObjectId
   },
   {
     versionKey : false
@@ -170,8 +172,7 @@ module.exports = function (N, collectionName) {
         return;
       }
 
-      self.avatar_exists = false;
-      self.avatar_id = origId;
+      self.avatar_fallback = origId;
 
       callback();
     });
@@ -181,7 +182,7 @@ module.exports = function (N, collectionName) {
   // Creates default avatar if avatar_id isn't set
   //
   User.pre('save', function (callback) {
-    if (this.avatar_id) {
+    if (!this.isNew) {
       callback();
       return;
     }
