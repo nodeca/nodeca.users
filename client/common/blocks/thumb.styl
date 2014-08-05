@@ -6,6 +6,7 @@
 thumbImageWidth  = '$$ N.config.options.users.media.resize.sm.max_width $$'px
 thumbImageHeight = '$$ N.config.options.users.media.resize.sm.height $$'px
 
+
 .thumb
   width thumbImageWidth + 6
   height thumbImageHeight + 6
@@ -22,6 +23,22 @@ thumbImageHeight = '$$ N.config.options.users.media.resize.sm.height $$'px
     display inline-block;
     vertical-align middle
 
+// use inner only when realy need colored background
+// for small images, like video previews
+.thumb__inner
+  display inline-block
+  height 100%
+  border-radius 2px
+  background-color #000
+  vertical-align top
+
+  &:before
+    content ''
+    height 100%
+    display inline-block;
+    vertical-align middle
+
+
 .thumb__image
   max-width thumbImageWidth
   max-height thumbImageHeight
@@ -32,18 +49,7 @@ thumbImageHeight = '$$ N.config.options.users.media.resize.sm.height $$'px
   text-align center
 
 
-// Black background for resized video previews
-.thumb__overlay
-  position absolute
-  top 2px
-  left 2px
-  bottom 2px
-  right 2px
-  background-color #000
-  border-radius 2px
-  z-index -1
-
-// Text content
+// Text content, when no image
 .thumb__content
   display inline-block
   vertical-align middle
@@ -53,6 +59,7 @@ thumbImageHeight = '$$ N.config.options.users.media.resize.sm.height $$'px
   overflow hidden
   white-space nowrap
   text-overflow ellipsis
+
 
 // Icon marker
 .thumb__icon
@@ -64,6 +71,7 @@ thumbImageHeight = '$$ N.config.options.users.media.resize.sm.height $$'px
   &:before
     margin 0
     opacity 1
+
 
 // Texts under thumbnail
 .thumb-caption
@@ -80,14 +88,17 @@ thumbImageHeight = '$$ N.config.options.users.media.resize.sm.height $$'px
   white-space nowrap
   text-overflow ellipsis
 
+
+// Modifier make previews smaller on small screens
 @media (max-width: screenSm - 1)
-  .thumb.thumb-sm
-    width (thumbImageWidth / 1.4) + 6
-    height (thumbImageHeight / 1.4) + 6
+  .thumb__m-responsive
+    &.thumb
+      width (thumbImageWidth / 1.4) + 6
+      height (thumbImageHeight / 1.4) + 6
 
-  .thumb__image.thumb-sm
-    max-width (thumbImageWidth / 1.4)
-    max-height (thumbImageHeight / 1.4)
+    .thumb__image
+      max-width (thumbImageWidth / 1.4)
+      max-height (thumbImageHeight / 1.4)
 
-  .thumb-caption.thumb-sm
-    width (thumbImageWidth / 1.4) + 6
+    &.thumb-caption
+      width (thumbImageWidth / 1.4) + 6

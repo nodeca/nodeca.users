@@ -1,22 +1,22 @@
 each album in self.albums
   li.user-albumlist__item(data-on-dragdrop='users.albums_root.list:dragdrop', data-album-id=album._id, data-user-hid=self.user_hid)
-    a.thumb.thumb-sm(
+    a.thumb.thumb__m-responsive(
       href=self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id })
     )
       if album.cover_id
         - var imageUrl = self.link_to('core.gridfs', { 'bucket': album.cover_id + '_sm' })
-        img.thumb__image.thumb-sm(src=imageUrl)
+        img.thumb__image(src=imageUrl)
       else
         .thumb__content= self.t('empty')
 
-    .user-albumlist__item-title.thumb-caption.thumb-caption__m-inline.thumb-sm
+    .user-albumlist__item-title.thumb-caption.thumb-caption__m-inline.thumb__m-responsive
       a(href=self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id }))
         if !album.default
           = album.title
         else
           = self.t('default_name')
 
-    .user-albumlist__item-meta.thumb-caption.thumb-sm.clearfix
+    .user-albumlist__item-meta.thumb-caption.thumb__m-responsive.clearfix
       if album.count > 0
         .pull-right.icon-camera #{album.count}
       .pull-left= self.date(album.last_ts, 'date')

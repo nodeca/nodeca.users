@@ -5,23 +5,20 @@ each media in self.medias
 
     if media.type === 'image'
       - var imageUrl = self.link_to('core.gridfs', { bucket: media.file_id + '_sm' })
-      a.thumb.thumb-sm(href=href)
-        img.thumb__image.thumb-sm(src=imageUrl)
+      a.thumb.thumb__m-responsive(href=href)
+        img.thumb__image(src=imageUrl)
 
     else if media.type === 'medialink'
-      a.thumb.thumb-sm(href=href)
-        img.thumb__image.thumb-sm(src=media.medialink_data.thumb)
-        .thumb__overlay
-        .thumb__icon.icon-video
+      .thumb.thumb__m-responsive
+        a.thumb__inner(href=href)
+          .thumb__icon.icon-video
+          img.thumb__image(src=media.medialink_data.thumb)
 
     else if media.type === 'binary'
       //-a.thumb(href=self.link_to('core.gridfs', { bucket: media.file_id }))
-      a.thumb.thumb-sm(href=href)
-        .thumb__content= media.file_name
+      a.thumb.thumb__m-responsive(href=href)
         .thumb__icon.icon-binary
+        .thumb__content= media.file_name
 
-    .thumb-caption.thumb-sm.user-medialist__item-title.thumb-caption__m-inline
-      a(href=href)= media.description
-
-    .thumb-caption.thumb-sm.user-medialist__item-meta
+    .user-medialist__item-meta.thumb-caption.thumb__m-responsive
       = self.date(media.ts, 'date')
