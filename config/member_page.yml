@@ -2,9 +2,24 @@ users:
   member_page:
 
     menu:
+      messages:
+        to: users.messages
+        priority: 10
+      albums:
+        to: users.albooms_root
+        priority: 20
+      blog:
+        to: blogs.member
+        priority: 50
+      bookmarks:
+        to: users.bookmarks
+        priority: 80
+      drafts:
+        to: users.drafts
+        priority: 90
       settings:
         to: users.member.settings
-        priority: 10
+        priority: 100
 
     # Blocks will be in users.member.blocks
     blocks:

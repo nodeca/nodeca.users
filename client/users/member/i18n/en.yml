@@ -1,4 +1,10 @@
 en-US:
   title: User profile
   menu:
+    messages: Messages
+    albums: Albums
+    blog: Blog
+    bookmarks: Bookmarks
+    drafts: Drafts
     settings: Settings
+
