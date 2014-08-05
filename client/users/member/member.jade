@@ -12,11 +12,13 @@
     .member-sidebar.col-sm-2
       .member-sidebar__avatar
         img(src=self.link_to('core.gridfs', { bucket: self.user.avatar_id }))
+        if own_page
+          a.btn.btn-link(data-on-click='users.member:change_avatar')= self.t('change_avatar')
       if own_page
         ul.member-sidebar__menu
           each item in self.menu_ordered
             li
-              a(href=self.link_to(item.to, { user_hid: self.user.hid }))= self.t('menu.' + item.name)
+              a.btn.btn-link(href=self.link_to(item.to, { user_hid: self.user.hid }))= self.t('menu.' + item.name)
 
     .member-blocks.col-sm-10
       each block in self.blocks_ordered

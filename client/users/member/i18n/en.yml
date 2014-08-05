@@ -1,5 +1,6 @@
 en-US:
   title: User profile
+  change_avatar: Click to edit or remove
   menu:
     messages: Messages
     albums: Albums
