@@ -89,6 +89,20 @@ thumbImageHeight = '$$ N.config.options.users.media.resize.sm.height $$'px
   text-overflow ellipsis
 
 
+// Modifier to show images in small size
+.thumb__m-sm
+  &.thumb
+    width (thumbImageWidth / 1.4) + 6
+    height (thumbImageHeight / 1.4) + 6
+
+  .thumb__image
+    max-width (thumbImageWidth / 1.4)
+    max-height (thumbImageHeight / 1.4)
+
+  &.thumb-caption
+    width (thumbImageWidth / 1.4) + 6
+
+
 // Modifier make previews smaller on small screens
 @media (max-width: screenSm - 1)
   .thumb__m-responsive
