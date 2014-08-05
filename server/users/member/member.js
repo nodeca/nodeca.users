@@ -72,4 +72,16 @@ module.exports = function (N, apiPath) {
 
     env.res.breadcrumbs = breadcrumbs;
   });
+
+
+  // Stub for unimplemented blocks
+  //
+  N.wire.after(apiPath, function stub(env) {
+    // TODO
+
+    env.res.blocks = env.res.blocks || {};
+    env.res.blocks.user_info = {};
+    env.res.blocks.notes = {};
+    env.res.blocks.bookmarks = {};
+  });
 };

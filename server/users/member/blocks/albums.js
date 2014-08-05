@@ -3,6 +3,8 @@
 
 module.exports = function (N) {
 
+  var PHOTO_COUNT = 5;
+
 
   // Fetch last user photos
   //
@@ -12,7 +14,7 @@ module.exports = function (N) {
       .find({ 'user_id': env.data.user._id, exists: true })
       .lean(true)
       .sort('-ts')
-      .limit(N.config.users.member_page.blocks.albums.photos)
+      .limit(PHOTO_COUNT)
       .exec(function (err, photos) {
         if (err) {
           callback(err);

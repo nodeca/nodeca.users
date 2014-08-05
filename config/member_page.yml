@@ -23,6 +23,11 @@ users:
 
     # Blocks will be in users.member.blocks
     blocks:
-      albums:
+      user_info:
         priority: 10
-        photos: 5
+      notes:
+        priority: 20
+      albums:
+        priority: 30
+      bookmarks:
+        priority: 40
