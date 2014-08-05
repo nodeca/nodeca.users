@@ -6,7 +6,7 @@ users:
         to: users.messages
         priority: 10
       albums:
-        to: users.albooms_root
+        to: users.albums_root
         priority: 20
       blog:
         to: blogs.member
