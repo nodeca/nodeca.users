@@ -1,30 +1,38 @@
 .member-block
 
   .member-block__header
-    h2.member-block__header-title= self.t('title')
+    .member-block__header-title.h2
+      .member-block__header-text.pull-left
+        = self.t('title')
+      a.member-block__header-collapser(href='#member-about-info', data-toggle='collapse')
+        .pull-right.icon-collapse
+        .pull-right.icon-expand
 
-  .member-block__inner
-    table.member-block-user-info
-      tr
-        td.member-block-user-info__param Name
-        td.member-block-user-info__data Aleksandr
-      tr
-        td.member-block-user-info__param Surname
-        td.member-block-user-info__data Makedonskiy
-      tr
-        td.member-block-user-info__param Birthday
-        td.member-block-user-info__data 2 august 2011
-      tr
-        td.member-block-user-info__param Interests
-        td.member-block-user-info__data Music, Books, Football, Tennis
-      tr
-        td(colspan=2).member-block-user-info__group Statistics
-      tr
-        td.member-block-user-info__param Messages
-        td.member-block-user-info__data 212
-      tr
-        td.member-block-user-info__param Posts
-        td.member-block-user-info__data 12
-      tr
-        td.member-block-user-info__param Comments
-        td.member-block-user-info__data 7334
+  #member-about-info.member-block__inner.collapse.in
+    dl.member-about-text.dl-horizontal
+      dt Last seen:
+      dd 7 dec 2014
+
+    dl.member-about-text.dl-horizontal
+      dt Posts:
+      dd 212
+
+    dl.member-about-text.dl-horizontal
+      dt Registered:
+      dd 15 jun 2009
+
+    dl.member-about-text.dl-horizontal
+      dt Contacts:
+      dd ICQ
+      dd Skype
+      dd Hangout
+      dd Jabber
+      dd Email
+
+    dl.member-about-text.dl-horizontal
+      dt Birthday:
+      dd 13 feb 1983
+
+    dl.member-about-text.dl-horizontal
+      dt Interests:
+      dd Music, Books, Football, Tennis

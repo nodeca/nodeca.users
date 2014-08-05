@@ -1,10 +1,17 @@
 .member-block
 
   .member-block__header
-    h2.member-block__header-title= self.t('title')
+    .member-block__header-title.h2
+      a.member-block__header-link.pull-left(href='#')
+        = self.t('title')
+        |  (5)
+        span.icon-right-open
+      a.member-block__header-collapser(href='#member-bookmarks-info', data-toggle='collapse')
+        .pull-right.icon-collapse
+        .pull-right.icon-expand
 
-  .member-block__inner
-    ul
+  #member-bookmarks-info.member-block__inner.collapse.in
+    ul.list-unstyled
       li
         a(href='#') Inventore provident fugiat minima
       li

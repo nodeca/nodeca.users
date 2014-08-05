@@ -2,10 +2,16 @@
 
   .member-block__header
     - var albumLink = self.link_to('users.albums_root', { 'user_hid': self.user_hid })
-    h2.member-block__header-title= self.t('title')
-      small.member-block__header-info: a(href=albumLink) total 8
+    .member-block__header-title.h2
+      a.member-block__header-link.pull-left(href=albumLink)
+        = self.t('title')
+        |  (8)
+        span.icon-right-open
+      a.member-block__header-collapser(href='#member-albums-info', data-toggle='collapse')
+        .pull-right.icon-collapse
+        .pull-right.icon-expand
 
-  .member-block__inner
+  #member-albums-info.member-block__inner.collapse.in
     ul.member-imagelist
 
       each media in self.photos

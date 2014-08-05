@@ -1,7 +1,12 @@
 .member-block
 
   .member-block__header
-    h2.member-block__header-title= self.t('title')
+    .member-block__header-title.h2
+      .member-block__header-text.pull-left
+        = self.t('title')
+      a.member-block__header-collapser(href='#member-notepad-info', data-toggle='collapse')
+        .pull-right.icon-collapse
+        .pull-right.icon-expand
 
-  .member-block__inner
+  #member-notepad-info.member-block__inner.collapse.in
     textarea(placeholder=self.t('help_text')).member-block-notes__text

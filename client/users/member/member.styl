@@ -1,29 +1,111 @@
 @import "nodeca.core/client/common/_variables"
 
+//
+// Layout
+//
+
+.member-sidebar
+  width 150px
+  float left
+
+.member-blocks
+  margin-left 170px
+  overflow hidden
+
 .member-sidebar__menu
   padding-left 0px
   li
     list-style none
 
+//
+// Avatar styles
+//
+
+.member-avatar
+  position relative
+.member-avatar__image
+  width 150px
+  border-radius 4px
+  box-shadow 0 0 4px grayLighter
+.member-avatar__link
+  display block
+.member-avatar__caption
+  display block
+  position absolute
+  bottom 0
+  width 100%
+  text-align center
+  background-color gray
+  color white
+  opacity .6
+  border-radius 0 0 4px 4px
+
+
+//
+// Helper for small thumbnails lists
+//
+
 .member-imagelist
   padding 0
+  margin 0
   overflow hidden
   white-space nowrap
 
 .member-imagelist__item
   display inline-block
-  margin-right 20px
+  margin-right 15px
+
+//
+// Content block in profile
+//
+
+.member-block
+  margin-bottom 30px
 
 .member-block__header
   border-bottom 1px solid grayLightest
 
-.member-block__inner
-  margin 20px 0
+.member-block__header-link
+  color inherit
+  float left
+  &:hover
+    text-decoration none
 
 .member-block__header-title
-  font-size 24px
+  font-size 20px
   margin-top 0
   margin-bottom 5px
 
-.member-block__header-info
-  margin-left 20px
+.member-block__header-collapser
+  display block
+  overflow hidden
+
+  .icon-collapse
+  .icon-expand
+    &:before
+      margin 0
+
+.member-block__inner
+  margin-top 15px
+  margin-left 15px
+
+//
+// Collapse toggler states
+//
+
+.member-block__header-collapser
+  .icon-expand
+    display none
+
+  .icon-collapse
+    opacity .3
+    transition opacity .3s ease
+  &:hover
+    .icon-collapse
+      opacity 1
+
+  &.collapsed
+    .icon-expand
+      display inline
+    .icon-collapse
+      display none
