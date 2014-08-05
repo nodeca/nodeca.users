@@ -1,0 +1,10 @@
+.panel.panel-default
+  .panel-heading
+    = self.t('title')
+    .btn-group.pull-right
+      - var albumLink = self.link_to('users.albums_root', { 'user_hid': self.user_hid })
+      a.pull-right.btn.btn-default.btn-sm(href=albumLink)= self.t('user_albums')
+    .clearfix
+  .panel-body
+    ul
+      != self.partial('@users.album.list', { medias: self.photos })

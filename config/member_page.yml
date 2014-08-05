@@ -1,0 +1,13 @@
+users:
+  member_page:
+
+    menu:
+      settings:
+        to: users.member.settings
+        priority: 10
+
+    # Blocks will be in users.member.blocks
+    blocks:
+      albums:
+        priority: 10
+        photos: 5

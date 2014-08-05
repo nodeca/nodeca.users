@@ -1,2 +1,4 @@
 en-US:
   title: User profile
+  menu:
+    settings: Settings
