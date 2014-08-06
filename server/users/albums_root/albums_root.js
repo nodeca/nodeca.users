@@ -46,7 +46,7 @@ module.exports = function (N, apiPath) {
   // Fill breadcrumbs
   //
   N.wire.after(apiPath, function fill_breadcrumbs(env) {
-    N.wire.emit('internal:users.breadcrumbs.fill_user', env);
+    N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
 
     env.res.breadcrumbs = env.data.breadcrumbs;
   });
