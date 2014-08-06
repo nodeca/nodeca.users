@@ -2,7 +2,7 @@
 - self.add_raw_data('profile_tab', own_page)
 
 #content.user-mediapage(class=self.media.exists ? '' : 'deleted')
-  != self.partial('@common.blocks.breadcrumbs')
+  != self.partial('@users.blocks.breadcrumbs')
 
   .breadcrumbs.hidden-deleted
     if own_page

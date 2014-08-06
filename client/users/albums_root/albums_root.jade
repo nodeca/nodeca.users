@@ -2,7 +2,7 @@
 - self.add_raw_data('profile_tab', own_page)
 
 #content
-  != self.partial('@common.blocks.breadcrumbs')
+  != self.partial('@users.blocks.breadcrumbs')
 
   .breadcrumbs
     a.btn.btn-default.btn-sm(href=self.link_to('users.album', { 'user_hid': self.user_hid }))

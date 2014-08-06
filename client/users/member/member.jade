@@ -1,7 +1,7 @@
 - var own_page = (self.runtime.user_hid === self.user.hid)
 
 #content
-  != self.partial('@common.blocks.breadcrumbs')
+  != self.partial('@users.blocks.breadcrumbs')
 
   header.page-head
     h1.page-head__title(itemprop='name')= self.users[self.user._id].name

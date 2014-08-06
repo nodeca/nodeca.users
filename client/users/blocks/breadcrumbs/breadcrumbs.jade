@@ -1,0 +1,28 @@
+// Draws breadcrumbs links for frontend
+
+mixin breadcrumb_step(tail)
+  //- each item has fields:
+  //-   text   (String)  - link text
+  //-   route  (String)  - routing rule (optional). Ex: "forum.thread.show".
+  //-   params (Object)  - routing params (optional). See routing rules in config.
+  - var item = tail[0];
+  if !!item.route
+    //- link
+    li.breadcrumbs__item
+      a.breadcrumbs__link(href=self.link_to(item.route, item.params))
+        if item.avatar_id
+          img.breadcrumbs__icon(src=self.link_to('core.gridfs', { bucket: item.avatar_id + '_md' }))
+        = item.text
+  else
+    //- text only
+    li.breadcrumbs__item
+      if item.avatar_id
+        img.breadcrumbs__icon(src=self.link_to('core.gridfs', { bucket: item.avatar_id + '_sm' }))
+      = item.text
+  if tail.length > 1
+    //- next sublevel
+    mixin breadcrumb_step(tail.slice(1))
+
+
+ul.breadcrumbs(itemprop='breadcrumb', itemscope, itemtype='http://schema.org/Breadcrumb')
+  mixin breadcrumb_step(self.breadcrumbs)
