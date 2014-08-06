@@ -74,13 +74,14 @@ module.exports = function (N, apiPath) {
     // TODO
 
     env.res.blocks = env.res.blocks || {};
-    env.res.blocks.user_info = {};
 
     if (String(env.data.user._id) === env.session.user_id) {
       env.res.blocks.notepad = {};
     }
 
+    env.res.blocks.user_info = {};
     env.res.blocks.bookmarks = {};
     env.res.blocks.friends = {};
+    env.res.blocks.blog = {};
   });
 };

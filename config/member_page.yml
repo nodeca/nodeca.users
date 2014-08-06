@@ -37,7 +37,9 @@ users:
         priority: 30
       last_photos:
         priority: 40
-      friends:
+      blog:
         priority: 50
-      bookmarks:
+      friends:
         priority: 60
+      bookmarks:
+        priority: 70

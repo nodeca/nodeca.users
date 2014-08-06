@@ -1,0 +1,23 @@
+.member-block
+
+  .member-block__header
+    .member-block__header-title.h2
+      a.member-block__header-link.pull-left(href='#')
+        = self.t('title')
+        |  (5)
+        span.icon-right-open
+      a.member-block__header-collapser(href='#member-blog-info', data-toggle='collapse')
+        .pull-right.icon-collapse
+        .pull-right.icon-expand
+
+  #member-blog-info.member-block__inner.collapse.in
+    ul.list-unstyled
+      li
+        | 20.05.2013  
+        a(href='#') Nullam ultricies, lacus eget consectetur ultrices
+      li
+        | 24.06.2013  
+        a(href='#') Nulla facilisi
+      li
+        | 13.08.2014  
+        a(href='#') Suspendisse consectetur molestie tortor sed vestibulum
