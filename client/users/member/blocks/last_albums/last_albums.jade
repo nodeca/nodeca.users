@@ -23,5 +23,5 @@
               - var imageUrl = self.link_to('core.gridfs', { bucket: album.cover_id + '_sm' })
               img.thumb__image(src=imageUrl)
             else
-              .member-last-albums__no-cover No cover
+              .thumb__content.thumb__m-sm No cover
           .user-medialist__item-meta.thumb-caption.thumb__m-sm= album.title
