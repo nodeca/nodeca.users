@@ -27,12 +27,33 @@ module.exports = function (N) {
         }
 
         env.res.blocks = env.res.blocks || {};
-        env.res.blocks.albums = {
+        env.res.blocks.last_photos = {
           photos: photos,
           user_hid: env.data.user.hid
         };
 
         callback();
       });
+  });
+
+
+  // Fetch user photos count
+  //
+  N.wire.after('server:users.member', function fetch_photos_count(env, callback) {
+
+    if (!env.res.blocks.last_photos) {
+      callback();
+      return;
+    }
+
+    N.models.users.Media.find({ 'user_id': env.data.user._id, exists: true }).count(function (err, count) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      env.res.blocks.last_photos.count = count;
+      callback();
+    });
   });
 };
