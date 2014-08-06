@@ -9,11 +9,11 @@
         = self.count
         |)
         span.icon-right-open
-      a.member-block__header-collapser(href='#member-notepad-info', data-toggle='collapse')
+      a.member-block__header-collapser(href='#member-albums-info', data-toggle='collapse')
         .pull-right.icon-collapse
         .pull-right.icon-expand
 
-  #member-last-albums.member-block__inner.collapse.in
+  #member-albums-info.member-block__inner.collapse.in
     ul.member-imagelist
       each album in self.albums
         - var href = self.link_to('users.album', { user_hid: self.user_hid, album_id: album._id })
