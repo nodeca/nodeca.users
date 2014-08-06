@@ -1,0 +1,75 @@
+.member-block
+
+  .member-block__header
+    .member-block__header-title.h2
+      .member-block__header-text.pull-left
+        = self.t('title')
+        |  (23)
+      a.member-block__header-collapser(href='#member-notepad-info', data-toggle='collapse')
+        .pull-right.icon-collapse
+        .pull-right.icon-expand
+
+  #member-friends.member-block__inner.collapse.in
+    ul.list-unstyled
+
+      li.member-friends__item
+        a(href='#')
+          img.member-friends__avatar(src=self.link_to('core.gridfs', { bucket: self.users[self.user._id].avatar_id + '_md' }))
+          .member-friends__name Gustave (lester_rowe) Littel
+
+      li.member-friends__item
+        a(href='#')
+          img.member-friends__avatar(src=self.link_to('core.gridfs', { bucket: self.users[self.user._id].avatar_id + '_md' }))
+          .member-friends__name Jaron (kiley) Raynor
+
+      li.member-friends__item
+        a(href='#')
+          img.member-friends__avatar(src=self.link_to('core.gridfs', { bucket: self.users[self.user._id].avatar_id + '_md' }))
+          .member-friends__name Lafayette (angie_kulas) O'Reilly
+
+      li.member-friends__item
+        a(href='#')
+          img.member-friends__avatar(src=self.link_to('core.gridfs', { bucket: self.users[self.user._id].avatar_id + '_md' }))
+          .member-friends__name Alicia (adrianna_schmitt) Bergstrom
+
+      li.member-friends__item
+        a(href='#')
+          img.member-friends__avatar(src=self.link_to('core.gridfs', { bucket: self.users[self.user._id].avatar_id + '_md' }))
+          .member-friends__name Ludwig (kavon) Ziemann
+
+      li.member-friends__item
+        a(href='#')
+          img.member-friends__avatar(src=self.link_to('core.gridfs', { bucket: self.users[self.user._id].avatar_id + '_md' }))
+          .member-friends__name Cory (dena.sporer) Funk
+
+      li.member-friends__item
+        a(href='#')
+          img.member-friends__avatar(src=self.link_to('core.gridfs', { bucket: self.users[self.user._id].avatar_id + '_md' }))
+          .member-friends__name Jaron (kiley) Raynor
+
+      li.member-friends__item
+        a(href='#')
+          img.member-friends__avatar(src=self.link_to('core.gridfs', { bucket: self.users[self.user._id].avatar_id + '_md' }))
+          .member-friends__name Gustave (lester_rowe) Littel
+
+      li.member-friends__item
+        a(href='#')
+          img.member-friends__avatar(src=self.link_to('core.gridfs', { bucket: self.users[self.user._id].avatar_id + '_md' }))
+          .member-friends__name Alicia (adrianna_schmitt) Bergstrom
+
+      li.member-friends__item
+        a(href='#')
+          img.member-friends__avatar(src=self.link_to('core.gridfs', { bucket: self.users[self.user._id].avatar_id + '_md' }))
+          .member-friends__name Lafayette (angie_kulas) O'Reilly
+
+      li.member-friends__item
+        a(href='#')
+          img.member-friends__avatar(src=self.link_to('core.gridfs', { bucket: self.users[self.user._id].avatar_id + '_md' }))
+          .member-friends__name Cory (dena.sporer) Funk
+
+      li.member-friends__item
+        a(href='#')
+          img.member-friends__avatar(src=self.link_to('core.gridfs', { bucket: self.users[self.user._id].avatar_id + '_md' }))
+          .member-friends__name Ludwig (kavon) Ziemann
+
+    .clearfix

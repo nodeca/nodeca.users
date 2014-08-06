@@ -81,5 +81,6 @@ module.exports = function (N, apiPath) {
     }
 
     env.res.blocks.bookmarks = {};
+    env.res.blocks.friends = {};
   });
 };

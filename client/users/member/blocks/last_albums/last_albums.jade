@@ -1,0 +1,27 @@
+.member-block
+
+  .member-block__header
+    - var albumsLink = self.link_to('users.albums_root', { 'user_hid': self.user_hid })
+    .member-block__header-title.h2
+      a.member-block__header-link.pull-left(href=albumsLink)
+        = self.t('title')
+        |  (
+        = self.count
+        |)
+        span.icon-right-open
+      a.member-block__header-collapser(href='#member-notepad-info', data-toggle='collapse')
+        .pull-right.icon-collapse
+        .pull-right.icon-expand
+
+  #member-last-albums.member-block__inner.collapse.in
+    ul.member-imagelist
+      each album in self.albums
+        - var href = self.link_to('users.album', { user_hid: self.user_hid, album_id: album._id })
+        li.member-imagelist__item
+          a.thumb.thumb__m-sm(href=href)
+            if album.cover_id
+              - var imageUrl = self.link_to('core.gridfs', { bucket: album.cover_id + '_sm' })
+              img.thumb__image(src=imageUrl)
+            else
+              .member-last-albums__no-cover No cover
+          .user-medialist__item-meta.thumb-caption.thumb__m-sm= album.title

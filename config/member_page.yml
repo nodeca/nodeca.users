@@ -27,7 +27,11 @@ users:
         priority: 10
       user_info:
         priority: 20
-      last_photos:
+      last_albums:
         priority: 30
-      bookmarks:
+      last_photos:
         priority: 40
+      friends:
+        priority: 50
+      bookmarks:
+        priority: 60
