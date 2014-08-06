@@ -53,7 +53,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  //Fill breadcrumbs
+  //Fill head and breadcrumbs
   //
   N.wire.after(apiPath, function fill_head_and_breadcrumbs(env) {
     var user = env.data.user;
@@ -62,15 +62,9 @@ module.exports = function (N, apiPath) {
     env.res.head = env.res.head || {};
     env.res.head.title = name;
 
-    var breadcrumbs = [];
 
-    breadcrumbs.push({
-      'text': name,
-      'route': 'users.member',
-      'params': { 'user_hid': env.data.user.hid }
-    });
-
-    env.res.breadcrumbs = breadcrumbs;
+    N.wire.emit('internal:users.breadcrumbs.fill_user', env);
+    env.res.breadcrumbs = env.data.breadcrumbs;
   });
 
 

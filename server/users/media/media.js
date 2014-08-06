@@ -245,29 +245,14 @@ module.exports = function (N, apiPath) {
   // Fill breadcrumbs
   //
   N.wire.after(apiPath, function fill_breadcrumbs(env) {
-    var user = env.data.user;
-    var album = env.data.album;
+    N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
 
-    var breadcrumbs = [];
-
-    breadcrumbs.push({
-      'text': env.runtime.is_member ? user.name : user.nick,
-      'route': 'users.member',
-      'params': { 'user_hid': user.hid }
+    env.data.breadcrumbs.push({
+      text   : env.data.album.title,
+      route  : 'users.album',
+      params : { 'user_hid': env.data.user.hid, 'album_id': env.data.album._id }
     });
 
-    breadcrumbs.push({
-      'text': env.t('albums_breadcrumbs_title'),
-      'route': 'users.albums_root',
-      'params': { 'user_hid': user.hid }
-    });
-
-    breadcrumbs.push({
-      'text': album.title,
-      'route': 'users.album',
-      'params': { 'user_hid': user.hid, 'album_id': album._id }
-    });
-
-    env.res.breadcrumbs = breadcrumbs;
+    env.res.breadcrumbs = env.data.breadcrumbs;
   });
 };

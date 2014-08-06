@@ -1,4 +1,3 @@
 en-US:
   title: "#{album} - #{username}"
-  albums_breadcrumbs_title: Albums
   default_name: Unsorted
