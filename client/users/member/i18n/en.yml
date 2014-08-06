@@ -2,9 +2,11 @@ en-US:
   title: User profile
   change_avatar: click to change
   menu:
+    feed: What's new
     messages: Messages
     albums: Albums
     blog: Blog
+    groups: Groups
     bookmarks: Bookmarks
     drafts: Drafts
     settings: Settings
