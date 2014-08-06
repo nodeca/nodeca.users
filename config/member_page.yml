@@ -23,7 +23,7 @@ users:
 
     # Blocks will be in users.member.blocks
     blocks:
-      notes:
+      notepad:
         priority: 10
       user_info:
         priority: 20

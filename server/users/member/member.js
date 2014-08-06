@@ -77,7 +77,7 @@ module.exports = function (N, apiPath) {
     env.res.blocks.user_info = {};
 
     if (String(env.data.user._id) === env.session.user_id) {
-      env.res.blocks.notes = {};
+      env.res.blocks.notepad = {};
     }
 
     env.res.blocks.bookmarks = {};
