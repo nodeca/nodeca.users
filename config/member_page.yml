@@ -20,9 +20,12 @@ users:
       bookmarks:
         to: users.bookmarks
         priority: 60
+      subscribtions:
+        to: users.subscribtions
+        priority: 70
       drafts:
         to: users.drafts
-        priority: 70
+        priority: 80
       settings:
         to: users.settings
         priority: 100
