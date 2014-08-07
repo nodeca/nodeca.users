@@ -36,7 +36,7 @@ users:
         priority: 10
       user_info:
         priority: 20
-      last_albums:
+      albums:
         priority: 30
       last_photos:
         priority: 40
