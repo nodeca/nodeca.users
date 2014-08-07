@@ -27,7 +27,7 @@ module.exports = function (N) {
         }
 
         env.res.blocks = env.res.blocks || {};
-        env.res.blocks.last_photos = {
+        env.res.blocks.photos = {
           photos: photos,
           user_hid: env.data.user.hid
         };
@@ -41,7 +41,7 @@ module.exports = function (N) {
   //
   N.wire.after('server:users.member', function fetch_photos_count(env, callback) {
 
-    if (!env.res.blocks.last_photos) {
+    if (!env.res.blocks.photos) {
       callback();
       return;
     }
@@ -52,7 +52,7 @@ module.exports = function (N) {
         return;
       }
 
-      env.res.blocks.last_photos.count = count;
+      env.res.blocks.photos.count = count;
       callback();
     });
   });

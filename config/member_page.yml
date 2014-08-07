@@ -38,7 +38,7 @@ users:
         priority: 20
       albums:
         priority: 30
-      last_photos:
+      photos:
         priority: 40
       blog:
         priority: 50
