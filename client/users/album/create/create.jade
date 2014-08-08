@@ -1,16 +1,27 @@
-.modal.fade(tabindex='-1')
+.modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
   .modal-dialog
     .modal-content
       form(data-on-submit='users.album.create:submit')
+
         .modal-header
-          button.close(aria-hidden='true' type='button' data-dismiss='modal') &times;
+          button.close(
+            aria-hidden='true'
+            type='button'
+            data-dismiss='modal'
+            tabindex='-1'
+          ) &times;
           h4.modal-title= self.t('title')
+
         .modal-body
-          input#create-album__title.form-control(
+          label(for='album_name_dlg_input')=self.t('input_name')
+          input#album_name_dlg_input.form-control(
             type='text'
             name='album_name'
-            placeholder=self.t('input_name')
+            placeholder=self.t('input_desc')
+            tabindex='1'
           )
+
         .modal-footer
-          button.btn.btn-default(type='button', data-dismiss='modal')= self.t('cancel')
+          button.btn.btn-default(type='button' data-dismiss='modal')= self.t('cancel')
           button.btn.btn-primary(type='submit')= self.t('create')
+

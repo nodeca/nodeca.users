@@ -20,7 +20,11 @@ N.wire.on('users.album.create', function show_album_create_dlg() {
     $dialog = null;
   });
 
-  $dialog.modal('show');
+  $dialog
+    .on('shown.bs.modal', function () {
+      $dialog.find('#album_name_dlg_input').focus();
+    })
+    .modal('show');
 });
 
 
