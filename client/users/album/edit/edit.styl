@@ -1,14 +1,23 @@
-#users-album-edit__cover
-  overflow hidden
-  width 240px
-  height 180px
-  border 1px solid gray
+.album-edit__cover
+  display none
+  position relative
 
-#users-album-edit__no-cover
-  text-align  center
-  width 240px
-  height 180px
-  padding-top 75px
+.album-edit__no-cover
+  display block
 
-#users-album-edit__cover-img
-  height 180px
+  .btn
+    padding-left 0
+    padding-right 0
+
+.has-cover
+  .album-edit__cover
+    display inline-block
+  .album-edit__no-cover
+    display none
+
+
+.album-edit__cover-delete
+  position absolute
+  top 5px
+  right 5px
+  width 22px
