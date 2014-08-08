@@ -1,4 +1,4 @@
-.modal.fade(tabindex='-1' role='dialog')
+.modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
   .modal-dialog.modal-lg
     .modal-content
       .modal-header
@@ -6,4 +6,4 @@
           span(aria-hidden='true') &times;
           span.sr-only= self.t('close')
         h4.modal-title= self.t('title')
-      #users-album-edit-select_cover__media-list.modal-body
+      #select_cover__photos.modal-body

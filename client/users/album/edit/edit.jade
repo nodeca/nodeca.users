@@ -38,13 +38,14 @@
             #album-edit__cover(class=state_class)
 
               .album-edit__cover
-                img#album-edit__cover-img(
-                  data-on-click='users.album.edit:select_cover'
-                  src=self.link_to('core.gridfs', { 'bucket': self.album.cover_id + '_sm' })
-                )
-                button.btn.btn-default.btn-xs.btn-icon-only.icon-cancel.album-edit__cover-delete(
-                  data-on-click='users.album.edit:reset_cover'
-                )
+                .thumb.thumb__m-sm
+                  img#album-edit__cover-img.thumb__image(
+                    data-on-click='users.album.edit:select_cover'
+                    src=self.link_to('core.gridfs', { 'bucket': self.album.cover_id + '_sm' })
+                  )
+                  button.btn.btn-default.btn-xs.btn-icon-only.icon-cancel.album-edit__cover-delete(
+                    data-on-click='users.album.edit:reset_cover'
+                  )
 
               .album-edit__no-cover
                 button.btn.btn-default.btn-link(

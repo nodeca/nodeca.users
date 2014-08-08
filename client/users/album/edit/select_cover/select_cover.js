@@ -47,7 +47,7 @@ N.wire.after('users.album.edit.select_cover', function load_photos(data, callbac
       return media.type === 'image';
     });
     var $list = $(N.runtime.render('users.album.edit.select_cover.media_list', { medias: medias }));
-    $('#users-album-edit-select_cover__media-list').html($list);
+    $('#select_cover__photos').html($list);
   });
 });
 
