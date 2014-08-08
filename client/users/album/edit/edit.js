@@ -4,6 +4,8 @@ var pageParams;
 
 N.wire.on('navigate.done:' + module.apiPath, function setup_page(data) {
   pageParams = data.params;
+
+  $('#album-edit__title').focus();
 });
 
 
