@@ -18,13 +18,16 @@ N.wire.on('users.album.add_medialink', function show_add_medialink_dlg(data, cal
   $('body').append($dialog);
 
   // When dialog closes - remove it from body
-  $dialog.on('hidden.bs.modal', function () {
-    $dialog.remove();
-    $dialog = null;
-    doneCallback = null;
-  });
-
-  $dialog.modal('show');
+  $dialog
+    .on('hidden.bs.modal', function () {
+      $dialog.remove();
+      $dialog = null;
+      doneCallback = null;
+    })
+    .on('shown.bs.modal', function () {
+      $dialog.find('#add-medialink__url').focus();
+    })
+    .modal('show');
 });
 
 
