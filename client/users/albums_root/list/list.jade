@@ -18,5 +18,5 @@ each album in self.albums
 
     .user-albumlist__item-meta.thumb-caption.thumb__m-responsive.clearfix
       if album.count > 0
-        .pull-right.icon-camera #{album.count}
+        .pull-right.icon.icon-space-after.icon-camera #{album.count}
       .pull-left= self.date(album.last_ts, 'date')

@@ -8,10 +8,10 @@
         |  (
         = self.count
         |)
-        span.icon-right-open
+        span.icon.icon-right-open
       a.member-block__header-collapser(href='#member-photos-info', data-toggle='collapse')
-        .pull-right.icon-collapse
-        .pull-right.icon-expand
+        .pull-right.icon.icon-collapse
+        .pull-right.icon.icon-expand
 
   #member-photos-info.member-block__inner.collapse.in
     ul.member-imagelist
@@ -29,13 +29,13 @@
           else if media.type === 'medialink'
             .thumb.thumb__m-sm
               a.thumb__inner(href=href)
-                .thumb__icon.icon-video
+                .thumb__icon.icon.icon-video
                 img.thumb__image(src=media.medialink_data.thumb)
 
           else if media.type === 'binary'
             //-a.thumb(href=self.link_to('core.gridfs', { bucket: media.file_id }))
             a.thumb.thumb__m-sm(href=href)
-              .thumb__icon.icon-binary
+              .thumb__icon.icon.icon-binary
               .thumb__content= media.file_name
 
           .user-medialist__item-meta.thumb-caption.thumb__m-sm
