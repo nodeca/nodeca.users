@@ -2,7 +2,8 @@
 
 'use strict';
 
-var _ = require('lodash');
+var _          = require('lodash');
+var medialinks = require('nodeca.core/lib/parser/medialinks');
 
 module.exports = function (N, apiPath) {
 
@@ -48,16 +49,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, function create_media(env, callback) {
     var url = env.params.media_url;
-    var providers;
-
-    // Get available for media providers
-    if (N.config.medialinks.albums === true) {
-      providers = N.config.medialinks.providers;
-    } else {
-      providers = _.filter(N.config.medialinks.providers, function (provider, providerName) {
-        return N.config.medialinks.albums.indexOf(providerName) !== -1;
-      });
-    }
+    var providers = medialinks(N.config.medialinks.providers, N.config.medialinks.albums);
 
     // Find provider by url
     var provider = _.find(providers, function (provider) {
