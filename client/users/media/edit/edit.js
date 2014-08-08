@@ -30,14 +30,14 @@ N.wire.on('users.media.edit', function show_media_edit_dlg(options, callback) {
   $('body').append($dialog);
 
   // When dialog closes - remove it from body
-  $dialog.on('hidden.bs.modal', function () {
-    $dialog.remove();
-    $dialog = null;
-    doneCallback = null;
-    params = null;
-  });
-
-  $dialog.modal('show');
+  $dialog
+    .on('hidden.bs.modal', function () {
+      $dialog.remove();
+      $dialog = null;
+      doneCallback = null;
+      params = null;
+    })
+    .modal('show');
 });
 
 

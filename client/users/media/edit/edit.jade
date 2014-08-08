@@ -1,18 +1,18 @@
-.modal.fade(tabindex='-1')
+.modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
   .modal-dialog
     .modal-content
       form(data-on-submit='users.media.edit:submit')
         .modal-header
-          button.close(type='button' data-dismiss='modal') &times;
+          button.close(type='button' tabindex='-1' data-dismiss='modal') &times;
           h4.modal-title= self.t('title')
         .modal-body
           label= self.t('album_input_name')
-          select.form-control(name='album_id')
+          select.form-control(name='album_id' tabindex='1')
             each album in self.albums
               option(
                 value=album._id
                 selected=(self.media.album_id === album._id)
               )= album.title || self.t('default_album_name')
         .modal-footer
-          button.btn.btn-default(type='button' data-dismiss='modal')= self.t('cancel')
-          button.btn.btn-primary(type='submit')= self.t('apply')
+          button.btn.btn-default(type='button' tabindex='2' data-dismiss='modal')= self.t('cancel')
+          button.btn.btn-primary(type='submit' tabindex='3')= self.t('apply')

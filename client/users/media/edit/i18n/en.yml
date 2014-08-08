@@ -1,6 +1,6 @@
 en-US:
   title: Change album
   default_album_name: Unsorted
-  album_input_name: Album
+  album_input_name: 'Move to:'
   apply: OK
   cancel: Cancel
