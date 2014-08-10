@@ -6,6 +6,11 @@
 thumbImageWidth  = '$$ N.config.options.users.media.resize.sm.max_width $$'px
 thumbImageHeight = '$$ N.config.options.users.media.resize.sm.height $$'px
 
+// 170x150 -> 119x105
+downScale = 1.428571429
+
+thumbImageWidthSm  = round(thumbImageWidth / downScale)
+thumbImageHeightSm = round(thumbImageHeight / downScale)
 
 .thumb
   width thumbImageWidth + 6
@@ -84,27 +89,27 @@ thumbImageHeight = '$$ N.config.options.users.media.resize.sm.height $$'px
 // Modifier to show images in small size
 .thumb__m-sm
   &.thumb
-    width (thumbImageWidth / 1.4) + 6
-    height (thumbImageHeight / 1.4) + 6
+    width thumbImageWidthSm + 6
+    height thumbImageHeightSm + 6
 
   .thumb__image
-    max-width (thumbImageWidth / 1.4)
-    max-height (thumbImageHeight / 1.4)
+    max-width thumbImageWidthSm
+    max-height thumbImageHeightSm
 
   &.thumb-caption
-    width (thumbImageWidth / 1.4) + 6
+    width thumbImageWidthSm + 6
 
 
 // Modifier make previews smaller on small screens
 @media (max-width: screenSm - 1)
   .thumb__m-responsive
     &.thumb
-      width (thumbImageWidth / 1.4) + 6
-      height (thumbImageHeight / 1.4) + 6
+      width thumbImageWidthSm + 6
+      height thumbImageHeightSm + 6
 
     .thumb__image
-      max-width (thumbImageWidth / 1.4)
-      max-height (thumbImageHeight / 1.4)
+      max-width thumbImageWidthSm
+      max-height thumbImageHeightSm
 
     &.thumb-caption
-      width (thumbImageWidth / 1.4) + 6
+      width thumbImageWidthSm + 6
