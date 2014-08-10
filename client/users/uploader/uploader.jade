@@ -1,9 +1,9 @@
-#users-uploader__dialog.modal.fade(tabindex='-1')
+.modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
   .modal-dialog
     .modal-content
       form
         .modal-header
-          button.close( aria-hidden='true', type='button', data-dismiss='modal') &times;
-          h4.modal-title= self.t('title_progress')
+          button.close(aria-hidden='true', type='button', data-dismiss='modal') &times;
+          h4.modal-title= self.t('title')
         .modal-body
-          #users-uploader__files
+          #uploader-files

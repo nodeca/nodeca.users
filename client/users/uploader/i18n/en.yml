@@ -1,5 +1,6 @@
 en-US:
-  title_progress: Upload in progress
+  title: Uploading...
+
   err_upload: "#{file_name}: upload failed"
-  err_invalid_ext: "#{file_name}: you can't upload this file types"
-  err_max_size: "#{file_name}: maximum file size is #{size} bytes"
+  err_invalid_ext: "#{file_name}: you can't upload files of this type"
+  err_max_size: "#{file_name}: too big file size (> #{size}mb)"

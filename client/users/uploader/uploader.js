@@ -24,12 +24,14 @@ var aborted;
 // Check file extension. Create unique id. Add initial progress info to dialog
 //
 function checkFile(data) {
-  data.uploaderFileId = 'file_' + Math.random().toString().split('.')[1]; // create unique file id
-
   var allowedFileExt = new RegExp('\.(' + settings.extentions.join('|') + ')$', 'i');
+  var message;
+
+  data.uploaderFileId = 'upload_' + Math.floor(Math.random() * 1e10); // create unique file id
+
   if (!allowedFileExt.test(data.file.name)) {
-    var message = t('err_invalid_ext', { 'file_name': data.file.name });
-    N.wire.emit('notify', { type: 'error', message: message });
+    message = t('err_invalid_ext', { 'file_name': data.file.name });
+    N.wire.emit('notify', message);
     return new Error(message);
   }
 
@@ -39,7 +41,7 @@ function checkFile(data) {
       file_name: data.file.name,
       element_id: data.uploaderFileId
     }
-  )).appendTo('#users-uploader__files');
+  )).appendTo('#uploader-files');
 }
 
 
@@ -64,8 +66,8 @@ function resizeImage(data, callback) {
   }
 
   var jpegHeader;
-
   var img = new Image();
+
   img.onload = function() {
     // To scale image we calculate new width and height, resize image by height and crop by width
     var scaledHeight, scaledWidth;
@@ -74,7 +76,9 @@ function resizeImage(data, callback) {
       // If only height defined - scale to fit height,
       // and crop by max_width
       scaledHeight = resizeConfig.height;
+
       var proportionalWidth = Math.floor(img.width * scaledHeight / img.height);
+
       scaledWidth = (!resizeConfig.max_width || resizeConfig.max_width > proportionalWidth) ?
                     proportionalWidth :
                     resizeConfig.max_width;
@@ -83,7 +87,9 @@ function resizeImage(data, callback) {
       // If only width defined - scale to fit width,
       // and crop by max_height
       scaledWidth = resizeConfig.width;
+
       var proportionalHeight = Math.floor(img.height * scaledWidth / img.width);
+
       scaledHeight = (!resizeConfig.max_height || resizeConfig.max_height > proportionalHeight) ?
                      proportionalHeight :
                      resizeConfig.max_height;
@@ -95,8 +101,10 @@ function resizeImage(data, callback) {
     }
 
     var canvas = document.createElement('canvas');
+
     canvas.width = scaledWidth;
     canvas.height = scaledHeight;
+
     var ctx = canvas.getContext('2d');
     var width = img.width * scaledHeight / img.height;
     var cropX = (scaledWidth - width) / 2;
@@ -105,16 +113,17 @@ function resizeImage(data, callback) {
     ctx.drawImage(img, cropX, 0, width, scaledHeight);
 
     canvas.toBlob(function (blob) {
-      var jpegBlob;
+      var jpegBlob, slice, jpegBody;
 
       if (jpegHeader) {
-        var slice = blob.slice || blob.webkitSlice || blob.mozSlice;
-        var jpegBody = slice.call(blob, 20);
+        slice = blob.slice || blob.webkitSlice || blob.mozSlice;
+        jpegBody = slice.call(blob, 20);
 
         jpegBlob = new Blob([ jpegHeader, jpegBody ], { type: typeConfig.mime_type });
       }
 
       var name = data.file.name;
+
       data.file = jpegBlob || blob;
       data.file.name = name;
       callback();
@@ -135,10 +144,15 @@ function checkFileSize(data) {
   var ext = data.file.name.split('.').pop();
   var typeConfig = settings.types[ext] || {};
   var maxSize = typeConfig.max_size || settings.max_size;
+  var message;
 
   if (data.file.size > maxSize) {
-    var message = t('err_max_size', { 'file_name': data.file.name, size: maxSize });
-    N.wire.emit('notify', { type: 'error', message: message });
+    message = t('err_max_size', {
+      'file_name': data.file.name,
+      size: maxSize / (1024 * 1024)
+    });
+    N.wire.emit('notify', message);
+
     return new Error(message);
   }
 }
@@ -154,6 +168,7 @@ function startUpload(data, callback) {
   }
 
   var formData = new FormData();
+
   formData.append('file', data.file);
   formData.append('csrf', N.runtime.csrf);
 
@@ -168,10 +183,12 @@ function startUpload(data, callback) {
     contentType: false,
     xhr: function() {
       var xhr = $.ajaxSettings.xhr();
+      var progress;
+
       if (xhr.upload) {
         xhr.upload.addEventListener('progress', function (e) {
           if (e.lengthComputable) {
-            var progress = Math.round((e.loaded * 100) / e.total);
+            progress = Math.round((e.loaded * 100) / e.total);
             $progressInfo.find('.progress-bar').width(progress + '%');
           }
         }, false);
@@ -180,7 +197,6 @@ function startUpload(data, callback) {
     }
   })
   .done(function () {
-    $progressInfo.find('.users-uploader__file').addClass('text-success');
     $progressInfo.find('.progress-bar').addClass('progress-bar-success');
   })
   .fail(function (jqXHR, textStatus, errorThrown) {
@@ -189,10 +205,10 @@ function startUpload(data, callback) {
       return;
     }
 
-    $progressInfo.find('.users-uploader__file').addClass('text-danger');
+    $progressInfo.find('.uploader-progress__name').addClass('text-danger');
     $progressInfo.find('.progress-bar').addClass('progress-bar-danger');
 
-    N.wire.emit('notify', { type: 'error', message: t('err_upload', { file_name: data.file.name }) });
+    N.wire.emit('notify', t('err_upload', { file_name: data.file.name }));
   })
   .always(callback);
 
@@ -224,6 +240,7 @@ N.wire.before('users.uploader:add', function load_config(data, callback) {
 N.wire.before('users.uploader:add', function init_upload_dialog(data, callback) {
   $uploadDialog = $(N.runtime.render('users.uploader'));
   $('body').append($uploadDialog);
+
   $uploadDialog
     .on('shown.bs.modal', function () {
       callback();
@@ -252,6 +269,7 @@ N.wire.on('users.uploader:add', function add_files(data, callback) {
       }
 
       var uploadInfo = { url: data.url, file: file };
+
       async.series([
         function (next) { next(checkFile(uploadInfo)); },
         function (next) {
