@@ -12,6 +12,12 @@ var reloadMedia = function () {
     var $list = $(N.runtime.render('users.album.list', mediaList));
     $('#users-medias-list').html($list);
 
+    if (mediaList.medias.length > 0) {
+      $('.user-album-page').removeClass('no-files');
+    } else {
+      $('.user-album-page').addClass('no-files');
+    }
+
     N.wire.emit('navigate.replace', {});
   });
 };
