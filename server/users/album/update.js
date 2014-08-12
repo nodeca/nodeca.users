@@ -10,7 +10,7 @@ module.exports = function (N, apiPath) {
     album_id: { format: 'mongo', required: true },
     title: { type: 'string', minLength: 1, required: true },
     description: { type: 'string', required: true },
-    cover_id: { format: 'mongo', required: true }
+    cover_id: { format: 'mongo' }
   });
 
 
@@ -45,6 +45,12 @@ module.exports = function (N, apiPath) {
   // Fetch cover
   //
   N.wire.before(apiPath, function fetch_cover(env, callback) {
+    // Skip if cover_id isn't set
+    if (!env.params.cover_id) {
+      callback();
+      return;
+    }
+
     N.models.users.Media.findOne({ 'file_id': env.params.cover_id }).lean(true).exec(function (err, cover) {
       if (err) {
         callback(err);
@@ -85,15 +91,16 @@ module.exports = function (N, apiPath) {
     var cover = env.data.cover;
     var album = env.data.album;
 
-    N.models.users.Album.update(
-      { _id: album._id },
-      {
-        cover_id: cover.file_id,
-        title: env.params.title,
-        description: env.params.description,
-        last_ts: Date.now()
-      },
-      callback
-    );
+    var data = {
+      title: env.params.title,
+      description: env.params.description,
+      last_ts: Date.now()
+    };
+
+    if (cover) {
+      data.cover_id = cover.file_id;
+    }
+
+    N.models.users.Album.update({ _id: album._id }, data, callback);
   });
 };

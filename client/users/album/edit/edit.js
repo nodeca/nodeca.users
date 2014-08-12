@@ -17,6 +17,11 @@ N.wire.on('users.album.edit:save', function save_album(form) {
     return;
   }
 
+  // If cover_id isn't set - don't send empty field to server
+  if (form.fields.cover_id === '') {
+    delete form.fields.cover_id;
+  }
+
   N.io.rpc('users.album.update', form.fields).done(function () {
     N.wire.emit('navigate.to', { apiPath: 'users.album', params: pageParams });
   });
