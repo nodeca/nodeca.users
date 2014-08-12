@@ -1,15 +1,17 @@
-/*eslint-disable no-bitwise*/
-
-// EXIF reader
+// Extract TIFF headers and orientation from raw data
 //
-// - file
-// - callback({ header: Uint8Array, orientation: Number }), null on error
+// - rawHeader (Uint8Array) - head of JPEG file (max 256k), that can contain metadata
+//
+// return { header: Uint8Array, orientation: Number } or null on error
 //
 
 'use strict';
 
 
-function getBytes(data, offset, length, littleEndian) {
+var data;
+
+
+function getBytes(offset, length, littleEndian) {
   if (littleEndian === undefined) {
     littleEndian = false;
   }
@@ -17,8 +19,10 @@ function getBytes(data, offset, length, littleEndian) {
   var result = 0;
   var i;
 
+  /*eslint-disable no-bitwise*/
+
   if (littleEndian) {
-    for (i = offset + length; i >= offset; i--) {
+    for (i = offset + length - 1; i >= offset; i--) {
       result = result << 8 | data[i];
     }
   } else {
@@ -31,26 +35,34 @@ function getBytes(data, offset, length, littleEndian) {
 }
 
 
-function getExifOrientation(data, offset, length) {
-  var tiffOffset = offset + 10;
-  var littleEndian;
-  var dirOffset;
-  var tagsNumber;
+function getUint16(offset, littleEndian) {
+  return getBytes(offset, 2, littleEndian);
+}
+
+
+function getUint32(offset, littleEndian) {
+  return getBytes(offset, 4, littleEndian);
+}
+
+
+function getExifOrientation(offset, max) {
+  var dirStart, tagsCount, littleEndian, tagOffset, tagCode;
+  var tiffStart = offset + 10;
 
   // Check for the ASCII code for "Exif" (0x45786966)
-  if (getBytes(data, offset + 4, 4) === 0x45786966) {
+  if (getUint32(offset + 4) === 0x45786966) {
 
-    if (tiffOffset + 8 > length) {
+    if (tiffStart + 8 > max) {
       // Invalid segment size
       return null;
     }
 
-    if (data[offset + 8] !== 0x00 || data[offset + 9] !== 0x00) {
+    if (getUint16(offset + 8) !== 0) {
       // Missing byte alignment offset
       return null;
     }
 
-    switch (getBytes(data, tiffOffset, 2)) {
+    switch (getUint16(tiffStart)) {
       case 0x4949:
         littleEndian = true;
         break;
@@ -63,22 +75,21 @@ function getExifOrientation(data, offset, length) {
     }
 
     // Check for the TIFF tag marker (0x002A)
-    if (getBytes(data, tiffOffset + 2, 2, littleEndian) !== 0x002A) {
-      //Missing TIFF marker
+    if (getUint16(tiffStart + 2, littleEndian) !== 0x002A) {
+      // Missing TIFF marker
       return null;
     }
 
-    dirOffset = getBytes(data, tiffOffset + 4, 4, littleEndian);
+    dirStart = getUint32(tiffStart + 4, littleEndian);
+    tagsCount = getUint16(dirStart, littleEndian);
 
-    tagsNumber = getBytes(data, dirOffset, 2, littleEndian);
-
-    for (var i = 0; i < tagsNumber; i++) {
-      var tagOffset = dirOffset + 2 + 12 * i;
-      var tag = getBytes(data, tagOffset, 2, littleEndian);
+    for (var i = 0; i < tagsCount; i++) {
+      tagOffset = dirStart + 2 + 12 * i;
+      tagCode = getUint16(tagOffset, littleEndian);
 
       // Orientation
-      if (tag === 0x0112) {
-        return getBytes(data, tagOffset + 8, 2, littleEndian);
+      if (tagCode === 0x0112) {
+        return getUint16(tagOffset + 8, littleEndian);
       }
     }
   }
@@ -88,57 +99,54 @@ function getExifOrientation(data, offset, length) {
 }
 
 
-function parseMetaData (file, callback) {
-  var fileReader = new FileReader();
-  var maxMetaDataSize = 262144; // 256 KiB
+function parseMetadata (rawHeader) {
+  var offset = 2;
+  var segmentLength, segmentMarker, orientation, max;
 
-  fileReader.onload = function(e) {
-    var data = new Uint8Array(e.target.result);
-    var offset = 2;
-    var maxOffset = data.buffer.byteLength - 4;
-    var markerLength, markerBytes;
-    maxOffset = maxOffset > maxMetaDataSize ? maxMetaDataSize : maxOffset;
-    var orientation;
+  data = rawHeader;
 
-    // Check for the JPEG marker (0xffd8)
-    if (getBytes(data, 0, 2) !== 0xffd8) {
-      // Not jpeg
-      callback(null);
-      return;
-    }
+  // Max offset is (length - 4) because we try to read first 4 bytes
+  // from every segment to extract marker and length.
+  max = data.buffer.byteLength - 4;
 
-    while (offset < maxOffset) {
-      markerBytes = getBytes(data, offset, 2);
+  // Check for the JPEG signature (0xffd8)
+  if (getUint16(0) !== 0xffd8) {
+    // Not jpeg
+    return null;
+  }
 
-      if ((markerBytes >= 0xffe0 && markerBytes <= 0xffef) || markerBytes === 0xfffe) {
-        markerLength = getBytes(data, offset + 2, 2) + 2;
-        if (offset + markerLength > maxOffset) {
-          // Invalid segment size
-          callback(null);
-          return;
-        }
+  while (offset < max) {
+    // APP or COM segment marker
+    segmentMarker = getUint16(offset);
 
-        // EXIF
-        if (markerBytes === 0xffe1 && !orientation) {
-          orientation = getExifOrientation(data, offset, markerLength);
-        }
-
-        offset += markerLength;
-      } else {
-        break;
+    // 0xffe0:0xffef - APP segments, 0xfffe - COM (comment) segment.
+    // APP and COM segments always go first.
+    if ((segmentMarker >= 0xffe0 && segmentMarker <= 0xffef) || segmentMarker === 0xfffe) {
+      segmentLength = getUint16(offset + 2) + 2;
+      if (offset + segmentLength > max) {
+        // Invalid segment size
+        return null;
       }
+
+      // If EXIF segment - try to extract orientation.
+      // There can be several EXIF segments, and some can be empty.
+      // So, extract orientation only if not filled yet.
+      if (segmentMarker === 0xffe1 && !orientation) {
+        orientation = getExifOrientation(offset, offset + segmentLength);
+      }
+
+      offset += segmentLength;
+    } else {
+      break;
     }
+  }
 
-    if (offset <= 6) {
-      // Bad header size
-      callback(null);
-      return;
-    }
+  if (offset <= 6) {
+    // Bad header size
+    return null;
+  }
 
-    callback({ orientation: orientation, header: data.subarray(0, offset) });
-  };
-
-  fileReader.readAsArrayBuffer(file);
+  return { orientation: orientation, header: data.subarray(0, offset) };
 }
 
-module.exports = parseMetaData;
+module.exports = parseMetadata;

@@ -6,7 +6,6 @@
 // Returns config similar to input config, but with extended 'types' property like this:
 // types: {
 //   png: {
-//     mime_type: 'image/png',
 //     max_size: 2000000,
 //     resize: {
 //       orig: { width: 1280, skip_size: 1000000, type: 'png' },
@@ -15,7 +14,6 @@
 //     }
 //   },
 //   zip: {
-//     mime_type: 'application/zip',
 //     max_size: 2000000
 //   }
 // }
@@ -113,7 +111,6 @@ module.exports = _.memoize(function (uploadsConfig) {
     var realExtension = mimoza.getExtension(mimeType).replace('.', '');
 
     var configForExt = {
-      mime_type: mimeType,
       max_size: config.max_size
     };
 

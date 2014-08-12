@@ -48,6 +48,7 @@ function checkFile(data) {
 // Resize image if needed
 //
 function resizeImage(data, callback) {
+  var slice = data.file.slice || data.file.webkitSlice || data.file.mozSlice;
   var ext = data.file.name.split('.').pop();
   var typeConfig = settings.types[ext] || {};
 
@@ -113,13 +114,13 @@ function resizeImage(data, callback) {
     ctx.drawImage(img, cropX, 0, width, scaledHeight);
 
     canvas.toBlob(function (blob) {
-      var jpegBlob, slice, jpegBody;
+      var jpegBlob, jpegBody;
+
 
       if (jpegHeader) {
-        slice = blob.slice || blob.webkitSlice || blob.mozSlice;
         jpegBody = slice.call(blob, 20);
 
-        jpegBlob = new Blob([ jpegHeader, jpegBody ], { type: typeConfig.mime_type });
+        jpegBlob = new Blob([ jpegHeader, jpegBody ], { type: data.file.type });
       }
 
       var name = data.file.name;
@@ -127,16 +128,24 @@ function resizeImage(data, callback) {
       data.file = jpegBlob || blob;
       data.file.name = name;
       callback();
-    }, typeConfig.mime_type, quality);
+    }, data.file.type, quality);
   };
 
-  readExif(data.file, function (exifData) {
+  var reader = new FileReader();
+
+  reader.onloadend = function (e) {
+    var exifData = readExif(new Uint8Array(e.target.result));
+
     if (exifData) {
       jpegHeader = exifData.header;
     }
 
     img.src = window.URL.createObjectURL(data.file);
-  });
+  };
+
+  var maxMetadataSize = Math.min(data.file.size, 256 * 1024);
+
+  reader.readAsArrayBuffer(slice.call(data.file, 0, maxMetadataSize));
 }
 
 
