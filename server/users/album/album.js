@@ -7,14 +7,8 @@
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
-    user_hid: {
-      type: 'integer',
-      minimum: 1,
-      required: true
-    },
-    album_id: {
-      format: 'mongo'
-    }
+    user_hid: { type: 'integer', minimum: 1, required: true },
+    album_id: { format: 'mongo' }
   });
 
 
@@ -59,12 +53,20 @@ module.exports = function (N, apiPath) {
   // Fill available medialink providers
   //
   N.wire.before(apiPath, function fill_providers(env) {
+    var providers;
+    var result = [];
 
     if (N.config.medialinks.albums === true) {
-      env.res.medialink_providers = Object.keys(N.config.medialinks.providers);
+      providers = Object.keys(N.config.medialinks.providers);
     } else {
-      env.res.medialink_providers = N.config.medialinks.albums;
+      providers = N.config.medialinks.albums;
     }
+
+    providers.forEach(function (provider) {
+      result.push({ name: provider, home: N.config.medialinks.providers[provider].home || '' });
+    });
+
+    env.res.medialink_providers = result;
   });
 
 

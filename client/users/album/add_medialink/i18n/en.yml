@@ -2,7 +2,7 @@ en-US:
   title: Add video
   input_url_name: Video URL
   input_url_desc: URL of page with video
-  input_url_help: 'You can add video from #{providers}'
+  input_url_help: You can add video from
 
   add: Add
   cancel: Cancel
