@@ -6,8 +6,8 @@
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
-    secret_key:   { type: 'string', required: true }
-  , password: { type: 'string', required: true }
+    secret_key: { type: 'string', required: true }
+  , password:   { type: 'string', required: true }
   });
 
 
@@ -73,13 +73,13 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function fetch_user_auth_data(env, callback) {
     var token = env.data.token;
 
-    N.models.users.AuthLink.findById(token.authlink_id, function (err, authlink) {
+    N.models.users.AuthLink.findById(token.authlink_id, function (err, authLink) {
       if (err) {
         callback(err);
         return;
       }
 
-      if (!authlink) {
+      if (!authLink) {
         callback({
           code:         N.io.CLIENT_ERROR,
           message:      env.t('broken_token'),
@@ -88,7 +88,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      env.data.authlink = authlink;
+      env.data.authLink = authLink;
       callback();
     });
   });
@@ -97,15 +97,15 @@ module.exports = function (N, apiPath) {
   // Update password & remove used token
   //
   N.wire.on(apiPath, function update_password(env, callback) {
-    var authlink = env.data.authlink;
+    var authLink = env.data.authLink;
 
-    authlink.setPass(env.params.password, function (err) {
+    authLink.setPass(env.params.password, function (err) {
       if (err) {
         callback(err);
         return;
       }
 
-      authlink.save(callback);
+      authLink.save(callback);
     });
   });
 
@@ -113,7 +113,7 @@ module.exports = function (N, apiPath) {
   // Remove current and all other password reset tokens for this provider.
   //
   N.wire.after(apiPath, function remove_token(env, callback) {
-    N.models.users.TokenResetPassword.remove({ authlink_id: env.data.authlink._id }, callback);
+    N.models.users.TokenResetPassword.remove({ authlink_id: env.data.authLink._id }, callback);
   });
 
 
@@ -121,7 +121,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function autologin(env, callback) {
 
-    N.models.users.User.findById(env.data.authlink.user_id, function (err, user) {
+    N.models.users.User.findById(env.data.authLink.user_id, function (err, user) {
       if (err) {
         callback(err);
         return;

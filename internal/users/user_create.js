@@ -96,6 +96,8 @@ module.exports = function (N, apiPath) {
           return;
         }
 
+        env.data.authLink = authlink;
+
         callback();
       });
     });
@@ -122,6 +124,8 @@ module.exports = function (N, apiPath) {
         fail(user._id, err, callback);
         return;
       }
+
+      env.data.authLink = authlink;
 
       callback();
     });

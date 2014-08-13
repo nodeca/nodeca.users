@@ -32,7 +32,7 @@ module.exports = function (N, apiPath) {
 
     N.models.users.TokenActivationEmail
         .findOne({ secret_key: env.params.secret_key, ip: env.req.ip })
-        .lean(true)
+        .lean(false) // because we use model's instance method 'isExpired'
         .exec(function (err, token) {
 
       if (err) {
