@@ -53,17 +53,15 @@ module.exports = function (N, apiPath) {
   // Fill available medialink providers
   //
   N.wire.before(apiPath, function fill_providers(env) {
-    var providers;
+    var providers = N.config.medialinks.providers;
+    var providerList = (N.config.medialinks.albums === true) ? Object.keys(providers) : N.config.medialinks.albums;
     var result = [];
 
-    if (N.config.medialinks.albums === true) {
-      providers = Object.keys(N.config.medialinks.providers);
-    } else {
-      providers = N.config.medialinks.albums;
-    }
-
-    providers.forEach(function (provider) {
-      result.push({ name: provider, home: N.config.medialinks.providers[provider].home || '' });
+    providerList.forEach(function (providerName) {
+      result.push({
+        name: providers[providerName].name || providerName,
+        home: providers[providerName].home || ''
+      });
     });
 
     env.res.medialink_providers = result;

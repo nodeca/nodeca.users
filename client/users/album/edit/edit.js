@@ -40,12 +40,6 @@ N.wire.on('users.album.edit:delete', function delete_album(event) {
 });
 
 
-N.wire.on('users.album.edit:reset_cover', function reset_cover() {
-  $('#album-edit__cover').removeClass('has-cover');
-  $('#album-edit__cover input[name="cover_id"]').val('');
-});
-
-
 N.wire.on('users.album.edit:select_cover', function select_cover() {
   var data = { user_hid: pageParams.user_hid, album_id: pageParams.album_id, cover_id: null };
   N.wire.emit('users.album.edit.select_cover', data, function () {
