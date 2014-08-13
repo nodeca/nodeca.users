@@ -7,10 +7,10 @@
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
-    album_id: { format: 'mongo', required: true },
-    title: { type: 'string', minLength: 1, required: true },
-    description: { type: 'string', required: true },
-    cover_id: { format: 'mongo' }
+    album_id:     { format: 'mongo', required: true },
+    title:        { type: 'string',  required: true, minLength: 1 },
+    description:  { type: 'string',  required: true },
+    cover_id:     { format: 'mongo' }
   });
 
 
@@ -51,24 +51,26 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    N.models.users.Media.findOne({ 'file_id': env.params.cover_id }).lean(true).exec(function (err, cover) {
+    N.models.users.Media
+        .findOne({
+          file_id: env.params.cover_id,
+          exists: true,
+          album_id: env.data.album._id
+        })
+        .lean(true)
+        .exec(function (err, cover) {
+
       if (err) {
         callback(err);
         return;
       }
 
-      if (!cover) {
-        callback(N.io.NOT_FOUND);
-        return;
+      // On invalid cover just leave existing intact.
+      // That's more simple than process errors for very rare case.
+      if (cover) {
+        env.data.cover = cover;
       }
 
-      // Cover must be from same album
-      if (cover.album_id.toString() !== env.data.album._id.toString()) {
-        callback(N.io.NOT_FOUND);
-        return;
-      }
-
-      env.data.cover = cover;
       callback();
     });
   });
