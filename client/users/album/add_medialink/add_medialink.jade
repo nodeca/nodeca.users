@@ -16,7 +16,7 @@
           p.help-block= self.t('input_url_help')
             | 
             each provider, index in self.providers
-              a(href=provider.home)= provider.name
+              a(href=provider.home target='_blank')= provider.name
               if (self.providers.length - 1 !== index)
                 |, 
         .modal-footer
