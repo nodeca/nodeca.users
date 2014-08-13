@@ -20,6 +20,7 @@ module.exports = function (N, apiPath) {
 
       env.data.settings = env.data.settings || {};
       env.data.settings.can_see_deleted_users = can_see_deleted_users;
+
       callback();
     });
   });
@@ -51,6 +52,7 @@ module.exports = function (N, apiPath) {
       }
 
       env.data.user = user;
+
       callback();
     });
   });

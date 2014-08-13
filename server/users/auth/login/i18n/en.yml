@@ -1,14 +1,14 @@
 en-US:
   plain_exec:
-    login_failed:
+    err_login_failed:
       Can't login. Check, that your email/nick and password are correct and try
       again. Or use link below to reset your password.
 
-    too_many_attempts:
-      Too many login attempts. Please, wait 5 minutes before next retry.
+    err_too_many_attempts:
+      Too many login attempts. You should wait 5 minutes and try again.
 
-    missed_captcha_response:
-      Please complete CAPTCHA challenge.
+    err_captcha_empty:
+      CAPTCHA should be filled.
 
-    wrong_captcha_solution:
-      Wrong CAPTCHA solution.
+    err_captcha_wrong:
+      Wrong CAPTCHA, try again.

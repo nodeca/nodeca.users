@@ -1,4 +1,4 @@
-// Login by `email` provider (email/password or nick/password)
+// Do login by `plain` provider (email/password or nick/password)
 
 
 'use strict';
@@ -16,11 +16,11 @@ module.exports = function (N, apiPath) {
   // fill form errors
   //
   N.validate(apiPath, {
-    email_or_nick: { type: 'string' }
-  , pass:          { type: 'string' }
-  , recaptcha_challenge_field: { type: 'string', 'default': '' }
-  , recaptcha_response_field:  { type: 'string', 'default': '' }
-  , redirect_id: { format: 'mongo' }
+    email_or_nick: { type: 'string' },
+    pass:          { type: 'string' },
+    recaptcha_challenge_field: { type: 'string', 'default': '' },
+    recaptcha_response_field:  { type: 'string', 'default': '' },
+    redirect_id: { format: 'mongo' }
   });
 
 
@@ -45,10 +45,9 @@ module.exports = function (N, apiPath) {
     if (_.isEmpty(env.params.email_or_nick) ||
         _.isEmpty(env.params.pass)) {
       return {
-        code:    N.io.CLIENT_ERROR
-      , message: env.t('login_failed')
-      , fields:  [ 'email_or_nick', 'pass' ]
-      , captcha: false
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('err_login_failed'),
+        captcha: false
       };
     }
   });
@@ -73,29 +72,33 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      var privateKey = N.config.options.recaptcha.private_key
-        , clientIp   = env.req.ip
-        , challenge  = env.params.recaptcha_challenge_field
-        , response   = env.params.recaptcha_response_field;
+      var privateKey = N.config.options.recaptcha.private_key,
+          clientIp   = env.req.ip,
+          challenge  = env.params.recaptcha_challenge_field,
+          response   = env.params.recaptcha_response_field;
 
       if (!response) {
         updateRateLimits(clientIp);
         callback({
-          code:    N.io.CLIENT_ERROR
-        , message: env.t('missed_captcha_solution')
-        , captcha: env.data.captcha_required
+          code:    N.io.CLIENT_ERROR,
+          message: env.t('err_captcha_empty'),
+          captcha: env.data.captcha_required
         });
         return;
       }
 
       recaptcha.verify(privateKey, clientIp, challenge, response, function (err, valid) {
-        if (err || !valid) {
+        if (err) {
+          callback(new Error('Captcha service error'));
+          return;
+        }
+
+        if (!valid) {
           updateRateLimits(clientIp);
           callback({
-            code:    N.io.CLIENT_ERROR
-          , message: env.t('wrong_captcha_solution')
-          , fields:  [  'recaptcha_response_field' ]
-          , captcha: env.data.captcha_required
+            code:    N.io.CLIENT_ERROR,
+            message: env.t('err_captcha_wrong'),
+            captcha: env.data.captcha_required
           });
           return;
         }
@@ -119,10 +122,9 @@ module.exports = function (N, apiPath) {
       if (isExceeded) {
         updateRateLimits(env.req.ip);
         callback({
-          code:    N.io.CLIENT_ERROR
-        , message: env.t('too_many_attempts')
-        , fields: [ 'recaptcha_response_field' ]
-        , captcha: env.data.captcha_required
+          code:    N.io.CLIENT_ERROR,
+          message: env.t('err_too_many_attempts'),
+          captcha: env.data.captcha_required
         });
         return;
       }
@@ -141,8 +143,8 @@ module.exports = function (N, apiPath) {
     }
 
     N.models.users.AuthLink
-      .findOne({ 'email': env.params.email_or_nick, 'type': 'plain', 'exist' : true })
-      .exec(function (err, authLink) {
+        .findOne({ 'email': env.params.email_or_nick, 'type': 'plain', 'exists' : true })
+        .exec(function (err, authLink) {
 
       if (err) {
         callback(err);
@@ -155,7 +157,7 @@ module.exports = function (N, apiPath) {
       }
 
       N.models.users.User
-        .findOne({ '_id': authLink.user_id })
+        .findOne({ _id: authLink.user_id })
         .lean(true)
         .exec(function (err, user) {
 
@@ -187,9 +189,9 @@ module.exports = function (N, apiPath) {
     }
 
     N.models.users.User
-      .findOne({ 'nick': env.params.email_or_nick })
-      .lean(true)
-      .exec(function (err, user) {
+        .findOne({ nick: env.params.email_or_nick })
+        .lean(true)
+        .exec(function (err, user) {
 
       if (err) {
         callback(err);
@@ -202,8 +204,8 @@ module.exports = function (N, apiPath) {
       }
 
       N.models.users.AuthLink
-        .findOne({ 'user_id': user._id, 'type': 'plain', 'exist': true })
-        .exec(function (err, authLink) {
+          .findOne({ user_id: user._id, type: 'plain', exists: true })
+          .exec(function (err, authLink) {
 
         if (err) {
           callback(err);
@@ -225,13 +227,13 @@ module.exports = function (N, apiPath) {
 
   // Check that user & plain authlink are ok
   //
-  N.wire.on(apiPath, function login_do(env, callback) {
+  N.wire.on(apiPath, function check_fetched(env, callback) {
 
     if (!env.data.user || !env.data.authLink) {
       updateRateLimits(env.req.ip);
       callback({
         code:    N.io.CLIENT_ERROR,
-        message: env.t('login_failed'),
+        message: env.t('err_login_failed'),
         fields:  [ 'email_or_nick', 'pass' ],
         captcha: env.data.captcha_required
       });
@@ -256,42 +258,21 @@ module.exports = function (N, apiPath) {
       if (!success) {
         updateRateLimits(env.req.ip);
         callback({
-          code:    N.io.CLIENT_ERROR
-        , message: env.t('login_failed')
-        , fields:  [ 'email_or_nick', 'pass' ]
-        , captcha: env.data.captcha_required
+          code:    N.io.CLIENT_ERROR,
+          message: env.t('err_login_failed'),
+          fields:  [ 'email_or_nick', 'pass' ],
+          captcha: env.data.captcha_required
         });
         return;
       }
 
       // Set login redirect URL.
       env.data.redirect_id = env.params.redirect_id;
-      N.wire.emit('internal:users.login', env, function set_redirect() {
+
+      N.wire.emit('internal:users.login', env, function () {
         env.res.redirect_url = env.data.redirect_url;
         callback();
       });
     });
   });
-
-
-  // Remembers login ip and date
-  //
-  N.wire.after(apiPath, function remember_auth_data(env, callback) {
-    var authLink = env.data.authLink;
-    authLink.last_ts = Date.now();
-    authLink.last_ip = env.req.ip;
-
-    authLink.save(function (err) {
-      callback(err);
-    });
-  });
-
-
-  // Clear data user for oauth.
-  //
-  N.wire.after(apiPath, function clear_oauth_data(env) {
-    env.session = _.omit(env.session, 'state');
-    env.session = _.omit(env.session, 'oauth');
-  });
-
 };

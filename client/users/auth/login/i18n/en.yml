@@ -2,9 +2,10 @@ en-US:
   show:
     title: Login
     register: Register
-    email: "Email (or nickname)"
+    email: Email (or nickname)
+    email_desc: Enter email
     password: Password
+    password_desc: Password
     enter: Login
-    forgot: forgot?
-    not_filled: Please fill this field
+    forgot: forgot password?
     oauth_info: Log in via

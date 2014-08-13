@@ -1,4 +1,15 @@
-// Apply login on current session and change session id for security reasons.
+// Update data to logged-in state:
+//
+// - recreate new session (change session id for security reasons)
+// - fill redirection URL
+// - log ip/time to AuthLink, been used for login
+//
+// Expects env.data filled with:
+//
+// - user
+// - redirect_id (optional)
+// - authLink
+//
 
 
 'use strict';
@@ -6,7 +17,9 @@
 
 module.exports = function (N, apiPath) {
 
-  N.wire.on(apiPath, function user_internal_login(env,callback) {
+  var LoginRedirect = N.models.users.LoginRedirect;
+
+  N.wire.on(apiPath, function user_internal_login(env, callback) {
 
     // delete old session (don't wait until compleete)
     if (env.session_id) {
@@ -15,7 +28,6 @@ module.exports = function (N, apiPath) {
 
     env.session_id      = null; // Generate new sid on session save.
     env.session.user_id = env.data.user._id.toString();
-
 
     // fill redirect with default value
     env.data.redirect_url = N.router.linkTo('users.profile_redirect');
@@ -26,39 +38,38 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    N.models.users.LoginRedirect
-      .findOne({ '_id': env.data.redirect_id })
-      .lean(true)
-      .exec(function (err, link) {
+    // Try to find active redirect, bunded to this ip
+    LoginRedirect.findOne({ '_id': env.data.redirect_id, used: false, ip: env.reg.ip })
+        .lean(true)
+        .exec(function (err, link) {
 
-        if (err) {
-          callback(err);
-          return;
-        }
+      if (err) {
+        callback(err);
+        return;
+      }
 
-        // If redirect requested, but not found - redirect to default.
-        // In other case, we have to mark redirect as used.
+      // If redirect requested, but not found - redirect to default.
+      if (!link) {
+        callback();
+        return;
+      }
 
-        if (!link) {
-          callback();
-          return;
-        }
+      // update redirect url
+      env.data.redirect_url = link.url;
 
-        // update redirect if conditions are valid
+      // mark redirect as used
+      LoginRedirect.update({ _id: link._id }, { $set: { used: true } }, callback);
+    });
+  });
 
-        if (!link.used && link.ip && link.ip === env.req.ip) {
-          env.data.redirect_url = link.url;
-        }
 
-        // mark link as used and return
-
-        N.models.users.LoginRedirect
-          .findByIdAndUpdate(env.data.redirect_id, { $set: { used: true } })
-          .lean(true)
-          .exec(function (err) {
-            callback(err);
-          });
-      });
-
+  // Remember login ip and date in used AuthLink
+  //
+  N.wire.after(apiPath, function remember_auth_data(env, callback) {
+    N.models.users.AuthLink.update(
+      { _id: env.data.authLink._id },
+      { $set: { last_ts: Date.now(), last_ip: env.req.ip } },
+      callback
+    );
   });
 };

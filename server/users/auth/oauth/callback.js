@@ -1,5 +1,9 @@
+// Clients are redirected here after authorisation on 3rd-party oauth server
+// Then postponed actions (login/register/add) are finalized
+
 
 'use strict';
+
 
 var _ = require('lodash');
 
@@ -26,14 +30,17 @@ module.exports = function (N, apiPath) {
   }
 
 
-  N.wire.before(apiPath, { proiroty: -15 }, function register_guest_only(env, callback) {
+  // TODO: pass check for adding new account from settings
+  //
+  N.wire.before(apiPath, { priority: -15 }, function register_guest_only(env, callback) {
     N.wire.emit('internal:users.redirect_not_guest', env, callback);
   });
 
 
-  // If provider return error. Example: user cancelled authorization
+  // If provider returned error (for example, user cancelled authorization),
+  // return to previous state.
   //
-  N.wire.before(apiPath, { proiroty: -15 }, function check_oauth_error(env, callback) {
+  N.wire.before(apiPath, { priority: -15 }, function check_oauth_error(env, callback) {
 
     if (env.params.error) {
       var location = (env.session.state.oauth_action === 'register')
@@ -47,41 +54,41 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Check oauth email uniqueness
+  // Registration only - check oauth email uniqueness
   //
-  N.wire.before(apiPath, { proiroty: -5 }, function check_email_uniqueness(env, callback) {
+  N.wire.before(apiPath, { priority: -5 }, function check_email_uniqueness(env, callback) {
 
-    if ((env.session.state.oauth_action === 'login')){
+    if ((env.session.oauth.action !== 'register')){
       callback();
       return;
     }
 
     N.models.users.AuthLink
-      .findOne({ 'email' : env.data.oauth.email, 'exist': true })
-      .lean(true)
-      .exec(function (err, authlink) {
+        .findOne({ email : env.data.oauth.email, exists: true })
+        .lean(true)
+        .exec(function (err, authlink) {
 
-        if (err) {
-          callback(err);
-          return;
-        }
+      if (err) {
+        callback(err);
+        return;
+      }
 
-        if (authlink) {
-          env.session = _.omit(env.session, 'state');
-          callback(createRedirect('users.auth.oauth.error_show'));
-          return;
-        }
+      if (authlink) {
+        // reset oauth state
+        env.session = _.omit(env.session, 'oauth');
 
-        callback();
-      });
+        callback(createRedirect('users.auth.oauth.error_show'));
+        return;
+      }
+
+      callback();
+    });
   });
 
 
-  // Try to login user
+  // We should try to login user for registration too
   //
   N.wire.on(apiPath, function finish_auth(env, callback) {
-
-    env.session.oauth = env.data.oauth;
 
     // Find authlink for oauth data
     N.models.users.AuthLink
@@ -90,6 +97,7 @@ module.exports = function (N, apiPath) {
           'type': env.params.provider,
           'exist' : true
         })
+        .lean(true)
         .exec(function (err, authLink) {
 
       if (err) {
@@ -97,14 +105,17 @@ module.exports = function (N, apiPath) {
         return;
       }
 
+      // No AuthLink - go to registration with this auth data
       if (!authLink) {
+        env.session.oauth = env.session.oauth || {};
+        env.session.oauth.info = env.data.oauth;
         callback(createRedirect('users.auth.register.show'));
         return;
       }
 
-        // Find user for oauth data
+      // Find user for oauth data
       N.models.users.User
-          .findOne({ '_id': authLink.user_id, exists: 'true' })
+          .findOne({ _id: authLink.user_id, exists: true })
           .lean(true)
           .exec(function (err, user) {
 
@@ -113,6 +124,8 @@ module.exports = function (N, apiPath) {
           return;
         }
 
+        // If AuthLink exists, but user not found - db is broken,
+        // go to registration, but without oauth data.
         if (!user) {
           callback(createRedirect('users.auth.register.show'));
           return;
@@ -120,9 +133,9 @@ module.exports = function (N, apiPath) {
 
         env.data.user     = user;
         env.data.authLink = authLink;
+        env.data.redirect_id = (env.session.oauth || {}).redirect_id;
 
-        env.data.redirect_id = env.session.state.redirect_id;
-        N.wire.emit('internal:users.login', env, function redirect() {
+        N.wire.emit('internal:users.login', env, function () {
           callback({
             code: N.io.REDIRECT,
             head: {
@@ -133,27 +146,4 @@ module.exports = function (N, apiPath) {
       });
     });
   });
-
-
-  // Remembers login ip and date
-  //
-  N.wire.after(apiPath, function remember_auth_data(env, callback) {
-    var authLink = env.data.authLink;
-    authLink.last_ts = Date.now();
-    authLink.last_ip = env.req.ip;
-
-    authLink.save(function (err) {
-      callback(err);
-    });
-  });
-
-
-  // Redirect to registration
-  //
-  N.wire.after(apiPath, function continue_auth(env, callback) {
-
-    callback(createRedirect('users.auth.register.show'));
-
-  });
-
 };

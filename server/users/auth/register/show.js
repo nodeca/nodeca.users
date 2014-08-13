@@ -1,9 +1,7 @@
-// Render registration form
+// Show registration form
 
 
 'use strict';
-
-var _ = require('lodash');
 
 
 module.exports = function (N, apiPath) {
@@ -28,17 +26,18 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function fill_head_and_breadcrumbs(env) {
 
-    if (env.session.oauth) {
-      env.res.auth_active = env.session.oauth.provider;
-      env.res.email = env.session.oauth.email;
+    // If user logged in via oauth, prefill email and oauth status
+    if (env.session.oauth && env.session.oauth.info) {
+      env.res.oauth_active = env.session.oauth.info.provider;
+      env.res.email = env.session.oauth.info.email;
     }
 
-    var oauth = {};
-    var providers = N.config.oauth;
-    _.forEach(providers, function (provider, name) {
-      oauth[name] = provider.client;
-    });
+    var providers = N.config.oauth || {};
 
-    env.res.blocks.oauth = oauth;
+    env.res.oauth = {};
+
+    Object.keys(providers, function (name) {
+      env.res.oauth[name] = providers[name].client;
+    });
   });
 };

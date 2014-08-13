@@ -1,4 +1,4 @@
-// Apply new password entered by user.
+// Apply new password, entered by user.
 
 
 'use strict';
@@ -7,7 +7,7 @@
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     secret_key:   { type: 'string', required: true }
-  , new_password: { type: 'string', required: true }
+  , password: { type: 'string', required: true }
   });
 
 
@@ -19,8 +19,8 @@ module.exports = function (N, apiPath) {
 
   // Validate new password
   //
-  N.wire.before(apiPath, function validate_new_password(env) {
-    if (!N.models.users.User.validatePassword(env.params.new_password)) {
+  N.wire.before(apiPath, function validate_password(env) {
+    if (!N.models.users.User.validatePassword(env.params.password)) {
       throw {
         code:         N.io.CLIENT_ERROR,
         message:      null,
@@ -45,9 +45,9 @@ module.exports = function (N, apiPath) {
 
       if (!token || token.isExpired()) {
         callback({
-          code:         N.io.CLIENT_ERROR
-        , message:      env.t('expired_token')
-        , bad_password: false
+          code:         N.io.CLIENT_ERROR,
+          message:      env.t('err_expired_token'),
+          bad_password: false
         });
         return;
       }
@@ -55,7 +55,7 @@ module.exports = function (N, apiPath) {
       if (token.ip !== env.req.ip) {
         callback({
           code:         N.io.CLIENT_ERROR,
-          message:      env.t('broken_token'),
+          message:      env.t('err_broken_token'),
           bad_password: false
         });
         return;
@@ -99,25 +99,21 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function update_password(env, callback) {
     var authlink = env.data.authlink;
 
-    authlink.setPass(env.params.new_password, function (err) {
+    authlink.setPass(env.params.password, function (err) {
       if (err) {
         callback(err);
         return;
       }
 
-      // Remove current and all other password reset tokens for this provider.
-      N.models.users.TokenResetPassword.remove({
-        authlink_id: authlink._id
-      }, function (err) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        // Save new password.
-        env.data.authlink.save(callback);
-      });
+      authlink.save(callback);
     });
+  });
+
+
+  // Remove current and all other password reset tokens for this provider.
+  //
+  N.wire.after(apiPath, function remove_token(env, callback) {
+    N.models.users.TokenResetPassword.remove({ authlink_id: env.data.authlink._id }, callback);
   });
 
 

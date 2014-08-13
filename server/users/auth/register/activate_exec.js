@@ -1,11 +1,8 @@
 // Activates user account.
-// Check token. If token is correct create User and AuthLinks
+// Check token. If token is correct - create User and AuthLink records.
 
 
 'use strict';
-
-
-var _ = require('lodash');
 
 
 module.exports = function (N, apiPath) {
@@ -35,6 +32,7 @@ module.exports = function (N, apiPath) {
 
     N.models.users.TokenActivationEmail
         .findOne({ secret_key: env.params.secret_key, ip: env.req.ip })
+        .lean(true)
         .exec(function (err, token) {
 
       if (err) {
@@ -50,10 +48,16 @@ module.exports = function (N, apiPath) {
 
       env.data.token = token;
 
+      // Token can be used only once.
       N.models.users.TokenActivationEmail.remove({ secret_key: env.params.secret_key }, callback);
     });
   });
 
+  //
+  // That's almost impossible, but someone could occupy nick/email if user
+  // activated account too late. Or if user started registration twice and
+  // got 2 emails. So, we check again that nick & emails are unique.
+  //
 
   // Check nick uniqueness
   //
@@ -67,24 +71,24 @@ module.exports = function (N, apiPath) {
     }
 
     N.models.users.User
-      .findOne({ 'nick': token.reg_info.nick })
-      .select('_id')
-      .lean(true)
-      .exec(function (err, user) {
+        .findOne({ 'nick': token.reg_info.nick })
+        .select('_id')
+        .lean(true)
+        .exec(function (err, id) {
 
-        if (err) {
-          callback(err);
-          return;
-        }
+      if (err) {
+        callback(err);
+        return;
+      }
 
-        if (user) {
-          // Need to terminate chain without 500 error
-          env.data = _.omit(env.data, 'token');
-          return;
-        }
+      if (id) {
+        // Need to terminate chain without 500 error.
+        // If user exists - kill fetched token as invalid.
+        env.data.token = null;
+      }
 
-        callback();
-      });
+      callback();
+    });
   });
 
 
@@ -100,30 +104,31 @@ module.exports = function (N, apiPath) {
     }
 
     var emails = [ token.reg_info.email ];
+
     if (token.oauth_info) {
       emails.push(token.oauth_info.email);
     }
 
     N.models.users.AuthLink
-      .findOne({ 'exist': true })
-      .where('email').in(emails)
-      .select('_id')
-      .lean(true)
-      .exec(function (err, authlink) {
+        .findOne({ exists: true })
+        .where('email').in(emails)
+        .select('_id')
+        .lean(true)
+        .exec(function (err, id) {
 
-        if (err) {
-          callback(err);
-          return;
-        }
+      if (err) {
+        callback(err);
+        return;
+      }
 
-        if (authlink) {
-          // Need to terminate chain without 500 error
-          env.data = _.omit(env.data, 'token');
-          return;
-        }
+      if (id) {
+        // Need to terminate chain without 500 error.
+        // If email(s) occupied - kill fetched token as invalid.
+        env.data.token = null;
+      }
 
-        callback();
-      });
+      callback();
+    });
   });
 
 
@@ -156,6 +161,7 @@ module.exports = function (N, apiPath) {
         }
 
         env.res.redirect_url = env.data.redirect_url;
+
         callback();
       });
     });

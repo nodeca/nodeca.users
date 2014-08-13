@@ -1,21 +1,23 @@
 en-US:
   request_show:
-    login: Login
     email: Email
+    email_desc: Enter email
+    login: Login
     reset_password: Reset password
 
   request_done_show:
-    message: Confirmation letter is sent.
+    message: You should receive email with instructions how change password.
 
   change_show:
-    invalid_token: Invalid token.
+    err_invalid_token: Invalid security token.
 
-    new_password: New password
-    new_password_help: Must contain both digits and letters (other symbols also
-      possible). Also, should have > 8 symbols.
-    apply: Apply
+    password: New password
+    password_desc: New password
+    password_help: >
+      Must contain both digits and letters (other symbols also possible).
+      Also should have > 8 symbols.
 
-    password_changed: Your password was changed.
+    apply: Ok
 
   change_done_show:
     message: Your password was changed.

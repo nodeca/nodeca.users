@@ -1,3 +1,4 @@
+//- Generates list of oauth buttons
 
-each provider, name in self.blocks.oauth
-  !=self.partial('@common.blocks.oauth_buttons.' + name)
+each client, provider in self.oauth
+  !=self.partial('@common.blocks.oauth_buttons.' + provider, { provider: provider, client: client })

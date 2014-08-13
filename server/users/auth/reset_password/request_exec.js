@@ -17,7 +17,7 @@ module.exports = function (N, apiPath) {
 
   //
   // Don't limit logged-in users to change pass. Because
-  // user can forget password, but still have cookies to remember him.
+  // user can forget password, but still have cookies to remember it.
   //
 
 
@@ -30,10 +30,15 @@ module.exports = function (N, apiPath) {
       , response   = env.params.recaptcha_response_field;
 
     recaptcha.verify(privateKey, clientIp, challenge, response, function (err, valid) {
-      if (err || !valid) {
+      if (err) {
+        callback(new Error('Captcha service error'));
+        return;
+      }
+
+      if (!valid) {
         callback({
-          code:    N.io.CLIENT_ERROR
-        , message: env.t('wrong_captcha_solution')
+          code:    N.io.CLIENT_ERROR,
+          message: env.t('err_captcha_wrong')
         });
         return;
       }
@@ -46,10 +51,12 @@ module.exports = function (N, apiPath) {
   // Search auth record
   //
   N.wire.before(apiPath, function fetch_auth_link(env, callback) {
-    N.models.users.AuthLink.findOne({
-      'email': env.params.email
-    , 'type': 'plain'
-    }, function (err, authlink) {
+
+    N.models.users.AuthLink
+        .findOne({ email: env.params.email, type: 'plain', exists: true })
+        .lean(true)
+        .exec(function (err, authlink) {
+
       if (err) {
         callback(err);
         return;
@@ -57,8 +64,8 @@ module.exports = function (N, apiPath) {
 
       if (!authlink) {
         callback({
-          code:    N.io.CLIENT_ERROR
-        , message: env.t('unknown_email')
+          code:    N.io.CLIENT_ERROR,
+          message: env.t('err_email_unknown')
         });
         return;
       }
@@ -85,7 +92,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      N.settings.get('general_project_name', function (err, projectName) {
+      N.settings.get('general_project_name', function (err, general_project_name) {
         if (err) {
           callback(err);
           return;
@@ -96,9 +103,9 @@ module.exports = function (N, apiPath) {
         });
 
         N.mailer.send({
-          to:      authlink.email
-        , subject: env.t('confirmation_email_subject', { project_name: projectName })
-        , text:    env.t('confirmation_email_text',    { link: link })
+          to:      authlink.email,
+          subject: env.t('email_subject', { project_name: general_project_name }),
+          text:    env.t('email_text',    { link: link })
         }, callback);
       });
     });

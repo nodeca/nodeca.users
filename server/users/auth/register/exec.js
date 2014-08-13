@@ -1,6 +1,5 @@
 // Register a new user. If email validation needed store
 // reg info in TokenActivationEmail. Else save user
-//
 
 
 'use strict';
@@ -10,29 +9,27 @@ var _           = require('lodash');
 var revalidator = require('revalidator');
 var recaptcha   = require('nodeca.core/lib/recaptcha.js');
 
-var sendActivationEmail = require('./_lib/send_activation_email');
-
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     // `required` specially set to false, because values are checked later
     // to show errors in regustration form.
-    email: { type: 'string', required: false }
-  , pass:  { type: 'string', required: false }
-  , nick:  { type: 'string', required: false }
-  , recaptcha_challenge_field: { type: 'string', required: false }
-  , recaptcha_response_field:  { type: 'string', required: false }
+    email: { type: 'string', required: false },
+    pass:  { type: 'string', required: false },
+    nick:  { type: 'string', required: false },
+    recaptcha_challenge_field: { type: 'string', required: false },
+    recaptcha_response_field:  { type: 'string', required: false }
   });
 
 
-  // Kick logged-in members
+  // Kick off logged-in members
   //
   N.wire.before(apiPath, function register_guest_only(env, callback) {
     N.wire.emit('internal:users.redirect_not_guest', env, callback);
   });
 
 
-  // Create sndbox for form errors
+  // Create sandbox for form errors
   //
   N.wire.before(apiPath, function prepare_env_data(env) {
     env.data.errors = env.data.errors || {};
@@ -43,11 +40,11 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function validate_params(env) {
     var report = revalidator.validate(env.params, {
-      type: 'object'
-    , properties: {
-        email: { format: 'email',                               required: true }
-      , pass:  { conform: N.models.users.User.validatePassword, required: true }
-      , nick:  { conform: N.models.users.User.validateNick,     required: true }
+      type: 'object',
+      properties: {
+        email: { format: 'email',                               required: true },
+        pass:  { conform: N.models.users.User.validatePassword, required: true },
+        nick:  { conform: N.models.users.User.validateNick,     required: true }
       }
     });
 
@@ -58,7 +55,10 @@ module.exports = function (N, apiPath) {
       });
 
       // terminate
-      return { code: N.io.CLIENT_ERROR, data: env.data.errors };
+      return {
+        code: N.io.CLIENT_ERROR,
+        data: env.data.errors
+      };
     }
   });
 
@@ -68,23 +68,25 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function check_email_uniqueness(env, callback) {
 
     var emails = [ env.params.email ];
-    if (env.session.oauth) {
-      emails.push(env.session.oauth.email);
+
+    // If we use oauth for registration, provider email should be unique too.
+    if (env.session.oauth && env.session.oauth.info) {
+      emails.push(env.session.oauth.info.email);
     }
 
     N.models.users.AuthLink
-        .findOne({ 'exist': true })
+        .findOne({ exists: true })
         .where('email').in(emails)
         .select('_id')
         .lean(true)
-        .exec(function (err, authlink) {
+        .exec(function (err, id) {
 
       if (err) {
         callback(err);
         return;
       }
 
-      if (authlink) {
+      if (id) {
         env.data.errors.email = env.t('err_busy_email');
       }
 
@@ -97,7 +99,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function check_nick_uniqueness(env, callback) {
     N.models.users.User
-        .findOne({ 'nick': env.params.nick })
+        .findOne({ nick: env.params.nick })
         .select('_id')
         .lean(true)
         .exec(function (err, user) {
@@ -126,14 +128,19 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    var privateKey = N.config.options.recaptcha.private_key
-      , clientIp   = env.req.ip
-      , challenge  = env.params.recaptcha_challenge_field
-      , response   = env.params.recaptcha_response_field;
+    var privateKey = N.config.options.recaptcha.private_key,
+        clientIp   = env.req.ip,
+        challenge  = env.params.recaptcha_challenge_field,
+        response   = env.params.recaptcha_response_field;
 
     recaptcha.verify(privateKey, clientIp, challenge, response, function (err, result) {
-      if (err || !result) {
-        env.data.errors.recaptcha_response_field = env.t('err_wrong_captcha_solution');
+      if (err) {
+        callback(new Error('Captcha service error'));
+        return;
+      }
+
+      if (!result) {
+        env.data.errors.recaptcha_response_field = env.t('err_wrong_captcha');
       }
 
       callback();
@@ -163,29 +170,31 @@ module.exports = function (N, apiPath) {
 
       env.data.validate_email = validate_email;
 
-      if (validate_email) {
+      // If global setting disables validation - skip next checks.
+      if (!validate_email) {
         callback();
         return;
       }
 
-      // If there is information about oauth provider then check trusted setting
-      if (!env.session.oauth) {
-        callback();
-        return;
-      }
+      // If oauth login info exists, skip validation for trusted provider,
+      // when user's email === privider's email
+      var oainfo = (env.session.oauth || {}).info;
 
-      env.data.validate_email = !N.config.oauth[env.session.oauth.type].trusted;
+      if (oainfo && N.config.oauth[oainfo.type].trusted && env.params.email === oainfo.email) {
+        env.data.validate_email = false;
+      }
 
       callback();
     });
   });
 
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Helpers
+
   // Create user record and login
   //
   function create_user(env, callback) {
-    env.res.head.title = env.t('title');
-
     N.wire.emit('internal:users.user_create', env, function (err) {
       if (err) {
         callback(err);
@@ -205,28 +214,46 @@ module.exports = function (N, apiPath) {
   }
 
 
-  // If the user need to activate email, send activation token by email.
+  // If the user have to confirm email, create token and send it by email.
   //
   function send_activation(env, callback) {
-
-    env.res.redirect_url = N.router.linkTo('users.auth.register.activate_show');
 
     N.models.users.TokenActivationEmail.create({
       ip: env.req.ip,
       reg_info: env.data.reg_info,
       oauth_info: env.data.oauth_info
     }, function (err, token) {
+
       if (err) {
         callback(err);
       }
 
-      sendActivationEmail(N, env, env.data.reg_info.email, token, callback);
+      env.res.redirect_url = N.router.linkTo('users.auth.register.activate_show');
+
+      var link = env.helpers.url_to('users.auth.register.activate_exec', {
+        secret_key: token.secret_key
+      });
+
+      N.settings.get('general_project_name', function (err, general_project_name) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        N.mailer.send({
+          to:      env.data.reg_info.email,
+          subject: env.t('email_subject', { project_name: general_project_name }),
+          text:    env.t('email_text',    { link: link })
+        }, callback);
+      });
     });
   }
 
+  //////////////////////////////////////////////////////////////////////////////
 
-  // If the user need to activate email, create token.
-  // Else save user
+
+  // If user need to activate email, create token and send activation email.
+  // Else create user immediately.
   //
   N.wire.on(apiPath, function finish_registration(env, callback) {
 
@@ -236,8 +263,11 @@ module.exports = function (N, apiPath) {
       pass: env.params.pass
     };
 
-    env.data.oauth_info = env.session.oauth;
-    env.session = _.omit(env.session, [ 'state', 'oauth' ]);
+    env.data.oauth_info = (env.session.oauth || {}).info;
+
+    // Stupid attempt to cleanup session. It should be safe to skip it,
+    // because session is deleted on user login.
+    env.session = _.omit(env.session, [ 'oauth' ]);
 
     if (env.data.validate_email) {
       send_activation(env, callback);
@@ -246,5 +276,4 @@ module.exports = function (N, apiPath) {
 
     create_user(env, callback);
   });
-
 };

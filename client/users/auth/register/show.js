@@ -1,3 +1,5 @@
+// Registration page form logic
+
 'use strict';
 
 
@@ -23,17 +25,19 @@ function Control(defaultHelp) {
 }
 
 
-N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
+// Page enter
+//
+N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
   // Root view model.
   view = {
-    email: new Control(t('email_help'))
-  , pass:  new Control(t('pass_help'))
-  , nick:  new Control(t('nick_help'))
+    email: new Control(t('')),
+    pass:  new Control(t('pass_help')),
+    nick:  new Control(t('')),
 
-  , recaptcha_response_field: {
-      visible: true
-    , css:     ko.observable('')
-    , message: ko.observable(null)
+    recaptcha_response_field: {
+      visible: true,
+      css:     ko.observable(''),
+      message: ko.observable(null)
     }
   };
 
@@ -49,51 +53,59 @@ N.wire.on('navigate.done:' + module.apiPath, function setup_page(__, callback) {
 
   // Setup automatic nick validation on input.
   view.nick.value.subscribe(_.debounce(function (text) {
+    var self = this;
+
     if (text.length < 1) {
       return;
     }
 
-    var self = this;
-
-    N.io.rpc('users.auth.check_nick', { nick: text }).done(function (res) {
-      self.css(res.error ? 'has-error' : '');
-      self.message(res.message);
-    });
+    N.io.rpc('users.auth.check_nick', { nick: text })
+      .done(function (res) {
+        self.css(res.error ? 'has-error' : '');
+        self.message(res.message);
+      });
   }, CHECK_NICK_DELAY), view.nick);
 
   // Apply root view model.
   ko.applyBindings(view, $('#content')[0]);
 
   // Init ReCaptcha.
-  N.wire.emit('common.blocks.recaptcha.create', null, callback);
+  N.wire.emit('common.blocks.recaptcha.create');
 });
 
 
-N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
-  ko.cleanNode($('#content')[0]);
-  view = null;
-});
-
-
-// Send registration data to the server.
+// Setup listeners
 //
-N.wire.on('users.auth.register.exec', function register(form) {
+N.wire.on('navigate.done:' + module.apiPath, function page_setup2() {
 
-  N.io.rpc('users.auth.register.exec', form.fields)
-    .done(function (res) {
-      // Reload page in order to apply auto-login after the registration.
-      window.location = res.redirect_url;
-    })
-    .fail(function (err) {
-      // Update classes and messages on all input fields.
-      _.forEach(view, function (field, name) {
-        field.css(_.has(err.data, name) ? 'has-error' : '');
-        field.message(err.data[name]);
+  // Page exit
+  //
+  N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
+    ko.cleanNode($('#content')[0]);
+    view = null;
+  });
+
+
+  // Form submit
+  //
+  N.wire.on('users.auth.register.exec', function register(form) {
+
+    N.io.rpc('users.auth.register.exec', form.fields)
+      .done(function (res) {
+        // Full page reload, because environment changed
+        window.location = res.redirect_url;
+      })
+      .fail(function (err) {
+        // Update classes and messages on all input fields.
+        _.forEach(view, function (field, name) {
+          field.css(_.has(err.data, name) ? 'has-error' : '');
+          field.message(err.data[name]);
+        });
+
+        // Update ReCaptcha if there is a ReCaptcha error.
+        if (_.has(err.data, 'recaptcha_response_field')) {
+          N.wire.emit('common.blocks.recaptcha.update');
+        }
       });
-
-      // Update ReCaptcha words if there is a ReCaptcha error.
-      if (_.has(err.data, 'recaptcha_response_field')) {
-        N.wire.emit('common.blocks.recaptcha.update');
-      }
-    });
+  });
 });

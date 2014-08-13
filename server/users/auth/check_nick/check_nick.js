@@ -6,11 +6,7 @@
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
-    nick: {
-      type: 'string'
-    , required: true
-    , minLength: 1
-    }
+    nick: { type: 'string', required: true, minLength: 1 }
   });
 
   N.wire.on(apiPath, function check_nick_busy(env, callback) {
@@ -24,7 +20,7 @@ module.exports = function (N, apiPath) {
     }
 
     N.models.users.User
-        .findOne({ 'nick': env.params.nick })
+        .findOne({ nick: env.params.nick })
         .select('_id')
         .lean(true)
         .exec(function (err, user) {

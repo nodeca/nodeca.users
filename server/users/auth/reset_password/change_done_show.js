@@ -1,4 +1,4 @@
-// Show 'Password is changed' message.
+// Show page with 'Password is changed' message.
 
 
 'use strict';
@@ -7,7 +7,7 @@
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {});
 
-  N.wire.on(apiPath, function fill_page_head(env) {
+  N.wire.on(apiPath, function change_done_show(env) {
     env.res.head.title = env.t('title');
   });
 };

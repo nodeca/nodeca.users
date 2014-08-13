@@ -1,30 +1,29 @@
 en-US:
   request_show:
-    title: Reset password
+    title: Change password
 
   request_exec:
-    wrong_captcha_solution: Wrong CAPTCHA solution.
-    unknown_email: Unknown email address.
+    err_captcha_wrong: Wrong CAPTCHA, try again.
+    err_email_unknown: Unknown email address.
 
-    confirmation_email_subject: '#{project_name}: Reset password confirmation.'
-    confirmation_email_text: |
-      Please follow this link to reset your password:
+    email_subject: '#{project_name}: password change confirmation.'
+    email_text: |
+      Follow this link to change your password:
 
       #{link}
 
-      If you did not requested this or changed your mind,
+      If you did not requested password reset or changed your mind,
       just ignore this letter.
 
   request_done_show:
-    title: Reset password
+    title: Change password
 
   change_show:
-    title: Reset password
+    title: Change password
 
   change_exec:
-    expired_token: Your password reset token is expired.
-    broken_token: Your password reset token is broken by some reason.
-      Please request another one.
+    err_expired_token: Security token expired.
+    err_broken_token: Invalid security token.
 
   change_done_show:
-    title: Reset password
+    title: Change password

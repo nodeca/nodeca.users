@@ -1,17 +1,12 @@
-// Creates user and AuthLinks
+// Creates user and AuthLinks.
+// Expects env.data to be filled with:
 //
-// Required data:
-//
-// env.data = {
-//     reg_info : {
-//         nick return
-//         email
-//         pass
-//     },
-//     oauth_info : {
-//         // If oauth used, the same hash as AuthLink schema
-//     }
-// }
+//   reg_info:
+//     nick
+//     email
+//     pass
+//   oauth_info:
+//     ... # If oauth used, the same hash as AuthLink schema
 //
 
 
@@ -21,7 +16,7 @@
 module.exports = function (N, apiPath) {
 
 
-  // Removes User and AuthLinks
+  // On error destroy created User, AuthLink, and pass `err` to `callback`.
   //
   function fail(user_id, err, callback) {
     N.models.users.User.remove({ '_id' : user_id }, function () {
@@ -32,7 +27,7 @@ module.exports = function (N, apiPath) {
   }
 
 
-  // Creates User
+  // Create user record
   //
   N.wire.on(apiPath, function user_create(env,callback) {
 
@@ -107,7 +102,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Create oauth provider record
+  // Create oauth provider record, if data filled
   //
   N.wire.after(apiPath, function create_oauth_privider(env, callback) {
 

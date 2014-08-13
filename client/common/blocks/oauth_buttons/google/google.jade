@@ -1,11 +1,15 @@
 span.oauth-btns__item
   - var link = '' +
-  -   'https://accounts.google.com/o/oauth2/auth' +
-  -   '?scope=email%20profile' +
-  -   '&state=/profile' +
-  -   '&redirect_uri=' + self.link_to('users.auth.oauth.callback', { provider: 'google' }) +
-  -   '&response_type=code' +
-  -   '&client_id=' + self.blocks.oauth['google'] +
-  -   '&approval_prompt=force'
+  - 'https://accounts.google.com/o/oauth2/auth' +
+  - '?scope=email%20profile' +
+  - '&state=/profile' +
+  - '&redirect_uri=' + self.link_to('users.auth.oauth.callback', { provider: self.provider }) +
+  - '&response_type=code' +
+  - '&client_id=' + self.client +
+  - '&approval_prompt=force'
 
-  a.oauth__link.icon.icon-google(data-url= link, title=self.t('name'), data-on-click='common.blocks.oauth_bottoms.google') g
+  a.oauth-button.icon.icon-google(
+    data-url=link
+    title=self.t('name')
+    data-on-click='common.blocks.oauth_buttons.' + self.provider
+  )

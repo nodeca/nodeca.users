@@ -34,10 +34,10 @@ module.exports = function (N, collectionName) {
     provider_user_id : String,
 
     // true if active, false when deleted
-    exist            : { 'type': Boolean, 'default': true },
+    exists           : { type: Boolean, 'default': true },
 
     // Creation date
-    ts               : { 'type': Date, 'default': Date.now },
+    ts               : { type: Date, 'default': Date.now },
 
     // Last login date
     last_ts          : Date,

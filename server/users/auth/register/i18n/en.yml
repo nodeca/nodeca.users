@@ -5,20 +5,17 @@ en-US:
   exec:
     err_busy_email: This email is already used.
     err_busy_nick: This nick is already used.
-    err_wrong_captcha_solution: Wrong CAPTCHA solution.
+    err_wrong_captcha: Wrong CAPTCHA, try again.
+
+    email_subject: '#{project_name}: activate your account'
+    email_text: |
+      Follow this link to activate your account:
+
+      #{link}
 
   activate_show:
     title: Registration
 
-  resend_activation_show:
-    title: Resend activation
 
   activate_exec:
     title: Registration
-
-  activation_email:
-    subject: '#{project_name}: Activate your account.'
-    text: |
-      Please activate your account by following this link:
-
-      #{link}

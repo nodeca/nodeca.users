@@ -4,7 +4,7 @@ if (self.email)
 - self.add_raw_data('action', 'register')
 
 #content.row
-  .col-sm-8.col-sm-offset-2
+  .col-md-6.col-md-offset-3.col-sm-8.col-sm-offset-2
     .panel.panel-default
 
       .panel-heading
@@ -12,46 +12,56 @@ if (self.email)
           .pull-right: small: a(href=self.link_to('users.auth.login.show')) #{self.t('login')}
 
 
-      form.panel-body.form-horizontal(data-on-submit='users.auth.register.exec')
-        if Object.keys(self.blocks.oauth).length
-          .form-group.oauth__block
-            .col-md-9.col-md-offset-3
-              != self.partial('@common.blocks.oauth_buttons')
-              span.help-block
-                =self.t('oauth_info')
+      form.panel-body(data-on-submit='users.auth.register.exec')
+        if self.oauth && Object.keys(self.oauth).length
+          .form-group
+            != self.partial('@common.blocks.oauth_buttons')
+            p.help-block
+              =self.t('oauth_info')
         // ko with: email
         .form-group(data-bind='css: css')
-          label.control-label.col-md-3(for='register_email') #{self.t('email')}
-          .col-md-9
-            input.form-control(id='register_email', name='email', type='email', data-bind='value: value')
-            span.help-block(data-bind='text: help')
+          label(for='register_email')= self.t('email')
+          input.form-control(
+            id='register_email'
+            name='email'
+            type='email'
+            placeholder= self.t('email_desc')
+            data-bind='value: value'
+          )
+          // ko if: message
+          p.help-block(data-bind='text: message')
+          // /ko
         // /ko
 
         // ko with: pass
         .form-group(data-bind='css: css')
-          label.control-label.col-md-3(for='register_pass') #{self.t('pass')}
-          .col-md-9
-            input.form-control(id='register_pass', name='pass', type='password', data-bind='value: value')
-            span.help-block(data-bind='text: help')
+          label(for='register_pass')= self.t('pass')
+          input.form-control(
+            id='register_pass'
+            name='pass'
+            type='password'
+            placeholder= self.t('pass_desc')
+            data-bind='value: value')
+          p.help-block(data-bind='text: help')
         // /ko
 
 
         // ko with: nick
         .form-group(data-bind='css: css')
-          label.control-label.col-md-3(for='register_nick') #{self.t('nick')}
-          .col-md-9
-            input.form-control(
-              id='register_nick',
-              name='nick',
-              type='text',
-              data-bind='value: value, valueUpdate: "afterkeydown"')
-            span.help-block(data-bind='text: help')
+          label(for='register_nick') #{self.t('nick')}
+          input.form-control(
+            id='register_nick',
+            name='nick',
+            type='text',
+            placeholder= self.t('nick_desc')
+            data-bind='value: value, valueUpdate: "afterkeydown"')
+          // ko if: message
+          p.help-block(data-bind='text: message')
+          // /ko
         // /ko
 
         // ko with: recaptcha_response_field
         != self.partial('@common.blocks.recaptcha')
         // /ko
 
-        .form-group
-          .col-md-9.col-md-offset-3
-            button.btn.btn-primary(type='submit') #{self.t('register')}
+        button.btn.btn-primary(type='submit') #{self.t('register')}

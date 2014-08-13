@@ -43,19 +43,6 @@ router:
         media_id:
           match: /[0-9a-f]{24}/
 
-    admin.users.usergroups.index:
-      "/usergroups": ~
-
-    admin.users.usergroups.new:
-      "/usergroups/new": ~
-
-    admin.users.usergroups.edit:
-      "/usergroups/edit/{_id}":
-        _id: /[0-9a-f]{24}/
-
-    admin.users.members.search:
-      "/members/search": ~
-
     users.auth.login.show:
       "/auth/login(/{redirect_id})":
         redirect_id: /[0-9a-f]{24}/
@@ -89,6 +76,20 @@ router:
 
     users.auth.oauth.error_show:
       "/auth/oa/error": ~
+
+    # Admin panel routes
+    admin.users.usergroups.index:
+      "/usergroups": ~
+
+    admin.users.usergroups.new:
+      "/usergroups/new": ~
+
+    admin.users.usergroups.edit:
+      "/usergroups/edit/{_id}":
+        _id: /[0-9a-f]{24}/
+
+    admin.users.members.search:
+      "/members/search": ~
 
   http.post:
     users.media.upload:
