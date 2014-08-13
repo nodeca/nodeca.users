@@ -66,6 +66,14 @@ module.exports = function (N, apiPath) {
   // Remember login ip and date in used AuthLink
   //
   N.wire.after(apiPath, function remember_auth_data(env, callback) {
+
+    // authLink is not filled for (register + autologin)
+    // Just skip update for this case.
+    if (!env.data.authLink) {
+      callback();
+      return;
+    }
+
     N.models.users.AuthLink.update(
       { _id: env.data.authLink._id },
       { $set: { last_ts: Date.now(), last_ip: env.req.ip } },

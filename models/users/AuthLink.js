@@ -39,8 +39,11 @@ module.exports = function (N, collectionName) {
     // Creation date
     ts               : { type: Date, 'default': Date.now },
 
+    // Creation ip
+    ip               : String,
+
     // Last login date
-    last_ts          : Date,
+    last_ts          : { type: Date, 'default': Date.now },
 
     // Last login ip
     last_ip          : String,

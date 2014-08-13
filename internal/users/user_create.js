@@ -74,13 +74,15 @@ module.exports = function (N, apiPath) {
 
     var user = env.data.user;
 
-    var authlink = new N.models.users.AuthLink({
-      'user_id': user._id,
-      'type' : 'plain',
-      'email' : env.data.reg_info.email
+    var authLink = new N.models.users.AuthLink({
+      user_id: user._id,
+      type:    'plain',
+      email:   env.data.reg_info.email,
+      ip:      env.req.ip,
+      last_ip: env.req.ip
     });
 
-    authlink.setPass(env.data.reg_info.pass, function (err) {
+    authLink.setPass(env.data.reg_info.pass, function (err) {
       if (err) {
         // Can't fill hash - delete the user.
         // Should not happen in real life
@@ -88,15 +90,13 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      authlink.save(function (err) {
+      authLink.save(function (err) {
         if (err) {
-          // Can't create authlink - delete the user.
+          // Can't create authLink - delete the user.
           // Should not happen in real life
           fail(user._id, err, callback);
           return;
         }
-
-        env.data.authLink = authlink;
 
         callback();
       });
@@ -114,18 +114,18 @@ module.exports = function (N, apiPath) {
     }
 
     var user = env.data.user;
-    var authlink = new N.models.users.AuthLink(env.data.oauth_info);
+    var authLink = new N.models.users.AuthLink(env.data.oauth_info);
 
-    authlink.user_id = user._id;
+    authLink.user_id = user._id;
+    authLink.ip      = env.req.ip;
+    authLink.last_ip = env.req.ip;
 
-    authlink.save(function (err) {
+    authLink.save(function (err) {
       if (err) {
         // Remove user and plain record
         fail(user._id, err, callback);
         return;
       }
-
-      env.data.authLink = authlink;
 
       callback();
     });

@@ -67,6 +67,8 @@ module.exports = function (N, cb) {
         }
 
         authLink.user_id = user._id;
+        authLink.ip = '127.0.0.1';
+        authLink.last_ip = '127.0.0.1';
 
         authLink.save(next);
       });
