@@ -76,11 +76,11 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
 
 // Setup listeners
 //
-N.wire.on('navigate.done:' + module.apiPath, function page_setup2() {
+N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
   // Page exit
   //
-  N.wire.on('navigate.exit:' + module.apiPath, function teardown_page() {
+  N.wire.on('navigate.exit:' + module.apiPath, function page_exit() {
     ko.cleanNode($('#content')[0]);
     view = null;
   });

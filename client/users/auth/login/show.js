@@ -38,7 +38,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
 
 // Setup listeners
 //
-N.wire.once('navigate.done:' + module.apiPath, function page_init() {
+N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
   // Page exit
   //
@@ -48,7 +48,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
   });
 
 
-  // Do login
+  // Form submit
   //
   N.wire.on('users.auth.login.plain_exec', function login(form) {
     var loginParams = form.fields;

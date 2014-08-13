@@ -21,7 +21,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
 
 // Setup listeners
 //
-N.wire.once('navigate.done:' + module.apiPath, function page_setup2() {
+N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
   // Page exit
   //
@@ -33,7 +33,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_setup2() {
 
   // Form submit
   //
-  N.wire.on('users.auth.reset_password.change_exec', function reset_password(form) {
+  N.wire.on('users.auth.reset_password.change_exec', function change_password(form) {
 
     N.io.rpc('users.auth.reset_password.change_exec', form.fields)
       .done(function () {

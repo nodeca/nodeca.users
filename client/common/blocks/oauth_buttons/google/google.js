@@ -8,8 +8,10 @@ var _ = require('lodash');
 
 var pageParams;
 
+
 var init = _.once(function () {
-  // Sets redirect action and redirect to provider
+
+  // Set redirect action and redirect to provider
   //
   N.wire.on('common.blocks.oauth_buttons.google', function set_action(event) {
     var $element = $(event.target);
