@@ -21,11 +21,11 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function validate_password(env) {
     if (!N.models.users.User.validatePassword(env.params.password)) {
-      throw {
+      return {
         code:         N.io.CLIENT_ERROR,
         message:      null,
         bad_password: true
-      }
+      };
     }
   });
 
