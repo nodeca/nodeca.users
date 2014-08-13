@@ -17,6 +17,6 @@ module.exports = function (N, apiPath) {
       };
     }
 
-    return;
+    return null;
   });
 };
