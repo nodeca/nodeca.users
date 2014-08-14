@@ -55,16 +55,15 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function fill_providers(env) {
     var providers = N.config.medialinks.providers;
     var providerList = (N.config.medialinks.albums === true) ? Object.keys(providers) : N.config.medialinks.albums;
-    var result = [];
 
-    providerList.forEach(function (providerName) {
-      result.push({
-        name: providers[providerName].name || providerName,
-        home: providers[providerName].home || ''
-      });
+    providerList = providerList.map(function (key) {
+      return {
+        name: providers[key].name || key,
+        home: providers[key].home || ''
+      };
     });
 
-    env.res.medialink_providers = result;
+    env.res.medialink_providers = providerList;
   });
 
 

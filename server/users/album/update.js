@@ -95,8 +95,7 @@ module.exports = function (N, apiPath) {
 
     var data = {
       title: env.params.title,
-      description: env.params.description,
-      last_ts: Date.now()
+      description: env.params.description
     };
 
     if (cover) {
