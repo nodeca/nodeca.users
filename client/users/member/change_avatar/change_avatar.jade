@@ -26,11 +26,9 @@
             .change-avatar-image
               canvas.change-avatar-image__canvas
               .change-avatar-image__select.hidden
-                .change-avatar-image__select-in
-                  .change-avatar-image__select-resize
           .col-md-3
             canvas.change-avatar-preview
 
       .modal-footer
         button.btn.btn-default(type='button' data-dismiss='modal')= self.t('cancel')
-        button.btn.btn-primary(type='button')= self.t('apply')
+        button.btn.btn-primary(type='button' data-on-click='users.member.change_avatar:apply')= self.t('apply')

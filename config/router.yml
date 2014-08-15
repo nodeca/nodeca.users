@@ -92,6 +92,9 @@ router:
       "/members/search": ~
 
   http.post:
+    users.member.avatar.upload:
+      "/upload_avatar": ~
+
     users.media.upload:
       "/upload/{album_id}":
         album_id:

@@ -5,3 +5,5 @@ en-US:
   cancel: Cancel
   upload_avatar: Upload avatar
   drag_to_upload: Drag avatar here to upload.
+  err_invalid_size: "#{file_name}: file is too small"
+  err_upload_failed: Upload failed
