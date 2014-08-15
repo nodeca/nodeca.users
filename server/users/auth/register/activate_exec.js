@@ -32,7 +32,7 @@ module.exports = function (N, apiPath) {
 
     N.models.users.TokenActivationEmail
         .findOne({ secret_key: env.params.secret_key, ip: env.req.ip })
-        .lean(false) // because we use model's instance method 'isExpired'
+        .lean(true) // because we use model's instance method 'isExpired'
         .exec(function (err, token) {
 
       if (err) {
@@ -41,7 +41,7 @@ module.exports = function (N, apiPath) {
       }
 
       // No token found or it's expired. Show 'Invalid token' page.
-      if (!token || token.isExpired()) {
+      if (!token) {
         callback();
         return;
       }

@@ -16,10 +16,11 @@ module.exports = function (N, apiPath) {
     env.res.head.title = env.t('title');
     env.res.secret_key = env.params.secret_key;
 
-    N.models.users.TokenResetPassword.findOne({
-      secret_key: env.params.secret_key,
-      ip:         env.req.ip
-    }, function (err, token) {
+    N.models.users.TokenResetPassword
+        .findOne({ secret_key: env.params.secret_key, ip: env.req.ip })
+        .lean(true)
+        .exec(function (err, token) {
+
       if (err) {
         callback(err);
         return;
@@ -29,7 +30,7 @@ module.exports = function (N, apiPath) {
       // Don't delete token here, we need it for exec action
       //
 
-      env.res.valid_token = token && !token.isExpired();
+      env.res.valid_token = !!token;
       callback();
     });
   });

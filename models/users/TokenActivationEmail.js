@@ -47,11 +47,6 @@ module.exports = function (N, collectionName) {
   //////////////////////////////////////////////////////////////////////////////
 
 
-  TokenActivationEmail.methods.isExpired = function isExpired() {
-    return Date.now() >= (this.create_ts.getTime() + TOKEN_EXPIRE_TIMEOUT * 1000);
-  };
-
-
   N.wire.on('init:models', function emit_init_TokenActivationEmail(__, callback) {
     N.wire.emit('init:models.' + collectionName, TokenActivationEmail, callback);
   });

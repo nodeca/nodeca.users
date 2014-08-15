@@ -34,16 +34,17 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function check_new_pass_token(env, callback) {
 
-    N.models.users.TokenResetPassword.findOne({
-      secret_key: env.params.secret_key
-    }, function (err, token) {
+    N.models.users.TokenResetPassword
+        .findOne({ secret_key: env.params.secret_key })
+        .lean(true)
+        .exec(function (err, token) {
 
       if (err) {
         callback(err);
         return;
       }
 
-      if (!token || token.isExpired()) {
+      if (!token) {
         callback({
           code:         N.io.CLIENT_ERROR,
           message:      env.t('err_expired_token'),
