@@ -117,7 +117,6 @@ module.exports = function (N, apiPath) {
     resize(fileInfo.path, {
       store: N.models.core.File,
       ext: ext,
-      imageMagick: false, // TODO: get real value
       maxSize: typeConfig.max_size,
       resize: typeConfig.resize
     }, function (err, data) {

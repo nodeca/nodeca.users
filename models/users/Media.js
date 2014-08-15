@@ -14,8 +14,6 @@ var configReader  = require('../../server/_lib/uploads_config_reader');
 module.exports = function (N, collectionName) {
 
   var mediaConfig;
-  // Need different options, depending on ImageMagick or GraphicsMagick used.
-  var gmConfigOptions;
 
 
   var Media = new Schema({
@@ -182,7 +180,6 @@ module.exports = function (N, collectionName) {
       options.path,
       {
         store: N.models.core.File,
-        imageMagick: gmConfigOptions.imageMagick,
         ext: format,
         maxSize: typeConfig.max_size || mediaConfig.max_size,
         resize: typeConfig.resize
@@ -220,29 +217,17 @@ module.exports = function (N, collectionName) {
       return;
     }
 
-    // Check is ImageMagick or GraphicsMagick installed
-    // GraphicsMagick prefered
+    // Check is GraphicsMagick installed
     exec('gm version', function (__, stdout) {
+
       // Don't check error because condition below is most strict
-      if (stdout.indexOf('GraphicsMagick') !== -1) {
-        // GraphicsMagick installed continue loading
-        gmConfigOptions = {};
-        N.wire.emit('init:models.' + collectionName, Media, callback);
+      if (stdout.indexOf('GraphicsMagick') === -1) {
+        callback(new Error('You need GraphicsMagick to run this application. Can\'t find GraphicsMagick.'));
         return;
       }
 
-      // Check ImageMagick if GraphicsMagick not found
-      exec('convert -version', function (__, stdout) {
-        // Don't check error because condition below is most strict
-        if (stdout.indexOf('ImageMagick') !== -1) {
-          // ImageMagick installed continue loading
-          gmConfigOptions = { 'imageMagick': true };
-          N.wire.emit('init:models.' + collectionName, Media, callback);
-          return;
-        }
-
-        callback(new Error('You need GraphicsMagick or ImageMagick to run this application. Can\'t find any.'));
-      });
+      // GraphicsMagick installed continue loading
+      N.wire.emit('init:models.' + collectionName, Media, callback);
     });
   });
 

@@ -4,7 +4,6 @@
 //
 // - options
 //   - store - storage interface
-//   - imageMagick - set true to use imageMagick, by default use GraphicsMagick
 //   - ext - file extension
 //   - maxSize - maximum file size if resized images
 //   - resize
@@ -38,7 +37,6 @@ var _        = require('lodash');
 var fs       = require('fs');
 
 var File;
-var gmConfigOptions;
 
 
 // Create preview for image
@@ -70,7 +68,7 @@ var createPreview = function (path, resizeConfig, imageType, callback) {
 
     // If animation not allowed - take first frame of gif image
     path = (imageType === 'gif' && resizeConfig.gif_animation === false) ? path + '[0]' : path;
-    var gmInstance = gm(path).options(gmConfigOptions);
+    var gmInstance = gm(path);
 
     // Set quality only for jpeg image
     if (outType === 'jpeg') {
@@ -218,7 +216,6 @@ var saveFiles = function (previews, maxSize, callback) {
 
 module.exports = function (src, options, callback) {
   File = options.store;
-  gmConfigOptions = options.imageMagick ? { imageMagick: true } : {};
 
   var previews = {};
   async.eachSeries(Object.keys(options.resize), function (resizeConfigKey, next) {
@@ -238,7 +235,7 @@ module.exports = function (src, options, callback) {
       previews[resizeConfigKey] = data;
 
       // Get real size after resize
-      gm(data.path).options(gmConfigOptions).size(function (err, imgSz) {
+      gm(data.path).size(function (err, imgSz) {
         if (err) {
           next(err);
           return;
