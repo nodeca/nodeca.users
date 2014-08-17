@@ -5,8 +5,8 @@ nodeca.users
 
 Nodeca Users app:
 
-- login
-- registration
+- login/registration
 - profile pages
+- albums/uploads
 
 See main repo for install instructions: https://github.com/nodeca/nodeca
