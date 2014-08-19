@@ -75,6 +75,10 @@ var createPreview = function (path, resizeConfig, imageType, callback) {
       gmInstance.quality(resizeConfig.jpeg_quality).autoOrient();
     }
 
+    if (resizeConfig.unsharp) {
+      gmInstance.unsharp('0');
+    }
+
     // Is image size smaller than 'skip_size' - skip resizing
     if (resizeConfig.skip_size && stats.size < resizeConfig.skip_size) {
 

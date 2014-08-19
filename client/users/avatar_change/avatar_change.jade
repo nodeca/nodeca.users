@@ -1,0 +1,25 @@
+.modal.fade(tabindex='-1' role='dialog')
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        button.close(data-dismiss='modal')
+          span(aria-hidden='true') &times;
+          span.sr-only= self.t('close')
+        h4.modal-title= self.t('title')
+
+      .modal-body
+        //- Hidden
+        input.avatar-change-upload__files(
+          name='files[]'
+          type='file'
+          style='position: absolute; left: -2000px'
+        )
+        .avatar-change(data-on-dragdrop='users.avatar_change:dd_area' data-on-click='users.avatar_change:select_file')
+          .avatar-change__text= self.t('drag_to_upload')
+          canvas.avatar-change__canvas.hidden
+          != self.partial('@users.avatar_change.selection_area')
+          canvas.avatar-change-preview.hidden
+
+      .modal-footer
+        button.btn.btn-default(type='button' data-dismiss='modal')= self.t('cancel')
+        button.btn.btn-primary(type='button' data-on-click='users.avatar_change:apply')= self.t('apply')

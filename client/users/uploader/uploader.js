@@ -14,7 +14,7 @@
 
 
 var async    = require('async');
-var readExif = require('./_exif');
+var readExif = require('nodeca.users/lib/exif');
 
 var settings;
 var $uploadDialog;

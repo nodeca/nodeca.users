@@ -24,6 +24,7 @@
 var _           = require('lodash');
 var mimoza      = require('mimoza');
 var revalidator = require('revalidator');
+var util        = require('util');
 
 var configRules = {
   additionalProperties: false,
@@ -63,7 +64,8 @@ var resizeConfigRules = {
     width:      { type: 'number' },
     height:     { type: 'number' },
     max_width:  { type: 'number' },
-    max_height: { type: 'number' }
+    max_height: { type: 'number' },
+    unsharp:    { type: 'boolean' }
   }
 };
 
@@ -72,6 +74,9 @@ module.exports = _.memoize(function (uploadsConfig) {
 
   config.types = config.types || {};
   config.resize = config.resize || {};
+
+  // Default max_size is 20 mb
+  config.max_size = config.max_size || 20000000;
 
   // Validate options
   var errors = [];
@@ -94,11 +99,11 @@ module.exports = _.memoize(function (uploadsConfig) {
 
   // Throw an error if validation failed
   if (errors.length > 0) {
-    var errorMessage = 'Can\'t read uploads config: ';
+    var errorMessages = [];
     for (var i = 0; i < errors.length; i++) {
-      errorMessage += '\'' + errors[i].property + '\' ' + errors[i].message + '. ';
+      errorMessages.push(util.format("'%s' %s", errors[i].property, errors[i].message));
     }
-    throw new Error(errorMessage);
+    throw new Error(errorMessages.join(', '));
   }
 
   var typesOptions = {};

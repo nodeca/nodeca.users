@@ -1,17 +1,17 @@
-options:
-  users:
-    avatars:
-      extentions: [ jpg, jpeg ]
-      jpeg_quality: 75
-      max_size: 1000000
+users:
+  avatars:
+    extentions: [ jpg, jpeg ]
+    jpeg_quality: 75
 
-      resize:
-        orig:
-          width: 150
-          height: 150
-        md:
-          width: 100
-          height: 100
-        sm:
-          width: 30
-          height: 30
+    resize:
+      orig:
+        width: 150
+        height: 150
+      md:
+        width: 100
+        height: 100
+        unsharp: true
+      sm:
+        width: 30
+        height: 30
+        unsharp: true

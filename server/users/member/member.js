@@ -43,6 +43,8 @@ module.exports = function (N, apiPath) {
     env.res.user._id = env.data.user._id;
     env.res.user.hid = env.data.user.hid;
 
+    env.res.avatar_exists = env.data.user.avatar_id ? true : false;
+
     env.res.menu_ordered = menu;
     env.res.blocks_ordered = blocks;
 

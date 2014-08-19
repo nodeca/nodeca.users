@@ -1,21 +1,22 @@
 // Upload avatar
+//
 
 
 'use strict';
 
 
-var formidable    = require('formidable');
-var tmpDir        = require('os').tmpdir();
-var fs            = require('fs');
-var async         = require('async');
-var _             = require('lodash');
-var configReader  = require('../../../_lib/uploads_config_reader');
-var resize        = require('nodeca.users/models/users/_lib/resize');
+var formidable  = require('formidable');
+var tmpDir      = require('os').tmpdir();
+var fs          = require('fs');
+var async       = require('async');
+var _           = require('lodash');
+var resizeParse = require('../../../_lib/resize_parse');
+var resize      = require('nodeca.users/models/users/_lib/resize');
 
 
 module.exports = function (N, apiPath) {
 
-  var config = configReader(((N.config.options || {}).users || {}).avatars || {});
+  var config = resizeParse(N.config.users.avatars);
 
   // CSRF comes in post data and checked separately
   N.validate(apiPath, {});

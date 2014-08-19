@@ -2,14 +2,13 @@
 
 'use strict';
 
-var fs        = require('fs');
-var extname   = require('path').extname;
-var exec      = require('child_process').exec;
-var Mongoose  = require('mongoose');
-var Schema    = Mongoose.Schema;
-var resize    = require('./_lib/resize');
-
-var configReader  = require('../../server/_lib/uploads_config_reader');
+var fs          = require('fs');
+var extname     = require('path').extname;
+var Mongoose    = require('mongoose');
+var Schema      = Mongoose.Schema;
+var resize      = require('./_lib/resize');
+var resizeParse = require('../../server/_lib/resize_parse');
+var util        = require('util');
 
 module.exports = function (N, collectionName) {
 
@@ -211,24 +210,13 @@ module.exports = function (N, collectionName) {
   N.wire.on('init:models', function emit_init_Media(__, callback) {
     // Read config
     try {
-      mediaConfig = configReader(((N.config.options || {}).users || {}).media || {});
+      mediaConfig = resizeParse(N.config.users.uploads);
     } catch (e) {
-      callback(e);
+      callback(util.format('Error in uploads config: %s.'), e.message);
       return;
     }
 
-    // Check is GraphicsMagick installed
-    exec('gm version', function (__, stdout) {
-
-      // Don't check error because condition below is most strict
-      if (stdout.indexOf('GraphicsMagick') === -1) {
-        callback(new Error('You need GraphicsMagick to run this application. Can\'t find GraphicsMagick.'));
-        return;
-      }
-
-      // GraphicsMagick installed continue loading
-      N.wire.emit('init:models.' + collectionName, Media, callback);
-    });
+    N.wire.emit('init:models.' + collectionName, Media, callback);
   });
 
 

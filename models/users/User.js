@@ -5,9 +5,10 @@ var Mongoose      = require('mongoose');
 var Schema        = Mongoose.Schema;
 var xregexp       = require('xregexp').XRegExp;
 var retricon      = require('retricon');
-var configReader  = require('../../server/_lib/uploads_config_reader');
+var configReader  = require('../../server/_lib/resize_parse');
 var _             = require('lodash');
 var async         = require('async');
+var util          = require('util');
 
 module.exports = function (N, collectionName) {
 
@@ -142,8 +143,9 @@ module.exports = function (N, collectionName) {
       var size = val.width || val.max_width;
       var style = _.clone(retricon.style.github);
 
-      var halfTileSize = Math.floor(size / ((style.tiles + 1) * 2));
-      var borderExtra = size % halfTileSize / 2;
+      var halfTiles = ((style.tiles + 1) * 2);
+      var halfTileSize = Math.floor(size / halfTiles);
+      var borderExtra = (size - (halfTiles * halfTileSize)) / 2;
 
       style.pixelPadding = 0;
       style.imagePadding = halfTileSize + borderExtra;
@@ -215,14 +217,15 @@ module.exports = function (N, collectionName) {
   N.wire.on('init:models', function emit_init_User(__, callback) {
     // Read config
     try {
-      avatarConfig = configReader(((N.config.options || {}).users || {}).avatars || {});
+      avatarConfig = configReader(N.config.users.avatars);
     } catch (e) {
-      callback(e);
+      callback(util.format('Error in avatars config: %s.'), e.message);
       return;
     }
 
     N.wire.emit('init:models.' + collectionName, User, callback);
   });
+
 
   N.wire.on('init:models.' + collectionName, function init_model_User(schema) {
     N.models[collectionName] = Mongoose.model(collectionName, schema);

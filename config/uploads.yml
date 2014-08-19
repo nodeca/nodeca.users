@@ -1,27 +1,26 @@
-options:
-  users:
-    media:
-      extentions: [ jpg, jpeg, png, gif, zip, svg ]
-      jpeg_quality: 75
-      gif_animation: true
-      max_size: 2000000
+users:
+  uploads:
+    extentions: [ jpg, jpeg, png, gif, zip, svg ]
+    jpeg_quality: 75
+    gif_animation: true
+    max_size: 2000000
 
-      resize:
-        orig:
-          width: 1280
-          skip_size: 300000
-        md:
-          width: 640
-        sm:
-          from: md
-          max_width: 170
-          height: 150
+    resize:
+      orig:
+        width: 1280
+        skip_size: 300000
+      md:
+        width: 640
+      sm:
+        from: md
+        max_width: 170
+        height: 150
 
-      types:
-        png:
-          resize:
-            orig:
-              skip_size: 1000000
-              type: png
-        gif:
-          max_size: 100000
+    types:
+      png:
+        resize:
+          orig:
+            skip_size: 1000000
+            type: png
+      gif:
+        max_size: 100000

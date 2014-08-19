@@ -4,18 +4,18 @@
 'use strict';
 
 
-var formidable    = require('formidable');
-var tmpDir        = require('os').tmpdir();
-var fs            = require('fs');
-var async         = require('async');
-var _             = require('lodash');
-var mimoza        = require('mimoza');
-var configReader  = require('../../../_lib/uploads_config_reader');
+var formidable  = require('formidable');
+var tmpDir      = require('os').tmpdir();
+var fs          = require('fs');
+var async       = require('async');
+var _           = require('lodash');
+var mimoza      = require('mimoza');
+var resizeParse = require('../../../_lib/resize_parse');
 
 
 module.exports = function (N, apiPath) {
 
-  var config = configReader(((N.config.options || {}).users || {}).media || {});
+  var config = resizeParse(N.config.users.uploads);
 
   // CSRF comes in post data and checked separately
   N.validate(apiPath, {

@@ -1,6 +1,9 @@
+// Change avatar dialog
+//
+
 'use strict';
 
-//var readExif = require('../../uploader/_exif');
+var readExif = require('nodeca.users/lib/exif');
 
 // Avatar upload finish callback
 var onUploaded;
@@ -9,7 +12,8 @@ var onUploaded;
 var image;
 
 // Avatar size config
-var avatarConfig;
+var avatarWidth = '$$ N.config.users.avatars.resize.orig.width $$';
+var avatarHeight = '$$ N.config.users.avatars.resize.orig.height $$';
 
 // The ratio of displayable image width to real image width
 var scale;
@@ -19,14 +23,19 @@ var $selectArea;
 var $canvas;
 var $canvasPreview;
 
+
 // Update select area position
 //
 function updateSelectArea() {
-  var sizeX, sizeY, left, top;
-  scale = $canvas.width() / image.width;
+  scale = $canvas.width() / $canvas[0].width;
 
-  left = top = 0;
-  sizeX = sizeY = Math.min($canvas.height(), $canvas.width());
+  var minSize = avatarWidth * scale;
+  var sizeX, sizeY, left, top;
+  var height = $canvas.height(), width = $canvas.width();
+
+  sizeX = sizeY = parseInt(Math.max(Math.min(height, width) / 4, minSize), 10);
+  left = parseInt(width / 2 - sizeX / 2, 10);
+  top = parseInt(height / 2 - sizeY / 2, 10);
 
   $selectArea.css({
     top: top + 'px',
@@ -41,18 +50,20 @@ function updateSelectArea() {
 //
 function updatePreview() {
   var ctx = $canvasPreview[0].getContext('2d');
-  $canvasPreview[0].width = 150;
-  $canvasPreview[0].height = 150;
 
   var x = parseInt($selectArea.css('left'), 10);
   var y = parseInt($selectArea.css('top'), 10);
 
-  var width = parseInt($selectArea.width(), 10);
-  var height = parseInt($selectArea.height(), 10);
+  var width = parseInt($selectArea.outerWidth(), 10);
+  var height = parseInt($selectArea.outerHeight(), 10);
 
-  var size = parseInt(width > height ? width / scale : height / scale, 10);
+  width = parseInt(width / scale, 10);
+  height = parseInt(height / scale, 10);
 
-  ctx.drawImage(image, parseInt(x / scale, 10), parseInt(y / scale, 10), size, size, 0, 0, 150, 150);
+  $canvasPreview[0].width = width;
+  $canvasPreview[0].height = height;
+
+  ctx.drawImage($canvas[0], parseInt(x / scale, 10), parseInt(y / scale, 10), width, height, 0, 0, width, height);
 }
 
 
@@ -85,6 +96,17 @@ function dragSelectArea(left, top, width, height, dX, dY) {
 }
 
 
+// Check is selected area into photo area
+//
+function checkFrames(newLeft, newTop, newWidth, newHeight, origWidth, origHeight, minSizeW, minSizeH) {
+  return !(
+    newLeft < 0 || newTop < 0 ||
+    newLeft + newWidth > origWidth || newTop + newHeight > origHeight ||
+    newWidth < minSizeW || newHeight < minSizeH
+  );
+}
+
+
 // Event handler for resizing selected area
 //
 function resizeSelectArea(left, top, width, height, dX, dY, dir) {
@@ -93,38 +115,76 @@ function resizeSelectArea(left, top, width, height, dX, dY, dir) {
   var origWidth = parseInt($canvas.width(), 10);
   var origHeight = parseInt($canvas.height(), 10);
 
-  var resizeConfig = avatarConfig.types[avatarConfig.extentions[0]].resize.orig;
-  var avatarWidth = resizeConfig.width || resizeConfig.max_width;
-  var avatarHeight = resizeConfig.height || resizeConfig.max_height;
   var minSizeW = avatarWidth * scale;
   var minSizeH = avatarHeight * scale;
 
   switch (dir) {
+    case 's':
+      newHeight = newWidth = height + dY;
+      newLeft = left - dY / 2;
+      newTop = top;
+      break;
+
+    case 'n':
+      newHeight = newWidth = height - dY;
+      newLeft = left + dY / 2;
+      newTop = top + dY;
+      break;
+
+    case 'w':
+      newHeight = newWidth = width - dX;
+      newLeft = left + dX;
+      newTop = top + dX / 2;
+      break;
+
+    case 'e':
+      newHeight = newWidth = width + dX;
+      newLeft = left;
+      newTop = top - dX / 2;
+      break;
+
     case 'se':
       dS = Math.min(dX, dY);
-
       newLeft = left;
       newTop = top;
       newHeight = newWidth = width + dS;
-
-      if (newWidth < minSizeW) {
-        newWidth = minSizeW;
-      }
-
-      if (newHeight < minSizeH) {
-        newHeight = minSizeH;
-      }
-
-      if (newLeft + newWidth > origWidth || newTop + newHeight > origHeight) {
-        newHeight = newWidth = Math.min(origWidth - newLeft, origHeight - newTop);
-      }
-
       break;
 
+    case 'nw':
+      dS = Math.min(dX, dY);
+      newLeft = left + dS;
+      newTop = top + dS;
+      newHeight = newWidth = width - dS;
+      break;
 
-    // TODO: implement other cases
+    case 'ne':
+      if (Math.abs(dX) > Math.abs(dY)) {
+        dS = -dY;
+      } else {
+        dS = dX;
+      }
+      newLeft = left;
+      newTop = top - dS;
+      newHeight = newWidth = width + dS;
+      break;
+
+    case 'sw':
+      if (Math.abs(dX) > Math.abs(dY)) {
+        dS = dY;
+      } else {
+        dS = -dX;
+      }
+      newLeft = left - dS;
+      newTop = top;
+      newHeight = newWidth = width + dS;
+      break;
+
     default:
       return;
+  }
+
+  if (!checkFrames(newLeft, newTop, newWidth, newHeight, origWidth, origHeight, minSizeW, minSizeH)) {
+    return;
   }
 
   $selectArea.css({
@@ -139,49 +199,22 @@ function resizeSelectArea(left, top, width, height, dX, dY, dir) {
 // Init select area (bind to mouse events)
 //
 function initSelectArea() {
-  var border = 10;
-  var x, y, left, top, width, height, started = false, dir;
+  var x, y, left, top, width, height, dir = null;
 
   $('body')
     .on('mouseup.change_avatar touchend.change_avatar', function () {
-      started = false;
+      dir = null;
     })
     .on('mousemove.change_avatar touchmove.change_avatar', function (event) {
-      if (!started) {
 
-        var offset = $selectArea.offset();
-        var x0 = offset.left;
-        var x1 = offset.left + parseInt($selectArea.width(), 10);
-        var y0 = offset.top;
-        var y1 = offset.top + parseInt($selectArea.height(), 10);
-
-        var isIn = event.pageX >= x0 && event.pageX <= x1 && event.pageY >= y0 && event.pageY <= y1;
-
-        var leftBorder = event.pageX >= x0 && event.pageX < x0 + border;
-        var rightBorder = event.pageX <= x1 && event.pageX > x1 - border;
-        var topBorder = event.pageY >= y0 && event.pageY < y0 + border;
-        var bottomBorder = event.pageY <= y1 && event.pageY > y1 - border;
-
-        if (isIn) {
-          dir = topBorder ? 'n' : bottomBorder ? 's' : '';
-          dir += leftBorder ? 'w' : rightBorder ? 'e' : '';
-        } else {
-          dir = '';
-        }
-
-        if (dir !== '') {
-          $selectArea.css('cursor', dir + '-resize');
-        } else {
-          $selectArea.css('cursor', 'move');
-        }
-
+      if (!dir) {
         return;
       }
 
       var dX = event.pageX - x;
       var dY = event.pageY - y;
 
-      if (dir !== '') {
+      if (dir !== 'move') {
         resizeSelectArea(left, top, width, height, dX, dY, dir);
       } else {
         dragSelectArea(left, top, width, height, dX, dY);
@@ -195,11 +228,87 @@ function initSelectArea() {
     y = event.pageY;
     left = parseInt($selectArea.css('left'), 10);
     top = parseInt($selectArea.css('top'), 10);
-    width = parseInt($selectArea.width(), 10);
-    height = parseInt($selectArea.height(), 10);
-
-    started = true;
+    width = parseInt($selectArea.outerWidth(), 10);
+    height = parseInt($selectArea.outerHeight(), 10);
   });
+
+  // All selection area selectors
+  $('.avatar-change__select, .avatar-change__select *')
+
+    // Disable dragstart event
+    .on('dragstart', function () {
+      return false;
+    })
+    .on('mousedown touchstart', function () {
+      if (!dir) {
+        dir = $(this).data('dir');
+      }
+    });
+}
+
+
+// Apply JPEG orientation to canvas
+//
+function applyOrientation(canvas, ctx, orientation) {
+  var width = canvas.width;
+  var height = canvas.height;
+
+  if (!orientation || orientation > 8) {
+    return;
+  }
+
+  if (orientation > 4) {
+    canvas.width = height;
+    canvas.height = width;
+  }
+
+  switch (orientation) {
+
+    case 2:
+      // Horizontal flip
+      ctx.translate(width, 0);
+      ctx.scale(-1, 1);
+      break;
+
+    case 3:
+      // 180 rotate left
+      ctx.translate(width, height);
+      ctx.rotate(Math.PI);
+      break;
+
+    case 4:
+      // Vertical flip
+      ctx.translate(0, height);
+      ctx.scale(1, -1);
+      break;
+
+    case 5:
+      // Vertical flip and 90 rotate right
+      ctx.rotate(0.5 * Math.PI);
+      ctx.scale(1, -1);
+      break;
+
+    case 6:
+      // 90 rotate right
+      ctx.rotate(0.5 * Math.PI);
+      ctx.translate(0, -height);
+      break;
+
+    case 7:
+      // Horizontal flip + 90 rotate right
+      ctx.rotate(0.5 * Math.PI);
+      ctx.translate(width, -height);
+      ctx.scale(-1, 1);
+      break;
+
+    case 8:
+      // 90 rotate left
+      ctx.rotate(-0.5 * Math.PI);
+      ctx.translate(-width, 0);
+      break;
+
+    default:
+  }
 }
 
 
@@ -207,13 +316,10 @@ function initSelectArea() {
 //
 function loadImage(file) {
   var ctx = $canvas[0].getContext('2d');
+  var orientation;
 
   image = new Image();
   image.onload = function () {
-
-    var resizeConfig = avatarConfig.types[avatarConfig.extentions[0]].resize.orig;
-    var avatarWidth = resizeConfig.width || resizeConfig.max_width;
-    var avatarHeight = resizeConfig.height || resizeConfig.max_height;
 
     if (image.width < avatarWidth || image.height < avatarHeight) {
       N.wire.emit('notify', t('err_invalid_size', { 'file_name': file.name }));
@@ -222,8 +328,14 @@ function loadImage(file) {
     $canvas[0].width = image.width;
     $canvas[0].height = image.height;
 
+    applyOrientation($canvas[0], ctx, orientation);
+
     ctx.drawImage(image, 0, 0, image.width, image.height);
+
+    $canvas.removeClass('hidden');
     $selectArea.removeClass('hidden');
+    $canvasPreview.removeClass('hidden');
+    $('.avatar-change__text').addClass('hidden');
 
     updateSelectArea();
     updatePreview();
@@ -232,10 +344,12 @@ function loadImage(file) {
 
   var reader = new FileReader();
 
-  reader.onloadend = function () {
-    //var exifData = readExif(new Uint8Array(e.target.result));
+  reader.onloadend = function (e) {
+    var exifData = readExif(new Uint8Array(e.target.result));
 
-    // TODO: orientation
+    if (exifData && exifData.orientation) {
+      orientation = exifData.orientation;
+    }
 
     image.src = window.URL.createObjectURL(file);
   };
@@ -244,27 +358,12 @@ function loadImage(file) {
 }
 
 
-// Get avatar size config
-//
-N.wire.before('users.member.change_avatar', function load_config(data, callback) {
-  if (avatarConfig) {
-    callback();
-    return;
-  }
-
-  N.io.rpc('users.member.avatar.config').done(function (data) {
-    avatarConfig = data.size_config;
-    callback();
-  });
-});
-
-
 // Init dialog on event
 //
-N.wire.on('users.member.change_avatar', function show_change_avatar(__, callback) {
+N.wire.on('users.avatar_change', function show_change_avatar(__, callback) {
   onUploaded = callback;
 
-  $dialog = $(N.runtime.render('users.member.change_avatar'));
+  $dialog = $(N.runtime.render('users.avatar_change'));
   $('body').append($dialog);
 
   $(window).on('resize.change_avatar', function () {
@@ -279,16 +378,17 @@ N.wire.on('users.member.change_avatar', function show_change_avatar(__, callback
     $('body').off('mouseup.change_avatar touchend.change_avatar mousemove.change_avatar touchmove.change_avatar');
     $(window).off('resize.change_avatar');
     onUploaded = null;
+    image = null;
   });
 
   $dialog.modal('show');
-  $selectArea = $('.change-avatar-image__select');
-  $canvas = $('.change-avatar-image__canvas');
-  $canvasPreview = $('.change-avatar-preview');
+  $selectArea = $('.avatar-change__select');
+  $canvas = $('.avatar-change__canvas');
+  $canvasPreview = $('.avatar-change-preview');
 
   initSelectArea();
 
-  $('.change-avatar-upload__files').on('change', function () {
+  $('.avatar-change-upload__files').on('change', function () {
     var files = $(this).get(0).files;
     if (files.length > 0) {
       loadImage(files[0]);
@@ -299,16 +399,21 @@ N.wire.on('users.member.change_avatar', function show_change_avatar(__, callback
 
 // Show system dialog file selection
 //
-N.wire.on('users.member.change_avatar:select_file', function select_file() {
-  $('.change-avatar-upload__files').click();
+N.wire.on('users.avatar_change:select_file', function select_file() {
+  // If image already selected don't open select dialog again
+  if (image) {
+    return;
+  }
+
+  $('.avatar-change-upload__files').click();
 });
 
 
 // Handles the event when user drag file to drag drop zone
 //
-N.wire.on('users.member.change_avatar:dd_area', function change_avatar_dd(event) {
+N.wire.on('users.avatar_change:dd_area', function change_avatar_dd(event) {
   var x0, y0, x1, y1, ex, ey;
-  var $dropZone = $('.change-avatar-upload');
+  var $dropZone = $('.avatar-change');
 
   switch (event.type) {
     case 'dragenter':
@@ -343,7 +448,7 @@ N.wire.on('users.member.change_avatar:dd_area', function change_avatar_dd(event)
 
 // Save selected avatar
 //
-N.wire.on('users.member.change_avatar:apply', function change_avatar_apply() {
+N.wire.on('users.avatar_change:apply', function change_avatar_apply() {
   $canvasPreview[0].toBlob(function (blob) {
     var formData = new FormData();
     formData.append('file', blob);
