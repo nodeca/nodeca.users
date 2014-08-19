@@ -129,6 +129,7 @@ module.exports = function (N, apiPath) {
         }
 
         env.data.old_avatar = env.data.user.avatar_id;
+        env.res.avatar_id = data.id;
         N.models.users.User.update({ _id: env.data.user._id }, { avatar_id: data.id }, callback);
       });
     });

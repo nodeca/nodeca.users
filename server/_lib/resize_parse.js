@@ -36,7 +36,7 @@ var configRules = {
       items: { type: 'string', pattern: /[a-z]+/ },
       required: true
     },
-    max_size:      { type: 'number', required: true },
+    max_size:      { type: 'number' },
     jpeg_quality:  { type: 'number' },
     gif_animation: { type: 'boolean' },
     resize:        { type: 'object' },
@@ -74,9 +74,6 @@ module.exports = _.memoize(function (uploadsConfig) {
 
   config.types = config.types || {};
   config.resize = config.resize || {};
-
-  // Default max_size is 20 mb
-  config.max_size = config.max_size || 20000000;
 
   // Validate options
   var errors = [];

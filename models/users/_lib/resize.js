@@ -173,7 +173,7 @@ var saveFiles = function (previews, maxSize, callback) {
 
       previews[key].fileSize = stats.size;
 
-      if (stats.size > maxSize) {
+      if (maxSize && stats.size > maxSize) {
         next(new Error('Can\'t save file: max size exceeded'));
         return;
       }

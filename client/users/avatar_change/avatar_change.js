@@ -18,6 +18,9 @@ var avatarHeight = '$$ N.config.users.avatars.resize.orig.height $$';
 // The ratio of displayable image width to real image width
 var scale;
 
+// Dialog data (data.avatar_id will be filled after upload)
+var data;
+
 var $dialog;
 var $selectArea;
 var $canvas;
@@ -199,23 +202,23 @@ function resizeSelectArea(left, top, width, height, dX, dY, dir) {
 // Init select area (bind to mouse events)
 //
 function initSelectArea() {
-  var x, y, left, top, width, height, dir = null;
+  var x, y, left, top, width, height, action = null;
 
   $('body')
     .on('mouseup.change_avatar touchend.change_avatar', function () {
-      dir = null;
+      action = null;
     })
     .on('mousemove.change_avatar touchmove.change_avatar', function (event) {
 
-      if (!dir) {
+      if (!action) {
         return;
       }
 
       var dX = event.pageX - x;
       var dY = event.pageY - y;
 
-      if (dir !== 'move') {
-        resizeSelectArea(left, top, width, height, dX, dY, dir);
+      if (action !== 'move') {
+        resizeSelectArea(left, top, width, height, dX, dY, action);
       } else {
         dragSelectArea(left, top, width, height, dX, dY);
       }
@@ -240,8 +243,8 @@ function initSelectArea() {
       return false;
     })
     .on('mousedown touchstart', function () {
-      if (!dir) {
-        dir = $(this).data('dir');
+      if (!action) {
+        action = $(this).data('action');
       }
     });
 }
@@ -360,7 +363,8 @@ function loadImage(file) {
 
 // Init dialog on event
 //
-N.wire.on('users.avatar_change', function show_change_avatar(__, callback) {
+N.wire.on('users.avatar_change', function show_change_avatar(params, callback) {
+  data = params;
   onUploaded = callback;
 
   $dialog = $(N.runtime.render('users.avatar_change'));
@@ -462,7 +466,8 @@ N.wire.on('users.avatar_change:apply', function change_avatar_apply() {
       processData: false,
       contentType: false
     })
-      .done(function () {
+      .done(function (result) {
+        data.avatar_id = result.avatar_id;
         $dialog.modal('hide');
         onUploaded();
       })

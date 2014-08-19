@@ -39,6 +39,7 @@ module.exports = function (N, apiPath) {
       }
 
       env.data.user = user;
+      env.res.avatar_id = user.avatar_fallback;
       callback();
     });
   });
@@ -53,7 +54,7 @@ module.exports = function (N, apiPath) {
 
   // Remove avatar from file store
   //
-  N.wire.after(apiPath, function save_media(env, callback) {
+  N.wire.after(apiPath, function remove_avatar_file(env, callback) {
     if (!env.data.user.avatar_id) {
       callback();
       return;
