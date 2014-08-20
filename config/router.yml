@@ -92,7 +92,7 @@ router:
       "/members/search": ~
 
   http.post:
-    users.member.avatar.upload:
+    users.avatar.upload:
       "/upload_avatar": ~
 
     users.media.upload:

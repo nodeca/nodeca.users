@@ -7,12 +7,12 @@
     h1.page-head__title(itemprop='name')= self.users[self.user._id].name
     p.page-head__descr.hidden-xs(itemprop='description')
 
-  .member-layout
+  - var mod = self.avatar_exists ? 'member-layout__m-avatar-exists' : '';
+  .member-layout(class=mod)
     .member-sidebar
       .member-avatar
         if own_page
-          if self.avatar_exists
-            a.member-avatar__delete.btn.btn-xs.btn-default(href='#' data-on-click='users.member:detete_avatar').icon.icon-cancel
+          a.member-avatar__delete.btn.btn-xs.btn-default(href='#' data-on-click='users.member:detete_avatar').icon.icon-cancel
           a.member-avatar__link(href='#' data-on-click='users.member:change_avatar')
             img.member-avatar__image(src=self.link_to('core.gridfs', { bucket: self.users[self.user._id].avatar_id }))
             .member-avatar__caption= self.t('change_avatar')

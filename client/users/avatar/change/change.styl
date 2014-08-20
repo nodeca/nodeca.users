@@ -1,16 +1,18 @@
 .avatar-change
   position relative
   margin 0 auto
-  cursor move
   text-align center
   min-height '$$ N.config.users.avatars.resize.orig.height $$'px
 
 .avatar-change__text
   padding 30px
   text-align center
+  display block
 
 .avatar-change__canvas
+  display none
   max-width 100%
+  margin 0 auto
 
 .avatar-change-preview
   position absolute
@@ -19,6 +21,20 @@
   border 2px solid #ccc
   width '$$ N.config.users.avatars.resize.md.width $$'px
   height '$$ N.config.users.avatars.resize.md.height $$'px
+  display none
 
 .avatar-change.active
   border 1px dashed #000000
+
+.avatar-change.avatar-change__m-loaded
+  .avatar-change__canvas
+    display block
+
+  .avatar-cropper
+    display block
+
+  .avatar-change-preview
+    display block
+
+  .avatar-change__text
+    display none

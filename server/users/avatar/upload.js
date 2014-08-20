@@ -10,7 +10,7 @@ var tmpDir      = require('os').tmpdir();
 var fs          = require('fs');
 var async       = require('async');
 var _           = require('lodash');
-var resizeParse = require('../../../_lib/resize_parse');
+var resizeParse = require('nodeca.users/server/_lib/resize_parse');
 var resize      = require('nodeca.users/models/users/_lib/resize');
 
 

@@ -32,11 +32,21 @@ var $canvas;
 var $canvasPreview;
 
 
-var cropFrame = null;
+// Get canvas position relative to parent (include margin)
+//
+function getCanvasPosition () {
+  var canvasPosition = $canvas.position();
+
+  return {
+    left: canvasPosition.left + parseFloat($canvas.css('marginLeft')),
+    top: canvasPosition.top + parseFloat($canvas.css('marginTop'))
+  };
+}
+
 
 // Update select area position
 //
-var updateCropArea = _.debounce(function () {
+var updateCropArea = function () {
   scale = $canvas.width() / $canvas[0].width;
 
   var minSize = avatarWidth * scale;
@@ -47,30 +57,32 @@ var updateCropArea = _.debounce(function () {
   left = parseInt(width / 2 - sizeX / 2, 10);
   top = parseInt(height / 2 - sizeY / 2, 10);
 
-  if (cropFrame) {
-    raf.cancel(cropFrame);
-  }
+  var canvasPosition = getCanvasPosition();
 
-  raf(function () {
-    $selectArea.css({
-      top: top + 'px',
-      left: left + 'px',
-      width: sizeX + 'px',
-      height: sizeY + 'px'
-    });
+  $selectArea.css({
+    top: top + canvasPosition.top + 'px',
+    left: left + canvasPosition.left + 'px',
+    width: sizeX + 'px',
+    height: sizeY + 'px'
   });
-}, 50, { maxWait: 70 });
+};
 
 
 var previewFrame = null;
 
 // Update preview image (rescaled selection)
 //
-var updatePreview = _.debounce(function () {
+var updatePreview = _.debounce(function (withCropArea) {
+  if (withCropArea) {
+    updateCropArea();
+  }
+
   var ctx = $canvasPreview[0].getContext('2d');
 
-  var x = parseInt($selectArea.css('left'), 10);
-  var y = parseInt($selectArea.css('top'), 10);
+  var canvasPosition = getCanvasPosition();
+
+  var x = parseInt($selectArea.css('left'), 10) - canvasPosition.left;
+  var y = parseInt($selectArea.css('top'), 10) - canvasPosition.top;
 
   var width = parseInt($selectArea.outerWidth(), 10);
   var height = parseInt($selectArea.outerHeight(), 10);
@@ -117,8 +129,10 @@ function dragSelectArea(left, top, width, height, dX, dY) {
     newTop = origHeight - height;
   }
 
-  $selectArea.css('left', newLeft + 'px');
-  $selectArea.css('top', newTop + 'px');
+  var canvasPosition = getCanvasPosition();
+
+  $selectArea.css('left', newLeft + canvasPosition.left + 'px');
+  $selectArea.css('top', newTop + canvasPosition.top + 'px');
 }
 
 
@@ -213,9 +227,11 @@ function resizeSelectArea(left, top, width, height, dX, dY, dir) {
     return;
   }
 
+  var canvasPosition = getCanvasPosition();
+
   $selectArea.css({
-    top: newTop + 'px',
-    left: newLeft + 'px',
+    top: newTop + canvasPosition.top + 'px',
+    left: newLeft + canvasPosition.left + 'px',
     width: newWidth + 'px',
     height: newHeight + 'px'
   });
@@ -250,26 +266,21 @@ function initSelectArea() {
     });
 
   $selectArea.on('mousedown touchstart', function (event) {
+    var canvasPosition = getCanvasPosition();
+
     x = event.pageX;
     y = event.pageY;
-    left = parseInt($selectArea.css('left'), 10);
-    top = parseInt($selectArea.css('top'), 10);
+    left = parseInt($selectArea.css('left'), 10) - canvasPosition.left;
+    top = parseInt($selectArea.css('top'), 10) - canvasPosition.top;
     width = parseInt($selectArea.outerWidth(), 10);
     height = parseInt($selectArea.outerHeight(), 10);
+
+    if (!action) {
+      action = $(event.target).data('action');
+    }
+
+    return false;
   });
-
-  // All selection area selectors
-  $('.avatar-cropper, .avatar-cropper *')
-
-    // Disable dragstart event
-    .on('dragstart', function () {
-      return false;
-    })
-    .on('mousedown touchstart', function () {
-      if (!action) {
-        action = $(this).data('action');
-      }
-    });
 }
 
 
@@ -349,6 +360,7 @@ function loadImage(file) {
 
     if (image.width < avatarWidth || image.height < avatarHeight) {
       N.wire.emit('notify', t('err_invalid_size', { w: avatarWidth, h: avatarHeight }));
+      return;
     }
 
     $canvas[0].width = image.width;
@@ -358,13 +370,9 @@ function loadImage(file) {
 
     ctx.drawImage(image, 0, 0, image.width, image.height);
 
-    $canvas.removeClass('hidden');
-    $selectArea.removeClass('hidden');
-    $canvasPreview.removeClass('hidden');
-    $('.avatar-change__text').addClass('hidden');
+    $('.avatar-change').addClass('avatar-change__m-loaded');
 
-    updateCropArea();
-    updatePreview();
+    updatePreview(true);
   };
 
 
@@ -386,17 +394,17 @@ function loadImage(file) {
 
 // Init dialog on event
 //
-N.wire.on('users.avatar_change', function show_change_avatar(params, callback) {
+N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
   data = params;
   onUploaded = callback;
 
-  $dialog = $(N.runtime.render('users.avatar_change'));
+  $dialog = $(N.runtime.render('users.avatar.change'));
   $('body').append($dialog);
 
   $(window).on('resize.change_avatar', function () {
-    updateCropArea();
-    updatePreview();
+    updatePreview(true);
   });
+
   // When dialog closes - remove it from body
   $dialog.on('hidden.bs.modal', function () {
     $dialog.remove();
@@ -426,19 +434,14 @@ N.wire.on('users.avatar_change', function show_change_avatar(params, callback) {
 
 // Show system dialog file selection
 //
-N.wire.on('users.avatar_change:select_file', function select_file() {
-  // If image already selected don't open select dialog again
-  if (image) {
-    return;
-  }
-
+N.wire.on('users.avatar.change:select_file', function select_file() {
   $('.avatar-change__upload').click();
 });
 
 
 // Handles the event when user drag file to drag drop zone
 //
-N.wire.on('users.avatar_change:dd_area', function change_avatar_dd(event) {
+N.wire.on('users.avatar.change:dd_area', function change_avatar_dd(event) {
   var x0, y0, x1, y1, ex, ey;
   var $dropZone = $('.avatar-change');
 
@@ -475,14 +478,14 @@ N.wire.on('users.avatar_change:dd_area', function change_avatar_dd(event) {
 
 // Save selected avatar
 //
-N.wire.on('users.avatar_change:apply', function change_avatar_apply() {
+N.wire.on('users.avatar.change:apply', function change_avatar_apply() {
   $canvasPreview[0].toBlob(function (blob) {
     var formData = new FormData();
     formData.append('file', blob);
     formData.append('csrf', N.runtime.csrf);
 
     $.ajax({
-      url: N.router.linkTo('users.member.avatar.upload'),
+      url: N.router.linkTo('users.avatar.upload'),
       type: 'POST',
       data: formData,
       dataType: 'json',
