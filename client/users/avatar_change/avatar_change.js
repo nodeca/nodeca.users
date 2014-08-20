@@ -3,6 +3,11 @@
 
 'use strict';
 
+
+var _   = require('lodash');
+var raf = require('raf');
+
+
 var readExif = require('nodeca.users/lib/exif');
 
 // Avatar upload finish callback
@@ -27,9 +32,11 @@ var $canvas;
 var $canvasPreview;
 
 
+var cropFrame = null;
+
 // Update select area position
 //
-function updateSelectArea() {
+var updateCropArea = _.debounce(function () {
   scale = $canvas.width() / $canvas[0].width;
 
   var minSize = avatarWidth * scale;
@@ -40,18 +47,26 @@ function updateSelectArea() {
   left = parseInt(width / 2 - sizeX / 2, 10);
   top = parseInt(height / 2 - sizeY / 2, 10);
 
-  $selectArea.css({
-    top: top + 'px',
-    left: left + 'px',
-    width: sizeX + 'px',
-    height: sizeY + 'px'
+  if (cropFrame) {
+    raf.cancel(cropFrame);
+  }
+
+  raf(function () {
+    $selectArea.css({
+      top: top + 'px',
+      left: left + 'px',
+      width: sizeX + 'px',
+      height: sizeY + 'px'
+    });
   });
-}
+}, 50, { maxWait: 70 });
 
 
-// Update preview canvas (crop by selected area)
+var previewFrame = null;
+
+// Update preview image (rescaled selection)
 //
-function updatePreview() {
+var updatePreview = _.debounce(function () {
   var ctx = $canvasPreview[0].getContext('2d');
 
   var x = parseInt($selectArea.css('left'), 10);
@@ -63,11 +78,19 @@ function updatePreview() {
   width = parseInt(width / scale, 10);
   height = parseInt(height / scale, 10);
 
-  $canvasPreview[0].width = width;
-  $canvasPreview[0].height = height;
+  if (previewFrame) {
+    raf.cancel(previewFrame);
+  }
 
-  ctx.drawImage($canvas[0], parseInt(x / scale, 10), parseInt(y / scale, 10), width, height, 0, 0, width, height);
-}
+  previewFrame = raf(function () {
+    previewFrame = null;
+    $canvasPreview[0].width = width;
+    $canvasPreview[0].height = height;
+
+    ctx.drawImage($canvas[0], parseInt(x / scale, 10), parseInt(y / scale, 10), width, height, 0, 0, width, height);
+  });
+
+}, 50, { maxWait: 70 });
 
 
 // Event handler for moving selected area
@@ -236,7 +259,7 @@ function initSelectArea() {
   });
 
   // All selection area selectors
-  $('.avatar-change__select, .avatar-change__select *')
+  $('.avatar-cropper, .avatar-cropper *')
 
     // Disable dragstart event
     .on('dragstart', function () {
@@ -274,7 +297,7 @@ function applyOrientation(canvas, ctx, orientation) {
       break;
 
     case 3:
-      // 180 rotate left
+      // rotate 180 degrees left
       ctx.translate(width, height);
       ctx.rotate(Math.PI);
       break;
@@ -286,26 +309,26 @@ function applyOrientation(canvas, ctx, orientation) {
       break;
 
     case 5:
-      // Vertical flip and 90 rotate right
+      // Vertical flip + rotate right
       ctx.rotate(0.5 * Math.PI);
       ctx.scale(1, -1);
       break;
 
     case 6:
-      // 90 rotate right
+      // Rotate right
       ctx.rotate(0.5 * Math.PI);
       ctx.translate(0, -height);
       break;
 
     case 7:
-      // Horizontal flip + 90 rotate right
+      // Horizontal flip + rotate right
       ctx.rotate(0.5 * Math.PI);
       ctx.translate(width, -height);
       ctx.scale(-1, 1);
       break;
 
     case 8:
-      // 90 rotate left
+      // Rotate left
       ctx.rotate(-0.5 * Math.PI);
       ctx.translate(-width, 0);
       break;
@@ -325,7 +348,7 @@ function loadImage(file) {
   image.onload = function () {
 
     if (image.width < avatarWidth || image.height < avatarHeight) {
-      N.wire.emit('notify', t('err_invalid_size', { 'file_name': file.name }));
+      N.wire.emit('notify', t('err_invalid_size', { w: avatarWidth, h: avatarHeight }));
     }
 
     $canvas[0].width = image.width;
@@ -340,7 +363,7 @@ function loadImage(file) {
     $canvasPreview.removeClass('hidden');
     $('.avatar-change__text').addClass('hidden');
 
-    updateSelectArea();
+    updateCropArea();
     updatePreview();
   };
 
@@ -371,7 +394,7 @@ N.wire.on('users.avatar_change', function show_change_avatar(params, callback) {
   $('body').append($dialog);
 
   $(window).on('resize.change_avatar', function () {
-    updateSelectArea();
+    updateCropArea();
     updatePreview();
   });
   // When dialog closes - remove it from body
@@ -386,13 +409,13 @@ N.wire.on('users.avatar_change', function show_change_avatar(params, callback) {
   });
 
   $dialog.modal('show');
-  $selectArea = $('.avatar-change__select');
+  $selectArea = $('.avatar-cropper');
   $canvas = $('.avatar-change__canvas');
   $canvasPreview = $('.avatar-change-preview');
 
   initSelectArea();
 
-  $('.avatar-change-upload__files').on('change', function () {
+  $('.avatar-change__upload').on('change', function () {
     var files = $(this).get(0).files;
     if (files.length > 0) {
       loadImage(files[0]);
@@ -409,7 +432,7 @@ N.wire.on('users.avatar_change:select_file', function select_file() {
     return;
   }
 
-  $('.avatar-change-upload__files').click();
+  $('.avatar-change__upload').click();
 });
 
 
@@ -475,5 +498,6 @@ N.wire.on('users.avatar_change:apply', function change_avatar_apply() {
         $dialog.modal('hide');
         N.wire.emit('notify', t('err_upload_failed'));
       });
-  }, 'image/jpeg', 100);
+
+  }, 'image/jpeg', 90);
 });

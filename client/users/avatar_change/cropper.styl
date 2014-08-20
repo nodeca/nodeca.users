@@ -1,0 +1,90 @@
+cropper_border = 2px
+cropper_resize_width = 10px
+cropper_resize_offset = -5px
+
+.avatar-cropper
+  position absolute
+  left 0px
+  top 0px
+
+.avatar-cropper__move
+  border cropper_border dotted #ccc
+  position absolute
+  top 0
+  bottom 0
+  right 0
+  left 0
+  z-index 5
+  background-color rgba(255, 255, 255, 0.25)
+
+.avatar-cropper__left
+  position absolute
+  top 0px
+  bottom 0px
+  left cropper_resize_offset
+  width cropper_resize_width
+  z-index 10
+  cursor w-resize
+
+.avatar-cropper__top
+  position absolute
+  top cropper_resize_offset
+  left 0px
+  right 0px
+  height cropper_resize_width
+  z-index 10
+  cursor n-resize
+
+.avatar-cropper__bottom
+  position absolute
+  bottom cropper_resize_offset
+  left 0px
+  right 0px
+  height cropper_resize_width
+  z-index 10
+  cursor s-resize
+
+.avatar-cropper__right
+  position absolute
+  top 0px
+  bottom 0px
+  right cropper_resize_offset
+  width cropper_resize_width
+  z-index 10
+  cursor e-resize
+
+.avatar-cropper__top-left
+  position absolute
+  width cropper_resize_width
+  height cropper_resize_width
+  left -4px
+  top -4px
+  z-index 20
+  cursor nw-resize
+
+.avatar-cropper__top-right
+  position absolute
+  width cropper_resize_width
+  height cropper_resize_width
+  right cropper_resize_offset
+  top cropper_resize_offset
+  z-index 20
+  cursor ne-resize
+
+.avatar-cropper__bottom-right
+  position absolute
+  width cropper_resize_width
+  height cropper_resize_width
+  right cropper_resize_offset
+  bottom cropper_resize_offset
+  z-index 20
+  cursor se-resize
+
+.avatar-cropper__bottom-left
+  position absolute
+  width cropper_resize_width
+  height cropper_resize_width
+  left cropper_resize_offset
+  bottom cropper_resize_offset
+  z-index 20
+  cursor sw-resize

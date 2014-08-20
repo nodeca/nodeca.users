@@ -9,17 +9,30 @@
 
       .modal-body
         //- Hidden
-        input.avatar-change-upload__files(
+        input.avatar-change__upload(
           name='files[]'
           type='file'
           style='position: absolute; left: -2000px'
         )
-        .avatar-change(data-on-dragdrop='users.avatar_change:dd_area' data-on-click='users.avatar_change:select_file')
+        .avatar-change(data-on-dragdrop='users.avatar_change:dd_area')
           .avatar-change__text= self.t('drag_to_upload')
           canvas.avatar-change__canvas.hidden
-          != self.partial('@users.avatar_change.selection_area')
+          != self.partial('@users.avatar_change.cropper')
+
           canvas.avatar-change-preview.hidden
 
       .modal-footer
-        button.btn.btn-default(type='button' data-dismiss='modal')= self.t('cancel')
-        button.btn.btn-primary(type='button' data-on-click='users.avatar_change:apply')= self.t('apply')
+        button.btn.btn-link.pull-left(
+          type='button'
+          data-on-click='users.avatar_change:select_file'
+        )= self.t('select')
+
+        button.btn.btn-default(
+          type='button'
+          data-dismiss='modal'
+        )= self.t('cancel')
+
+        button.btn.btn-primary(
+          type='button'
+          data-on-click='users.avatar_change:apply'
+        )= self.t('apply')

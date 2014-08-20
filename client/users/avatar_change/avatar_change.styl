@@ -1,3 +1,10 @@
+.avatar-change
+  position relative
+  margin 0 auto
+  cursor move
+  text-align center
+  min-height '$$ N.config.users.avatars.resize.orig.height $$'px
+
 .avatar-change__text
   padding 30px
   text-align center
@@ -5,110 +12,13 @@
 .avatar-change__canvas
   max-width 100%
 
-.avatar-change
-  position relative
-  margin 0 auto
-  cursor move
-
 .avatar-change-preview
   position absolute
-  right 0px
-  top 0px
-  border 1px solid #ccc
-  width 50px
-  height 50px
-
-.change-avatar
-  text-align left
+  right 10px
+  top 10px
+  border 2px solid #ccc
+  width '$$ N.config.users.avatars.resize.md.width $$'px
+  height '$$ N.config.users.avatars.resize.md.height $$'px
 
 .avatar-change.active
   border 1px dashed #000000
-
-draggable-border-size = 10px
-draggable-border-offset = -4px
-
-.avatar-change__select
-  position absolute
-  left 0px
-  top 0px
-
-.avatar-change__select-move
-  border 2px dotted #ccc
-  position absolute
-  top 0px
-  bottom 0px
-  right 0px
-  left 0px
-  z-index 5
-
-.avatar-change__select-left
-  position absolute
-  top 0px
-  bottom 0px
-  left draggable-border-offset
-  width draggable-border-size
-  z-index 10
-  cursor w-resize
-
-.avatar-change__select-top
-  position absolute
-  top draggable-border-offset
-  left 0px
-  right 0px
-  height draggable-border-size
-  z-index 10
-  cursor n-resize
-
-.avatar-change__select-bottom
-  position absolute
-  bottom draggable-border-offset
-  left 0px
-  right 0px
-  height draggable-border-size
-  z-index 10
-  cursor s-resize
-
-.avatar-change__select-right
-  position absolute
-  top 0px
-  bottom 0px
-  right draggable-border-offset
-  width draggable-border-size
-  z-index 10
-  cursor e-resize
-
-.avatar-change__select-top-left
-  position absolute
-  width draggable-border-size
-  height draggable-border-size
-  left -4px
-  top -4px
-  z-index 20
-  cursor nw-resize
-
-.avatar-change__select-top-right
-  position absolute
-  width draggable-border-size
-  height draggable-border-size
-  right draggable-border-offset
-  top draggable-border-offset
-  z-index 20
-  cursor ne-resize
-
-.avatar-change__select-bottom-right
-  position absolute
-  width draggable-border-size
-  height draggable-border-size
-  right draggable-border-offset
-  bottom draggable-border-offset
-  z-index 20
-  cursor se-resize
-
-.avatar-change__select-bottom-left
-  position absolute
-  width draggable-border-size
-  height draggable-border-size
-  left draggable-border-offset
-  bottom draggable-border-offset
-  z-index 20
-  cursor sw-resize

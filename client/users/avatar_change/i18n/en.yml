@@ -1,8 +1,12 @@
 en-US:
-  close: Close
   title: Change avatar
+  close: Close
+
   apply: OK
   cancel: Cancel
+  select: Select file
+
   drag_to_upload: Drag avatar here or click to upload.
-  err_invalid_size: "#{file_name}: file is too small"
+
+  err_invalid_size: "Image too small. Should be at least #{w}x#{h}."
   err_upload_failed: Upload failed
