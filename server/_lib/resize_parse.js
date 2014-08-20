@@ -58,19 +58,21 @@ var typeConfigRules = {
 var resizeConfigRules = {
   additionalProperties: false,
   properties: {
-    skip_size:  { type: 'number' },
-    type:       { enum: [ 'jpeg', 'png', 'gif' ] },
-    from:       { enum: [ 'orig', 'md', 'sm' ] },
-    width:      { type: 'number' },
-    height:     { type: 'number' },
-    max_width:  { type: 'number' },
-    max_height: { type: 'number' },
-    unsharp:    { type: 'boolean' }
+    skip_size:    { type: 'number' },
+    type:         { enum: [ 'jpeg', 'png', 'gif' ] },
+    from:         { enum: [ 'orig', 'md', 'sm' ] },
+    width:        { type: 'number' },
+    height:       { type: 'number' },
+    max_width:    { type: 'number' },
+    max_height:   { type: 'number' },
+    jpeg_quality: { type: 'number' },
+    unsharp:      { type: 'boolean' }
   }
 };
 
 module.exports = _.memoize(function (uploadsConfig) {
   var config = _.cloneDeep(uploadsConfig);
+  revalidator.validate.messages.additionalProperties = 'not allowed';
 
   config.types = config.types || {};
   config.resize = config.resize || {};
@@ -130,7 +132,8 @@ module.exports = _.memoize(function (uploadsConfig) {
         // For jpeg preview assign 'jpeg_quality' option
         if (configForExt.resize[key].type === 'jpeg' ||
             (realExtension === 'jpeg' && !configForExt.resize[key].type)) {
-          configForExt.resize[key].jpeg_quality = previewTypeOptions.jpeg_quality || config.jpeg_quality;
+          configForExt.resize[key].jpeg_quality =
+            configForExt.resize[key].jpeg_quality || previewTypeOptions.jpeg_quality || config.jpeg_quality;
         }
 
         // For gif preview assign 'gif_animation' option

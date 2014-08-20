@@ -212,7 +212,7 @@ module.exports = function (N, collectionName) {
     try {
       mediaConfig = resizeParse(N.config.users.uploads);
     } catch (e) {
-      callback(util.format('Error in uploads config: %s.'), e.message);
+      callback(util.format('Error in uploads config: %s.', e.message));
       return;
     }
 

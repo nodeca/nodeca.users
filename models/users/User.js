@@ -219,7 +219,7 @@ module.exports = function (N, collectionName) {
     try {
       avatarConfig = configReader(N.config.users.avatars);
     } catch (e) {
-      callback(util.format('Error in avatars config: %s.'), e.message);
+      callback(util.format('Error in avatars config: %s.', e.message));
       return;
     }
 
