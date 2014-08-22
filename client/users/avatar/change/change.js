@@ -446,16 +446,20 @@ function initSelectArea() {
         return;
       }
 
-      // If mouse button up
-      if (event.which === 0) {
+      // Detect mouse button up for case when `mouseup` event happens
+      // out of browser window. Check current state directly. Skip this check
+      // for touch events, because they have invalid mouse buttons values.
+      // `event.which` works in chrome, `event.buttons` in firefox
+      if (event.type === 'mousemove' && (event.which === 0 || event.buttons === 0)) {
         $dialog.removeClass('avatar-dialog__m-cursor-' + action);
         action = null;
         return;
       }
 
       var absoluteOffset = $canvas.offset();
-      var mouseX = (event.pageX - absoluteOffset.left) / viewRatio;
-      var mouseY = (event.pageY - absoluteOffset.top) / viewRatio;
+      var point = event.originalEvent.touches ? event.originalEvent.touches[0] : event;
+      var mouseX = (point.pageX - absoluteOffset.left) / viewRatio;
+      var mouseY = (point.pageY - absoluteOffset.top) / viewRatio;
 
       if (action !== 'move') {
         cropperResize(mouseX, mouseY, action);
@@ -469,10 +473,11 @@ function initSelectArea() {
 
   $selectArea.on('mousedown touchstart', function (event) {
     var $target = $(event.target);
+    var point = event.originalEvent.touches ? event.originalEvent.touches[0] : event;
 
     var absoluteOffset = $canvas.offset();
-    cropperClickOffsetX = (event.pageX - absoluteOffset.left) / viewRatio - cropperLeft;
-    cropperClickOffsetY = (event.pageY - absoluteOffset.top) / viewRatio - cropperTop;
+    cropperClickOffsetX = (point.pageX - absoluteOffset.left) / viewRatio - cropperLeft;
+    cropperClickOffsetY = (point.pageY - absoluteOffset.top) / viewRatio - cropperTop;
 
     if (!action) {
       action = $target.data('action');
