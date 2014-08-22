@@ -1,4 +1,4 @@
-.modal.fade(tabindex='-1' role='dialog')
+.modal.fade(tabindex='-1' role='dialog').avatar-dialog
   .modal-dialog.modal-lg
     .modal-content
       .modal-header
@@ -7,19 +7,20 @@
           span.sr-only= self.t('close')
         h4.modal-title= self.t('title')
 
-      .modal-body.avatar-change(data-on-dragdrop='users.avatar.change:dd_area')
-        //- Hidden
-        input.avatar-change__upload(
-          name='files[]'
-          type='file'
-          style='position: absolute; left: -2000px'
-        )
+      .modal-body
+        .avatar-change(data-on-dragdrop='users.avatar.change:dd_area')
+          //- Hidden
+          input.avatar-change__upload(
+            name='files[]'
+            type='file'
+            style='position: absolute; left: -2000px'
+          )
 
-        .avatar-change__text= self.t('drag_to_upload')
-        canvas.avatar-change__canvas
-        != self.partial('@users.avatar.change.cropper')
+          .avatar-change__text= self.t('drag_to_upload')
+          canvas.avatar-change__canvas
+          != self.partial('@users.avatar.change.cropper')
 
-        canvas.avatar-change-preview
+          canvas.avatar-change-preview
 
       .modal-footer
         button.btn.btn-link.pull-left(

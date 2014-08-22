@@ -4,289 +4,300 @@
 'use strict';
 
 
-var _   = require('lodash');
-var raf = require('raf');
+var _        = require('lodash');
+var raf      = require('raf');
 
 
 var readExif = require('nodeca.users/lib/exif');
+
 
 // Avatar upload finish callback
 var onUploaded;
 
 // Original image
-var image;
+var image,
+  imageWidth,
+ imageHeight;
 
 // Avatar size config
 var avatarWidth = '$$ N.config.users.avatars.resize.orig.width $$';
 var avatarHeight = '$$ N.config.users.avatars.resize.orig.height $$';
 
-// The ratio of displayable image width to real image width
-var scale;
+var previewWidth = '$$ N.config.users.avatars.resize.md.width $$';
+var previewHeight = '$$ N.config.users.avatars.resize.md.height $$';
+
+// Cropped image position
+var cropperTop,
+  cropperRight,
+  cropperBottom,
+  cropperLeft,
+  viewOffsetX, // Canvas offset from parent element
+  viewOffsetY,
+  viewRatio; // The ratio of displayable image width to real image width
 
 // Dialog data (data.avatar_id will be filled after upload)
 var data;
 
-var $dialog;
-var $selectArea;
-var $canvas;
-var $canvasPreview;
+// Dialog elements
+var $dialog, $selectArea, $canvas, $canvasPreview, canvasPreviewCtx;
 
 
-// Get canvas position relative to parent (include margin)
-//
-function getCanvasPosition () {
-  var canvasPosition = $canvas.position();
+///////////////////////////////////////////////////////////////////////////////
+// Redraw cropper frame
 
-  return {
-    left: canvasPosition.left + parseFloat($canvas.css('marginLeft')),
-    top: canvasPosition.top + parseFloat($canvas.css('marginTop'))
-  };
+var redrawCropperStarted = false;
+
+function _cropperUpdate () {
+  $selectArea.css({
+    top: (cropperTop * viewRatio + viewOffsetY) + 'px',
+    left: (cropperLeft * viewRatio + viewOffsetX) + 'px',
+    width: (cropperRight - cropperLeft) * viewRatio + 'px',
+    height: (cropperBottom - cropperTop) * viewRatio + 'px'
+  });
+
+  redrawCropperStarted = false;
 }
 
-
-// Update select area position
-//
-var updateCropArea = function () {
-  scale = $canvas.width() / $canvas[0].width;
-
-  var minSize = avatarWidth * scale;
-  var sizeX, sizeY, left, top;
-  var height = $canvas.height(), width = $canvas.width();
-
-  sizeX = sizeY = parseInt(Math.max(Math.min(height, width) / 4, minSize), 10);
-  left = parseInt(width / 2 - sizeX / 2, 10);
-  top = parseInt(height / 2 - sizeY / 2, 10);
-
-  var canvasPosition = getCanvasPosition();
-
-  $selectArea.css({
-    top: top + canvasPosition.top + 'px',
-    left: left + canvasPosition.left + 'px',
-    width: sizeX + 'px',
-    height: sizeY + 'px'
-  });
-};
-
-
-var previewFrame = null;
-
-// Update preview image (rescaled selection)
-//
-var updatePreview = _.debounce(function (withCropArea) {
-  if (withCropArea) {
-    updateCropArea();
+var cropperUpdate = _.debounce(function () {
+  if (!redrawCropperStarted) {
+    redrawCropperStarted = true;
+    raf(_cropperUpdate);
   }
+}, 10, { maxWait: 20 });
 
-  var ctx = $canvasPreview[0].getContext('2d');
 
-  var canvasPosition = getCanvasPosition();
+///////////////////////////////////////////////////////////////////////////////
+// Redraw preview canvas
 
-  var x = parseInt($selectArea.css('left'), 10) - canvasPosition.left;
-  var y = parseInt($selectArea.css('top'), 10) - canvasPosition.top;
+var redrawPreviewStarted = false;
 
-  var width = parseInt($selectArea.outerWidth(), 10);
-  var height = parseInt($selectArea.outerHeight(), 10);
+function _previewUpdate() {
+  canvasPreviewCtx.drawImage(
+    $canvas[0],
+    cropperLeft,
+    cropperTop,
+    cropperRight - cropperLeft,
+    cropperBottom - cropperTop,
+    0,
+    0,
+    previewWidth,
+    previewHeight
+  );
 
-  width = parseInt(width / scale, 10);
-  height = parseInt(height / scale, 10);
+  redrawPreviewStarted = false;
+}
 
-  if (previewFrame) {
-    raf.cancel(previewFrame);
+var previewUpdate = _.debounce(function () {
+  if (!redrawPreviewStarted) {
+    redrawPreviewStarted = true;
+    raf(_previewUpdate);
   }
-
-  previewFrame = raf(function () {
-    previewFrame = null;
-    $canvasPreview[0].width = width;
-    $canvasPreview[0].height = height;
-
-    ctx.drawImage($canvas[0], parseInt(x / scale, 10), parseInt(y / scale, 10), width, height, 0, 0, width, height);
-  });
-
 }, 50, { maxWait: 70 });
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+// Set `number` in range (`min`, `max`)
+//
+function clamp(number, min, max) {
+  return Math.max(min, Math.min(number, max));
+}
 
 
 // Event handler for moving selected area
 //
-function dragSelectArea(left, top, width, height, dX, dY) {
-  var origWidth = parseInt($canvas.width(), 10);
-  var origHeight = parseInt($canvas.height(), 10);
-  var newLeft = left + dX;
-  var newTop = top + dY;
+function cropperDrag(cropperClickOffsetX, cropperClickOffsetY, mouseX, mouseY) {
+  var left, top;
 
-  if (newLeft < 0) {
-    newLeft = 0;
-  }
+  var width = cropperRight - cropperLeft;
+  var height = cropperBottom - cropperTop;
 
-  if (newTop < 0) {
-    newTop = 0;
-  }
+  left = mouseX - cropperClickOffsetX;
+  top = mouseY - cropperClickOffsetY;
 
-  if (newLeft + width > origWidth) {
-    newLeft = origWidth - width;
-  }
-
-  if (newTop + height > origHeight) {
-    newTop = origHeight - height;
-  }
-
-  var canvasPosition = getCanvasPosition();
-
-  $selectArea.css('left', newLeft + canvasPosition.left + 'px');
-  $selectArea.css('top', newTop + canvasPosition.top + 'px');
-}
-
-
-// Check is selected area into photo area
-//
-function checkFrames(newLeft, newTop, newWidth, newHeight, origWidth, origHeight, minSizeW, minSizeH) {
-  return !(
-    newLeft < 0 || newTop < 0 ||
-    newLeft + newWidth > origWidth || newTop + newHeight > origHeight ||
-    newWidth < minSizeW || newHeight < minSizeH
-  );
+  cropperLeft = Math.round(clamp(left, 0, imageWidth - width));
+  cropperTop = Math.round(clamp(top, 0, imageHeight - height));
+  cropperRight = Math.round(cropperLeft + width);
+  cropperBottom = Math.round(cropperTop + height);
 }
 
 
 // Event handler for resizing selected area
 //
-function resizeSelectArea(left, top, width, height, dX, dY, dir) {
-  var newLeft, newTop, newWidth, newHeight, dS;
+function cropperResize(mouseX, mouseY, dir) {
+  var ratio = avatarWidth / avatarHeight;
 
-  var origWidth = parseInt($canvas.width(), 10);
-  var origHeight = parseInt($canvas.height(), 10);
-
-  var minSizeW = avatarWidth * scale;
-  var minSizeH = avatarHeight * scale;
+  var left, top, right, bottom;
+  var refX, refY;
+  var maxLeft, maxRight, maxTop, maxBottom, minLeft, minRight, minTop, minBottom, widthHalf, heightHalf;
 
   switch (dir) {
     case 's':
-      newHeight = newWidth = height + dY;
-      newLeft = left - dY / 2;
-      newTop = top;
+      // The middle of top cropper border
+      refX = cropperLeft + (cropperRight - cropperLeft) / 2;
+      refY = cropperTop;
+      maxBottom = imageHeight;
+      minBottom = refY + avatarHeight;
+      bottom = clamp(mouseY, minBottom, maxBottom);
+      top = refY;
+      left = refX - (bottom - top) * ratio / 2;
+      right = refX + (bottom - top) * ratio / 2;
+
+      if (left < 0 || right > imageWidth) {
+        widthHalf = Math.min(refX - Math.max(left, 0), Math.min(imageWidth, right) - refX);
+        left = refX - widthHalf;
+        right = refX + widthHalf;
+        bottom = top + (right - left) / ratio;
+      }
+
       break;
 
     case 'n':
-      newHeight = newWidth = height - dY;
-      newLeft = left + dY / 2;
-      newTop = top + dY;
+      // The middle of bottom cropper border
+      refX = cropperLeft + (cropperRight - cropperLeft) / 2;
+      refY = cropperBottom;
+      minTop = 0;
+      maxTop = refY - avatarHeight;
+      top = clamp(mouseY, minTop, maxTop);
+      bottom = refY;
+      left = refX - (bottom - top) * ratio / 2;
+      right = refX + (bottom - top) * ratio / 2;
+
+      if (left < 0 || right > imageWidth) {
+        widthHalf = Math.min(refX - Math.max(left, 0), Math.min(imageWidth, right) - refX);
+        left = refX - widthHalf;
+        right = refX + widthHalf;
+        top = bottom - (right - left) / ratio;
+      }
+
       break;
 
     case 'w':
-      newHeight = newWidth = width - dX;
-      newLeft = left + dX;
-      newTop = top + dX / 2;
+      // The middle of right cropper border
+      refX = cropperRight;
+      refY = cropperTop + (cropperBottom - cropperTop) / 2;
+      minLeft = 0;
+      maxLeft = refX - avatarWidth;
+      left = clamp(mouseX, minLeft, maxLeft);
+      right = refX;
+      top = refY - (right - left) / ratio / 2;
+      bottom = refY + (right - left) / ratio / 2;
+
+      if (top < 0 || bottom > imageHeight) {
+        heightHalf = Math.min(refY - Math.max(top, 0), Math.min(imageHeight, bottom) - refY);
+        top = refY - heightHalf;
+        bottom = refY + heightHalf;
+        left = right - (bottom - top) * ratio;
+      }
+
       break;
 
     case 'e':
-      newHeight = newWidth = width + dX;
-      newLeft = left;
-      newTop = top - dX / 2;
+      // The middle of left cropper border
+      refX = cropperLeft;
+      refY = cropperTop + (cropperBottom - cropperTop) / 2;
+      minRight = refX + avatarWidth;
+      maxRight = imageWidth;
+      right = clamp(mouseX, minRight, maxRight);
+      left = refX;
+      top = refY - (right - left) / ratio / 2;
+      bottom = refY + (right - left) / ratio / 2;
+
+      if (top < 0 || bottom > imageHeight) {
+        heightHalf = Math.min(refY - Math.max(top, 0), Math.min(imageHeight, bottom) - refY);
+        top = refY - heightHalf;
+        bottom = refY + heightHalf;
+        right = left + (bottom - top) * ratio;
+      }
+
       break;
 
     case 'se':
-      dS = Math.min(dX, dY);
-      newLeft = left;
-      newTop = top;
-      newHeight = newWidth = width + dS;
+      // Top left corner
+      refX = cropperLeft;
+      refY = cropperTop;
+      minRight = refX + avatarWidth;
+      maxRight = imageWidth;
+      right = clamp(mouseX, minRight, maxRight);
+      left = refX;
+      top = refY;
+      bottom = refY + (right - left) / ratio;
+
+      if (bottom > imageHeight) {
+        bottom = imageHeight;
+        right = refX + (bottom - top) * ratio;
+      }
+
       break;
 
     case 'nw':
-      dS = Math.min(dX, dY);
-      newLeft = left + dS;
-      newTop = top + dS;
-      newHeight = newWidth = width - dS;
+      // Bottom right corner
+      refX = cropperRight;
+      refY = cropperBottom;
+      minLeft = 0;
+      maxLeft = refX - avatarWidth;
+      left = clamp(mouseX, minLeft, maxLeft);
+      right = refX;
+      bottom = refY;
+      top = refY - (right - left) / ratio;
+
+      if (top < 0) {
+        top = 0;
+        left = refX - (bottom - top) * ratio;
+      }
+
       break;
 
     case 'ne':
-      if (Math.abs(dX) > Math.abs(dY)) {
-        dS = -dY;
-      } else {
-        dS = dX;
+      // Bottom right corner
+      refX = cropperLeft;
+      refY = cropperBottom;
+      minTop = 0;
+      maxTop = refY - avatarHeight;
+      top = clamp(mouseY, minTop, maxTop);
+      left = refX;
+      bottom = refY;
+      right = refX + (bottom - top) * ratio;
+
+      if (right > imageWidth) {
+        right = imageWidth;
+        top = refY - (right - left) / ratio;
       }
-      newLeft = left;
-      newTop = top - dS;
-      newHeight = newWidth = width + dS;
+
       break;
 
     case 'sw':
-      if (Math.abs(dX) > Math.abs(dY)) {
-        dS = dY;
-      } else {
-        dS = -dX;
+      // Right top corner
+      refX = cropperRight;
+      refY = cropperTop;
+      minBottom = refY + avatarHeight;
+      maxBottom = imageHeight;
+      bottom = clamp(mouseY, minBottom, maxBottom);
+      right = refX;
+      top = refY;
+      left = refX - (bottom - top) * ratio;
+
+      if (left < 0) {
+        left = 0;
+        bottom = refY + (right - left) / ratio;
       }
-      newLeft = left - dS;
-      newTop = top;
-      newHeight = newWidth = width + dS;
+
       break;
 
     default:
       return;
   }
 
-  if (!checkFrames(newLeft, newTop, newWidth, newHeight, origWidth, origHeight, minSizeW, minSizeH)) {
-    return;
-  }
-
-  var canvasPosition = getCanvasPosition();
-
-  $selectArea.css({
-    top: newTop + canvasPosition.top + 'px',
-    left: newLeft + canvasPosition.left + 'px',
-    width: newWidth + 'px',
-    height: newHeight + 'px'
-  });
-}
-
-
-// Init select area (bind to mouse events)
-//
-function initSelectArea() {
-  var x, y, left, top, width, height, action = null;
-
-  $('body')
-    .on('mouseup.change_avatar touchend.change_avatar', function () {
-      action = null;
-    })
-    .on('mousemove.change_avatar touchmove.change_avatar', function (event) {
-
-      if (!action) {
-        return;
-      }
-
-      var dX = event.pageX - x;
-      var dY = event.pageY - y;
-
-      if (action !== 'move') {
-        resizeSelectArea(left, top, width, height, dX, dY, action);
-      } else {
-        dragSelectArea(left, top, width, height, dX, dY);
-      }
-
-      updatePreview();
-    });
-
-  $selectArea.on('mousedown touchstart', function (event) {
-    var canvasPosition = getCanvasPosition();
-
-    x = event.pageX;
-    y = event.pageY;
-    left = parseInt($selectArea.css('left'), 10) - canvasPosition.left;
-    top = parseInt($selectArea.css('top'), 10) - canvasPosition.top;
-    width = parseInt($selectArea.outerWidth(), 10);
-    height = parseInt($selectArea.outerHeight(), 10);
-
-    if (!action) {
-      action = $(event.target).data('action');
-    }
-
-    return false;
-  });
+  cropperBottom = Math.round(bottom);
+  cropperRight = Math.round(right);
+  cropperTop = Math.round(top);
+  cropperLeft = Math.round(left);
 }
 
 
 // Apply JPEG orientation to canvas
 //
-function applyOrientation(canvas, ctx, orientation) {
+function orientationApply(canvas, ctx, orientation) {
   var width = canvas.width;
   var height = canvas.height;
 
@@ -349,6 +360,21 @@ function applyOrientation(canvas, ctx, orientation) {
 }
 
 
+// Update viewRatio, viewOffsetX, viewOffsetY on image load or on window resize
+//
+function viewParamsUpdate() {
+  var viewPosition = $canvas.position();
+
+  viewOffsetX = viewPosition.left + parseFloat($canvas.css('marginLeft'));
+  viewOffsetY = viewPosition.top + parseFloat($canvas.css('marginTop'));
+
+  viewRatio = $canvas.width() / $canvas[0].width;
+
+  imageWidth = $canvas[0].width;
+  imageHeight = $canvas[0].height;
+}
+
+
 // Load image from user's file
 //
 function loadImage(file) {
@@ -366,13 +392,23 @@ function loadImage(file) {
     $canvas[0].width = image.width;
     $canvas[0].height = image.height;
 
-    applyOrientation($canvas[0], ctx, orientation);
+    orientationApply($canvas[0], ctx, orientation);
 
     ctx.drawImage(image, 0, 0, image.width, image.height);
 
     $('.avatar-change').addClass('avatar-change__m-loaded');
 
-    updatePreview(true);
+    viewParamsUpdate();
+
+    // Init crop area box (center of image)
+    var size = Math.max(Math.floor(Math.min(imageWidth, imageHeight) / 4), Math.max(avatarWidth, avatarHeight));
+    cropperLeft = Math.floor(imageWidth / 2 - size / 2);
+    cropperTop = Math.floor(imageHeight / 2 - size / 2);
+    cropperBottom = cropperTop + size;
+    cropperRight = cropperLeft + size;
+
+    cropperUpdate();
+    previewUpdate();
   };
 
 
@@ -392,6 +428,151 @@ function loadImage(file) {
 }
 
 
+// Init select area (bind to mouse events)
+//
+function initSelectArea() {
+  var cropperClickOffsetX, cropperClickOffsetY, action;
+  var $body = $('body');
+
+  // Use `body` selector for listen mouse events outside of dialog
+  $body
+    .on('mouseup.change_avatar touchend.change_avatar', function () {
+      $dialog.removeClass('avatar-dialog__m-cursor-' + action);
+      action = null;
+    })
+    .on('mousemove.change_avatar touchmove.change_avatar', function (event) {
+
+      if (!action) {
+        return;
+      }
+
+      // If mouse button up
+      if (event.which === 0) {
+        $dialog.removeClass('avatar-dialog__m-cursor-' + action);
+        action = null;
+        return;
+      }
+
+      var absoluteOffset = $canvas.offset();
+      var mouseX = (event.pageX - absoluteOffset.left) / viewRatio;
+      var mouseY = (event.pageY - absoluteOffset.top) / viewRatio;
+
+      if (action !== 'move') {
+        cropperResize(mouseX, mouseY, action);
+      } else {
+        cropperDrag(cropperClickOffsetX, cropperClickOffsetY, mouseX, mouseY);
+      }
+
+      cropperUpdate();
+      previewUpdate();
+    });
+
+  $selectArea.on('mousedown touchstart', function (event) {
+    var $target = $(event.target);
+
+    var absoluteOffset = $canvas.offset();
+    cropperClickOffsetX = (event.pageX - absoluteOffset.left) / viewRatio - cropperLeft;
+    cropperClickOffsetY = (event.pageY - absoluteOffset.top) / viewRatio - cropperTop;
+
+    if (!action) {
+      action = $target.data('action');
+      $dialog.addClass('avatar-dialog__m-cursor-' + action);
+    }
+
+    return false;
+  });
+}
+
+
+// Init event handlers
+//
+N.wire.once('users.avatar.change', function init_event_handlers() {
+
+  // Show system dialog file selection
+  //
+  N.wire.on('users.avatar.change:select_file', function select_file() {
+    $('.avatar-change__upload').click();
+  });
+
+
+  // Handles the event when user drag file to drag drop zone
+  //
+  N.wire.on('users.avatar.change:dd_area', function change_avatar_dd(event) {
+    var x0, y0, x1, y1, ex, ey;
+    var $dropZone = $('.avatar-change');
+
+    switch (event.type) {
+      case 'dragenter':
+        $dropZone.addClass('active');
+        break;
+      case 'dragleave':
+        // 'dragleave' occurs when user move cursor over child HTML element
+        // track this situation and don't remove 'active' class
+        // http://stackoverflow.com/questions/10867506/
+        x0 = $dropZone.offset().left;
+        y0 = $dropZone.offset().top;
+        x1 = x0 + $dropZone.outerWidth();
+        y1 = y0 + $dropZone.outerHeight();
+        ex = event.originalEvent.pageX;
+        ey = event.originalEvent.pageY;
+
+        if (ex > x1 || ex < x0 || ey > y1 || ey < y0) {
+          $dropZone.removeClass('active');
+        }
+        break;
+      case 'drop':
+        $dropZone.removeClass('active');
+
+        if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
+          loadImage(event.dataTransfer.files[0]);
+        }
+        break;
+      default:
+    }
+  });
+
+
+  // Save selected avatar
+  //
+  N.wire.on('users.avatar.change:apply', function change_avatar_apply() {
+
+    var canvas = document.createElement('canvas');
+
+    canvas.width = (cropperRight - cropperLeft);
+    canvas.height = (cropperBottom - cropperTop);
+
+    var ctx = canvas.getContext('2d');
+
+    ctx.drawImage($canvas[0], cropperLeft, cropperTop, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob(function (blob) {
+      var formData = new FormData();
+      formData.append('file', blob);
+      formData.append('csrf', N.runtime.csrf);
+
+      $.ajax({
+        url: N.router.linkTo('users.avatar.upload'),
+        type: 'POST',
+        data: formData,
+        dataType: 'json',
+        processData: false,
+        contentType: false
+      })
+        .done(function (result) {
+          data.avatar_id = result.avatar_id;
+          $dialog.modal('hide');
+          onUploaded();
+        })
+        .fail(function () {
+          $dialog.modal('hide');
+          N.wire.emit('notify', t('err_upload_failed'));
+        });
+
+    }, 'image/jpeg', 90);
+  });
+});
+
+
 // Init dialog on event
 //
 N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
@@ -402,7 +583,8 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
   $('body').append($dialog);
 
   $(window).on('resize.change_avatar', function () {
-    updatePreview(true);
+    viewParamsUpdate();
+    cropperUpdate();
   });
 
   // When dialog closes - remove it from body
@@ -414,12 +596,16 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
     $(window).off('resize.change_avatar');
     onUploaded = null;
     image = null;
+    viewRatio = null;
   });
 
   $dialog.modal('show');
   $selectArea = $('.avatar-cropper');
   $canvas = $('.avatar-change__canvas');
   $canvasPreview = $('.avatar-change-preview');
+  canvasPreviewCtx = $canvasPreview[0].getContext('2d');
+  $canvasPreview[0].width = previewWidth;
+  $canvasPreview[0].height = previewHeight;
 
   initSelectArea();
 
@@ -429,78 +615,4 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
       loadImage(files[0]);
     }
   });
-});
-
-
-// Show system dialog file selection
-//
-N.wire.on('users.avatar.change:select_file', function select_file() {
-  $('.avatar-change__upload').click();
-});
-
-
-// Handles the event when user drag file to drag drop zone
-//
-N.wire.on('users.avatar.change:dd_area', function change_avatar_dd(event) {
-  var x0, y0, x1, y1, ex, ey;
-  var $dropZone = $('.avatar-change');
-
-  switch (event.type) {
-    case 'dragenter':
-      $dropZone.addClass('active');
-      break;
-    case 'dragleave':
-      // 'dragleave' occurs when user move cursor over child HTML element
-      // track this situation and don't remove 'active' class
-      // http://stackoverflow.com/questions/10867506/
-      x0 = $dropZone.offset().left;
-      y0 = $dropZone.offset().top;
-      x1 = x0 + $dropZone.outerWidth();
-      y1 = y0 + $dropZone.outerHeight();
-      ex = event.originalEvent.pageX;
-      ey = event.originalEvent.pageY;
-
-      if (ex > x1 || ex < x0 || ey > y1 || ey < y0) {
-        $dropZone.removeClass('active');
-      }
-      break;
-    case 'drop':
-      $dropZone.removeClass('active');
-
-      if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
-        loadImage(event.dataTransfer.files[0]);
-      }
-      break;
-    default:
-  }
-});
-
-
-// Save selected avatar
-//
-N.wire.on('users.avatar.change:apply', function change_avatar_apply() {
-  $canvasPreview[0].toBlob(function (blob) {
-    var formData = new FormData();
-    formData.append('file', blob);
-    formData.append('csrf', N.runtime.csrf);
-
-    $.ajax({
-      url: N.router.linkTo('users.avatar.upload'),
-      type: 'POST',
-      data: formData,
-      dataType: 'json',
-      processData: false,
-      contentType: false
-    })
-      .done(function (result) {
-        data.avatar_id = result.avatar_id;
-        $dialog.modal('hide');
-        onUploaded();
-      })
-      .fail(function () {
-        $dialog.modal('hide');
-        N.wire.emit('notify', t('err_upload_failed'));
-      });
-
-  }, 'image/jpeg', 90);
 });
