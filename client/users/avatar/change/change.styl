@@ -2,12 +2,12 @@
   position relative
   margin 0 auto
   text-align center
-  min-height '$$ N.config.users.avatars.resize.orig.height $$'px
 
 .avatar-change__text
   padding 30px
   text-align center
   display block
+  cursor pointer
 
 .avatar-change__canvas
   display none
@@ -18,10 +18,11 @@
   position absolute
   right 10px
   top 10px
-  border 2px solid #ccc
   width '$$ N.config.users.avatars.resize.md.width $$'px
   height '$$ N.config.users.avatars.resize.md.height $$'px
   display none
+  box-shadow 0 0 0 1px white, 0 0 2px 1px black
+  border-radius 4px
 
 .avatar-change.active
   border 1px dashed #000000
@@ -40,20 +41,20 @@
     display none
 
 .avatar-dialog__m-cursor-n
-  cursor n-resize
+  cursor n-resize !important
 .avatar-dialog__m-cursor-e
-  cursor e-resize
+  cursor e-resize !important
 .avatar-dialog__m-cursor-w
-  cursor w-resize
+  cursor w-resize !important
 .avatar-dialog__m-cursor-s
-  cursor s-resize
+  cursor s-resize !important
 .avatar-dialog__m-cursor-nw
-  cursor nw-resize
+  cursor nw-resize !important
 .avatar-dialog__m-cursor-ne
-  cursor ne-resize
+  cursor ne-resize !important
 .avatar-dialog__m-cursor-sw
-  cursor sw-resize
+  cursor sw-resize !important
 .avatar-dialog__m-cursor-se
-  cursor se-resize
+  cursor se-resize !important
 .avatar-dialog__m-cursor-move
-  cursor move
+  cursor move !important
