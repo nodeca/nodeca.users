@@ -1,3 +1,5 @@
+@import "nodeca.core/client/common/_variables"
+
 cropper_border = 2px
 cropper_resize_width = 10px
 cropper_resize_offset = - cropper_resize_width * 0.5 - cropper_border * 0.5
@@ -53,48 +55,47 @@ cropper_resize_color = #ccc
   cursor e-resize
 
 .avatar-cropper__top-left
+.avatar-cropper__top-right
+.avatar-cropper__bottom-right
+.avatar-cropper__bottom-left
   position absolute
   width cropper_resize_width
   height cropper_resize_width
+
+.avatar-cropper__top-left
   left cropper_resize_offset
   top cropper_resize_offset
   cursor nw-resize
 
 .avatar-cropper__top-right
-  position absolute
-  width cropper_resize_width
-  height cropper_resize_width
   right cropper_resize_offset
   top cropper_resize_offset
   cursor ne-resize
 
 .avatar-cropper__bottom-right
-  position absolute
-  width cropper_resize_width
-  height cropper_resize_width
   right cropper_resize_offset
   bottom cropper_resize_offset
   cursor se-resize
 
 .avatar-cropper__bottom-left
-  position absolute
-  width cropper_resize_width
-  height cropper_resize_width
   left cropper_resize_offset
   bottom cropper_resize_offset
   cursor sw-resize
 
 // round markers
 
+.avatar-cropper__mark
+  box-shadow 0 0 0 1px grayDark
+  width cropper_resize_mark_width
+  height cropper_resize_mark_width
+  background-color lighten(cropper_resize_color, 50%)
+  border-radius cropper_resize_mark_width
+
 .avatar-cropper__right
 .avatar-cropper__left
   .avatar-cropper__mark
-    position relative
+    position absolute
     left (cropper_resize_width - cropper_resize_mark_width) * 0.5
-    width cropper_resize_mark_width
-    height cropper_resize_mark_width
-    background-color lighten(cropper_resize_color, 50%)
-    border-radius cropper_resize_mark_width
     top 50%
     margin-top - cropper_resize_mark_width * 0.5
 
@@ -103,10 +104,6 @@ cropper_resize_color = #ccc
   .avatar-cropper__mark
     position relative
     top (cropper_resize_width - cropper_resize_mark_width) * 0.5
-    width cropper_resize_mark_width
-    height cropper_resize_mark_width
-    background-color lighten(cropper_resize_color, 50%)
-    border-radius cropper_resize_mark_width
     margin-left auto
     margin-right auto
 
@@ -116,9 +113,19 @@ cropper_resize_color = #ccc
 .avatar-cropper__bottom-left
   .avatar-cropper__mark
     position relative
-    width cropper_resize_mark_width
-    height cropper_resize_mark_width
     top (cropper_resize_width - cropper_resize_mark_width) * 0.5
     left (cropper_resize_width - cropper_resize_mark_width) * 0.5
-    background-color lighten(cropper_resize_color, 50%)
-    border-radius cropper_resize_mark_width
+
+// State change: use cursor from external container on cropper change
+
+.avatar-dialog__m-crop-active
+  .avatar-cropper__move
+  .avatar-cropper__left
+  .avatar-cropper__top
+  .avatar-cropper__bottom
+  .avatar-cropper__right
+  .avatar-cropper__top-left
+  .avatar-cropper__top-right
+  .avatar-cropper__bottom-right
+  .avatar-cropper__bottom-left
+    cursor inherit

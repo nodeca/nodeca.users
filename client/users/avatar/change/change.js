@@ -14,10 +14,8 @@ var readExif = require('nodeca.users/lib/exif');
 // Avatar upload finish callback
 var onUploaded;
 
-// Original image
-var image,
-  imageWidth,
- imageHeight;
+// Original image & it's sizes (sizes are calculated after orientation update)
+var image, imageWidth, imageHeight;
 
 // Avatar size config
 var avatarWidth = '$$ N.config.users.avatars.resize.orig.width $$';
@@ -26,20 +24,22 @@ var avatarHeight = '$$ N.config.users.avatars.resize.orig.height $$';
 var previewWidth = '$$ N.config.users.avatars.resize.md.width $$';
 var previewHeight = '$$ N.config.users.avatars.resize.md.height $$';
 
-// Cropped image position
+// Cropped image box. Absolute coordinates,
+// relative to not scaled original image (drawn in css-scaled canvas)
 var cropperTop,
-  cropperRight,
-  cropperBottom,
-  cropperLeft,
-  viewOffsetX, // Canvas offset from parent element
-  viewOffsetY,
-  viewRatio; // The ratio of displayable image width to real image width
+    cropperRight,
+    cropperBottom,
+    cropperLeft,
+    // Canvas shift + real scale
+    viewOffsetX,  // viewport (canvas) offset from parent element
+    viewOffsetY,
+    viewRatio;    // viewport (canvas) scale (canvas max-width limited with css)
 
 // Dialog data (data.avatar_id will be filled after upload)
 var data;
 
 // Dialog elements
-var $dialog, $selectArea, $canvas, $canvasPreview, canvasPreviewCtx;
+var $dialog, $cropper, canvas, canvasPreview, canvasPreviewCtx;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ var $dialog, $selectArea, $canvas, $canvasPreview, canvasPreviewCtx;
 var redrawCropperStarted = false;
 
 function _cropperUpdate () {
-  $selectArea.css({
+  $cropper.css({
     top: (cropperTop * viewRatio + viewOffsetY) + 'px',
     left: (cropperLeft * viewRatio + viewOffsetX) + 'px',
     width: (cropperRight - cropperLeft) * viewRatio + 'px',
@@ -73,7 +73,7 @@ var redrawPreviewStarted = false;
 
 function _previewUpdate() {
   canvasPreviewCtx.drawImage(
-    $canvas[0],
+    canvas,
     cropperLeft,
     cropperTop,
     cropperRight - cropperLeft,
@@ -92,19 +92,19 @@ var previewUpdate = _.debounce(function () {
     redrawPreviewStarted = true;
     raf(_previewUpdate);
   }
-}, 50, { maxWait: 70 });
+}, 20, { maxWait: 40 });
 
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// Set `number` in range (`min`, `max`)
+// Return number, restricted to range [min..max]
 //
 function clamp(number, min, max) {
   return Math.max(min, Math.min(number, max));
 }
 
 
-// Event handler for moving selected area
+// Calculate new cropper coords on `move`
 //
 function cropperDrag(cropperClickOffsetX, cropperClickOffsetY, mouseX, mouseY) {
   var left, top;
@@ -122,7 +122,7 @@ function cropperDrag(cropperClickOffsetX, cropperClickOffsetY, mouseX, mouseY) {
 }
 
 
-// Event handler for resizing selected area
+// Calculate new cropper coords on `resize`
 //
 function cropperResize(mouseX, mouseY, dir) {
   var ratio = avatarWidth / avatarHeight;
@@ -295,7 +295,8 @@ function cropperResize(mouseX, mouseY, dir) {
 }
 
 
-// Apply JPEG orientation to canvas
+// Apply JPEG orientation to canvas. Define flip/rotate transformation
+// on context and swap canvas width/height if needed
 //
 function orientationApply(canvas, ctx, orientation) {
   var width = canvas.width;
@@ -360,28 +361,27 @@ function orientationApply(canvas, ctx, orientation) {
 }
 
 
-// Update viewRatio, viewOffsetX, viewOffsetY on image load or on window resize
+// Update viewRatio, viewOffsetX, viewOffsetY on image load & window resize
 //
 function viewParamsUpdate() {
-  var viewPosition = $canvas.position();
+  var $canvas = $(canvas),
+      viewPosition = $canvas.position();
 
   viewOffsetX = viewPosition.left + parseFloat($canvas.css('marginLeft'));
   viewOffsetY = viewPosition.top + parseFloat($canvas.css('marginTop'));
 
   viewRatio = $canvas.width() / $canvas[0].width;
-
-  imageWidth = $canvas[0].width;
-  imageHeight = $canvas[0].height;
 }
 
 
 // Load image from user's file
 //
 function loadImage(file) {
-  var ctx = $canvas[0].getContext('2d');
+  var ctx = canvas.getContext('2d');
   var orientation;
 
   image = new Image();
+
   image.onload = function () {
 
     if (image.width < avatarWidth || image.height < avatarHeight) {
@@ -389,10 +389,13 @@ function loadImage(file) {
       return;
     }
 
-    $canvas[0].width = image.width;
-    $canvas[0].height = image.height;
+    canvas.width  = image.width;
+    canvas.height = image.height;
 
-    orientationApply($canvas[0], ctx, orientation);
+    orientationApply(canvas, ctx, orientation);
+
+    imageWidth = canvas.width;
+    imageHeight = canvas.height;
 
     ctx.drawImage(image, 0, 0, image.width, image.height);
 
@@ -411,7 +414,6 @@ function loadImage(file) {
     previewUpdate();
   };
 
-
   var reader = new FileReader();
 
   reader.onloadend = function (e) {
@@ -428,16 +430,21 @@ function loadImage(file) {
 }
 
 
-// Init select area (bind to mouse events)
+// Init cropper
 //
-function initSelectArea() {
+// - set handler to track touch/click point, when action started
+// - track if mouse goes out of window
+//
+function initCropper() {
   var cropperClickOffsetX, cropperClickOffsetY, action;
-  var $body = $('body');
+  var $body = $('body'),
+      $canvas = $(canvas);
 
   // Use `body` selector for listen mouse events outside of dialog
   $body
     .on('mouseup.change_avatar touchend.change_avatar', function () {
       $dialog.removeClass('avatar-dialog__m-cursor-' + action);
+      $dialog.removeClass('avatar-dialog__m-crop-active');
       action = null;
     })
     .on('mousemove.change_avatar touchmove.change_avatar', function (event) {
@@ -452,6 +459,7 @@ function initSelectArea() {
       // `event.which` works in chrome, `event.buttons` in firefox
       if (event.type === 'mousemove' && (event.which === 0 || event.buttons === 0)) {
         $dialog.removeClass('avatar-dialog__m-cursor-' + action);
+        $dialog.removeClass('avatar-dialog__m-crop-active');
         action = null;
         return;
       }
@@ -471,7 +479,7 @@ function initSelectArea() {
       previewUpdate();
     });
 
-  $selectArea.on('mousedown touchstart', function (event) {
+  $cropper.on('mousedown touchstart', function (event) {
     var $target = $(event.target);
     var point = event.originalEvent.touches ? event.originalEvent.touches[0] : event;
 
@@ -482,6 +490,7 @@ function initSelectArea() {
     if (!action) {
       action = $target.data('action');
       $dialog.addClass('avatar-dialog__m-cursor-' + action);
+      $dialog.addClass('avatar-dialog__m-crop-active');
     }
 
     return false;
@@ -541,16 +550,26 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
   //
   N.wire.on('users.avatar.change:apply', function change_avatar_apply() {
 
-    var canvas = document.createElement('canvas');
+    var canvasAv = document.createElement('canvas');
 
-    canvas.width = (cropperRight - cropperLeft);
-    canvas.height = (cropperBottom - cropperTop);
+    canvasAv.width = (cropperRight - cropperLeft);
+    canvasAv.height = (cropperBottom - cropperTop);
 
-    var ctx = canvas.getContext('2d');
+    var ctx = canvasAv.getContext('2d');
 
-    ctx.drawImage($canvas[0], cropperLeft, cropperTop, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(
+      canvas,
+      cropperLeft,
+      cropperTop,
+      canvasAv.width,
+      canvasAv.height,
+      0,
+      0,
+      canvasAv.width,
+      canvasAv.height
+    );
 
-    canvas.toBlob(function (blob) {
+    canvasAv.toBlob(function (blob) {
       var formData = new FormData();
       formData.append('file', blob);
       formData.append('csrf', N.runtime.csrf);
@@ -605,17 +624,19 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
   });
 
   $dialog.modal('show');
-  $selectArea = $('.avatar-cropper');
-  $canvas = $('.avatar-change__canvas');
-  $canvasPreview = $('.avatar-change-preview');
-  canvasPreviewCtx = $canvasPreview[0].getContext('2d');
-  $canvasPreview[0].width = previewWidth;
-  $canvasPreview[0].height = previewHeight;
 
-  initSelectArea();
+  $cropper = $('.avatar-cropper');
+  canvas = $('.avatar-change__canvas')[0];
+
+  canvasPreview = $('.avatar-preview')[0];
+  canvasPreview.width = previewWidth;
+  canvasPreview.height = previewHeight;
+  canvasPreviewCtx = canvasPreview.getContext('2d');
+
+  initCropper();
 
   $('.avatar-change__upload').on('change', function () {
-    var files = $(this).get(0).files;
+    var files = $(this)[0].files;
     if (files.length > 0) {
       loadImage(files[0]);
     }

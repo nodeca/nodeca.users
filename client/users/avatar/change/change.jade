@@ -16,13 +16,15 @@
             style='position: absolute; left: -2000px'
           )
 
-          .avatar-change__text(
+          .avatar-change__info(
             data-on-click='users.avatar.change:select_file'
           )= self.t('drag_to_upload')
 
           canvas.avatar-change__canvas
+
           != self.partial('@users.avatar.change.cropper')
-          canvas.avatar-change-preview
+
+          canvas.avatar-preview
 
       .modal-footer
         button.btn.btn-link.pull-left(
@@ -36,6 +38,6 @@
         )= self.t('cancel')
 
         button.btn.btn-primary(
-          type='button'
+          type='submit'
           data-on-click='users.avatar.change:apply'
         )= self.t('apply')

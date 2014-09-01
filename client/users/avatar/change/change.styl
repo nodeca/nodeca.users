@@ -1,20 +1,32 @@
+@import "nodeca.core/client/common/_variables"
+
 .avatar-change
   position relative
   margin 0 auto
   text-align center
 
-.avatar-change__text
+
+.avatar-change__info
   padding 30px
   text-align center
   display block
   cursor pointer
+  border 2px dashed grayLighter
 
 .avatar-change__canvas
   display none
   max-width 100%
   margin 0 auto
 
-.avatar-change-preview
+
+.avatar-change.active
+  .avatar-change__info
+    background-color grayLightest
+  .avatar-change__canvas
+    border 2px dashed grayLighter
+
+
+.avatar-preview
   position absolute
   right 10px
   top 10px
@@ -24,37 +36,33 @@
   box-shadow 0 0 0 1px white, 0 0 2px 1px black
   border-radius 4px
 
-.avatar-change.active
-  border 1px dashed #000000
+// Toggle visibility when image loaded
 
 .avatar-change.avatar-change__m-loaded
   .avatar-change__canvas
-    display block
-
+  .avatar-preview
   .avatar-cropper
     display block
-
-  .avatar-change-preview
-    display block
-
-  .avatar-change__text
+  .avatar-change__info
     display none
 
+// Freeze cursor on cropper change
+
 .avatar-dialog__m-cursor-n
-  cursor n-resize !important
+  cursor n-resize
 .avatar-dialog__m-cursor-e
-  cursor e-resize !important
+  cursor e-resize
 .avatar-dialog__m-cursor-w
-  cursor w-resize !important
+  cursor w-resize
 .avatar-dialog__m-cursor-s
-  cursor s-resize !important
+  cursor s-resize
 .avatar-dialog__m-cursor-nw
-  cursor nw-resize !important
+  cursor nw-resize
 .avatar-dialog__m-cursor-ne
-  cursor ne-resize !important
+  cursor ne-resize
 .avatar-dialog__m-cursor-sw
-  cursor sw-resize !important
+  cursor sw-resize
 .avatar-dialog__m-cursor-se
-  cursor se-resize !important
+  cursor se-resize
 .avatar-dialog__m-cursor-move
-  cursor move !important
+  cursor move
