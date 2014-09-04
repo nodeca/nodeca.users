@@ -442,12 +442,12 @@ function initCropper() {
 
   // Use `body` selector for listen mouse events outside of dialog
   $body
-    .on('mouseup.change_avatar touchend.change_avatar', function () {
+    .on('mouseup.nd.avatar_change touchend.nd.avatar_change', function () {
       $dialog.removeClass('avatar-dialog__m-cursor-' + action);
       $dialog.removeClass('avatar-dialog__m-crop-active');
       action = null;
     })
-    .on('mousemove.change_avatar touchmove.change_avatar', function (event) {
+    .on('mousemove.nd.avatar_change touchmove.nd.avatar_change', function (event) {
 
       if (!action) {
         return;
@@ -594,6 +594,29 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
 
     }, 'image/jpeg', 90);
   });
+
+
+  // Page exit
+  //
+  N.wire.on('navigate.exit', function page_exit() {
+    if (!$dialog) {
+      return;
+    }
+
+    $dialog.remove();
+
+    $('body').off('.nd.avatar_change');
+    $(window).off('.nd.avatar_change');
+
+    // Free resources
+    onUploaded = null;
+    image = null;
+    $dialog = null;
+    $cropper = null;
+    canvas = null;
+    canvasPreview = null;
+    canvasPreviewCtx = null;
+  });
 });
 
 
@@ -603,27 +626,15 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
   data = params;
   onUploaded = callback;
 
+  // If dialog already exists - just show,
+  // it allows to keep already uploaded image
+  if ($dialog) {
+    $dialog.modal('show');
+    return;
+  }
+
   $dialog = $(N.runtime.render('users.avatar.change'));
   $('body').append($dialog);
-
-  $(window).on('resize.change_avatar', function () {
-    viewParamsUpdate();
-    cropperUpdate();
-  });
-
-  // When dialog closes - remove it from body
-  $dialog.on('hidden.bs.modal', function () {
-    $dialog.remove();
-    $dialog = null;
-
-    $('body').off('mouseup.change_avatar touchend.change_avatar mousemove.change_avatar touchmove.change_avatar');
-    $(window).off('resize.change_avatar');
-    onUploaded = null;
-    image = null;
-    viewRatio = null;
-  });
-
-  $dialog.modal('show');
 
   $cropper = $('.avatar-cropper');
   canvas = $('.avatar-change__canvas')[0];
@@ -635,10 +646,24 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
 
   initCropper();
 
+  $(window).on('resize.nd.avatar_change', function () {
+    viewParamsUpdate();
+    cropperUpdate();
+  });
+
   $('.avatar-change__upload').on('change', function () {
     var files = $(this)[0].files;
     if (files.length > 0) {
       loadImage(files[0]);
     }
   });
+
+  // Update cropper on dialog open.
+  // Needed when we open dialog at second time with existing image
+  $dialog.on('shown.bs.modal', function () {
+    viewParamsUpdate();
+    cropperUpdate();
+  });
+
+  $dialog.modal('show');
 });
