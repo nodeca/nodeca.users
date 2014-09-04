@@ -39,7 +39,7 @@ var cropperTop,
 var data;
 
 // Dialog elements
-var $dialog, $cropper, canvas, canvasPreview, canvasPreviewCtx;
+var $dialog, cropper, canvas, canvasPreview, canvasPreviewCtx;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -48,12 +48,10 @@ var $dialog, $cropper, canvas, canvasPreview, canvasPreviewCtx;
 var redrawCropperStarted = false;
 
 function _cropperUpdate () {
-  $cropper.css({
-    top: (cropperTop * viewRatio + viewOffsetY) + 'px',
-    left: (cropperLeft * viewRatio + viewOffsetX) + 'px',
-    width: (cropperRight - cropperLeft) * viewRatio + 'px',
-    height: (cropperBottom - cropperTop) * viewRatio + 'px'
-  });
+  cropper.style.top = (cropperTop * viewRatio + viewOffsetY) + 'px';
+  cropper.style.left = (cropperLeft * viewRatio + viewOffsetX) + 'px';
+  cropper.style.width = (cropperRight - cropperLeft) * viewRatio + 'px';
+  cropper.style.height = (cropperBottom - cropperTop) * viewRatio + 'px';
 
   redrawCropperStarted = false;
 }
@@ -364,13 +362,10 @@ function orientationApply(canvas, ctx, orientation) {
 // Update viewRatio, viewOffsetX, viewOffsetY on image load & window resize
 //
 function viewParamsUpdate() {
-  var $canvas = $(canvas),
-      viewPosition = $canvas.position();
+  viewOffsetX = canvas.offsetLeft;
+  viewOffsetY = canvas.offsetTop;
 
-  viewOffsetX = viewPosition.left + parseFloat($canvas.css('marginLeft'));
-  viewOffsetY = viewPosition.top + parseFloat($canvas.css('marginTop'));
-
-  viewRatio = $canvas.width() / $canvas[0].width;
+  viewRatio = canvas.offsetWidth / imageWidth;
 }
 
 
@@ -437,8 +432,7 @@ function loadImage(file) {
 //
 function initCropper() {
   var cropperClickOffsetX, cropperClickOffsetY, action;
-  var $body = $('body'),
-      $canvas = $(canvas);
+  var $body = $('body');
 
   // Use `body` selector for listen mouse events outside of dialog
   $body
@@ -464,10 +458,10 @@ function initCropper() {
         return;
       }
 
-      var absoluteOffset = $canvas.offset();
+      var canvasRect = canvas.getBoundingClientRect();
       var point = event.originalEvent.touches ? event.originalEvent.touches[0] : event;
-      var mouseX = (point.pageX - absoluteOffset.left) / viewRatio;
-      var mouseY = (point.pageY - absoluteOffset.top) / viewRatio;
+      var mouseX = (point.pageX - canvasRect.left) / viewRatio;
+      var mouseY = (point.pageY - canvasRect.top) / viewRatio;
 
       if (action !== 'move') {
         cropperResize(mouseX, mouseY, action);
@@ -479,13 +473,13 @@ function initCropper() {
       previewUpdate();
     });
 
-  $cropper.on('mousedown touchstart', function (event) {
+  $(cropper).on('mousedown touchstart', function (event) {
     var $target = $(event.target);
     var point = event.originalEvent.touches ? event.originalEvent.touches[0] : event;
 
-    var absoluteOffset = $canvas.offset();
-    cropperClickOffsetX = (point.pageX - absoluteOffset.left) / viewRatio - cropperLeft;
-    cropperClickOffsetY = (point.pageY - absoluteOffset.top) / viewRatio - cropperTop;
+    var canvasRect = canvas.getBoundingClientRect();
+    cropperClickOffsetX = (point.pageX - canvasRect.left) / viewRatio - cropperLeft;
+    cropperClickOffsetY = (point.pageY - canvasRect.top) / viewRatio - cropperTop;
 
     if (!action) {
       action = $target.data('action');
@@ -612,7 +606,7 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
     onUploaded = null;
     image = null;
     $dialog = null;
-    $cropper = null;
+    cropper = null;
     canvas = null;
     canvasPreview = null;
     canvasPreviewCtx = null;
@@ -636,7 +630,7 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
   $dialog = $(N.runtime.render('users.avatar.change'));
   $('body').append($dialog);
 
-  $cropper = $('.avatar-cropper');
+  cropper = $('.avatar-cropper')[0];
   canvas = $('.avatar-change__canvas')[0];
 
   canvasPreview = $('.avatar-preview')[0];
