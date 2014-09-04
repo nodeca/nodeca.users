@@ -377,6 +377,10 @@ function loadImage(file) {
 
   image = new Image();
 
+  image.onerror = function () {
+    N.wire.emit('notify', t('err_image_invalid'));
+  };
+
   image.onload = function () {
 
     if (image.width < avatarWidth || image.height < avatarHeight) {

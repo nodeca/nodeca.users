@@ -8,5 +8,6 @@ en-US:
 
   drag_to_upload: Drag image here or click to select file.
 
+  err_image_invalid: File should be an image.
   err_invalid_size: "Image too small. Should be at least #{w}x#{h}."
   err_upload_failed: Upload failed
