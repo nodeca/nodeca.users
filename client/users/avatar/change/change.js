@@ -6,7 +6,7 @@
 
 var _        = require('lodash');
 var raf      = require('raf');
-
+var pica     = require('pica');
 
 var readExif = require('nodeca.users/lib/exif');
 
@@ -69,6 +69,40 @@ var cropperUpdate = _.debounce(function () {
 
 var redrawPreviewStarted = false;
 
+// Built high quality avatar preview. This is slow, do
+// it only after user stopped cropper change
+var previewHqUpdate = _.debounce(function () {
+  var width = cropperRight - cropperLeft;
+  var height = cropperBottom - cropperTop;
+
+  var ctx = canvas.getContext('2d');
+
+  // Get ImageData object contains cropped image
+  var croppedImageData = ctx.getImageData(cropperLeft, cropperTop, width, height);
+
+  var previewImageData = canvasPreviewCtx.createImageData(previewWidth, previewHeight);
+
+  // Resize to preview size
+  pica.resizeBuffer({
+    src: croppedImageData.data,
+    width: width,
+    height: height,
+    toWidth: previewWidth,
+    toHeight: previewHeight,
+    quality: 3,
+    dest: previewImageData.data
+  }, function (err) {
+
+    if (err) {
+      return;
+    }
+
+    canvasPreviewCtx.putImageData(previewImageData, 0, 0);
+  });
+
+}, 500);
+
+// Build real-time preview on cropper change. Fast, but low quality (pixelated)
 function _previewUpdate() {
   canvasPreviewCtx.drawImage(
     canvas,
@@ -82,6 +116,7 @@ function _previewUpdate() {
     previewHeight
   );
 
+  previewHqUpdate();
   redrawPreviewStarted = false;
 }
 
@@ -544,53 +579,78 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
   });
 
 
+  ///////////////////////////////////////////////////////////////////////////////
   // Save selected avatar
-  //
-  N.wire.on('users.avatar.change:apply', function change_avatar_apply() {
 
-    var canvasAv = document.createElement('canvas');
+  var formData;
 
-    canvasAv.width = (cropperRight - cropperLeft);
-    canvasAv.height = (cropperBottom - cropperTop);
+  N.wire.on('users.avatar.change:apply', function change_avatar_resize(__, callback) {
 
-    var ctx = canvasAv.getContext('2d');
+    var ctx = canvas.getContext('2d');
+    var width = cropperRight - cropperLeft;
+    var height = cropperBottom - cropperTop;
+    var croppedImageData = ctx.getImageData(cropperLeft, cropperTop, width, height);
 
-    ctx.drawImage(
-      canvas,
-      cropperLeft,
-      cropperTop,
-      canvasAv.width,
-      canvasAv.height,
-      0,
-      0,
-      canvasAv.width,
-      canvasAv.height
-    );
+    var avatarCanvas = document.createElement('canvas');
+    var avatarCanvasCtx = avatarCanvas.getContext('2d');
 
-    canvasAv.toBlob(function (blob) {
-      var formData = new FormData();
-      formData.append('file', blob);
-      formData.append('csrf', N.runtime.csrf);
+    avatarCanvas.width = avatarWidth;
+    avatarCanvas.height = avatarHeight;
 
-      $.ajax({
-        url: N.router.linkTo('users.avatar.upload'),
-        type: 'POST',
-        data: formData,
-        dataType: 'json',
-        processData: false,
-        contentType: false
+    var avatarImageData = avatarCanvasCtx.createImageData(avatarWidth, avatarHeight);
+
+    pica.resizeBuffer({
+      src: croppedImageData.data,
+      width: width,
+      height: height,
+      toWidth: avatarWidth,
+      toHeight: avatarHeight,
+      quality: 3,
+      dest: avatarImageData.data
+    }, function (err) {
+
+      if (err) {
+        N.wire.emit('notify', t('err_image_invalid'));
+        return;
+      }
+
+      avatarCanvasCtx.putImageData(avatarImageData, 0, 0);
+
+      avatarCanvas.toBlob(function (blob) {
+
+        formData = new FormData();
+        formData.append('file', blob);
+        formData.append('csrf', N.runtime.csrf);
+
+        callback();
+
+      }, 'image/jpeg', 90);
+    });
+  });
+
+  N.wire.after('users.avatar.change:apply', function change_avatar_upload() {
+
+    // Upload resizd avatar
+    $.ajax({
+      url: N.router.linkTo('users.avatar.upload'),
+      type: 'POST',
+      data: formData,
+      dataType: 'json',
+      processData: false,
+      contentType: false
+    })
+      .done(function (result) {
+        data.avatar_id = result.avatar_id;
+        $dialog.modal('hide');
+        onUploaded();
       })
-        .done(function (result) {
-          data.avatar_id = result.avatar_id;
-          $dialog.modal('hide');
-          onUploaded();
-        })
-        .fail(function () {
-          $dialog.modal('hide');
-          N.wire.emit('notify', t('err_upload_failed'));
-        });
-
-    }, 'image/jpeg', 90);
+      .fail(function () {
+        $dialog.modal('hide');
+        N.wire.emit('notify', t('err_upload_failed'));
+      })
+      .always(function () {
+        formData = null;
+      });
   });
 
 
