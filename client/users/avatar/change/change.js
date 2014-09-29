@@ -69,9 +69,14 @@ var cropperUpdate = _.debounce(function () {
 
 var redrawPreviewStarted = false;
 
+// Redraw lock. Incremented on each new request, to discard previous results
+var redrawHqLastId = 0;
+
 // Built high quality avatar preview. This is slow, do
 // it only after user stopped cropper change
 var previewHqUpdate = _.debounce(function () {
+  var redrawId = redrawHqLastId;
+
   var width = cropperRight - cropperLeft;
   var height = cropperBottom - cropperTop;
 
@@ -90,14 +95,20 @@ var previewHqUpdate = _.debounce(function () {
     toWidth: previewWidth,
     toHeight: previewHeight,
     quality: 3,
-    dest: previewImageData.data
+    dest: previewImageData.data,
+    unsharpThreshold: 10,
+    __unsharpAmount: 60
   }, function (err) {
 
     if (err) {
       return;
     }
 
-    canvasPreviewCtx.putImageData(previewImageData, 0, 0);
+    // Check that no new resizes requested, until we processed
+    // this one. If new request happened - just ignore old data.
+    if (redrawId === redrawHqLastId) {
+      canvasPreviewCtx.putImageData(previewImageData, 0, 0);
+    }
   });
 
 }, 500);
@@ -116,7 +127,12 @@ function _previewUpdate() {
     previewHeight
   );
 
-  previewHqUpdate();
+  // Check is web worker available in browser
+  if (pica.WW) {
+    redrawHqLastId++;
+    previewHqUpdate();
+  }
+
   redrawPreviewStarted = false;
 }
 
