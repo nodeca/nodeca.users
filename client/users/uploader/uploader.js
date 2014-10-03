@@ -15,6 +15,8 @@
 
 var async    = require('async');
 var readExif = require('nodeca.users/lib/exif');
+var pica     = require('pica');
+
 
 var settings;
 var $uploadDialog;
@@ -101,34 +103,41 @@ function resizeImage(data, callback) {
       scaledHeight = resizeConfig.height;
     }
 
-    var canvas = document.createElement('canvas');
-
-    canvas.width = scaledWidth;
-    canvas.height = scaledHeight;
-
-    var ctx = canvas.getContext('2d');
-    var width = img.width * scaledHeight / img.height;
-    var cropX = (scaledWidth - width) / 2;
     var quality = (ext === 'jpeg' || ext === 'jpg') ? resizeConfig.jpeg_quality : undefined;
 
-    ctx.drawImage(img, cropX, 0, width, scaledHeight);
+    var width = Math.min(img.height * scaledWidth / scaledHeight, img.width);
+    var cropX = (width - img.width) / 2;
 
-    canvas.toBlob(function (blob) {
-      var jpegBlob, jpegBody;
+    var source = document.createElement('canvas');
+    var dest = document.createElement('canvas');
+
+    source.width = width;
+    source.height = img.height;
+
+    dest.width = scaledWidth;
+    dest.height = scaledHeight;
+
+    source.getContext('2d').drawImage(img, cropX, 0, width, img.height);
+
+    pica.resizeCanvas(source, dest, { alpha: true }, function () {
+
+      dest.toBlob(function (blob) {
+        var jpegBlob, jpegBody;
 
 
-      if (jpegHeader) {
-        jpegBody = slice.call(blob, 20);
+        if (jpegHeader) {
+          jpegBody = slice.call(blob, 20);
 
-        jpegBlob = new Blob([ jpegHeader, jpegBody ], { type: data.file.type });
-      }
+          jpegBlob = new Blob([ jpegHeader, jpegBody ], { type: data.file.type });
+        }
 
-      var name = data.file.name;
+        var name = data.file.name;
 
-      data.file = jpegBlob || blob;
-      data.file.name = name;
-      callback();
-    }, data.file.type, quality);
+        data.file = jpegBlob || blob;
+        data.file.name = name;
+        callback();
+      }, data.file.type, quality);
+    });
   };
 
   var reader = new FileReader();

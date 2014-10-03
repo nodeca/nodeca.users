@@ -11,6 +11,7 @@ users:
         skip_size: 300000
       md:
         width: 640
+        unsharp: true
       sm:
         from: md
         #jpeg_quality: 75

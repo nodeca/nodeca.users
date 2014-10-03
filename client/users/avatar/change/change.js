@@ -464,6 +464,8 @@ function loadImage(file) {
     previewUpdate();
   };
 
+  var slice = file.slice || file.webkitSlice || file.mozSlice;
+  var maxMetadataSize = Math.min(file.size, 256 * 1024);
   var reader = new FileReader();
 
   reader.onloadend = function (e) {
@@ -476,7 +478,7 @@ function loadImage(file) {
     image.src = window.URL.createObjectURL(file);
   };
 
-  reader.readAsArrayBuffer(file);
+  reader.readAsArrayBuffer(slice.call(file, 0, maxMetadataSize));
 }
 
 
