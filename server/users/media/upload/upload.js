@@ -19,15 +19,20 @@ module.exports = function (N, apiPath) {
 
   // CSRF comes in post data and checked separately
   N.validate(apiPath, {
-    album_id: { format: 'mongo', required: true }
+    album_id: { format: 'mongo' }
   });
 
 
-  // Fetch album info (by album_id)
+  // Fetch album info (by album_id). Fetch default album if album_id not specified
   //
   N.wire.before(apiPath, function fetch_album(env, callback) {
+
+    var queryParams = env.params.album_id ?
+                      { _id: env.params.album_id, user_id: env.session.user_id } :
+                      { user_id: env.session.user_id, default: true };
+
     N.models.users.Album
-      .findOne({ '_id': env.params.album_id })
+      .findOne(queryParams)
       .lean(true)
       .exec(function (err, album) {
         if (err) {
@@ -46,19 +51,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Check permissions
-  //
-  N.wire.before(apiPath, function check_permissions(env, callback) {
-    // TODO: check quota and permissions
-
-    // Check is current user owner of album
-    if (env.session.user_id !== env.data.album.user_id.toString()) {
-      callback(N.io.FORBIDDEN);
-      return;
-    }
-
-    callback();
-  });
+  // TODO: check quota
 
 
   // Fetch post body with files via formidable
@@ -179,5 +172,12 @@ module.exports = function (N, apiPath) {
     }
 
     N.models.users.Album.update({ _id: env.data.album._id }, { cover_id: media.file_id }, callback);
+  });
+
+
+  // Fill media data (file_id, type, file_name)
+  //
+  N.wire.after(apiPath, function fill_media_id(env) {
+    env.res.media = _.pick(env.data.media, [ 'file_id', 'type', 'file_name' ]);
   });
 };

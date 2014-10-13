@@ -96,6 +96,6 @@ router:
       "/upload_avatar": ~
 
     users.media.upload:
-      "/upload/{album_id}":
+      "/upload/({album_id})":
         album_id:
           match: /[0-9a-f]{24}/

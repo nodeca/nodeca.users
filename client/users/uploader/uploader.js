@@ -5,9 +5,10 @@
 // Add files (from drop event)
 //
 // N.wire.emit('users.uploader:add', { files: event.dataTransfer.files, url: '/url/to/upload/method' });
-// - files  - required
-// - url    - required
-// - config - required. name of server method that returns config for uploader
+// - files    - required
+// - url      - required
+// - config   - required. name of server method that returns config for uploader
+// - uploaded - null. will be filled after upload. array of uploaded media (file_id, type, file_name)
 //
 
 'use strict';
@@ -21,6 +22,7 @@ var pica     = require('pica');
 var settings;
 var $uploadDialog;
 var aborted;
+var uploadedFiles;
 
 
 // Check file extension. Create unique id. Add initial progress info to dialog
@@ -214,7 +216,8 @@ function startUpload(data, callback) {
       return xhr;
     }
   })
-  .done(function () {
+  .done(function (res) {
+    uploadedFiles.push(res.media);
     $progressInfo.find('.progress-bar').addClass('progress-bar-success');
   })
   .fail(function (jqXHR, textStatus, errorThrown) {
@@ -266,6 +269,7 @@ N.wire.before('users.uploader:add', function init_upload_dialog(data, callback) 
     .on('hidden.bs.modal', function () {
       $uploadDialog.remove();
       $uploadDialog = null;
+      uploadedFiles = null;
       aborted = true;
     })
     .modal('show');
@@ -275,6 +279,7 @@ N.wire.before('users.uploader:add', function init_upload_dialog(data, callback) 
 // Resize files if needed, upload files
 N.wire.on('users.uploader:add', function add_files(data, callback) {
   aborted = false;
+  uploadedFiles = [];
 
   async.eachLimit(
     data.files,
@@ -307,6 +312,7 @@ N.wire.on('users.uploader:add', function add_files(data, callback) {
       }
 
       if (!aborted) {
+        data.uploaded = uploadedFiles;
         callback();
       }
     }
