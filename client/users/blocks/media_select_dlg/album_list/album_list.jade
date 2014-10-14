@@ -1,0 +1,11 @@
+ul
+  each album in self.albums
+    li.media-select-dlg__album
+      a(
+        data-on-click='users.blocks.media_select_dlg:album_select'
+        data-album-id=album._id
+      )
+        if !album.default
+          = album.title
+        else
+          = self.t('default_name')

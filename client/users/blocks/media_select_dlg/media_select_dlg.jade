@@ -1,0 +1,28 @@
+.modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
+  .modal-dialog.modal-lg
+    .modal-content
+
+        .modal-header
+          button.close(
+            aria-hidden='true'
+            type='button'
+            data-dismiss='modal'
+            tabindex='-1'
+          ) &times;
+          h4.modal-title= self.t('title')
+
+        .modal-body.media-select-dlg
+          .media-select-dlg__list
+            .media-select-dlg__albums
+            .media-select-dlg__files
+          - // TODO: list of selected files
+          .media-select-dlg__selected
+
+        .modal-footer
+          button.btn.btn-default(type='button' tabindex='2' data-dismiss='modal')= self.t('cancel')
+          button.btn.btn-primary(
+            type='button'
+            tabindex='3'
+            data-on-click='users.blocks.media_select_dlg:apply'
+          )= self.t('apply')
+
