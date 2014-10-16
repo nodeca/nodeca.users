@@ -1,0 +1,10 @@
+setting_schemas:
+  user:
+    edit_no_mlinks:
+      type: boolean
+      default: false
+      category_key: editor
+    edit_no_smiles:
+      type: boolean
+      default: false
+      category_key: editor
