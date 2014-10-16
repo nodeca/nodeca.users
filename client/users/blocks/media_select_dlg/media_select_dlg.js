@@ -30,7 +30,7 @@ function loadAlbumContent(albumID) {
     $dialog.find('.media-select-dlg__files').empty().append($media);
 
     options.selected.forEach(function (file) {
-      $dialog.find('#media-select-dlg__media-' + file.id).addClass('selected');
+      $dialog.find('#media-select-dlg__media-' + file.file_id).addClass('selected');
     });
   });
 }
@@ -47,7 +47,13 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
 
     if (_.findIndex(options.selected, function (file) { return file.id === id; }) === -1) {
       $target.addClass('selected');
-      options.selected.push({ id: id, name: $target.data('file-name') });
+
+      options.selected.push({
+        file_id: id,
+        file_name: $target.data('file-name'),
+        type: $target.data('type')
+      });
+
     } else {
       $target.removeClass('selected');
       options.selected = _.remove(options.selected, function (file) { return file.id !== id; });
