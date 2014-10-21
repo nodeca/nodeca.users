@@ -29,9 +29,9 @@
           = self.media.file_name
 
   if self.previous
-    a.user-mediapage__prev.btn.btn-default(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.previous }))= self.t('prev')
+    a.user-mediapage__prev.btn.btn-default(href=self.link_to('users.media', { user_hid: self.user_hid, file_id: self.previous }))= self.t('prev')
   if self.next
-    a.user-mediapage__next.btn.btn-default(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.next }))= self.t('next')
+    a.user-mediapage__next.btn.btn-default(href=self.link_to('users.media', { user_hid: self.user_hid, file_id: self.next }))= self.t('next')
 
   .hidden-deleted
     if own_page

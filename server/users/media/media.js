@@ -13,7 +13,7 @@ module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
     user_hid: { type: 'integer', minimum: 1, required: true },
-    media_id: { format: 'mongo' }
+    file_id: { format: 'mongo', required: true }
   });
 
 
@@ -32,7 +32,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function fetch_media(env, callback) {
     N.models.users.Media
-      .findOne({ '_id': env.params.media_id })
+      .findOne({ 'file_id': env.params.file_id })
       .where({ 'user_id': env.data.user._id }) // Make sure that user is real owner
       .lean(true)
       .exec(function (err, result) {
@@ -112,7 +112,7 @@ module.exports = function (N, apiPath) {
     env.res.user_hid = env.data.user.hid;
 
     N.models.users.Comment
-      .find({ 'media_id': env.params.media_id }, fields.post_in.join(' '))
+      .find({ 'media_id': env.data.media._id }, fields.post_in.join(' '))
       .where('st').in(env.data.statuses)
       .lean(true)
       .exec(function (err, result) {
@@ -191,7 +191,7 @@ module.exports = function (N, apiPath) {
     N.models.users.Media
       .findOne({ album_id: media.album_id, exists: true, _id: { $gt: media._id } })
       .sort('_id')
-      .select('_id')
+      .select('file_id')
       .lean(true)
       .exec(function (err, result) {
         if (err) {
@@ -200,7 +200,7 @@ module.exports = function (N, apiPath) {
         }
 
         if (result) {
-          env.res.previous = result._id;
+          env.res.previous = result.file_id;
         }
         callback();
       });
@@ -215,7 +215,7 @@ module.exports = function (N, apiPath) {
     N.models.users.Media
       .findOne({ album_id: media.album_id, exists: true, _id: { $lt: media._id } })
       .sort('-_id')
-      .select('_id')
+      .select('file_id')
       .lean(true)
       .exec(function (err, result) {
         if (err) {
@@ -224,7 +224,7 @@ module.exports = function (N, apiPath) {
         }
 
         if (result) {
-          env.res.next = result._id;
+          env.res.next = result.file_id;
         }
         callback();
       });

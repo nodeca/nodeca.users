@@ -36,11 +36,11 @@ router:
           match: /[0-9a-f]{24}/
 
     users.media:
-      "/member{user_hid}/media/{media_id}":
+      "/member{user_hid}/media/{file_id}":
         user_hid:
           match: /\d+/
           type: 'integer'
-        media_id:
+        file_id:
           match: /[0-9a-f]{24}/
 
     users.auth.login.show:

@@ -78,6 +78,9 @@ module.exports = function (N, apiPath) {
       media.user_id = env.data.album.user_id;
       media.album_id = env.data.album._id;
       media.type = 'medialink';
+
+      // In case of medialink, we have no file, but we should specify file_id for media page
+      media.file_id = media._id;
       media.save(callback);
     });
   });
