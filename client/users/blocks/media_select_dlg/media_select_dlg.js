@@ -45,7 +45,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
     var $target = $(event.currentTarget);
     var id = $target.data('file-id');
 
-    if (_.findIndex(options.selected, function (file) { return file.id === id; }) === -1) {
+    if (_.findIndex(options.selected, function (file) { return file.file_id === id; }) === -1) {
       $target.addClass('selected');
 
       options.selected.push({
@@ -56,7 +56,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
 
     } else {
       $target.removeClass('selected');
-      options.selected = _.remove(options.selected, function (file) { return file.id !== id; });
+      options.selected = _.remove(options.selected, function (file) { return file.file_id !== id; });
     }
 
     event.stopPropagation();
