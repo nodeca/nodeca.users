@@ -1,3 +1,5 @@
+@import "nodeca.core/client/common/_variables"
+
 .media-select-dlg__files
   display table-cell
   ul
@@ -13,13 +15,18 @@
       border-color #008000
       border-style dashed
 
-.media-select-dlg__albums
+.media-select-dlg__sidebar
   vertical-align top
-  display table-cell
+  float left
   width 110px
   overflow hidden
   ul
     list-style none
 
-.media-select-dlg__list
-  display table-row
+.media-select-dlg__album-list
+  margin 0px
+  padding 0px
+
+
+.media-select-dlg__album
+  shortable()

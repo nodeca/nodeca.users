@@ -102,7 +102,7 @@ N.wire.on('users.blocks.media_select_dlg', function show_media_select_dlg(data, 
   N.io.rpc('users.albums_root.list', { user_hid: N.runtime.user_hid }).done(function (albumsList) {
     var $albums = $(N.runtime.render('users.blocks.media_select_dlg.album_list', albumsList));
 
-    $dialog.find('.media-select-dlg__albums').append($albums);
+    $dialog.find('.media-select-dlg__sidebar').append($albums);
 
     loadAlbumContent(albumsList.albums[0]._id);
   });
