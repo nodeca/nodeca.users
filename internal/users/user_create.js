@@ -29,7 +29,7 @@ module.exports = function (N, apiPath) {
 
   // Create user record
   //
-  N.wire.on(apiPath, function user_create(env,callback) {
+  N.wire.on(apiPath, function user_create(env, callback) {
 
     N.settings.get('registered_user_group', function (err, registeredGroupId) {
 

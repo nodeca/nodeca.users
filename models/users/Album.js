@@ -48,21 +48,19 @@ module.exports = function (N, collectionName) {
   // Update media count in album
   //
   var updateCount = function (albumId, full, callback) {
-    var Album = N.models.users.Album;
-    var Media = N.models.users.Media;
 
     if (!full) {
-      Album.update({ _id: albumId }, { $inc: { count: 1 } }, callback);
+      N.models.users.Album.update({ _id: albumId }, { $inc: { count: 1 } }, callback);
       return;
     }
 
-    Media.count({ album_id: albumId, exists: true }, function (err, result) {
+    N.models.users.Media.count({ album_id: albumId, exists: true }, function (err, result) {
       if (err) {
         callback(err);
         return;
       }
 
-      Album.update({ _id: albumId }, { count: result }, callback);
+      N.models.users.Album.update({ _id: albumId }, { count: result }, callback);
     });
   };
 
@@ -70,11 +68,9 @@ module.exports = function (N, collectionName) {
   // Update album cover
   //
   var updateCover = function (albumId, callback) {
-    var Album = N.models.users.Album;
-    var Media = N.models.users.Media;
 
     // Fetch album
-    Album.findOne({ _id: albumId }).lean(true).exec(function (err, album) {
+    N.models.users.Album.findOne({ _id: albumId }).lean(true).exec(function (err, album) {
       if (err) {
         callback(err);
         return;
@@ -84,7 +80,7 @@ module.exports = function (N, collectionName) {
 
       // album.cover_id may be null. Set it to zero fill to avoid find medialinks.
       var fileId = album.cover_id || '000000000000000000000000';
-      Media
+      N.models.users.Media
         // album_id used to check if media moved to another album
         .findOne({ file_id: fileId, exists: true, album_id: album._id })
         .select('file_id')
@@ -102,14 +98,14 @@ module.exports = function (N, collectionName) {
           }
 
           // Update cover
-          Media.findOne({ album_id: album._id, exists: true, type: 'image' })
+          N.models.users.Media.findOne({ album_id: album._id, exists: true, type: 'image' })
             .sort('-ts').lean(true).exec(function (err, result) {
               if (err) {
                 callback(err);
                 return;
               }
 
-              Album.update({ _id: albumId }, { cover_id: result ? result.file_id : null }, callback);
+              N.models.users.Album.update({ _id: albumId }, { cover_id: result ? result.file_id : null }, callback);
             });
         });
     });
