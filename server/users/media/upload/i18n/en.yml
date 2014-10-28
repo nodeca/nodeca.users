@@ -1,0 +1,4 @@
+en-US:
+  err_permission: You don't have permissions to upload media
+  err_file_size: "File is too big (max #{max_size_kb} kb)"
+  err_quota_exceeded: "Your quota (#{quota_mb} MB) has exceeded"

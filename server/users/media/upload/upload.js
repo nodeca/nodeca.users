@@ -4,6 +4,7 @@
 'use strict';
 
 
+var Mongoose    = require('mongoose');
 var formidable  = require('formidable');
 var tmpDir      = require('os').tmpdir();
 var fs          = require('fs');
@@ -51,7 +52,97 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // TODO: check quota
+  // Check permissions
+  //
+  N.wire.before(apiPath, function check_permissions(env, callback) {
+
+    env.extras.settings.fetch('users_can_upload_media', function (err, users_can_upload_media) {
+
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      if (!users_can_upload_media) {
+        callback({
+          code:    N.io.CLIENT_ERROR,
+          message: env.t('err_permission')
+        });
+        return;
+      }
+
+      callback();
+    });
+  });
+
+
+  // Check file size
+  //
+  N.wire.before(apiPath, function check_file_size(env, callback) {
+    var fileSize = env.origin.req.headers['content-length'];
+
+    env.extras.settings.fetch('users_media_single_quota_kb', function (err, users_media_single_quota_kb) {
+
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      if (!fileSize || (users_media_single_quota_kb * 1024 < fileSize)) {
+        callback({
+          code:    N.io.CLIENT_ERROR,
+          message: env.t('err_file_size', { max_size_kb: users_media_single_quota_kb })
+        });
+        return;
+      }
+
+      callback();
+    });
+  });
+
+
+  // Check quota
+  //
+  N.wire.before(apiPath, function check_quota(env, callback) {
+    var totalSize;
+
+    // Fetch user's total media size
+    //
+    // TODO: Aggregation $groups can't use coverage index.
+    // TODO: All user's medias will be selected to calculate $sum. Check performance on production
+    N.models.users.Media.aggregate(
+      [
+        { $match: { user_id: new Mongoose.Types.ObjectId(env.session.user_id), exists: true } },
+        { $group: { _id: null, total_size: { $sum: '$file_size' } } }
+      ],
+      function (err, data) {
+
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        totalSize = data[0] ? data[0].total_size : 0;
+
+        env.extras.settings.fetch('users_media_total_quota_mb', function (err, users_media_total_quota_mb) {
+
+          if (err) {
+            callback(err);
+            return;
+          }
+
+          if (users_media_total_quota_mb * 1024 * 1024 < totalSize) {
+            callback({
+              code:    N.io.CLIENT_ERROR,
+              message: env.t('err_quota_exceeded', { quota_mb: users_media_total_quota_mb })
+            });
+            return;
+          }
+
+          callback();
+        });
+      });
+  });
 
 
   // Fetch post body with files via formidable

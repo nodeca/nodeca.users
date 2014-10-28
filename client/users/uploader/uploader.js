@@ -229,7 +229,12 @@ function startUpload(data, callback) {
     $progressInfo.find('.uploader-progress__name').addClass('text-danger');
     $progressInfo.find('.progress-bar').addClass('progress-bar-danger');
 
-    N.wire.emit('notify', t('err_upload', { file_name: data.file.name }));
+    // Client error
+    if (jqXHR.status === N.io.CLIENT_ERROR) {
+      N.wire.emit('notify', jqXHR.responseText);
+    } else {
+      N.wire.emit('notify', t('err_upload', { file_name: data.file.name }));
+    }
   })
   .always(callback);
 

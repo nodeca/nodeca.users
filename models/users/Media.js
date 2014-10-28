@@ -44,7 +44,7 @@ module.exports = function (N, collectionName) {
     // }
     medialink_data : Schema.Types.Mixed,
 
-    file_size      : Number,
+    file_size      : { 'type': Number, 'default': 0 },
     file_name      : String,
     description    : String,
     exists         : { 'type': Boolean, 'default': true }
@@ -62,7 +62,11 @@ module.exports = function (N, collectionName) {
   // - Media page, fetch next and prev _id's
   Media.index({ album_id: 1, exists: 1, _id: 1 });
 
-  // "All medias" page, medias list, sorted by date
+  // - "All medias" page, medias list, sorted by date
+  // - User medias size (users.media.upload)
+  //
+  // TODO: Aggregation $groups can't use coverage index.
+  // TODO: All user's medias will be selected to calculate $sum. Check performance on production
   Media.index({ user_id: 1, exists: 1, ts: -1 });
 
   //////////////////////////////////////////////////////////////////////////////
