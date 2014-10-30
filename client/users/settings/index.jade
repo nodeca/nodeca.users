@@ -1,0 +1,46 @@
+- self.add_raw_data('setting_schemas', self.setting_schemas)
+- self.add_raw_data('settings', self.settings)
+
+#content
+  != self.partial('@users.blocks.breadcrumbs')
+
+  header.page-head
+    h1.page-head__title(itemprop='name')= self.t('title')
+    p.page-head__descr.hidden-xs(itemprop='description')
+
+  form.form#user-settings(data-bind='submit: submit')
+    // ko foreach: categories
+
+    fieldset
+      legend(data-bind='text: name')
+
+      // ko foreach: settings
+
+      .form-group.form-group-hover
+
+          // ko if: type === 'string'
+          label(data-bind='text: name')
+          input.form-control(type='text' data-bind='value: value, valueUpdate: "keyup"')
+          // /ko
+
+          // ko if: type === 'number'
+          label(data-bind='text: name')
+          input.form-control(type='number' data-bind='value: value, valueUpdate: "keyup"')
+          // /ko
+
+          // ko if: type === 'boolean'
+          .checkbox
+            label
+              input(type='checkbox' data-bind='checked: value')
+              span(data-bind='text: name')
+          // /ko
+
+          // ko if: help
+          p.help-block(data-bind="text: help")
+          // /ko
+
+      // /ko
+
+    // /ko
+
+    button.btn.btn-primary(type='submit', data-bind='enable: isDirty')= self.t('submit')

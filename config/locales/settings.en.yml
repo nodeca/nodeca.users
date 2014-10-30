@@ -9,7 +9,6 @@ i18n:
           register_common: Common
           perm_admin: Administration
           perm_users: Users
-          editor: Editor
 
         setting_names:
           general_ssl_mode: SSL mode
@@ -30,9 +29,6 @@ i18n:
 
           users_media_single_quota_kb: Max upload file size (KB)
 
-          edit_no_mlinks: Disallow parse medialinks
-
-          edit_no_smiles: Disallow parse smiles
 
         setting_values:
           general_ssl_mode:

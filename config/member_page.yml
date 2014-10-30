@@ -27,7 +27,7 @@ users:
         to: users.drafts
         priority: 80
       settings:
-        to: users.settings
+        to: users.settings.index
         priority: 100
 
     # Blocks will be in users.member.blocks

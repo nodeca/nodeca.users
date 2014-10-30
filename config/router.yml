@@ -9,6 +9,9 @@ router:
           match: /\d+/
           type: 'integer'
 
+    users.settings.index:
+      "/settings": ~
+
     users.albums_root:
       "/member{user_hid}/albums":
         user_hid:

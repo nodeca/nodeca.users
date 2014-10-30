@@ -1,0 +1,10 @@
+i18n:
+  en-US:
+    users:
+
+      setting_cat:
+        editor: Editor
+
+      setting_names:
+        edit_no_mlinks: Disallow parse medialinks
+        edit_no_smiles: Disallow parse smiles
