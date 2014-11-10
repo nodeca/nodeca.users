@@ -21,8 +21,8 @@
       if own_page
         ul.member-sidebar__menu
           each item in self.menu_ordered
-            li
-              a.btn.btn-link(href=self.link_to(item.to, { user_hid: self.user.hid }))= self.t('menu.' + item.name)
+            li.member-sidebar__menu-item
+              a.member-sidebar__menu-link(href=self.link_to(item.to, { user_hid: self.user.hid }))= self.t('menu.' + item.name)
 
     .member-blocks
       each block in self.blocks_ordered

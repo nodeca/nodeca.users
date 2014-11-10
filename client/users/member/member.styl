@@ -14,8 +14,21 @@
 
 .member-sidebar__menu
   padding-left 0px
-  li
-    list-style none
+
+.member-sidebar__menu-item
+  list-style none
+  font-size 16px
+  line-height 35px
+  border-radius 4px
+  transition .2s ease
+  &:hover
+    background-color grayLightest
+
+.member-sidebar__menu-link
+  display block
+  padding 0 5px
+  &:hover
+    text-decoration none
 
 //
 // Avatar styles
@@ -27,6 +40,7 @@
 
 .member-avatar
   position relative
+  margin-bottom 15px
 .member-avatar__image
   width 150px
   border-radius 4px
@@ -42,6 +56,7 @@
   background-color gray
   color white
   opacity .6
+  transition opacity .2s ease
   border-radius 0 0 4px 4px
 
 .member-avatar__delete
@@ -49,6 +64,13 @@
   position absolute
   top 5px
   right 5px
+  opacity .4
+  transition opacity .2s ease
+
+.member-avatar:hover
+  .member-avatar__caption
+  .member-avatar__delete
+    opacity 1
 
 //
 // Helper for small thumbnails lists
