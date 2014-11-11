@@ -1,7 +1,7 @@
 - self.add_raw_data('setting_schemas', self.setting_schemas)
 - self.add_raw_data('settings', self.settings)
 
-#content
+#content.user-settings-root
   != self.partial('@users.blocks.breadcrumbs')
 
   header.page-head
@@ -43,4 +43,5 @@
 
     // /ko
 
+    br
     button.btn.btn-primary(type='submit', data-bind='enable: isDirty')= self.t('submit')

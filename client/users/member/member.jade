@@ -7,8 +7,8 @@
     h1.page-head__title(itemprop='name')= self.users[self.user._id].name
     p.page-head__descr.hidden-xs(itemprop='description')
 
-  - var mod = self.avatar_exists ? 'member-layout__m-avatar-exists' : '';
-  .member-layout(class=mod)
+  - var modifier = self.avatar_exists ? 'member-layout__m-avatar-exists' : '';
+  .member-layout(class=modifier)
     .member-sidebar
       .member-avatar
         if own_page
