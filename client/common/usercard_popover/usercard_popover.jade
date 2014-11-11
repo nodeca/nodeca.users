@@ -5,7 +5,7 @@
     .ucard-head.cleafix #{self.name}
     aside.ucard-sidebar
       a.ucard-avatar(href='#')
-        img.av-l(alt='#{self.name}',src=self.link_to('core.gridfs', { bucket: self.avatar_id }))
+        img.av-l(alt='#{self.name}',src=self.link_to('core.gridfs', { bucket: self.avatar_id || self.avatar_fallback }))
 
       a.btn.btn-default.btn-xs.btn-block= self.t('find_posts')  
       a.btn.btn-default.btn-xs.btn-block= self.t('send_message')  
