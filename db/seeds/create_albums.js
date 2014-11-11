@@ -79,18 +79,33 @@ var createAlbums = function (callback) {
 
   async.series([
     function (next) {
+      // Create demo albums for users from administrators group
 
-      // Get first user id to use it as reference for albums and media
-      models.users.User.findOne({ 'hid': 1 }).lean(true).exec(function (err, user) {
-        if (err) { return next(err); }
+      // Get administrators group _id
+      models.users.UserGroup
+        .findOne({ short_name: 'administrators' })
+        .select('_id')
+        .lean(true)
+        .exec(function (err, group) {
+          if (err) {
+            next(err);
+            return;
+          }
 
-        if (user) {
-          user_ids.push(user._id);
-        }
+          // Get users from administrators group
+          models.users.User.find({ usergroups: group._id }).select('_id').lean(true).exec(function (err, users) {
+            if (err) {
+              next(err);
+              return;
+            }
 
-        next();
-      });
+            if (users) {
+              user_ids = user_ids.concat(_.pluck(users, '_id'));
+            }
 
+            next();
+          });
+        });
     },
     function (next) {
       // Create demo albums for moderators in first forum section
