@@ -66,6 +66,10 @@ module.exports = function (N, apiPath) {
 
 
     N.wire.emit('internal:users.breadcrumbs.fill_user', env);
+
+    // Doesn't show avatar in breadcrumbs on member page
+    env.data.breadcrumbs[0].avatar_id = null;
+
     env.res.breadcrumbs = env.data.breadcrumbs;
   });
 

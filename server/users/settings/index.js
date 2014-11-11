@@ -59,12 +59,6 @@ module.exports = function (N, apiPath) {
 
     N.wire.emit('internal:users.breadcrumbs.fill_user', env);
 
-    env.data.breadcrumbs.push({
-      text   : env.t('title'),
-      route  : 'users.settings',
-      params : { 'user_hid': env.data.user.hid }
-    });
-
     env.res.breadcrumbs = env.data.breadcrumbs;
   });
 };
