@@ -1,6 +1,7 @@
 en-US:
   title: User profile
   change_avatar: click to change
+  delete_avatar_confirm: Are you sure want to delete avatar?
   menu:
     feed: What's new
     messages: Messages
