@@ -39,7 +39,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   // Edit media
   //
   N.wire.on('users.media:edit', function media_edit() {
-    N.wire.emit('users.media.edit', { media_id: pageParams.media_id }, function () {
+    N.wire.emit('users.media.edit', { file_id: pageParams.file_id }, function () {
 
       N.io.rpc('users.media', pageParams).done(function (data) {
         $('#content').html($(N.runtime.render('users.media', data)));

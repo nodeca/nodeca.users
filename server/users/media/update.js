@@ -8,7 +8,7 @@ module.exports = function (N, apiPath) {
 
 
   N.validate(apiPath, {
-    media_id: { format: 'mongo', required: true },
+    file_id: { format: 'mongo', required: true },
     album_id: { format: 'mongo', required: true }
   });
 
@@ -16,7 +16,7 @@ module.exports = function (N, apiPath) {
   // Fetch media
   //
   N.wire.before(apiPath, function fetch_media (env, callback) {
-    N.models.users.Media.findOne({ _id: env.params.media_id, exists: true }).lean(true).exec(function (err, media) {
+    N.models.users.Media.findOne({ file_id: env.params.file_id, exists: true }).lean(true).exec(function (err, media) {
       if (err) {
         callback(err);
         return;
