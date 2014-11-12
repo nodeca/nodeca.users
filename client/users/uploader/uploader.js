@@ -8,7 +8,7 @@
 // - files    - required
 // - url      - required
 // - config   - required. name of server method that returns config for uploader
-// - uploaded - null. will be filled after upload. array of uploaded media (file_id, type, file_name)
+// - uploaded - null. will be filled after upload. array of uploaded media (media_id, type, file_name)
 //
 
 'use strict';

@@ -8,33 +8,36 @@ module.exports = function (N, apiPath) {
 
 
   N.validate(apiPath, {
-    file_id: { format: 'mongo', required: true }
+    media_id: { format: 'mongo', required: true }
   });
 
 
   // Fetch media
   //
   N.wire.on(apiPath, function fetch_media (env, callback) {
-    N.models.users.Media.findOne({ file_id: env.params.file_id, exists: true }).lean(true).exec(function (err, media) {
-      if (err) {
-        callback(err);
-        return;
-      }
+    N.models.users.MediaInfo
+      .findOne({ media_id: env.params.media_id, exists: true })
+      .lean(true)
+      .exec(function (err, media) {
+        if (err) {
+          callback(err);
+          return;
+        }
 
-      if (!media) {
-        callback(N.io.NOT_FOUND);
-        return;
-      }
+        if (!media) {
+          callback(N.io.NOT_FOUND);
+          return;
+        }
 
-      // Check media owner
-      if (env.session.user_id !== String(media.user_id)) {
-        callback(N.io.FORBIDDEN);
-        return;
-      }
+        // Check media owner
+        if (env.session.user_id !== String(media.user_id)) {
+          callback(N.io.FORBIDDEN);
+          return;
+        }
 
-      env.res.media = env.data.media = media;
-      callback();
-    });
+        env.res.media = env.data.media = media;
+        callback();
+      });
   });
 
 

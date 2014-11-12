@@ -5,15 +5,15 @@ else
     each media in self.medias
 
       li.media-select-dlg__media(
-        id='media-select-dlg__media-' + media.file_id
-        data-file-id=media.file_id
+        id='media-select-dlg__media-' + media.media_id
+        data-media-id=media.media_id
         data-file-name=media.file_name
         data-type=media.type
         data-on-click='users.blocks.media_select_dlg:media_select'
       )
 
         if media.type === 'image'
-          - var imageUrl = self.link_to('core.gridfs', { bucket: media.file_id + '_sm' })
+          - var imageUrl = self.link_to('core.gridfs', { bucket: media.media_id + '_sm' })
           .thumb.thumb__m-responsive
             img.thumb__image(src=imageUrl)
 

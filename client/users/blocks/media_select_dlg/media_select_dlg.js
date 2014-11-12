@@ -29,8 +29,8 @@ function loadAlbumContent(albumID) {
 
     $dialog.find('.media-select-dlg__files').empty().append($media);
 
-    options.selected.forEach(function (file) {
-      $dialog.find('#media-select-dlg__media-' + file.file_id).addClass('selected');
+    options.selected.forEach(function (mediaInfo) {
+      $dialog.find('#media-select-dlg__media-' + mediaInfo.media_id).addClass('selected');
     });
   });
 }
@@ -43,20 +43,20 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
 
   N.wire.on('users.blocks.media_select_dlg:media_select', function media_select (event) {
     var $target = $(event.currentTarget);
-    var id = $target.data('file-id');
+    var id = $target.data('media-id');
 
-    if (_.findIndex(options.selected, function (file) { return file.file_id === id; }) === -1) {
+    if (_.findIndex(options.selected, function (mediaInfo) { return mediaInfo.media_id === id; }) === -1) {
       $target.addClass('selected');
 
       options.selected.push({
-        file_id: id,
+        media_id: id,
         file_name: $target.data('file-name'),
         type: $target.data('type')
       });
 
     } else {
       $target.removeClass('selected');
-      options.selected = _.remove(options.selected, function (file) { return file.file_id !== id; });
+      options.selected = _.remove(options.selected, function (mediaInfo) { return mediaInfo.media_id !== id; });
     }
 
     event.stopPropagation();

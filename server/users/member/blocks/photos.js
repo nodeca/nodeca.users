@@ -10,7 +10,7 @@ module.exports = function (N) {
   //
   N.wire.after('server:users.member', function fetch_last_photos(env, callback) {
 
-    N.models.users.Media
+    N.models.users.MediaInfo
       .find({ 'user_id': env.data.user._id, exists: true })
       .lean(true)
       .sort('-ts')
@@ -46,7 +46,7 @@ module.exports = function (N) {
       return;
     }
 
-    N.models.users.Media.find({ 'user_id': env.data.user._id, exists: true }).count(function (err, count) {
+    N.models.users.MediaInfo.find({ 'user_id': env.data.user._id, exists: true }).count(function (err, count) {
       if (err) {
         callback(err);
         return;

@@ -8,7 +8,7 @@ module.exports = function (N, apiPath) {
 
 
   N.validate(apiPath, {
-    file_id: { format: 'mongo', required: true },
+    media_id: { format: 'mongo', required: true },
     album_id: { format: 'mongo', required: true }
   });
 
@@ -16,26 +16,29 @@ module.exports = function (N, apiPath) {
   // Fetch media
   //
   N.wire.before(apiPath, function fetch_media (env, callback) {
-    N.models.users.Media.findOne({ file_id: env.params.file_id, exists: true }).lean(true).exec(function (err, media) {
-      if (err) {
-        callback(err);
-        return;
-      }
+    N.models.users.MediaInfo
+      .findOne({ media_id: env.params.media_id, exists: true })
+      .lean(true)
+      .exec(function (err, media) {
+        if (err) {
+          callback(err);
+          return;
+        }
 
-      if (!media) {
-        callback(N.io.NOT_FOUND);
-        return;
-      }
+        if (!media) {
+          callback(N.io.NOT_FOUND);
+          return;
+        }
 
-      // Check media owner
-      if (env.session.user_id !== String(media.user_id)) {
-        callback(N.io.FORBIDDEN);
-        return;
-      }
+        // Check media owner
+        if (env.session.user_id !== String(media.user_id)) {
+          callback(N.io.FORBIDDEN);
+          return;
+        }
 
-      env.data.media = media;
-      callback();
-    });
+        env.data.media = media;
+        callback();
+      });
   });
 
 
@@ -78,7 +81,7 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    N.models.users.Media.update({ _id: media._id }, { album_id: album._id }, callback);
+    N.models.users.MediaInfo.update({ _id: media._id }, { album_id: album._id }, callback);
   });
 
 

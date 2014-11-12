@@ -14,7 +14,7 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.before(apiPath, function fetch_user_media (env, callback) {
-    N.models.users.Media.findOne({ '_id': env.params.media_id }).lean(true).exec(function (err, media) {
+    N.models.users.MediaInfo.findOne({ '_id': env.params.media_id }).lean(true).exec(function (err, media) {
       if (err) {
         callback(err);
         return;
@@ -43,7 +43,7 @@ module.exports = function (N, apiPath) {
     var media = env.data.media;
 
     var exists = env.params.restore ? true : false;
-    N.models.users.Media.update({ _id: media._id }, { exists: exists }, function (err) {
+    N.models.users.MediaInfo.update({ _id: media._id }, { exists: exists }, function (err) {
       if (err) {
         callback(err);
         return;

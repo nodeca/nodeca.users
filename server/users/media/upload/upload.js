@@ -110,7 +110,7 @@ module.exports = function (N, apiPath) {
     //
     // TODO: Aggregation $groups can't use coverage index.
     // TODO: All user's medias will be selected to calculate $sum. Check performance on production
-    N.models.users.Media.aggregate(
+    N.models.users.MediaInfo.aggregate(
       [
         { $match: { user_id: new Mongoose.Types.ObjectId(env.session.user_id), exists: true } },
         { $group: { _id: null, total_size: { $sum: '$file_size' } } }
@@ -208,7 +208,7 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function save_media(env, callback) {
     var fileInfo = env.data.upload_file_info;
 
-    N.models.users.Media.createFile({
+    N.models.users.MediaInfo.createFile({
       album_id: env.data.album._id,
       user_id: env.session.user_id,
       path: fileInfo.path,
@@ -262,13 +262,13 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    N.models.users.Album.update({ _id: env.data.album._id }, { cover_id: media.file_id }, callback);
+    N.models.users.Album.update({ _id: env.data.album._id }, { cover_id: media.media_id }, callback);
   });
 
 
-  // Fill media data (file_id, type, file_name)
+  // Fill media data (media_id, type, file_name)
   //
   N.wire.after(apiPath, function fill_media_id(env) {
-    env.res.media = _.pick(env.data.media, [ 'file_id', 'type', 'file_name' ]);
+    env.res.media = _.pick(env.data.media, [ 'media_id', 'type', 'file_name' ]);
   });
 };

@@ -54,7 +54,7 @@ module.exports = function (N, collectionName) {
       return;
     }
 
-    N.models.users.Media.count({ album_id: albumId, exists: true }, function (err, result) {
+    N.models.users.MediaInfo.count({ album_id: albumId, exists: true }, function (err, result) {
       if (err) {
         callback(err);
         return;
@@ -80,9 +80,9 @@ module.exports = function (N, collectionName) {
 
       // album.cover_id may be null. Set it to zero fill to avoid find medialinks.
       var fileId = album.cover_id || '000000000000000000000000';
-      N.models.users.Media
+      N.models.users.MediaInfo
         // album_id used to check if media moved to another album
-        .findOne({ file_id: fileId, exists: true, album_id: album._id })
+        .findOne({ media_id: fileId, exists: true, album_id: album._id })
         .select('file_id')
         .lean(true)
         .exec(function (err, cover) {
@@ -98,14 +98,14 @@ module.exports = function (N, collectionName) {
           }
 
           // Update cover
-          N.models.users.Media.findOne({ album_id: album._id, exists: true, type: 'image' })
+          N.models.users.MediaInfo.findOne({ album_id: album._id, exists: true, type: 'image' })
             .sort('-ts').lean(true).exec(function (err, result) {
               if (err) {
                 callback(err);
                 return;
               }
 
-              N.models.users.Album.update({ _id: albumId }, { cover_id: result ? result.file_id : null }, callback);
+              N.models.users.Album.update({ _id: albumId }, { cover_id: result ? result.media_id : null }, callback);
             });
         });
     });

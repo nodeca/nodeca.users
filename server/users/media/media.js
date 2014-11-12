@@ -13,7 +13,7 @@ module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
     user_hid: { type: 'integer', minimum: 1, required: true },
-    file_id: { format: 'mongo', required: true }
+    media_id: { format: 'mongo', required: true }
   });
 
 
@@ -31,9 +31,9 @@ module.exports = function (N, apiPath) {
   // Fetch media
   //
   N.wire.before(apiPath, function fetch_media(env, callback) {
-    N.models.users.Media
-      .findOne({ 'file_id': env.params.file_id })
-      .where({ 'user_id': env.data.user._id }) // Make sure that user is real owner
+    N.models.users.MediaInfo
+      .findOne({ media_id: env.params.media_id })
+      .where({ user_id: env.data.user._id }) // Make sure that user is real owner
       .lean(true)
       .exec(function (err, result) {
         if (err) {
@@ -188,10 +188,10 @@ module.exports = function (N, apiPath) {
   N.wire.after(apiPath, function fill_previous(env, callback) {
     var media = env.data.media;
 
-    N.models.users.Media
+    N.models.users.MediaInfo
       .findOne({ album_id: media.album_id, exists: true, _id: { $gt: media._id } })
       .sort('_id')
-      .select('file_id')
+      .select('media_id')
       .lean(true)
       .exec(function (err, result) {
         if (err) {
@@ -200,7 +200,7 @@ module.exports = function (N, apiPath) {
         }
 
         if (result) {
-          env.res.previous = result.file_id;
+          env.res.previous = result.media_id;
         }
         callback();
       });
@@ -212,10 +212,10 @@ module.exports = function (N, apiPath) {
   N.wire.after(apiPath, function fill_next(env, callback) {
     var media = env.data.media;
 
-    N.models.users.Media
+    N.models.users.MediaInfo
       .findOne({ album_id: media.album_id, exists: true, _id: { $lt: media._id } })
       .sort('-_id')
-      .select('file_id')
+      .select('media_id')
       .lean(true)
       .exec(function (err, result) {
         if (err) {
@@ -224,7 +224,7 @@ module.exports = function (N, apiPath) {
         }
 
         if (result) {
-          env.res.next = result.file_id;
+          env.res.next = result.media_id;
         }
         callback();
       });

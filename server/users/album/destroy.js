@@ -59,7 +59,7 @@ module.exports = function (N, apiPath) {
   // Fetch album media
   //
   N.wire.before(apiPath, function fetch_media(env, callback) {
-    N.models.users.Media
+    N.models.users.MediaInfo
       .find({ 'album_id': env.data.album._id })
       .lean(false) // Use as mongoose model
       .exec(function (err, medias) {

@@ -29,7 +29,7 @@ var models;
 var createMedia = function (userId, album, callback) {
   var photoPath = PHOTOS[Charlatan.Helpers.rand(0, PHOTOS.length)];
 
-  models.users.Media.createFile({
+  models.users.MediaInfo.createFile({
     album_id: album,
     user_id: userId,
     path: photoPath
@@ -172,7 +172,7 @@ var createComments = function (callback) {
 
   async.series([
     function (next) {
-      models.users.Media.find().lean(true).exec(function (err, media) {
+      models.users.MediaInfo.find().lean(true).exec(function (err, media) {
         if (err) { return next(err); }
         next(null, media);
       });

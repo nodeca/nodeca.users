@@ -51,9 +51,9 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    N.models.users.Media
+    N.models.users.MediaInfo
         .findOne({
-          file_id: env.params.cover_id,
+          media_id: env.params.cover_id,
           exists: true,
           album_id: env.data.album._id
         })
@@ -99,7 +99,7 @@ module.exports = function (N, apiPath) {
     };
 
     if (cover) {
-      data.cover_id = cover.file_id;
+      data.cover_id = cover.media_id;
     }
 
     N.models.users.Album.update({ _id: album._id }, data, callback);

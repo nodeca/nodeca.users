@@ -72,7 +72,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      var media = new N.models.users.Media();
+      var media = new N.models.users.MediaInfo();
       media.medialink_html = provider.template(data);
       media.medialink_data = data;
       media.user_id = env.data.album.user_id;
@@ -80,7 +80,7 @@ module.exports = function (N, apiPath) {
       media.type = 'medialink';
 
       // In case of medialink, we have no file, but we should specify file_id for media page
-      media.file_id = media._id;
+      media.media_id = media._id;
       media.save(callback);
     });
   });

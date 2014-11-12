@@ -26,7 +26,7 @@ module.exports = function (N, apiPath) {
   // Find and processes user media
   //
   N.wire.on(apiPath, function get_user_medias(env, callback) {
-    var query = N.models.users.Media
+    var query = N.models.users.MediaInfo
                   .find({ 'user_id': env.data.user._id, exists: true })
                   .lean(true)
                   .sort('-ts');

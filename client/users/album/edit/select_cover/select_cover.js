@@ -56,7 +56,7 @@ N.wire.after('users.album.edit.select_cover', function load_photos(data, callbac
 //
 N.wire.on('users.album.edit.select_cover:select', function select_cover(event) {
   var $item = $(event.target);
-  dialogData.cover_id = $item.data('file_id');
+  dialogData.cover_id = $item.data('media_id');
   onCoverSelected();
   $dialog.modal('hide');
 });

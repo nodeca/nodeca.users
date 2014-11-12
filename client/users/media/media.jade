@@ -16,7 +16,7 @@
 
   .user-media
     if self.media.type === 'image'
-      - var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.file_id })
+      - var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.media_id })
         img.img-responsive(src=imageUrl)
 
     else if self.media.type === 'medialink'
@@ -25,13 +25,13 @@
 
     else if self.media.type === 'binary'
       .user-media__binary
-        a(href=self.link_to('core.gridfs', { bucket: self.media.file_id }))
+        a(href=self.link_to('core.gridfs', { bucket: self.media.media_id }))
           = self.media.file_name
 
   if self.previous
-    a.user-mediapage__prev.btn.btn-default(href=self.link_to('users.media', { user_hid: self.user_hid, file_id: self.previous }))= self.t('prev')
+    a.user-mediapage__prev.btn.btn-default(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.previous }))= self.t('prev')
   if self.next
-    a.user-mediapage__next.btn.btn-default(href=self.link_to('users.media', { user_hid: self.user_hid, file_id: self.next }))= self.t('next')
+    a.user-mediapage__next.btn.btn-default(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.next }))= self.t('next')
 
   .hidden-deleted
     if own_page

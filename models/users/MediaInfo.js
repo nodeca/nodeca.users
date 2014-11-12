@@ -15,8 +15,8 @@ module.exports = function (N, collectionName) {
   var mediaConfig;
 
 
-  var Media = new Schema({
-    file_id        : Schema.Types.ObjectId,
+  var MediaInfo = new Schema({
+    media_id        : Schema.Types.ObjectId,
 
     // image_sizes contains list of previews size:
     //
@@ -56,31 +56,31 @@ module.exports = function (N, collectionName) {
   //////////////////////////////////////////////////////////////////////////////
 
   // Media page, routing
-  Media.index({ file_id: 1 });
+  MediaInfo.index({ media_id: 1 });
 
   // - Album page, fetch medias
   // - Media page, fetch next and prev _id's
-  Media.index({ album_id: 1, exists: 1, _id: 1 });
+  MediaInfo.index({ album_id: 1, exists: 1, _id: 1 });
 
   // - "All medias" page, medias list, sorted by date
   // - User medias size (users.media.upload)
   //
   // TODO: Aggregation $groups can't use coverage index.
   // TODO: All user's medias will be selected to calculate $sum. Check performance on production
-  Media.index({ user_id: 1, exists: 1, ts: -1 });
+  MediaInfo.index({ user_id: 1, exists: 1, ts: -1 });
 
   //////////////////////////////////////////////////////////////////////////////
 
 
   // Remove files with previews
   //
-  Media.pre('remove', function (callback) {
+  MediaInfo.pre('remove', function (callback) {
     if (this.type === 'medialink') {
       callback();
       return;
     }
 
-    N.models.core.File.remove(this.file_id, true, callback);
+    N.models.core.File.remove(this.media_id, true, callback);
   });
 
 
@@ -125,8 +125,8 @@ module.exports = function (N, collectionName) {
   //
   // - callback(err, media)
   //
-  Media.statics.createFile = function (options, callback) {
-    var media = new N.models.users.Media();
+  MediaInfo.statics.createFile = function (options, callback) {
+    var media = new N.models.users.MediaInfo();
     media._id = new Mongoose.Types.ObjectId();
     media.user_id = options.user_id;
     media.album_id = options.album_id;
@@ -163,7 +163,7 @@ module.exports = function (N, collectionName) {
         }
 
         media.type = 'binary';
-        media.file_id = data.id;
+        media.media_id = data.id;
         media.file_size = data.size;
         media.file_name = options.name;
 
@@ -195,7 +195,7 @@ module.exports = function (N, collectionName) {
 
         media.type = 'image';
         media.image_sizes = data.images;
-        media.file_id = data.id;
+        media.media_id = data.id;
         media.file_size = data.size;
 
         media.save(function (err) {
@@ -211,7 +211,7 @@ module.exports = function (N, collectionName) {
   };
 
 
-  N.wire.on('init:models', function emit_init_Media(__, callback) {
+  N.wire.on('init:models', function emit_init_MediaInfo(__, callback) {
     // Read config
     try {
       mediaConfig = resizeParse(N.config.users.uploads);
@@ -220,11 +220,11 @@ module.exports = function (N, collectionName) {
       return;
     }
 
-    N.wire.emit('init:models.' + collectionName, Media, callback);
+    N.wire.emit('init:models.' + collectionName, MediaInfo, callback);
   });
 
 
-  N.wire.on('init:models.' + collectionName, function init_model_Media(schema) {
+  N.wire.on('init:models.' + collectionName, function init_model_MediaInfo(schema) {
     N.models[collectionName] = Mongoose.model(collectionName, schema);
   });
 };

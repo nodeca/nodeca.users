@@ -4,9 +4,9 @@ if self.medias.length > 0
       li.select-cover-list__item
         .thumb.thumb__m-sm
           img.thumb__image(
-            src=self.link_to('core.gridfs', { 'bucket': media.file_id + '_sm' })
+            src=self.link_to('core.gridfs', { 'bucket': media.media_id + '_sm' })
             data-on-click='users.album.edit.select_cover:select'
-            data-file_id=media.file_id
+            data-media_id=media.media_id
           )
 else
   p= self.t('empty_album')
