@@ -1,12 +1,8 @@
 setting_schemas:
   global:
-    general_ssl_mode:
+    general_ssl_force:
       priority: 10
       group_key: general
       category_key: general_common
-      type: dropdown
-      values:
-      - https_members: https_members
-      - https_always:  https_always
-      - https_off:     https_off
-      default: https_members
+      type: boolean
+      default: true

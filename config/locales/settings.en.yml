@@ -11,7 +11,7 @@ i18n:
           perm_users: Users
 
         setting_names:
-          general_ssl_mode: SSL mode
+          general_ssl_force: SSL force
 
           validate_email: Should validate email after registration
 
@@ -28,10 +28,3 @@ i18n:
           users_media_total_quota_mb: Total media quota (MB)
 
           users_media_single_quota_kb: Max upload file size (KB)
-
-
-        setting_values:
-          general_ssl_mode:
-            https_members: https for logged in
-            https_always: https for all
-            https_off: don't use https
