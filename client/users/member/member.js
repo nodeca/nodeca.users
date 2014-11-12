@@ -31,7 +31,11 @@ N.wire.on('navigate.done:' + module.apiPath, function store_blocks_state() {
     collapsedBlocks = data || [];
 
     collapsedBlocks.forEach(function (blockID) {
-      $('#' + blockID).removeClass('in');
+      $('#' + blockID)
+        .removeClass('in')
+        .parent()
+        .find('.member-block__header-collapser')
+        .addClass('collapsed');
     });
   });
 });
