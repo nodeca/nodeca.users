@@ -97,7 +97,8 @@ var previewHqUpdate = _.debounce(function () {
     quality: 3,
     dest: previewImageData.data,
     unsharpThreshold: 10,
-    __unsharpAmount: 60
+    __unsharpAmount: 60,
+    transferable: true
   }, function (err) {
 
     if (err) {
@@ -624,7 +625,8 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
       toWidth: avatarWidth,
       toHeight: avatarHeight,
       quality: 3,
-      dest: avatarImageData.data
+      dest: avatarImageData.data,
+      transferable: true
     }, function (err) {
 
       if (err) {
