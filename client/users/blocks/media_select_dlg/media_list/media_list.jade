@@ -27,3 +27,9 @@ else
           .thumb.thumb__m-responsive
             .thumb__icon.icon.icon-binary
             .thumb__content= media.file_name
+  if self.show_more
+    a.media-select-dlg__more-photos(
+      data-on-click='users.blocks.media_select_dlg:more_photos'
+      data-page=self.page
+      data-album-id=self.album_id
+    )= self.t('more')
