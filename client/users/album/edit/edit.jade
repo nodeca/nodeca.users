@@ -39,9 +39,11 @@
             #album-edit__cover(class=state_class)
 
               .album-edit__cover
-                .thumb.thumb__m-sm
+                a.thumb.thumb__m-sm(
+                  href='#'
+                  data-on-click='users.album.edit:select_cover'
+                )
                   img#album-edit__cover-img.thumb__image(
-                    data-on-click='users.album.edit:select_cover'
                     src=self.link_to('core.gridfs', { 'bucket': self.album.cover_id + '_sm' })
                   )
 

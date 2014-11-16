@@ -14,17 +14,17 @@ else
 
         if media.type === 'image'
           - var imageUrl = self.link_to('core.gridfs', { bucket: media.media_id + '_sm' })
-          .thumb.thumb__m-responsive
+          .thumb.thumb__m-sm
             img.thumb__image(src=imageUrl)
 
         else if media.type === 'medialink'
-          .thumb.thumb__m-responsive
+          .thumb.thumb__m-sm
             .thumb__inner
               .thumb__icon.icon.icon-video
               img.thumb__image(src=media.medialink_data.thumb)
 
         else if media.type === 'binary'
-          .thumb.thumb__m-responsive
+          .thumb.thumb__m-sm
             .thumb__icon.icon.icon-binary
             .thumb__content= media.file_name
   if self.show_more
