@@ -24,5 +24,6 @@
               img.thumb__image(src=imageUrl)
             else
               .thumb__content.thumb__m-sm No cover
-          .user-medialist__item-meta.thumb-caption.thumb__m-sm= album.title
-          .user-medialist__item-meta.thumb-caption.thumb__m-sm= self.date(album.last_ts, 'date')
+            .thumb-caption
+              .thumb-caption__line= album.title
+              time.thumb-caption__line.thumb-caption__m-secondary(datetime=album.last_ts)= self.date(album.last_ts, 'date')

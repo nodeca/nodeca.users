@@ -1,22 +1,19 @@
 each album in self.albums
   li.user-albumlist__item(data-on-dragdrop='users.albums_root.list:dragdrop', data-album-id=album._id, data-user-hid=self.user_hid)
-    a.thumb.thumb__m-responsive(
-      href=self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id })
-    )
+    - var albumLink = self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id });
+    - var albumTitle = !album.default ? album.title : self.t('default_name')
+
+    a.thumb.thumb__m-responsive(href=albumLink)
       if album.cover_id
         - var imageUrl = self.link_to('core.gridfs', { 'bucket': album.cover_id + '_sm' })
         img.thumb__image(src=imageUrl)
       else
         .thumb__content= self.t('empty')
 
-    .user-albumlist__item-title.thumb-caption.thumb-caption__m-inline.thumb__m-responsive
-      a(href=self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id }))
-        if !album.default
-          = album.title
-        else
-          = self.t('default_name')
+      .thumb-caption
+        .thumb-caption__line= albumTitle
+        .thumb-caption__line.thumb-caption__m-secondary
+          if album.count > 0
+            .pull-right.icon.icon-space-after.icon-camera #{album.count}
+          time.thumb-caption__line(datetime=album.last_ts)= self.date(album.last_ts, 'date')
 
-    .user-albumlist__item-meta.thumb-caption.thumb__m-responsive.clearfix
-      if album.count > 0
-        .pull-right.icon.icon-space-after.icon-camera #{album.count}
-      .pull-left= self.date(album.last_ts, 'date')

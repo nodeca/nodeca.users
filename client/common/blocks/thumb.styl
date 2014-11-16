@@ -9,18 +9,21 @@ thumbImageHeight = '$$ N.config.users.uploads.resize.sm.height $$'px
 // 170x150 -> 119x105
 downScale = 1.428571429
 
+bigCornerRadius = 3px
+smallCornerRadius = 2px
+
 thumbImageWidthSm  = round(thumbImageWidth / downScale)
 thumbImageHeightSm = round(thumbImageHeight / downScale)
 
+// Image container (link)
 .thumb
-  width thumbImageWidth + 6
-  height thumbImageHeight + 6
+  width thumbImageWidth
+  height thumbImageHeight
   display block
   text-align center
-  border 1px solid grayLighter
-  border-radius 2px
-  padding 2px
   position relative
+  border-radius bigCornerRadius
+  box-shadow 0 0 2px grayLight
 
   &:before
     content ''
@@ -28,12 +31,42 @@ thumbImageHeightSm = round(thumbImageHeight / downScale)
     display inline-block;
     vertical-align middle
 
+  // Texts under thumbnail
+  .thumb-caption
+    width 100%
+    padding 0 3px
+    display block
+    position absolute
+    bottom 0
+    text-align left
+    color grayLightest
+    background-color rgba(grayDark, 0.6)
+    border-radius 0 0 bigCornerRadius bigCornerRadius
+    font-size 11px
+    transition .2s ease
+    shortable()
+
+  &:hover .thumb-caption
+    background-color grayDark
+
+.thumb-caption__line
+  display block
+  shortable()
+
+.thumb-caption__line + .thumb-caption__line
+  margin-top -0.2em
+
+.thumb-caption.thumb-caption__m-secondary
+.thumb-caption__m-secondary
+  font-size 10px
+  color grayLighter
+
 // use inner only when realy need colored background
 // for small images, like video previews
 .thumb__inner
   display inline-block
   height 100%
-  border-radius 2px
+  border-radius bigCornerRadius
   background-color #000
   vertical-align top
 
@@ -43,11 +76,10 @@ thumbImageHeightSm = round(thumbImageHeight / downScale)
     display inline-block;
     vertical-align middle
 
-
 .thumb__image
   max-width thumbImageWidth
   max-height thumbImageHeight
-  border-radius 2px
+  border-radius bigCornerRadius
   background-color grayLighter
   display inline-block
   vertical-align middle
@@ -67,49 +99,44 @@ thumbImageHeightSm = round(thumbImageHeight / downScale)
 .thumb__icon
   position absolute
   font-size 25px
-  top 10px
-  right 10px
+  top 7px
+  right 7px
   color grayLighter
-
-
-// Texts under thumbnail
-.thumb-caption
-  width thumbImageWidth + 6
-  padding 0 5px 0 3px
-  display block
-
-.thumb + .thumb-caption
-  margin-top 4px
-
-// Single-line modifier
-.thumb-caption__m-inline
-  shortable()
 
 
 // Modifier to show images in small size
 .thumb__m-sm
   &.thumb
-    width thumbImageWidthSm + 6
-    height thumbImageHeightSm + 6
+    width thumbImageWidthSm
+    height thumbImageHeightSm
 
   .thumb__image
     max-width thumbImageWidthSm
     max-height thumbImageHeightSm
 
-  &.thumb-caption
-    width thumbImageWidthSm + 6
+  .thumb-caption
+    border-radius 0 0 bigCornerRadius bigCornerRadius
 
+  &.thumb
+  .thumb__image
+  .thumb__inner
+    border-radius smallCornerRadius
 
 // Modifier make previews smaller on small screens
 @media (max-width: screenSm - 1)
   .thumb__m-responsive
     &.thumb
-      width thumbImageWidthSm + 6
-      height thumbImageHeightSm + 6
+      width thumbImageWidthSm
+      height thumbImageHeightSm
 
     .thumb__image
       max-width thumbImageWidthSm
       max-height thumbImageHeightSm
 
-    &.thumb-caption
-      width thumbImageWidthSm + 6
+    .thumb-caption
+      border-radius 0 0 bigCornerRadius bigCornerRadius
+
+    &.thumb
+    .thumb__image
+    .thumb__inner
+      border-radius smallCornerRadius
