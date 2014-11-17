@@ -1,32 +1,31 @@
 if self.medias.length === 0
   .media-select-dlg__no-files= self.t('no_files')
 else
-  ul
+  ul.media-select-dlg__media-list
     each media in self.medias
 
-      li.media-select-dlg__media(
-        id='media-select-dlg__media-' + media.media_id
-        data-media-id=media.media_id
-        data-file-name=media.file_name
-        data-type=media.type
-        data-on-click='users.blocks.media_select_dlg:media_select'
-      )
+      li.media-select-dlg__mlist-item(id='media-select-dlg__media-' + media.media_id)
 
-        if media.type === 'image'
-          - var imageUrl = self.link_to('core.gridfs', { bucket: media.media_id + '_sm' })
-          .thumb.thumb__m-sm
+        a.thumb.thumb__m-sm(
+          data-media-id=media.media_id
+          data-file-name=media.file_name
+          data-type=media.type
+          data-on-click='users.blocks.media_select_dlg:media_select'
+        )
+
+          if media.type === 'image'
+            - var imageUrl = self.link_to('core.gridfs', { bucket: media.media_id + '_sm' })
             img.thumb__image(src=imageUrl)
 
-        else if media.type === 'medialink'
-          .thumb.thumb__m-sm
+          else if media.type === 'medialink'
             .thumb__inner
               .thumb__icon.icon.icon-video
               img.thumb__image(src=media.medialink_data.thumb)
 
-        else if media.type === 'binary'
-          .thumb.thumb__m-sm
+          else if media.type === 'binary'
             .thumb__icon.icon.icon-binary
             .thumb__content= media.file_name
+
   if self.show_more
     a.media-select-dlg__more-photos(
       data-on-click='users.blocks.media_select_dlg:more_photos'

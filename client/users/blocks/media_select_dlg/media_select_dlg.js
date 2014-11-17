@@ -47,7 +47,7 @@ function loadAlbumContent(albumID, page, append) {
         //$dialog.find('.media-select-dlg__more-photos').replaceWith($media.find('.media-select-dlg__more-photos'));
         $dialog.find('.media-select-dlg__media:last').after($media.find('.media-select-dlg__media'));
       } else {
-        $dialog.find('.media-select-dlg__files').empty().append($media);
+        $dialog.find('.media-select-dlg__content').empty().append($media);
       }
 
       options.selected.forEach(function (mediaInfo) {
@@ -75,9 +75,10 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
   N.wire.on('users.blocks.media_select_dlg:media_select', function media_select (event) {
     var $target = $(event.currentTarget);
     var id = $target.data('media-id');
+    var $listItem = $('#media-select-dlg__media-' + id);
 
     if (_.findIndex(options.selected, function (mediaInfo) { return mediaInfo.media_id === id; }) === -1) {
-      $target.addClass('selected');
+      $listItem.addClass('selected');
 
       options.selected.push({
         media_id: id,
@@ -86,7 +87,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
       });
 
     } else {
-      $target.removeClass('selected');
+      $listItem.removeClass('selected');
       options.selected = _.remove(options.selected, function (mediaInfo) { return mediaInfo.media_id !== id; });
     }
 
