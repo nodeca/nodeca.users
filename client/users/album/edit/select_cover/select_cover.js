@@ -55,10 +55,12 @@ N.wire.after('users.album.edit.select_cover', function load_photos(data, callbac
 // Click to cover
 //
 N.wire.on('users.album.edit.select_cover:select', function select_cover(event) {
-  var $item = $(event.target);
+  var $item = $(event.currentTarget);
   dialogData.cover_id = $item.data('media_id');
   onCoverSelected();
   $dialog.modal('hide');
+
+  event.stopPropagation();
 });
 
 
