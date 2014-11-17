@@ -19,7 +19,7 @@
   list-style none
   font-size 16px
   line-height 35px
-  border-radius 4px
+  border-radius 3px
   transition .2s ease
   &:hover
     background-color grayLightest
@@ -43,8 +43,8 @@
   margin-bottom 15px
 .member-avatar__image
   width 150px
-  border-radius 4px
-  box-shadow 0 0 4px grayLighter
+  border-radius 3px
+  box-shadow 0 0 2px grayLight
 .member-avatar__link
   display block
 .member-avatar__caption
@@ -53,11 +53,11 @@
   bottom 0
   width 100%
   text-align center
-  background-color gray
-  color white
-  opacity .6
-  transition opacity .2s ease
-  border-radius 0 0 4px 4px
+  background-color rgba(grayDark, 0.6)
+  color grayLighter
+  font-size 12px
+  transition background-color .2s ease
+  border-radius 0 0 3px 3px
 
 .member-avatar__delete
   display none
@@ -69,6 +69,7 @@
 
 .member-avatar:hover
   .member-avatar__caption
+    background-color grayDark
   .member-avatar__delete
     opacity 1
 
@@ -79,7 +80,6 @@
 .member-imagelist
   padding 0
   margin 0
-  overflow hidden
   white-space nowrap
   position relative
 
