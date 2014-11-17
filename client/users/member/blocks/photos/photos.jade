@@ -17,7 +17,7 @@
     ul.member-imagelist
 
       each media in self.photos
-        - var href = self.link_to('users.media', { user_hid: self.user_hid, media_id: media._id })
+        - var href = self.link_to('users.media', { user_hid: self.user_hid, media_id: media.media_id })
 
         li.member-imagelist__item
 
