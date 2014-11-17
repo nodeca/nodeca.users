@@ -1,12 +1,13 @@
 if self.medias.length === 0
   .media-select-dlg__no-files= self.t('no_files')
 else
-  ul.media-select-dlg__media-list
+  ul.media-select-dlg__mlist
     each media in self.medias
 
       li.media-select-dlg__mlist-item(id='media-select-dlg__media-' + media.media_id)
 
         a.thumb.thumb__m-sm(
+          href='#'
           data-media-id=media.media_id
           data-file-name=media.file_name
           data-type=media.type
@@ -27,7 +28,7 @@ else
             .thumb__content= media.file_name
 
   if self.show_more
-    a.media-select-dlg__more-photos(
+    a.media-select-dlg__more-photos.btn.btn-default.icon.icon-dimmed.icon-space-after.icon-more(
       data-on-click='users.blocks.media_select_dlg:more_photos'
       data-page=self.page
       data-album-id=self.album_id

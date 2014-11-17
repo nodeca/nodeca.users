@@ -1,7 +1,7 @@
-ul.media-select-dlg__album-list
+ul.media-select-dlg__albums
   each album in self.albums
-    li.media-select-dlg__album
-      a(href='#'
+    li.media-select-dlg__albums-item
+      a.media-select-dlg__albums-link(href='#'
         data-on-click='users.blocks.media_select_dlg:album_select'
         data-album-id=album._id
       )

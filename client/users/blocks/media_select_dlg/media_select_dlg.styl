@@ -1,29 +1,50 @@
 @import "nodeca.core/client/common/_variables"
 
+// Selection border
+borderWidth = 3px
+
 .media-select-dlg__content
   overflow auto
+  padding-left borderWidth
 
 .media-select-dlg__sidebar
-  vertical-align top
   float left
-  width 110px
-  overflow auto
+  margin-right 20px
+  width 150px
+
+//
+// List of medias
+//
+
+.media-select-dlg__mlist
+  padding 0
+  margin-left -20px + borderWidth
+  margin-bottom 0
 
 .media-select-dlg__mlist-item
   display inline-block
-  padding-right 3px
-  padding-bottom 3px
+  margin-left 20px - (borderWidth * 2)
+  margin-bottom 20px - (borderWidth * 2)
+  border borderWidth solid transparent
+  border-radius 3px
 
-.media-select-dlg__mlist-item.selected
-  opacity 0.7
-  .thumb
-    border-color #008000
-    border-style dashed
+  &.selected
+    border borderWidth dotted grayDark
+    .thumb
+      opacity .5
 
-.media-select-dlg__album-list
+//
+// Categories (albums)
+//
+.media-select-dlg__albums
   list-style none
   margin 0px
   padding 0px
+  font-size 13px
+  line-height 24px
 
-.media-select-dlg__album
+.media-select-dlg__albums-item
   shortable()
+
+.media-select-dlg__albums-link
+  display block
