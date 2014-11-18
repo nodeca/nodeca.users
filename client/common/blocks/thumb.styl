@@ -22,9 +22,13 @@ thumbImageHeightSm = round(thumbImageHeight / downScaleSm)
 thumbImageWidthXs  = round(thumbImageWidth / downScaleXs)
 thumbImageHeightXs = round(thumbImageHeight / downScaleXs)
 
-gridInterval = 20px
+gridInterval   = 20px
 gridIntervalSm = 20px //round(gridInterval / downScaleSm)
 gridIntervalXs = 20px //round(gridInterval / downScaleXs)
+
+gridIntervalTight   = 10px
+gridIntervalTightSm = 10px //round(gridInterval / downScaleSm)
+gridIntervalTightXs = 10px //round(gridInterval / downScaleXs)
 
 //
 // Grid to show thumbnails
@@ -49,12 +53,30 @@ gridIntervalXs = 20px //round(gridInterval / downScaleXs)
     .thumb
       opacity .5 !important
 
-.thumb-grid.thumb-grid__m-sm
-  margin-left 0px - gridIntervalSm + selectionWidth
+.thumb-grid__m-sm
+  &.thumb-grid
+    margin-left 0px - gridIntervalSm + selectionWidth
+    margin-bottom 0px - gridIntervalSm + selectionWidth
+  .thumb-grid__item
+    margin-left gridIntervalSm - (selectionWidth * 2)
+    margin-bottom gridIntervalSm - (selectionWidth * 2)
 
-.thumb-grid__m-sm .thumb-grid__item
-  margin-left gridIntervalSm - (selectionWidth * 2)
-  margin-bottom gridIntervalSm - (selectionWidth * 2)
+
+.thumb-grid__m-tight
+  margin-left 0px - gridIntervalTight + selectionWidth
+  margin-bottom 0px - gridIntervalTight + selectionWidth
+  .thumb-grid__item
+    margin-left gridIntervalTight - (selectionWidth * 2)
+    margin-bottom gridIntervalTight - (selectionWidth * 2)
+
+  &.thumb-grid__m-sm
+    &.thumb-grid
+      margin-left 0px - gridIntervalTightSm + selectionWidth
+      margin-bottom 0px - gridIntervalTightSm + selectionWidth
+    .thumb-grid__item
+      margin-left gridIntervalTightSm - (selectionWidth * 2)
+      margin-bottom gridIntervalTightSm - (selectionWidth * 2)
+
 
 .thumb-grid__m-inline
   white-space nowrap
@@ -204,6 +226,7 @@ gridIntervalXs = 20px //round(gridInterval / downScaleXs)
     &.thumb-grid
       padding 0
       margin-left 0px - gridIntervalSm + selectionWidth
+      margin-bottom 0px - gridIntervalSm + selectionWidth
 
     .thumb-grid__item
       display inline-block
@@ -211,6 +234,13 @@ gridIntervalXs = 20px //round(gridInterval / downScaleXs)
       margin-bottom gridIntervalSm - (selectionWidth * 2)
       border selectionWidth solid transparent
       border-radius 3px
+
+    &.thumb-grid__m-tight
+      margin-left 0px - gridIntervalTightSm + selectionWidth
+      margin-bottom 0px - gridIntervalTightSm + selectionWidth
+      .thumb-grid__item
+        margin-left gridIntervalTightSm - (selectionWidth * 2)
+        margin-bottom gridIntervalTightSm - (selectionWidth * 2)
 
   .thumb-grid__m-responsive
   .thumb__m-responsive
@@ -238,6 +268,7 @@ gridIntervalXs = 20px //round(gridInterval / downScaleXs)
     &.thumb-grid
       padding 0
       margin-left 0px - gridIntervalXs + selectionWidth
+      margin-bottom 0px - gridIntervalXs + selectionWidth
 
     .thumb-grid__item
       display inline-block
@@ -245,6 +276,13 @@ gridIntervalXs = 20px //round(gridInterval / downScaleXs)
       margin-bottom gridIntervalXs - (selectionWidth * 2)
       border selectionWidth solid transparent
       border-radius 3px
+
+    &.thumb-grid__m-tight
+      margin-left 0px - gridIntervalTightXs + selectionWidth
+      margin-bottom 0px - gridIntervalTightXs + selectionWidth
+      .thumb-grid__item
+        margin-left gridIntervalTightXs - (selectionWidth * 2)
+        margin-bottom gridIntervalTightXs - (selectionWidth * 2)
 
   .thumb__m-responsive
   .thumb__m-responsive.thumb__m-sm
