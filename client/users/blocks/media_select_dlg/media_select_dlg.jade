@@ -11,12 +11,20 @@
           ) &times;
           h4.modal-title= self.t('title')
 
-        .modal-body.clearfix
-          .media-select-dlg__list
-            .media-select-dlg__albums
-              != self.partial('@users.blocks.media_select_dlg.album_list')
-            .media-select-dlg__content
-          .media-select-dlg__selected
+        .modal-body
+          select.media-select-dlg__albums.form-control(data-on-change='users.blocks.media_select_dlg:album_select')
+            each album in self.albums
+              option(value=album._id || '')=album.default ? self.t('default_name') : album.title
+
+          .media-select-dlg__no-files= self.t('no_files')
+
+          ul.media-select-dlg__content.thumb-grid.thumb-grid__m-sm.thumb-grid__m-responsive
+
+          a.media-select-dlg__more-photos.btn.btn-default.icon.icon-dimmed.icon-space-after.icon-more(
+            data-on-click='users.blocks.media_select_dlg:more_photos'
+            data-page=self.page
+            data-album-id=self.album_id
+          )= self.t('more')
 
         .modal-footer
           button.btn.btn-default(type='button' tabindex='2' data-dismiss='modal')= self.t('cancel')

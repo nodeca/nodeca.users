@@ -1,3 +1,0 @@
-select.form-control(data-on-change='users.blocks.media_select_dlg:album_select')
-  each album in self.albums
-    option(value=album._id || '')=album.default ? self.t('default_name') : album.title

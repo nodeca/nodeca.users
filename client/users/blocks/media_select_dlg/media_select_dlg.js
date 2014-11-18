@@ -18,7 +18,7 @@ var options;
 var doneCallback;
 
 
-function loadAlbumContent(albumID, page, append) {
+function loadAlbumContent(albumID, page) {
   N.io.rpc('users.album.list', { user_hid: N.runtime.user_hid, album_id: albumID, page: page })
     .done(function (mediaList) {
 
@@ -26,29 +26,32 @@ function loadAlbumContent(albumID, page, append) {
         return options.types.indexOf(media.type) !== -1;
       });
 
-      var data = {
+      var $content = $dialog.find('.media-select-dlg__content');
+      var $morePhotos = $dialog.find('.media-select-dlg__more-photos');
+      var $noFiles = $dialog.find('.media-select-dlg__no-files');
+
+      var $medias = $(N.runtime.render('users.blocks.media_select_dlg.media_list', {
         medias: medias,
-        user_hid: mediaList.user_hid,
-        page: page,
-        album_id: albumID,
-        show_more: page && mediaList.medias.length === mediaList.photos_per_page
-      };
+        user_hid: mediaList.user_hid
+      }));
 
-      var $media = $(N.runtime.render('users.blocks.media_select_dlg.media_list', data));
-
-      if (append) {
-        var $morePhotos = $dialog.find('.media-select-dlg__more-photos');
-
-        if (data.show_more) {
-          $morePhotos.data('album-id', albumID).data('page', page);
-        } else {
-          $morePhotos.hide();
-        }
-
-        $dialog.find('.media-select-dlg__content li:last').after($media.find('li'));
+      if (page && mediaList.medias.length === mediaList.photos_per_page) {
+        $morePhotos.show().data('album-id', albumID).data('page', page);
       } else {
-        $dialog.find('.media-select-dlg__content').empty().append($media);
+        $morePhotos.hide();
       }
+
+      if (!page || page === 1) {
+        $content.empty();
+
+        if (medias.length === 0) {
+          $noFiles.show();
+        } else {
+          $noFiles.hide();
+        }
+      }
+
+      $content.append($medias);
 
       options.selected.forEach(function (mediaInfo) {
         $dialog.find('#media-select-dlg__media-' + mediaInfo.media_id).addClass('selected');
@@ -68,7 +71,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
     var page = $target.data('page');
     var albumID = $target.data('album-id');
 
-    loadAlbumContent(albumID, page + 1, true);
+    loadAlbumContent(albumID, page + 1);
   });
 
 
@@ -125,7 +128,7 @@ N.wire.on('users.blocks.media_select_dlg', function show_media_select_dlg(data, 
   doneCallback = callback;
 
   N.io.rpc('users.albums_root.list', { user_hid: N.runtime.user_hid }).done(function (albumsList) {
-    albumsList.albums.unshift({ title: t('album_list.all') });
+    albumsList.albums.unshift({ title: t('all') });
 
     $dialog = $(N.runtime.render('users.blocks.media_select_dlg', albumsList));
 
