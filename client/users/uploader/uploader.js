@@ -70,8 +70,13 @@ function resizeImage(data, callback) {
     return;
   }
 
+  var $progressStatus = $('#' + data.uploaderFileId).find('.uploader-progress__status');
   var jpegHeader;
   var img = new Image();
+
+  $progressStatus
+    .text(t('progress.compressing'))
+    .show(0);
 
   img.onload = function() {
     // To scale image we calculate new width and height, resize image by height and crop by width
@@ -137,6 +142,8 @@ function resizeImage(data, callback) {
 
         data.file = jpegBlob || blob;
         data.file.name = name;
+
+        $progressStatus.hide(0);
         callback();
       }, data.file.type, quality);
     });
