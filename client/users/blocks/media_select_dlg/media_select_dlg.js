@@ -44,8 +44,7 @@ function loadAlbumContent(albumID, page, append) {
           $morePhotos.hide();
         }
 
-        //$dialog.find('.media-select-dlg__more-photos').replaceWith($media.find('.media-select-dlg__more-photos'));
-        $dialog.find('.media-select-dlg__media:last').after($media.find('.media-select-dlg__media'));
+        $dialog.find('.media-select-dlg__content li:last').after($media.find('li'));
       } else {
         $dialog.find('.media-select-dlg__content').empty().append($media);
       }
