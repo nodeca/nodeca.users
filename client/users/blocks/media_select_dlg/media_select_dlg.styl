@@ -1,37 +1,12 @@
 @import "nodeca.core/client/common/_variables"
 
-// Selection border
-borderWidth = 3px
-
 .media-select-dlg__content
   overflow auto
-  padding-left borderWidth
 
 .media-select-dlg__sidebar
   float left
   margin-right 20px
   width 150px
-
-//
-// List of medias
-//
-
-.media-select-dlg__mlist
-  padding 0
-  margin-left -20px + borderWidth
-  margin-bottom 0
-
-.media-select-dlg__mlist-item
-  display inline-block
-  margin-left 20px - (borderWidth * 2)
-  margin-bottom 20px - (borderWidth * 2)
-  border borderWidth solid transparent
-  border-radius 3px
-
-  &.selected
-    border borderWidth dotted grayDark
-    .thumb
-      opacity .5
 
 //
 // Categories (albums)

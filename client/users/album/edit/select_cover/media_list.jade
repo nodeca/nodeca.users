@@ -1,8 +1,8 @@
 if self.medias.length > 0
-  ul.select-cover-list
+  ul.thumb-grid.thumb-grid__m-responsive.thumb-grid__m-sm
     each media in self.medias
-      li.select-cover-list__item
-        a.thumb.thumb__m-sm(
+      li.thumb-grid__item
+        a.thumb(
           href='#'
           data-on-click='users.album.edit.select_cover:select'
           data-media_id=media.media_id

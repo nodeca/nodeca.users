@@ -1,9 +1,9 @@
 each album in self.albums
-  li.user-albumlist__item(data-on-dragdrop='users.albums_root.list:dragdrop', data-album-id=album._id, data-user-hid=self.user_hid)
+  li.user-albumlist__item.thumb-grid__item(data-on-dragdrop='users.albums_root.list:dragdrop', data-album-id=album._id, data-user-hid=self.user_hid)
     - var albumLink = self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id });
     - var albumTitle = !album.default ? album.title : self.t('default_name')
 
-    a.thumb.thumb__m-responsive(href=albumLink)
+    a.thumb(href=albumLink)
       if album.cover_id
         - var imageUrl = self.link_to('core.gridfs', { 'bucket': album.cover_id + '_sm' })
         img.thumb__image(src=imageUrl)

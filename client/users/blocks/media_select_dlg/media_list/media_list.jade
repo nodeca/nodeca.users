@@ -1,12 +1,12 @@
 if self.medias.length === 0
   .media-select-dlg__no-files= self.t('no_files')
 else
-  ul.media-select-dlg__mlist
+  ul.thumb-grid.thumb-grid__m-sm.thumb-grid__m-responsive
     each media in self.medias
 
-      li.media-select-dlg__mlist-item(id='media-select-dlg__media-' + media.media_id)
+      li.thumb-grid__item(id='media-select-dlg__media-' + media.media_id)
 
-        a.thumb.thumb__m-sm(
+        a.thumb(
           href='#'
           data-media-id=media.media_id
           data-file-name=media.file_name

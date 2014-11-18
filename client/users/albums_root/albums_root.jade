@@ -18,5 +18,5 @@
     h1.page-head__title(itemprop='name')= self.t('title')
     //-p.page-head__descr.hidden-xs(itemprop='description')
 
-  ul.user-albumlist
+  ul.user-albumlist.thumb-grid.thumb-grid__m-responsive
     != self.partial('@users.albums_root.list')

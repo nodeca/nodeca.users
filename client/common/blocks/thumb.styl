@@ -14,12 +14,67 @@ downScaleXs = 1.7
 cornerRadius = 3px
 cornerRadiusSm = 2px
 
+// active item change border
+selectionWidth = 3px
+
 thumbImageWidthSm  = round(thumbImageWidth / downScaleSm)
 thumbImageHeightSm = round(thumbImageHeight / downScaleSm)
 thumbImageWidthXs  = round(thumbImageWidth / downScaleXs)
 thumbImageHeightXs = round(thumbImageHeight / downScaleXs)
 
-// Image container (link)
+gridInterval = 20px
+gridIntervalSm = 20px //round(gridInterval / downScaleSm)
+gridIntervalXs = 20px //round(gridInterval / downScaleXs)
+
+//
+// Grid to show thumbnails
+//
+
+.thumb-grid
+  padding 0
+  margin-left 0px - gridInterval + selectionWidth
+  margin-right 0px - selectionWidth
+  margin-top 0px - selectionWidth
+  margin-bottom 0px - gridInterval + selectionWidth
+
+.thumb-grid__item
+  display inline-block
+  margin-left gridInterval - (selectionWidth * 2)
+  margin-bottom gridInterval - (selectionWidth * 2)
+  border selectionWidth solid transparent
+  border-radius 3px
+  &.active
+  &.selected
+    border selectionWidth dotted grayDark !important
+    .thumb
+      opacity .5 !important
+
+.thumb-grid.thumb-grid__m-sm
+  margin-left 0px - gridIntervalSm + selectionWidth
+
+.thumb-grid__m-sm .thumb-grid__item
+  margin-left gridIntervalSm - (selectionWidth * 2)
+  margin-bottom gridIntervalSm - (selectionWidth * 2)
+
+.thumb-grid__m-inline
+  white-space nowrap
+
+.thumb-grid__m-shadow-tail
+  position relative
+  &:after
+    content ""
+    display block
+    position absolute
+    right 0
+    top 0
+    bottom 0
+    width 20px
+    background linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%)
+
+//
+// Thumbnail container (link)
+//
+
 .thumb
   width thumbImageWidth
   height thumbImageHeight
@@ -61,7 +116,7 @@ thumbImageHeightXs = round(thumbImageHeight / downScaleXs)
   shortable()
 
 .thumb-caption__line + .thumb-caption__line
-  margin-top -0.2em
+  margin-top -0.15em
 
 .thumb-caption.thumb-caption__m-secondary
 .thumb-caption__m-secondary
@@ -120,7 +175,9 @@ thumbImageHeightXs = round(thumbImageHeight / downScaleXs)
 
 
 // Modifier to show images in small size
+.thumb-grid__m-sm
 .thumb__m-sm
+  .thumb
   &.thumb
     width thumbImageWidthSm
     height thumbImageHeightSm
@@ -132,14 +189,32 @@ thumbImageHeightXs = round(thumbImageHeight / downScaleXs)
   .thumb-caption
     border-radius 0 0 cornerRadiusSm cornerRadiusSm
 
+  .thumb
   &.thumb
   .thumb__image
   .thumb__inner
     border-radius cornerRadiusSm
 
-// Modifier make previews smaller on small screens
+//
+// Responsive rules (reduce size)
+//
+
 @media (max-width: screenSm - 1)
+  .thumb-grid__m-responsive
+    &.thumb-grid
+      padding 0
+      margin-left 0px - gridIntervalSm + selectionWidth
+
+    .thumb-grid__item
+      display inline-block
+      margin-left gridIntervalSm - (selectionWidth * 2)
+      margin-bottom gridIntervalSm - (selectionWidth * 2)
+      border selectionWidth solid transparent
+      border-radius 3px
+
+  .thumb-grid__m-responsive
   .thumb__m-responsive
+    .thumb
     &.thumb
       width thumbImageWidthSm
       height thumbImageHeightSm
@@ -151,15 +226,30 @@ thumbImageHeightXs = round(thumbImageHeight / downScaleXs)
     .thumb-caption
       border-radius 0 0 cornerRadiusSm cornerRadiusSm
 
+    .thumb
     &.thumb
     .thumb__image
     .thumb__inner
       border-radius cornerRadiusSm
 
-// Modifier make previews smaller on small screens
+// For portrait mobile
 @media (max-width: screenXs - 1)
+  .thumb-grid__m-responsive
+    &.thumb-grid
+      padding 0
+      margin-left 0px - gridIntervalXs + selectionWidth
+
+    .thumb-grid__item
+      display inline-block
+      margin-left gridIntervalXs - (selectionWidth * 2)
+      margin-bottom gridIntervalXs - (selectionWidth * 2)
+      border selectionWidth solid transparent
+      border-radius 3px
+
   .thumb__m-responsive
   .thumb__m-responsive.thumb__m-sm
+  .thumb-grid__m-responsive
+    .thumb
     &.thumb
       width thumbImageWidthXs
       height thumbImageHeightXs
@@ -171,6 +261,7 @@ thumbImageHeightXs = round(thumbImageHeight / downScaleXs)
     .thumb-caption
       border-radius 0 0 cornerRadiusXs cornerRadiusXs
 
+    .thumb
     &.thumb
     .thumb__image
     .thumb__inner
