@@ -1,11 +1,3 @@
-ul.media-select-dlg__albums
+select.form-control(data-on-change='users.blocks.media_select_dlg:album_select')
   each album in self.albums
-    li.media-select-dlg__albums-item
-      a.media-select-dlg__albums-link(href='#'
-        data-on-click='users.blocks.media_select_dlg:album_select'
-        data-album-id=album._id
-      )
-        if !album.default
-          = album.title
-        else
-          = self.t('default_name')
+    option(value=album._id || '')=album.default ? self.t('default_name') : album.title

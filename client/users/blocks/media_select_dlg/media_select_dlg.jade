@@ -13,7 +13,8 @@
 
         .modal-body.clearfix
           .media-select-dlg__list
-            .media-select-dlg__sidebar
+            .media-select-dlg__albums
+              != self.partial('@users.blocks.media_select_dlg.album_list')
             .media-select-dlg__content
           .media-select-dlg__selected
 

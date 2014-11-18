@@ -105,9 +105,9 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
 
   N.wire.on('users.blocks.media_select_dlg:album_select', function album_select (event) {
     var $target = $(event.target);
-    var id = $target.data('album-id');
+    var id = $target.val();
 
-    if (id) {
+    if (id !== '') {
       loadAlbumContent(id);
     } else {
       loadAlbumContent(undefined, 1);
@@ -123,25 +123,22 @@ N.wire.on('users.blocks.media_select_dlg', function show_media_select_dlg(data, 
   options = data;
   options.selected = options.selected || [];
   doneCallback = callback;
-  $dialog = $(N.runtime.render('users.blocks.media_select_dlg'));
-
-  $('body').append($dialog);
-
-  $dialog
-    .on('hidden.bs.modal', function () {
-      $dialog.remove();
-      $dialog = null;
-      doneCallback = null;
-      options = null;
-    })
-    .modal('show');
 
   N.io.rpc('users.albums_root.list', { user_hid: N.runtime.user_hid }).done(function (albumsList) {
     albumsList.albums.unshift({ title: t('album_list.all') });
 
-    var $albums = $(N.runtime.render('users.blocks.media_select_dlg.album_list', albumsList));
+    $dialog = $(N.runtime.render('users.blocks.media_select_dlg', albumsList));
 
-    $dialog.find('.media-select-dlg__sidebar').append($albums);
+    $('body').append($dialog);
+
+    $dialog
+      .on('hidden.bs.modal', function () {
+        $dialog.remove();
+        $dialog = null;
+        doneCallback = null;
+        options = null;
+      })
+      .modal('show');
 
     loadAlbumContent(albumsList.albums[0]._id, 1);
   });
