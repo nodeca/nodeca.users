@@ -46,7 +46,12 @@ N.wire.after('users.album.edit.select_cover', function load_photos(data, callbac
     var medias = _.filter(mediaList.medias, function (media) {
       return media.type === 'image';
     });
-    var $list = $(N.runtime.render('users.album.edit.select_cover.media_list', { medias: medias }));
+
+    var $list = $(N.runtime.render('users.album.edit.select_cover.media_list', {
+      medias: medias,
+      user_hid: mediaList.user_hid
+    }));
+
     $('#select_cover__photos').html($list);
   });
 });

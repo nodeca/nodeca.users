@@ -3,7 +3,7 @@ if self.medias.length > 0
     each media in self.medias
       li.thumb-grid__item
         a.thumb(
-          href='#'
+          href=self.link_to('users.media', { user_hid: self.user_hid, media_id: media.media_id })
           data-on-click='users.album.edit.select_cover:select'
           data-media_id=media.media_id
         )
