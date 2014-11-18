@@ -34,11 +34,11 @@ users:
     blocks:
       notepad:
         priority: 10
-      user_info:
+      about:
         priority: 20
       albums:
         priority: 30
-      photos:
+      medias:
         priority: 40
       blog:
         priority: 50

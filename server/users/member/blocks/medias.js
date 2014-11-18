@@ -6,7 +6,7 @@ module.exports = function (N) {
   var PHOTO_COUNT = 7;
 
 
-  // Fetch last user photos
+  // Fetch last user medias
   //
   N.wire.after('server:users.member', function fetch_last_photos(env, callback) {
 
@@ -15,20 +15,20 @@ module.exports = function (N) {
       .lean(true)
       .sort('-ts')
       .limit(PHOTO_COUNT)
-      .exec(function (err, photos) {
+      .exec(function (err, medias) {
         if (err) {
           callback(err);
           return;
         }
 
-        if (photos.length === 0) {
+        if (medias.length === 0) {
           callback();
           return;
         }
 
         env.res.blocks = env.res.blocks || {};
-        env.res.blocks.photos = {
-          photos: photos,
+        env.res.blocks.medias = {
+          medias: medias,
           user_hid: env.data.user.hid
         };
 
@@ -41,7 +41,7 @@ module.exports = function (N) {
   //
   N.wire.after('server:users.member', function fetch_photos_count(env, callback) {
 
-    if (!env.res.blocks.photos) {
+    if (!env.res.blocks.medias) {
       callback();
       return;
     }
@@ -52,7 +52,7 @@ module.exports = function (N) {
         return;
       }
 
-      env.res.blocks.photos.count = count;
+      env.res.blocks.medias.count = count;
       callback();
     });
   });

@@ -9,13 +9,13 @@
         = self.count
         |)
         span.icon.icon-right-open
-      a.member-block__header-collapser(href='#member-photos-info', data-toggle='collapse')
+      a.member-block__header-collapser(href='#member-medias-info', data-toggle='collapse')
         .pull-right.icon.icon-collapse
         .pull-right.icon.icon-expand
 
-  #member-photos-info.member-block__inner.collapse.in
+  #member-medias-info.member-block__inner.collapse.in
     ul.thumb-grid.thumb-grid__m-sm.thumb-grid__m-responsive.thumb-grid__m-inline.thumb-grid__m-shadow-tail
-      each media in self.photos
+      each media in self.medias
         - var href = self.link_to('users.media', { user_hid: self.user_hid, media_id: media.media_id })
         li.thumb-grid__item
           if media.type === 'image'
