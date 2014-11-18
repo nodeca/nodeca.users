@@ -7,7 +7,7 @@ else
       li.thumb-grid__item(id='media-select-dlg__media-' + media.media_id)
 
         a.thumb(
-          href='#'
+          href=self.link_to('users.media', { user_hid: self.user_hid, media_id: media.media_id })
           data-media-id=media.media_id
           data-file-name=media.file_name
           data-type=media.type

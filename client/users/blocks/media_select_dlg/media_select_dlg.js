@@ -28,6 +28,7 @@ function loadAlbumContent(albumID, page, append) {
 
       var data = {
         medias: medias,
+        user_hid: mediaList.user_hid,
         page: page,
         album_id: albumID,
         show_more: page && mediaList.medias.length === mediaList.photos_per_page
