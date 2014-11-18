@@ -7,13 +7,17 @@ thumbImageWidth  = '$$ N.config.users.uploads.resize.sm.max_width $$'px
 thumbImageHeight = '$$ N.config.users.uploads.resize.sm.height $$'px
 
 // 170x150 -> 119x105
-downScale = 1.428571429
+downScaleSm = 1.428571429
+// 170x150 -> 85x75
+downScaleXs = 1.7
 
-bigCornerRadius = 3px
-smallCornerRadius = 2px
+cornerRadius = 3px
+cornerRadiusSm = 2px
 
-thumbImageWidthSm  = round(thumbImageWidth / downScale)
-thumbImageHeightSm = round(thumbImageHeight / downScale)
+thumbImageWidthSm  = round(thumbImageWidth / downScaleSm)
+thumbImageHeightSm = round(thumbImageHeight / downScaleSm)
+thumbImageWidthXs  = round(thumbImageWidth / downScaleXs)
+thumbImageHeightXs = round(thumbImageHeight / downScaleXs)
 
 // Image container (link)
 .thumb
@@ -22,7 +26,7 @@ thumbImageHeightSm = round(thumbImageHeight / downScale)
   display block
   text-align center
   position relative
-  border-radius bigCornerRadius
+  border-radius cornerRadius
   box-shadow 0 0 2px grayLight
 
   &:before
@@ -31,23 +35,26 @@ thumbImageHeightSm = round(thumbImageHeight / downScale)
     display inline-block;
     vertical-align middle
 
-  // Texts under thumbnail
-  .thumb-caption
-    width 100%
-    padding 0 3px
-    display block
-    position absolute
-    bottom 0
-    text-align left
-    color grayLightest
-    background-color rgba(grayDark, 0.6)
-    border-radius 0 0 bigCornerRadius bigCornerRadius
-    font-size 11px
-    transition .2s ease
-    shortable()
+  &:hover
+    .thumb-caption
+      background-color grayDark
+    .thumb__control
+      opacity 1
 
-  &:hover .thumb-caption
-    background-color grayDark
+// Texts under thumbnail
+.thumb-caption
+  width 100%
+  padding 0 3px
+  display block
+  position absolute
+  bottom 0
+  text-align left
+  color grayLightest
+  background-color rgba(grayDark, 0.6)
+  border-radius 0 0 cornerRadius cornerRadius
+  font-size 11px
+  transition background-color .2s ease
+  shortable()
 
 .thumb-caption__line
   display block
@@ -66,7 +73,7 @@ thumbImageHeightSm = round(thumbImageHeight / downScale)
 .thumb__inner
   display inline-block
   height 100%
-  border-radius bigCornerRadius
+  border-radius cornerRadius
   background-color #000
   vertical-align top
 
@@ -79,7 +86,7 @@ thumbImageHeightSm = round(thumbImageHeight / downScale)
 .thumb__image
   max-width thumbImageWidth
   max-height thumbImageHeight
-  border-radius bigCornerRadius
+  border-radius cornerRadius
   background-color grayLighter
   display inline-block
   vertical-align middle
@@ -103,6 +110,14 @@ thumbImageHeightSm = round(thumbImageHeight / downScale)
   right 7px
   color grayLighter
 
+// For buttons
+.thumb__control
+  position absolute
+  top 7px
+  right 7px
+  opacity .7
+  transition opacity .2s ease
+
 
 // Modifier to show images in small size
 .thumb__m-sm
@@ -115,12 +130,12 @@ thumbImageHeightSm = round(thumbImageHeight / downScale)
     max-height thumbImageHeightSm
 
   .thumb-caption
-    border-radius 0 0 bigCornerRadius bigCornerRadius
+    border-radius 0 0 cornerRadiusSm cornerRadiusSm
 
   &.thumb
   .thumb__image
   .thumb__inner
-    border-radius smallCornerRadius
+    border-radius cornerRadiusSm
 
 // Modifier make previews smaller on small screens
 @media (max-width: screenSm - 1)
@@ -134,9 +149,36 @@ thumbImageHeightSm = round(thumbImageHeight / downScale)
       max-height thumbImageHeightSm
 
     .thumb-caption
-      border-radius 0 0 bigCornerRadius bigCornerRadius
+      border-radius 0 0 cornerRadiusSm cornerRadiusSm
 
     &.thumb
     .thumb__image
     .thumb__inner
-      border-radius smallCornerRadius
+      border-radius cornerRadiusSm
+
+// Modifier make previews smaller on small screens
+@media (max-width: screenXs - 1)
+  .thumb__m-responsive
+  .thumb__m-responsive.thumb__m-sm
+    &.thumb
+      width thumbImageWidthXs
+      height thumbImageHeightXs
+
+    .thumb__image
+      max-width thumbImageWidthXs
+      max-height thumbImageHeightXs
+
+    .thumb-caption
+      border-radius 0 0 cornerRadiusXs cornerRadiusXs
+
+    &.thumb
+    .thumb__image
+    .thumb__inner
+      border-radius cornerRadiusXs
+
+    .thumb-caption
+      font-size 10px
+
+    .thumb-caption.thumb-caption__m-secondary
+    .thumb-caption__m-secondary
+      font-size 9px
