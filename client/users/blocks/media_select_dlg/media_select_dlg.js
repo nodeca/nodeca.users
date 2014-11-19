@@ -135,6 +135,12 @@ N.wire.on('users.blocks.media_select_dlg', function show_media_select_dlg(data, 
     $('body').append($dialog);
 
     $dialog
+      .keypress(function (e) {
+        // Apply selected on `enter` key
+        if (e.which === 13) {
+          N.wire.emit('users.blocks.media_select_dlg:apply');
+        }
+      })
       .on('hidden.bs.modal', function () {
         $dialog.remove();
         $dialog = null;
