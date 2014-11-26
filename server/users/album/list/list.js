@@ -3,7 +3,6 @@
 
 'use strict';
 
-
 var PHOTOS_PER_PAGE = 16;
 
 
@@ -26,8 +25,10 @@ module.exports = function (N, apiPath) {
   // Find and processes user media
   //
   N.wire.on(apiPath, function get_user_medias(env, callback) {
+    var mTypes = N.models.users.MediaInfo.types;
+
     var query = N.models.users.MediaInfo
-                  .find({ 'user_id': env.data.user._id, exists: true })
+                  .find({ user_id: env.data.user._id, type: { $in: mTypes.LIST_VISIBLE } })
                   .lean(true)
                   .sort('-ts');
 

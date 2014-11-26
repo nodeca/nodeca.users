@@ -77,7 +77,7 @@ module.exports = function (N, apiPath) {
       media.medialink_data = data;
       media.user_id = env.data.album.user_id;
       media.album_id = env.data.album._id;
-      media.type = 'medialink';
+      media.type = N.models.users.MediaInfo.types.MEDIALINK;
 
       // In case of medialink, we have no file, but we should specify file_id for media page
       media.media_id = media._id;

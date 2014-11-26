@@ -15,8 +15,10 @@ module.exports = function (N, apiPath) {
   // Fetch media
   //
   N.wire.on(apiPath, function fetch_media (env, callback) {
+    var mTypes = N.models.users.MediaInfo.types;
+
     N.models.users.MediaInfo
-      .findOne({ media_id: env.params.media_id, exists: true })
+      .findOne({ media_id: env.params.media_id, type: { $in: mTypes.LIST_VISIBLE } })
       .lean(true)
       .exec(function (err, media) {
         if (err) {

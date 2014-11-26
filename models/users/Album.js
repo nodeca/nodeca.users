@@ -68,6 +68,7 @@ module.exports = function (N, collectionName) {
   // Update album cover
   //
   var updateCover = function (albumId, callback) {
+    var mTypes = N.models.users.MediaInfo.types;
 
     // Fetch album
     N.models.users.Album.findOne({ _id: albumId }).lean(true).exec(function (err, album) {
@@ -82,8 +83,8 @@ module.exports = function (N, collectionName) {
       var fileId = album.cover_id || '000000000000000000000000';
       N.models.users.MediaInfo
         // album_id used to check if media moved to another album
-        .findOne({ media_id: fileId, exists: true, album_id: album._id })
-        .select('file_id')
+        .findOne({ media_id: fileId, type: mTypes.IMAGE, album_id: album._id })
+        .select('media_id')
         .lean(true)
         .exec(function (err, cover) {
           if (err) {
@@ -97,9 +98,12 @@ module.exports = function (N, collectionName) {
             return;
           }
 
-          // Update cover
-          N.models.users.MediaInfo.findOne({ album_id: album._id, exists: true, type: 'image' })
-            .sort('-ts').lean(true).exec(function (err, result) {
+          // Update cover with latest available image
+          N.models.users.MediaInfo
+            .findOne({ album_id: album._id, type: mTypes.IMAGE })
+            .sort('-ts')
+            .lean(true)
+            .exec(function (err, result) {
               if (err) {
                 callback(err);
                 return;

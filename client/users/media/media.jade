@@ -1,7 +1,8 @@
+- var mTypes = '$$ JSON.stringify(N.models.users.MediaInfo.types) $$'
 - var own_page = (self.runtime.user_hid === self.user_hid)
 - self.add_raw_data('profile_tab', own_page)
 
-#content.user-mediapage(class=self.media.exists ? '' : 'deleted')
+#content.user-mediapage(class=self.media.type & mTypes.MASK_DELETED ? 'deleted' : '')
   != self.partial('@users.blocks.breadcrumbs')
 
   .breadcrumbs.hidden-deleted
@@ -15,15 +16,17 @@
     p.page-head__descr.hidden-xs(itemprop='description')
 
   .user-media
-    if self.media.type === 'image'
+    - var mType = self.media.type & ~mTypes.MASK_DELETED
+
+    if mType === mTypes.IMAGE
       - var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.media_id })
         img.img-responsive(src=imageUrl)
 
-    else if self.media.type === 'medialink'
+    else if mType === mTypes.MEDIALINK
       .user-media__video
         != self.media.medialink_html
 
-    else if self.media.type === 'binary'
+    else if mType === mTypes.BINARY
       .user-media__binary
         a(href=self.link_to('core.gridfs', { bucket: self.media.media_id }))
           = self.media.file_name
@@ -37,7 +40,6 @@
     if own_page
       a(
         href='#'
-        data-media-id=self.media._id
         data-on-click='users.media:delete'
       )= self.t('delete')
 

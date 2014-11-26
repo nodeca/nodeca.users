@@ -14,36 +14,42 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.before(apiPath, function fetch_user_media (env, callback) {
-    N.models.users.MediaInfo.findOne({ '_id': env.params.media_id }).lean(true).exec(function (err, media) {
-      if (err) {
-        callback(err);
-        return;
-      }
+    N.models.users.MediaInfo
+      .findOne({ media_id: env.params.media_id })
+      .lean(true)
+      .exec(function (err, media) {
+        if (err) {
+          callback(err);
+          return;
+        }
 
-      if (!media) {
-        callback(N.io.NOT_FOUND);
-        return;
-      }
+        if (!media) {
+          callback(N.io.NOT_FOUND);
+          return;
+        }
 
-      // Check media owner
-      if (env.session.user_id !== String(media.user_id)) {
-        callback(N.io.FORBIDDEN);
-        return;
-      }
+        // Check media owner
+        if (env.session.user_id !== String(media.user_id)) {
+          callback(N.io.FORBIDDEN);
+          return;
+        }
 
-      env.data.media = media;
-      callback();
-    });
+        env.data.media = media;
+        callback();
+      });
   });
 
 
   // Delete media by id
   //
   N.wire.on(apiPath, function delete_media(env, callback) {
+    var mTypes = N.models.users.MediaInfo.types;
     var media = env.data.media;
 
-    var exists = env.params.restore ? true : false;
-    N.models.users.MediaInfo.update({ _id: media._id }, { exists: exists }, function (err) {
+    /*eslint-disable no-bitwise*/
+    var mType = env.params.restore ? (media.type & ~mTypes.MASK_DELETED) : (media.type | mTypes.MASK_DELETED);
+
+    N.models.users.MediaInfo.update({ _id: media._id }, { type: mType }, function (err) {
       if (err) {
         callback(err);
         return;

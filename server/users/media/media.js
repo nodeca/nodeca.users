@@ -186,12 +186,17 @@ module.exports = function (N, apiPath) {
   // Fill previous media _id
   //
   N.wire.after(apiPath, function fill_previous(env, callback) {
+    var mTypes = N.models.users.MediaInfo.types;
     var media = env.data.media;
 
     N.models.users.MediaInfo
-      .findOne({ album_id: media.album_id, exists: true, _id: { $gt: media._id } })
-      .sort('_id')
+      .findOne({
+        album_id: media.album_id,
+        type: { $in: mTypes.LIST_VISIBLE },
+        media_id: { $gt: media.media_id }
+      })
       .select('media_id')
+      .sort('media_id')
       .lean(true)
       .exec(function (err, result) {
         if (err) {
@@ -210,12 +215,17 @@ module.exports = function (N, apiPath) {
   // Fill next media _id
   //
   N.wire.after(apiPath, function fill_next(env, callback) {
+    var mTypes = N.models.users.MediaInfo.types;
     var media = env.data.media;
 
     N.models.users.MediaInfo
-      .findOne({ album_id: media.album_id, exists: true, _id: { $lt: media._id } })
-      .sort('-_id')
+      .findOne({
+        album_id: media.album_id,
+        type: { $in: mTypes.LIST_VISIBLE },
+        media_id: { $lt: media.media_id }
+      })
       .select('media_id')
+      .sort('-media_id')
       .lean(true)
       .exec(function (err, result) {
         if (err) {

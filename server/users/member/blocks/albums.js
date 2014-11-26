@@ -50,7 +50,7 @@ module.exports = function (N) {
   //
   N.wire.after('server:users.member', function fetch_photos_count(env, callback) {
 
-    if (!env.data.albums) {
+    if (!env.res.blocks.albums) {
       callback();
       return;
     }

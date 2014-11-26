@@ -104,6 +104,7 @@ module.exports = function (N, apiPath) {
   // Check quota
   //
   N.wire.before(apiPath, function check_quota(env, callback) {
+    var mTypes = N.models.users.MediaInfo.types;
     var totalSize;
 
     // Fetch user's total media size
@@ -112,7 +113,12 @@ module.exports = function (N, apiPath) {
     // TODO: All user's medias will be selected to calculate $sum. Check performance on production
     N.models.users.MediaInfo.aggregate(
       [
-        { $match: { user_id: new Mongoose.Types.ObjectId(env.session.user_id), exists: true } },
+        {
+          $match: {
+            user_id: new Mongoose.Types.ObjectId(env.session.user_id),
+            type: { $in: mTypes.LIST_VISIBLE }
+          }
+        },
         { $group: { _id: null, total_size: { $sum: '$file_size' } } }
       ],
       function (err, data) {
@@ -255,9 +261,10 @@ module.exports = function (N, apiPath) {
       return;
     }
 
+    var mTypes = N.models.users.MediaInfo.types;
     var media = env.data.media;
 
-    if (media.type !== 'image') {
+    if (media.type !== mTypes.IMAGE) {
       callback();
       return;
     }

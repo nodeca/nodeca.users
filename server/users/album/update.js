@@ -45,6 +45,8 @@ module.exports = function (N, apiPath) {
   // Fetch cover
   //
   N.wire.before(apiPath, function fetch_cover(env, callback) {
+    var mTypes = N.models.users.MediaInfo.types;
+
     // Skip if cover_id isn't set
     if (!env.params.cover_id) {
       callback();
@@ -54,7 +56,7 @@ module.exports = function (N, apiPath) {
     N.models.users.MediaInfo
         .findOne({
           media_id: env.params.cover_id,
-          exists: true,
+          type: mTypes.IMAGE,
           album_id: env.data.album._id
         })
         .lean(true)

@@ -14,11 +14,8 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
   // Delete media
   //
-  N.wire.on('users.media:delete', function media_delete(event) {
-    var $target = $(event.target);
-    var mediaId = $target.data('mediaId');
-
-    N.io.rpc('users.media.destroy', { 'media_id': mediaId }).done(function () {
+  N.wire.on('users.media:delete', function media_delete() {
+    N.io.rpc('users.media.destroy', { media_id: pageParams.media_id }).done(function () {
       $('.user-mediapage').addClass('deleted');
     });
   });
@@ -26,11 +23,8 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
   // Restore media
   //
-  N.wire.on('users.media:restore', function media_restore(event) {
-    var $target = $(event.target);
-    var mediaId = $target.data('mediaId');
-
-    N.io.rpc('users.media.destroy', { 'media_id': mediaId, restore: true }).done(function () {
+  N.wire.on('users.media:restore', function media_restore() {
+    N.io.rpc('users.media.destroy', { media_id: pageParams.media_id, restore: true }).done(function () {
       $('.user-mediapage').removeClass('deleted');
     });
   });

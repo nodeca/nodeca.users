@@ -14,6 +14,16 @@ module.exports = function (N, collectionName) {
 
   var mediaConfig;
 
+  var types = {
+    IMAGE: 0x1,
+    MEDIALINK: 0x2,
+    BINARY: 0x3,
+
+    MASK_DELETED: 0x80
+  };
+
+  types.LIST_VISIBLE = [ types.IMAGE, types.MEDIALINK, types.BINARY ];
+
 
   var MediaInfo = new Schema({
     media_id        : Schema.Types.ObjectId,
@@ -28,8 +38,8 @@ module.exports = function (N, collectionName) {
     image_sizes    : Schema.Types.Mixed,
     user_id        : Schema.Types.ObjectId,
     album_id       : Schema.Types.ObjectId,
-    ts             : { 'type': Date, 'default': Date.now },
-    type           : { 'type': String, 'enum': [ 'image', 'medialink', 'binary' ], 'default': 'binary' },
+    ts             : { type: Date, default: Date.now },
+    type           : Number,
     medialink_html : String,
 
     // medialink_data contains:
@@ -44,10 +54,9 @@ module.exports = function (N, collectionName) {
     // }
     medialink_data : Schema.Types.Mixed,
 
-    file_size      : { 'type': Number, 'default': 0 },
+    file_size      : { type: Number, default: 0 },
     file_name      : String,
-    description    : String,
-    exists         : { 'type': Boolean, 'default': true }
+    description    : String
   }, {
     versionKey: false
   });
@@ -60,22 +69,27 @@ module.exports = function (N, collectionName) {
 
   // - Album page, fetch medias
   // - Media page, fetch next and prev _id's
-  MediaInfo.index({ album_id: 1, exists: 1, _id: 1 });
+  MediaInfo.index({ album_id: 1, type: 1, media_id: 1 });
 
   // - "All medias" page, medias list, sorted by date
   // - User medias size (users.media.upload)
   //
   // TODO: Aggregation $groups can't use coverage index.
   // TODO: All user's medias will be selected to calculate $sum. Check performance on production
-  MediaInfo.index({ user_id: 1, exists: 1, ts: -1 });
+  MediaInfo.index({ user_id: 1, type: 1, ts: -1 });
 
   //////////////////////////////////////////////////////////////////////////////
+
+  // Export media types
+  //
+  MediaInfo.statics.types = types;
 
 
   // Remove files with previews
   //
   MediaInfo.pre('remove', function (callback) {
-    if (this.type === 'medialink') {
+    /*eslint-disable no-bitwise*/
+    if ((this.type & ~types.MASK_DELETED) === types.MEDIALINK) {
       callback();
       return;
     }
@@ -162,7 +176,7 @@ module.exports = function (N, collectionName) {
           return;
         }
 
-        media.type = 'binary';
+        media.type = types.BINARY;
         media.media_id = data.id;
         media.file_size = data.size;
         media.file_name = options.name;
@@ -193,7 +207,7 @@ module.exports = function (N, collectionName) {
           return;
         }
 
-        media.type = 'image';
+        media.type = types.IMAGE;
         media.image_sizes = data.images;
         media.media_id = data.id;
         media.file_size = data.size;

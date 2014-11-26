@@ -1,3 +1,5 @@
+- var mTypes = '$$ JSON.stringify(N.models.users.MediaInfo.types) $$'
+
 .member-block
 
   .member-block__header
@@ -18,14 +20,16 @@
       each media in self.medias
         - var href = self.link_to('users.media', { user_hid: self.user_hid, media_id: media.media_id })
         li.thumb-grid__item
-          if media.type === 'image'
+          - var mType = media.type & ~mTypes.MASK_DELETED
+
+          if mType === mTypes.IMAGE
             - var imageUrl = self.link_to('core.gridfs', { bucket: media.media_id + '_sm' })
             a.thumb(href=href)
               img.thumb__image(src=imageUrl)
               .thumb-caption.thumb-caption__m-secondary
                 time.thumb-caption__line(datetime=media.ts)= self.date(media.ts, 'date')
 
-          else if media.type === 'medialink'
+          else if mType === mTypes.MEDIALINK
             .thumb
               a.thumb__inner(href=href)
                 .thumb__icon.icon.icon-video
@@ -33,7 +37,7 @@
                 .thumb-caption.thumb-caption__m-secondary
                   time.thumb-caption__line(datetime=media.ts)= self.date(media.ts, 'date')
 
-          else if media.type === 'binary'
+          else if mType === mTypes.BINARY
             a.thumb(href=href)
               .thumb__icon.icon.icon-binary
               .thumb__content= media.file_name

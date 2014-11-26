@@ -13,6 +13,7 @@
 
 var _ = require('lodash');
 
+var mTypes = '$$ JSON.stringify(N.models.users.MediaInfo.types) $$';
 
 var $dialog;
 var onCoverSelected;
@@ -44,7 +45,7 @@ N.wire.after('users.album.edit.select_cover', function load_photos(data, callbac
 
   N.io.rpc('users.album.list', { user_hid: data.user_hid, album_id: data.album_id }).done(function (mediaList) {
     var medias = _.filter(mediaList.medias, function (media) {
-      return media.type === 'image';
+      return media.type === mTypes.IMAGE;
     });
 
     var $list = $(N.runtime.render('users.album.edit.select_cover.media_list', {
