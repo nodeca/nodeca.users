@@ -88,7 +88,7 @@ module.exports = function (N, collectionName) {
   // Remove files with previews
   //
   MediaInfo.pre('remove', function (callback) {
-    /*eslint-disable no-bitwise*/
+    /* eslint no-bitwise: 0 */
     if ((this.type & ~types.MASK_DELETED) === types.MEDIALINK) {
       callback();
       return;

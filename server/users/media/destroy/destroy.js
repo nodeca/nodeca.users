@@ -46,7 +46,7 @@ module.exports = function (N, apiPath) {
     var mTypes = N.models.users.MediaInfo.types;
     var media = env.data.media;
 
-    /*eslint-disable no-bitwise*/
+    /* eslint no-bitwise: 0 */
     var mType = env.params.restore ? (media.type & ~mTypes.MASK_DELETED) : (media.type | mTypes.MASK_DELETED);
 
     N.models.users.MediaInfo.update({ _id: media._id }, { type: mType }, function (err) {
