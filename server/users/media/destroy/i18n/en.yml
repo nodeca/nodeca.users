@@ -1,0 +1,2 @@
+en-US:
+  err_quota_exceeded: "Your quota (#{quota_mb} MB) has exceeded"
