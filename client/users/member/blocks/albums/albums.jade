@@ -4,10 +4,7 @@
     - var albumsLink = self.link_to('users.albums_root', { 'user_hid': self.user.hid })
     .member-block__header-title.h2
       a.member-block__header-link.pull-left(href=albumsLink)
-        = self.t('title')
-        |  (
-        = self.blocks.albums.count
-        |)
+        | #{self.t('title')} (#{self.blocks.albums.count})
         span.icon.icon-right-open
       a.member-block__header-collapser(href='#member-albums-info', data-toggle='collapse')
         .pull-right.icon.icon-collapse

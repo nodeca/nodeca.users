@@ -6,10 +6,7 @@
     - var allPhotosLink = self.link_to('users.album', { 'user_hid': self.user.hid })
     .member-block__header-title.h2
       a.member-block__header-link.pull-left(href=allPhotosLink)
-        = self.t('title')
-        |  (
-        = self.blocks.medias.count
-        |)
+        | #{self.t('title')} (#{self.blocks.medias.count})
         span.icon.icon-right-open
       a.member-block__header-collapser(href='#member-medias-info', data-toggle='collapse')
         .pull-right.icon.icon-collapse

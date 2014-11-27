@@ -1,9 +1,11 @@
+// Fill last user medias info
+//
 'use strict';
 
 
 module.exports = function (N) {
 
-  var PHOTO_COUNT = 7;
+  var MEDIA_LIMIT = 7;
 
 
   // Fetch last user medias
@@ -15,7 +17,7 @@ module.exports = function (N) {
       .find({ user_id: env.data.user._id, type: { $in: mTypes.LIST_VISIBLE } })
       .lean(true)
       .sort('-ts')
-      .limit(PHOTO_COUNT)
+      .limit(MEDIA_LIMIT)
       .exec(function (err, medias) {
         if (err) {
           callback(err);
@@ -37,7 +39,7 @@ module.exports = function (N) {
   });
 
 
-  // Fetch user photos count
+  // Fetch user medias count
   //
   N.wire.after('server:users.member', function fetch_photos_count(env, callback) {
     var mTypes = N.models.users.MediaInfo.types;
