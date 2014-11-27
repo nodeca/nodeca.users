@@ -29,8 +29,7 @@ module.exports = function (N) {
 
         env.res.blocks = env.res.blocks || {};
         env.res.blocks.medias = {
-          medias: medias,
-          user_hid: env.data.user.hid
+          list: medias
         };
 
         callback();

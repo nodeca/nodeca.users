@@ -1,12 +1,12 @@
 .member-block
 
   .member-block__header
-    - var albumsLink = self.link_to('users.albums_root', { 'user_hid': self.user_hid })
+    - var albumsLink = self.link_to('users.albums_root', { 'user_hid': self.user.hid })
     .member-block__header-title.h2
       a.member-block__header-link.pull-left(href=albumsLink)
         = self.t('title')
         |  (
-        = self.count
+        = self.blocks.albums.count
         |)
         span.icon.icon-right-open
       a.member-block__header-collapser(href='#member-albums-info', data-toggle='collapse')
@@ -15,8 +15,8 @@
 
   #member-albums-info.member-block__inner.collapse.in
     ul.thumb-grid.thumb-grid__m-sm.thumb-grid__m-responsive.thumb-grid__m-inline.thumb-grid__m-shadow-tail
-      each album in self.albums
-        - var href = self.link_to('users.album', { user_hid: self.user_hid, album_id: album._id })
+      each album in self.blocks.albums.list
+        - var href = self.link_to('users.album', { user_hid: self.user.hid, album_id: album._id })
         li.thumb-grid__item
           a.thumb(href=href)
             if album.cover_id

@@ -37,8 +37,7 @@ module.exports = function (N) {
 
         env.res.blocks = env.res.blocks || {};
         env.res.blocks.albums = {
-          albums: albums,
-          user_hid: env.data.user.hid
+          list: albums
         };
 
         callback();

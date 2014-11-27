@@ -27,4 +27,4 @@
     .member-blocks
       each block in self.blocks_ordered
         if (self.blocks[block.name])
-          != self.partial('@users.member.blocks.' + block.name, self.blocks[block.name])
+          != self.partial('@users.member.blocks.' + block.name)
