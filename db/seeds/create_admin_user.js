@@ -51,6 +51,9 @@ module.exports = function (N, cb) {
           user.post_count = 1;
           user.usergroups = [ group ];
 
+          user.first_name = 'Admin';
+          user.last_name = 'Adminovski';
+
           user.save(next);
         });
     },
