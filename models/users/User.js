@@ -114,6 +114,21 @@ module.exports = function (N, collectionName) {
   });
 
 
+  // Creates UserExtra for new user
+  //
+  User.pre('save', function (callback) {
+    if (!this.isNew) {
+      callback();
+      return;
+    }
+
+    // this._id generates automatically before first pre('save') call
+    var extra = new N.models.users.UserExtra({ user_id: this._id });
+
+    extra.save(callback);
+  });
+
+
   // Creates default album for new user
   //
   User.pre('save', function (callback) {

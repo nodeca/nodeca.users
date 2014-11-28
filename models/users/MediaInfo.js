@@ -1,5 +1,6 @@
 // Model for file page (comments, file usage...)
 
+/* eslint no-bitwise: 0 */
 'use strict';
 
 var fs          = require('fs');
@@ -23,6 +24,11 @@ module.exports = function (N, collectionName) {
   };
 
   types.LIST_VISIBLE = [ types.IMAGE, types.MEDIALINK, types.BINARY ];
+  types.LIST_DELETED = [
+    types.IMAGE | types.MASK_DELETED,
+    types.MEDIALINK | types.MASK_DELETED,
+    types.BINARY | types.MASK_DELETED
+  ];
 
 
   var MediaInfo = new Schema({
@@ -72,10 +78,6 @@ module.exports = function (N, collectionName) {
   MediaInfo.index({ album_id: 1, type: 1, media_id: 1 });
 
   // - "All medias" page, medias list, sorted by date
-  // - User medias size (users.media.upload)
-  //
-  // TODO: Aggregation $groups can't use coverage index.
-  // TODO: All user's medias will be selected to calculate $sum. Check performance on production
   MediaInfo.index({ user_id: 1, type: 1, ts: -1 });
 
   //////////////////////////////////////////////////////////////////////////////
@@ -85,10 +87,46 @@ module.exports = function (N, collectionName) {
   MediaInfo.statics.types = types;
 
 
+  // Mark media deleted and update user's media size
+  //
+  // - media_id
+  // - revert - revert deleted media (default false)
+  // - callback
+  //
+  MediaInfo.statics.markDeleted = function (media_id, revert, callback) {
+    N.models.users.MediaInfo
+      .findOneAndUpdate(
+        {
+          media_id: media_id,
+          type: { $in: (revert ? types.LIST_DELETED : types.LIST_VISIBLE) }
+        },
+        { $bit: { type: { xor: types.MASK_DELETED } } }
+      )
+      .select('file_size user_id')
+      .lean(true)
+      .exec(function (err, media) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        if (!media) {
+          callback();
+          return;
+        }
+
+        N.models.users.UserExtra.update(
+          { user_id: media.user_id },
+          { $inc: { media_size: media.file_size * (revert ? 1 : -1) } },
+          callback
+        );
+      });
+  };
+
+
   // Remove files with previews
   //
   MediaInfo.pre('remove', function (callback) {
-    /* eslint no-bitwise: 0 */
     if ((this.type & ~types.MASK_DELETED) === types.MEDIALINK) {
       callback();
       return;
@@ -126,6 +164,22 @@ module.exports = function (N, collectionName) {
       });
     });
   };
+
+
+  function updateMediaSize(media, callback) {
+    N.models.users.UserExtra.update(
+      { user_id: media.user_id },
+      { $inc: { media_size: media.file_size } },
+      function (err) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        callback(null, media);
+      }
+    );
+  }
 
 
   // Create media with original image with previews or binary file
@@ -187,7 +241,7 @@ module.exports = function (N, collectionName) {
             return;
           }
 
-          callback(null, media);
+          updateMediaSize(media, callback);
         });
       });
       return;
@@ -218,7 +272,7 @@ module.exports = function (N, collectionName) {
             return;
           }
 
-          callback(null, media);
+          updateMediaSize(media, callback);
         });
       }
     );

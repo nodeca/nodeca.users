@@ -24,7 +24,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   // Restore media
   //
   N.wire.on('users.media:restore', function media_restore() {
-    N.io.rpc('users.media.destroy', { media_id: pageParams.media_id, restore: true }).done(function () {
+    N.io.rpc('users.media.destroy', { media_id: pageParams.media_id, revert: true }).done(function () {
       $('.user-mediapage').removeClass('deleted');
     });
   });

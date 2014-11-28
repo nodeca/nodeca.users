@@ -60,7 +60,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function fetch_media(env, callback) {
     N.models.users.MediaInfo
-      .find({ 'album_id': env.data.album._id })
+      .find({ album_id: env.data.album._id })
       .lean(false) // Use as mongoose model
       .exec(function (err, medias) {
         if (err) {
@@ -78,13 +78,14 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function delete_album(env, callback) {
     async.eachLimit(env.data.album_media, numCPUs, function (media, next) {
       process.nextTick(function () {
-        media.remove(next);
+        N.models.users.MediaInfo.markDeleted(media.media_id, false, next);
       });
     }, function (err) {
       if (err) {
         callback(err);
         return;
       }
+
       env.data.album.remove(callback);
     });
   });

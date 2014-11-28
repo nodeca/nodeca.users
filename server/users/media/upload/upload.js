@@ -4,7 +4,6 @@
 'use strict';
 
 
-var Mongoose    = require('mongoose');
 var formidable  = require('formidable');
 var tmpDir      = require('os').tmpdir();
 var fs          = require('fs');
@@ -104,31 +103,15 @@ module.exports = function (N, apiPath) {
   // Check quota
   //
   N.wire.before(apiPath, function check_quota(env, callback) {
-    var mTypes = N.models.users.MediaInfo.types;
-    var totalSize;
-
-    // Fetch user's total media size
-    //
-    // TODO: Aggregation $groups can't use coverage index.
-    // TODO: All user's medias will be selected to calculate $sum. Check performance on production
-    N.models.users.MediaInfo.aggregate(
-      [
-        {
-          $match: {
-            user_id: new Mongoose.Types.ObjectId(env.session.user_id),
-            type: { $in: mTypes.LIST_VISIBLE }
-          }
-        },
-        { $group: { _id: null, total_size: { $sum: '$file_size' } } }
-      ],
-      function (err, data) {
-
+    N.models.users.UserExtra
+      .findOne({ user_id: env.session.user_id })
+      .select('media_size')
+      .lean(true)
+      .exec(function (err, extra) {
         if (err) {
           callback(err);
           return;
         }
-
-        totalSize = data[0] ? data[0].total_size : 0;
 
         env.extras.settings.fetch('users_media_total_quota_mb', function (err, users_media_total_quota_mb) {
 
@@ -137,7 +120,7 @@ module.exports = function (N, apiPath) {
             return;
           }
 
-          if (users_media_total_quota_mb * 1024 * 1024 < totalSize) {
+          if (users_media_total_quota_mb * 1024 * 1024 < extra.media_size) {
             callback({
               code:    N.io.CLIENT_ERROR,
               message: env.t('err_quota_exceeded', { quota_mb: users_media_total_quota_mb })
