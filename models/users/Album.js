@@ -48,13 +48,14 @@ module.exports = function (N, collectionName) {
   // Update media count in album
   //
   var updateCount = function (albumId, full, callback) {
+    var mTypes = N.models.users.MediaInfo.types;
 
     if (!full) {
       N.models.users.Album.update({ _id: albumId }, { $inc: { count: 1 } }, callback);
       return;
     }
 
-    N.models.users.MediaInfo.count({ album_id: albumId, exists: true }, function (err, result) {
+    N.models.users.MediaInfo.count({ album_id: albumId, type: { $in: mTypes.LIST_VISIBLE } }, function (err, result) {
       if (err) {
         callback(err);
         return;
