@@ -18,33 +18,38 @@ var options;
 var doneCallback;
 
 
-function loadAlbumContent(albumID, page) {
-  N.io.rpc('users.album.list', { user_hid: N.runtime.user_hid, album_id: albumID, page: page })
+function loadAlbumContent(albumID, lastMediaID) {
+  N.io.rpc('users.media_select.index', {
+    user_hid: N.runtime.user_hid,
+    album_id: albumID,
+    last_media_id: lastMediaID,
+    media_types: options.types
+  })
     .done(function (mediaList) {
-
-      var medias = _.filter(mediaList.medias, function (media) {
-        return options.types.indexOf(media.type) !== -1;
-      });
 
       var $content = $dialog.find('.media-select-dlg__content');
       var $morePhotos = $dialog.find('.media-select-dlg__more-photos');
       var $noFiles = $dialog.find('.media-select-dlg__no-files');
 
       var $medias = $(N.runtime.render('users.blocks.media_select_dlg.media_list', {
-        medias: medias,
-        user_hid: mediaList.user_hid
+        medias: mediaList.medias,
+        user_hid: N.runtime.user_hid
       }));
 
-      if (page && mediaList.medias.length === mediaList.photos_per_page) {
-        $morePhotos.show().data('album-id', albumID).data('page', page);
+      if (mediaList.has_next_page) {
+        $morePhotos
+          .show()
+          .data('album-id', albumID)
+          .data('last-media-id', mediaList.medias[mediaList.medias.length - 1].media_id);
       } else {
         $morePhotos.hide();
       }
 
-      if (!page || page === 1) {
+
+      if (!lastMediaID) {
         $content.empty();
 
-        if (medias.length === 0) {
+        if (mediaList.medias.length === 0) {
           $noFiles.show();
         } else {
           $noFiles.hide();
@@ -68,10 +73,10 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
   //
   N.wire.on('users.blocks.media_select_dlg:more_photos', function more_photos (event) {
     var $target = $(event.currentTarget);
-    var page = $target.data('page');
+    var lastMediaID = $target.data('last-media-id');
     var albumID = $target.data('album-id');
 
-    loadAlbumContent(albumID, page + 1);
+    loadAlbumContent(albumID, lastMediaID);
   });
 
 
@@ -110,11 +115,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
     var $target = $(event.target);
     var id = $target.val();
 
-    if (id !== '') {
-      loadAlbumContent(id);
-    } else {
-      loadAlbumContent(undefined, 1);
-    }
+    loadAlbumContent(id);
   });
 });
 
@@ -149,7 +150,7 @@ N.wire.on('users.blocks.media_select_dlg', function show_media_select_dlg(data, 
       })
       .modal('show');
 
-    loadAlbumContent(albumsList.albums[0]._id, 1);
+    loadAlbumContent(albumsList.albums[0]._id);
   });
 
 });

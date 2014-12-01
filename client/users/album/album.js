@@ -1,26 +1,7 @@
 'use strict';
 
-var _ = require('lodash');
-
-
 var pageParams;
 var $dropZone;
-
-
-var reloadMedia = function () {
-  N.io.rpc('users.album.list', pageParams).done(function (mediaList) {
-    var $list = $(N.runtime.render('users.album.list', mediaList));
-    $('#users-medias-list').html($list);
-
-    if (mediaList.medias.length > 0) {
-      $('.user-album-page').removeClass('no-files');
-    } else {
-      $('.user-album-page').addClass('no-files');
-    }
-
-    N.wire.emit('navigate.replace', {});
-  });
-};
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,16 +15,19 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
 
   $('.user-album-upload__files').on('change', function () {
     var files = $(this).get(0).files;
+    var params = {
+      files: files,
+      url: N.router.linkTo('users.media.upload', { album_id: pageParams.album_id }),
+      config: 'users.uploader_config',
+      uploaded: null
+    };
+
     if (files.length > 0) {
-      N.wire.emit(
-        'users.uploader:add',
-        {
-          files: files,
-          url: N.router.linkTo('users.media.upload', { album_id: pageParams.album_id }),
-          config: 'users.uploader_config'
-        },
-        reloadMedia
-      );
+      N.wire.emit('users.uploader:add', params, function() {
+        $('#users-medias-list').prepend(
+          $(N.runtime.render('users.album.list', { medias: params.uploaded, user_hid: pageParams.user_hid }))
+        );
+      });
     }
   });
 });
@@ -84,15 +68,18 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         $dropZone.removeClass('active');
 
         if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
-          N.wire.emit(
-            'users.uploader:add',
-            {
-              files: event.dataTransfer.files,
-              url: N.router.linkTo('users.media.upload', { album_id: pageParams.album_id }),
-              config: 'users.uploader_config'
-            },
-            reloadMedia
-          );
+          var params = {
+            files: event.dataTransfer.files,
+            url: N.router.linkTo('users.media.upload', { album_id: pageParams.album_id }),
+            config: 'users.uploader_config',
+            uploaded: null
+          };
+
+          N.wire.emit('users.uploader:add', params, function () {
+            $('#users-medias-list').prepend(
+              $(N.runtime.render('users.album.list', { medias: params.uploaded, user_hid: pageParams.user_hid }))
+            );
+          });
         }
         break;
       default:
@@ -107,8 +94,12 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
   N.wire.on('users.album:add_medialink', function add_medialink(event) {
-    var params = { album_id: pageParams.album_id, providers: $(event.target).data('providers') };
-    N.wire.emit('users.album.add_medialink', params, reloadMedia);
+    var params = { album_id: pageParams.album_id, providers: $(event.target).data('providers'), media: null };
+    N.wire.emit('users.album.add_medialink', params, function () {
+      $('#users-medias-list').prepend(
+        $(N.runtime.render('users.album.list', { medias: [ params.media ], user_hid: pageParams.user_hid }))
+      );
+    });
   });
 });
 
@@ -117,20 +108,13 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 // Lazy load photos on scroll down
 //
 
-var nextPage;
 var appendParams;
 
 
 // Init photos append when user scroll page down
 //
 N.wire.after('navigate.done:' + module.apiPath, function setup_append(data) {
-  appendParams = _.clone(data.params);
-
-  if (!appendParams.album_id) {
-    nextPage = 2;
-  } else {
-    nextPage = -1;
-  }
+  appendParams = data.params;
 });
 
 
@@ -140,22 +124,26 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   //
   // If callback not executed, no new event happen
   //
-  N.wire.on('users.album:append_more_photos', function append_more_photos(__, callback) {
-    if (nextPage === -1) {
-      // Skip callback to stop new attempts
+  N.wire.on('users.album:append_more_medias', function append_more_medias(__, callback) {
+    var $list = $('#users-medias-list');
+
+    if (!$list.data('has-next-page')) {
+      callback();
       return;
     }
 
-    N.io.rpc('users.album.list', _.assign({}, appendParams, { page: nextPage })).done(function (mediaList) {
-      var $list = $(N.runtime.render('users.album.list', mediaList));
-      $('#users-medias-list').append($list);
-
-      if (mediaList.medias.length < mediaList.photos_per_page) {
-        // No more available media
-        nextPage = -1;
-      } else {
-        nextPage++;
+    N.io.rpc(
+      'users.album.list',
+      {
+        user_hid: appendParams.user_hid,
+        album_id: appendParams.album_id,
+        last_media_id: $list.find('li:last').data('media-id')
       }
+    ).done(function (mediaList) {
+      $list
+        .data('has-next-page', mediaList.has_next_page)
+        .data('last-media-id', mediaList.medias[mediaList.medias.length - 1].media_id)
+        .append($(N.runtime.render('users.album.list', mediaList)));
 
       callback();
     });

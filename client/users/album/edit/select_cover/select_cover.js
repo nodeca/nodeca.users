@@ -10,11 +10,6 @@
 
 'use strict';
 
-
-var _ = require('lodash');
-
-var mTypes = '$$ JSON.stringify(N.models.users.MediaInfo.types) $$';
-
 var $dialog;
 var onCoverSelected;
 var dialogData;
@@ -43,14 +38,10 @@ N.wire.after('users.album.edit.select_cover', function load_photos(data, callbac
   onCoverSelected = callback;
   dialogData = data;
 
-  N.io.rpc('users.album.list', { user_hid: data.user_hid, album_id: data.album_id }).done(function (mediaList) {
-    var medias = _.filter(mediaList.medias, function (media) {
-      return media.type === mTypes.IMAGE;
-    });
-
+  N.io.rpc('users.album.select_cover.index', { user_hid: data.user_hid, album_id: data.album_id }).done(function (res) {
     var $list = $(N.runtime.render('users.album.edit.select_cover.media_list', {
-      medias: medias,
-      user_hid: mediaList.user_hid
+      medias: res.medias,
+      user_hid: data.user_hid
     }));
 
     $('#select_cover__photos').html($list);

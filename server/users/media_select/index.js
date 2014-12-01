@@ -11,11 +11,17 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     user_hid: { type: 'integer', minimum: 1, required: true },
     album_id: { format: 'mongo' },
+    media_types: {
+      type: 'array',
+      required: true,
+      uniqueItems: true,
+      items: { type: 'integer' }
+    },
     last_media_id: { format: 'mongo' }
   });
 
 
-  // Fetch owner
+  // Fetch user
   //
   N.wire.before(apiPath, function fetch_user_by_hid(env, callback) {
     N.wire.emit('internal:users.fetch_user_by_hid', env, callback);
@@ -27,8 +33,17 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function get_user_medias(env, callback) {
     var mTypes = N.models.users.MediaInfo.types;
 
+    // Check `media_type` not contains deleted types
+    for (var i = 0; i < env.params.media_types.length; i++) {
+      /* eslint no-bitwise: 0 */
+      if (env.params.media_types[i] & mTypes.MASK_DELETED) {
+        callback(N.io.FORBIDDEN);
+        return;
+      }
+    }
+
     var query = N.models.users.MediaInfo
-                  .find({ user_id: env.data.user._id, type: { $in: mTypes.LIST_VISIBLE } })
+                  .find({ user_id: env.data.user._id, type: { $in: env.params.media_types } })
                   .lean(true)
                   .sort('-ts')
                   // Select one extra item to check next page exists
@@ -59,7 +74,6 @@ module.exports = function (N, apiPath) {
         env.res.has_next_page = false;
       }
 
-      env.res.user_hid = env.data.user.hid;
       env.res.medias = result;
 
       callback();

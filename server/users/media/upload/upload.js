@@ -259,6 +259,6 @@ module.exports = function (N, apiPath) {
   // Fill media data (media_id, type, file_name)
   //
   N.wire.after(apiPath, function fill_media_id(env) {
-    env.res.media = _.pick(env.data.media, [ 'media_id', 'type', 'file_name' ]);
+    env.res.media = _.pick(env.data.media, [ 'media_id', 'type', 'file_name', 'ts' ]);
   });
 };

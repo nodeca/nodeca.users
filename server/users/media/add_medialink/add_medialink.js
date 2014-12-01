@@ -81,6 +81,9 @@ module.exports = function (N, apiPath) {
 
       // In case of medialink, we have no file, but we should specify file_id for media page
       media.media_id = media._id;
+
+      env.res.media = media;
+
       media.save(callback);
     });
   });
