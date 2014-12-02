@@ -9,10 +9,20 @@ var Bag = require('bag.js');
 
 // Store/restore blocks collapse state
 //
-N.wire.on('navigate.done:' + module.apiPath, function store_blocks_state() {
-  var key = 'member_blocks_collapsed';
+N.wire.on('navigate.done:' + module.apiPath, function store_blocks_state(data) {
+  var key = [
+    'blocks_collapsed',
+    N.runtime.user_hid,
+    // Different blocks state for owner's page and for another user's page
+    data.params.user_hid === N.runtime.user_hid
+  ].join('_');
+
   var collapsedBlocks;
-  var bag = new Bag();
+
+  var bag = new Bag({
+    prefix: 'nodeca_settings',
+    expire: 12 * 30 * 24 // 1 year
+  });
 
   // Handle show/hide events
   $('.member-block__inner')
