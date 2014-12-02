@@ -16,7 +16,7 @@ module.exports = function (N) {
     N.models.users.MediaInfo
       .find({ user_id: env.data.user._id, type: { $in: mTypes.LIST_VISIBLE } })
       .lean(true)
-      .sort('-ts')
+      .sort('-media_id')
       .limit(MEDIA_LIMIT)
       .exec(function (err, medias) {
         if (err) {

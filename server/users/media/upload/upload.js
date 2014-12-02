@@ -214,6 +214,7 @@ module.exports = function (N, apiPath) {
           return;
         }
 
+        env.res.media = media;
         env.data.media = media;
         callback();
       });
@@ -253,12 +254,5 @@ module.exports = function (N, apiPath) {
     }
 
     N.models.users.Album.update({ _id: env.data.album._id }, { cover_id: media.media_id }, callback);
-  });
-
-
-  // Fill media data (media_id, type, file_name)
-  //
-  N.wire.after(apiPath, function fill_media_id(env) {
-    env.res.media = _.pick(env.data.media, [ 'media_id', 'type', 'file_name', 'ts' ]);
   });
 };

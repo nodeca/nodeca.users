@@ -6,15 +6,7 @@
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
-    user_hid: { type: 'integer', minimum: 1, required: true },
-    album_id: { format: 'mongo' }
-  });
-
-
-  // Fetch user
-  //
-  N.wire.before(apiPath, function fetch_user_by_hid(env, callback) {
-    N.wire.emit('internal:users.fetch_user_by_hid', env, callback);
+    album_id: { format: 'mongo', required: true }
   });
 
 
@@ -24,9 +16,9 @@ module.exports = function (N, apiPath) {
     var mTypes = N.models.users.MediaInfo.types;
 
     N.models.users.MediaInfo
-      .find({ user_id: env.data.user._id, type: mTypes.IMAGE, album_id: env.params.album_id })
+      .find({ type: mTypes.IMAGE, album_id: env.params.album_id })
       .lean(true)
-      .sort('-ts')
+      .sort('-media_id')
       .exec(function (err, medias) {
         if (err) {
           callback(err);

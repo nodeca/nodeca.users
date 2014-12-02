@@ -21,14 +21,12 @@
             | 
             button.btn.btn-default= self.t('upload_here')
 
-          .media-select-dlg__no-files= self.t('no_files')
+          .media-select-dlg__no-medias= self.t('no_files')
 
           ul.media-select-dlg__content.thumb-grid.thumb-grid__m-sm.thumb-grid__m-tight.thumb-grid__m-centered.thumb-grid__m-responsive
 
-          a.media-select-dlg__more-photos.btn.btn-default.btn-block.icon.icon-dimmed.icon-space-after.icon-more(
+          a.media-select-dlg__more-medias.btn.btn-default.btn-block.icon.icon-dimmed.icon-space-after.icon-more(
             data-on-click='users.blocks.media_select_dlg:more_photos'
-            data-page=self.page
-            data-album-id=self.album_id
           )= self.t('more')
 
         .modal-footer

@@ -40,14 +40,13 @@
       .user-album-upload__text
         = self.t('drag_to_upload')
 
+  - self.add_raw_data('next_media_id', self.next_media_id)
   ul#users-medias-list.user-medialist.thumb-grid.thumb-grid__m-responsive._affix(
     data-affix={
       'bottom': 160,
       'wire': 'users.album:append_more_medias',
       'class': 'append-more-photos'
     }
-    data-has-next-page=self.has_next_page
-    data-last-media-id=self.medias.length > 0 ? self.medias[self.medias.length - 1].media_id : null
   )!= self.partial('@users.album.list')
 
   p.user-album-page__no-files= self.t('no_files')

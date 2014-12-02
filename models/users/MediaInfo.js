@@ -78,7 +78,7 @@ module.exports = function (N, collectionName) {
   MediaInfo.index({ album_id: 1, type: 1, media_id: 1 });
 
   // - "All medias" page, medias list, sorted by date
-  MediaInfo.index({ user_id: 1, type: 1, ts: -1 });
+  MediaInfo.index({ user_id: 1, type: 1, media_id: 1 });
 
   //////////////////////////////////////////////////////////////////////////////
 
