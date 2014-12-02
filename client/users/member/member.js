@@ -3,7 +3,8 @@
 
 'use strict';
 
-var _ = require('lodash');
+var _   = require('lodash');
+var Bag = require('bag.js');
 
 
 // Store/restore blocks collapse state
@@ -11,7 +12,7 @@ var _ = require('lodash');
 N.wire.on('navigate.done:' + module.apiPath, function store_blocks_state() {
   var key = 'member_blocks_collapsed';
   var collapsedBlocks;
-  var bag = new window.Bag();
+  var bag = new Bag();
 
   // Handle show/hide events
   $('.member-block__inner')
