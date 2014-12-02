@@ -9,7 +9,7 @@ module.exports = function (N, cb) {
   var user     = new models.users.User();
   var authLink     = new models.users.AuthLink();
 
-  var login, password;
+  var login, password, email;
 
   async.series([
     function (next) {
@@ -30,6 +30,7 @@ module.exports = function (N, cb) {
 
         login = result.login || 'admin';
         password = result.password || 'admin';
+        email = 'admin@example.com';
 
         next();
       });
@@ -46,7 +47,7 @@ module.exports = function (N, cb) {
           }
           user.hid = 1;
           user.nick = login;
-          user.email = 'admin@localhost';
+          user.email = email;
           user.joined_ts = new Date();
           user.post_count = 1;
           user.usergroups = [ group ];
@@ -62,7 +63,7 @@ module.exports = function (N, cb) {
     function (next) {
 
       authLink.type = 'plain';
-      authLink.email = 'admin@example.com';
+      authLink.email = email;
       authLink.setPass(password, function (err) {
         if (err) {
           next(err);
