@@ -22,6 +22,25 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Find and processes user albums
+  //
+  N.wire.on(apiPath, function get_user_albums(env, callback) {
+    N.models.users.Album
+      .find({ 'user_id': env.data.user._id })
+      .sort('-default -last_ts')
+      .lean(true)
+      .exec(function (err, result) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        env.res.albums = result;
+        callback();
+      });
+  });
+
+
   // Find and processes user media
   //
   N.wire.on(apiPath, function get_user_medias(env, callback) {

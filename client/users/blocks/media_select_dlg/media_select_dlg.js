@@ -20,39 +20,36 @@ var albumID;
 var nextMediaID;
 
 
-function loadMedias() {
-  N.io.rpc('users.media_select.index', {
-    user_hid: N.runtime.user_hid,
-    album_id: albumID,
-    from_media_id: nextMediaID
-  }).done(function (mediaList) {
+function loadDialogContent(selectedAlbumID) {
+  var user_hid = N.runtime.user_hid;
 
-    var $content = $dialog.find('.media-select-dlg__content');
+  N.io.rpc('users.media_select.index', { album_id: selectedAlbumID, user_hid: user_hid }).done(function (res) {
+    // Add virtual item (all photos) to albums list
+    res.albums.unshift({ title: t('all') });
 
-    var $medias = $(N.runtime.render('users.blocks.media_select_dlg.media_list', {
-      medias: mediaList.medias,
-      user_hid: N.runtime.user_hid
+    var $dlgBody = $(N.runtime.render('users.blocks.media_select_dlg.dlg_body', {
+      albums: res.albums,
+      medias: res.medias,
+      user_hid: user_hid,
+      selected_album_id: selectedAlbumID
     }));
 
-    if (mediaList.next_media_id) {
+    if (res.medias.length === 0) {
+      $dialog.addClass('no-medias');
+    } else {
+      $dialog.removeClass('no-medias');
+    }
+
+    if (res.next_media_id) {
       $dialog.removeClass('no-more-medias');
     } else {
       $dialog.addClass('no-more-medias');
     }
 
-    if (!nextMediaID) {
-      $content.empty();
+    nextMediaID = res.next_media_id;
+    albumID = selectedAlbumID;
 
-      if (mediaList.medias.length === 0) {
-        $dialog.addClass('no-medias');
-      } else {
-        $dialog.removeClass('no-medias');
-      }
-    }
-
-    $content.append($medias);
-
-    nextMediaID = mediaList.next_media_id;
+    $dialog.find('.media_select_dlg__body').html($dlgBody);
 
     options.selected.forEach(function (mediaInfo) {
       $dialog.find('#media-select-dlg__media-' + mediaInfo.media_id).addClass('selected');
@@ -61,14 +58,127 @@ function loadMedias() {
 }
 
 
+function destroyDialog(callback) {
+  $dialog.on('hidden.bs.modal', function () {
+    $dialog.remove();
+    $dialog = null;
+    doneCallback = null;
+    options = null;
+
+    if (callback) {
+      callback();
+    }
+  }).modal('hide');
+}
+
+
 // Init event handlers
 //
 N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
 
+  // Upload files button handler
+  //
+  N.wire.on('users.blocks.media_select_dlg:select_files', function select_files() {
+    $dialog.find('.media-select-dlg__files').click();
+  });
+
+
+  // Upload selected files
+  //
+  N.wire.on('users.blocks.media_select_dlg:upload', function upload_files(event) {
+    var $target = $(event.target);
+    var files = $target.get(0).files;
+
+    if (files.length > 0) {
+      var params = {
+        files: files,
+        url: N.router.linkTo('users.media.upload', { album_id: albumID }),
+        config: 'users.uploader_config',
+        uploaded: null
+      };
+
+      // Hide current dialog and start uploader dialog
+      $dialog.on('hidden.bs.modal', function () {
+
+        N.wire.emit('users.uploader:add', params, function() {
+          if (params.uploaded.length === 0) {
+
+            // No files uploaded. Show media select dialog again
+            $dialog
+              .off('hidden.bs.modal')
+              .modal('show');
+
+            return;
+          }
+
+          var $uploadedMedias = $(N.runtime.render(
+            'users.blocks.media_select_dlg.media_list',
+            {
+              medias: params.uploaded,
+              user_hid: N.runtime.user_hid
+            }
+          ));
+
+          $dialog
+            .off('hidden.bs.modal') // show media select dialog again
+            .modal('show') // remove `no-medias` modifier because album can't be empty
+            .removeClass('no-medias')
+            .find('.media-select-dlg__content') // show uploaded medias
+            .prepend($uploadedMedias);
+        });
+      }).modal('hide');
+    }
+  });
+
+
+  // Create album button handler
+  //
+  N.wire.on('users.blocks.media_select_dlg:create_album', function create_album() {
+    $dialog.on('hidden.bs.modal', function () {
+      var params = { album: null };
+
+      N.wire.emit('users.album.create', params, function () {
+
+        if (params.album) {
+          loadDialogContent(params.album._id);
+        }
+
+        $dialog
+          .off('hidden.bs.modal')
+          .modal('show');
+      });
+    }).modal('hide');
+  });
+
+
   // Append more photos button handler
   //
   N.wire.on('users.blocks.media_select_dlg:more_photos', function more_photos () {
-    loadMedias();
+    N.io.rpc('users.media_select.index', {
+      user_hid: N.runtime.user_hid,
+      album_id: albumID,
+      from_media_id: nextMediaID
+    }).done(function (req) {
+
+      var $medias = $(N.runtime.render('users.blocks.media_select_dlg.media_list', {
+        medias: req.medias,
+        user_hid: N.runtime.user_hid
+      }));
+
+      if (req.next_media_id) {
+        $dialog.removeClass('no-more-medias');
+      } else {
+        $dialog.addClass('no-more-medias');
+      }
+
+      $dialog.find('.media-select-dlg__content').append($medias);
+
+      nextMediaID = req.next_media_id;
+
+      options.selected.forEach(function (mediaInfo) {
+        $dialog.find('#media-select-dlg__media-' + mediaInfo.media_id).addClass('selected');
+      });
+    });
   });
 
 
@@ -95,20 +205,36 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
   });
 
 
-  N.wire.on('users.blocks.media_select_dlg:apply', function apply () {
-    // stub
-    doneCallback();
-
-    $dialog.modal('hide');
+  // Handle albums select change
+  //
+  N.wire.on('users.blocks.media_select_dlg:album_select', function album_select (event) {
+    loadDialogContent($(event.target).val() || undefined);
   });
 
 
-  N.wire.on('users.blocks.media_select_dlg:album_select', function album_select (event) {
-    var $target = $(event.target);
+  // OK button handler
+  //
+  N.wire.on('users.blocks.media_select_dlg:done', function apply () {
+    destroyDialog(doneCallback);
+  });
 
-    albumID = $target.val() || undefined;
-    nextMediaID = undefined;
-    loadMedias();
+
+  // Close dialog handler
+  //
+  N.wire.on('users.blocks.media_select_dlg:close', function close() {
+    destroyDialog();
+  });
+
+
+  // Close dialog on sudden page exit (if user click back button in browser)
+  //
+  N.wire.on('navigate.exit', function teardown_page(__, callback) {
+    if (!$dialog) {
+      callback();
+      return;
+    }
+
+    destroyDialog(callback);
   });
 });
 
@@ -116,35 +242,30 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
 // Init dialog on event
 //
 N.wire.on('users.blocks.media_select_dlg', function show_media_select_dlg(data, callback) {
-
   options = data;
   options.selected = options.selected || [];
   doneCallback = callback;
 
-  N.io.rpc('users.albums_root.list', { user_hid: N.runtime.user_hid }).done(function (albumsList) {
-    albumsList.albums.unshift({ title: t('all') });
+  $dialog = $(N.runtime.render('users.blocks.media_select_dlg'));
 
-    $dialog = $(N.runtime.render('users.blocks.media_select_dlg', albumsList));
+  $('body').append($dialog);
 
-    $('body').append($dialog);
+  $dialog
+    .keypress(function (e) {
+      // Apply selected on `enter` key
+      if (e.which === 13) {
+        N.wire.emit('users.blocks.media_select_dlg:apply');
+      }
+    })
+    // Close dialog on click outside `.modal-content`
+    .click(function (event) {
+      if (event.target !== event.currentTarget) {
+        return;
+      }
 
-    $dialog
-      .keypress(function (e) {
-        // Apply selected on `enter` key
-        if (e.which === 13) {
-          N.wire.emit('users.blocks.media_select_dlg:apply');
-        }
-      })
-      .on('hidden.bs.modal', function () {
-        $dialog.remove();
-        $dialog = null;
-        doneCallback = null;
-        options = null;
-      })
-      .modal('show');
+      destroyDialog();
+    })
+    .modal('show');
 
-    albumID = albumsList.albums[0]._id;
-    nextMediaID = undefined;
-    loadMedias();
-  });
+  loadDialogContent();
 });

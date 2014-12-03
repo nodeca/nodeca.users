@@ -2,9 +2,10 @@ en-US:
   title: Select files
   cancel: Cancel
   apply: OK
-  no_files: No files
-  more: More
-  default_name: Unsorted
   all: All
-  create_album: New album
-  upload_here: Upload here
+  dlg_body:
+    create_album: New album
+    upload_here: Upload here
+    default_name: Unsorted
+    no_files: No files
+    more: More

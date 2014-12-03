@@ -1,39 +1,28 @@
-.modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
+.modal.fade(tabindex='-1' role='dialog' aria-hidden='true' data-backdrop='static')
   .modal-dialog.modal-lg
     .modal-content
 
-        .modal-header
-          button.close(
-            aria-hidden='true'
-            type='button'
-            data-dismiss='modal'
-            tabindex='-1'
-          ) &times;
-          h4.modal-title= self.t('title')
+      .modal-header
+        //- used custom close handler instead `data-dismiss='modal'` because this dialog
+        //- has internal dialogs and we can't use bootstrap events
+        button.close(
+          aria-hidden='true'
+          type='button'
+          tabindex='-1'
+          data-on-click='users.blocks.media_select_dlg:close'
+        ) &times;
+        h4.modal-title= self.t('title')
 
-        .modal-body
-          select.media-select-dlg__albums.form-control(data-on-change='users.blocks.media_select_dlg:album_select')
-            each album in self.albums
-              option(value=album._id || '')=album.default ? self.t('default_name') : album.title
+      .media_select_dlg__body.modal-body
 
-          .media-select-dlg__actions
-            button.btn.btn-default= self.t('create_album')
-            | 
-            button.btn.btn-default= self.t('upload_here')
-
-          .media-select-dlg__no-medias= self.t('no_files')
-
-          ul.media-select-dlg__content.thumb-grid.thumb-grid__m-sm.thumb-grid__m-tight.thumb-grid__m-centered.thumb-grid__m-responsive
-
-          a.media-select-dlg__more-medias.btn.btn-default.btn-block.icon.icon-dimmed.icon-space-after.icon-more(
-            data-on-click='users.blocks.media_select_dlg:more_photos'
-          )= self.t('more')
-
-        .modal-footer
-          button.btn.btn-default(type='button' tabindex='2' data-dismiss='modal')= self.t('cancel')
-          button.btn.btn-primary(
-            type='button'
-            tabindex='3'
-            data-on-click='users.blocks.media_select_dlg:apply'
-          )= self.t('apply')
-
+      .modal-footer
+        button.btn.btn-default(
+          type='button'
+          tabindex='2'
+          data-on-click='users.blocks.media_select_dlg:close'
+        )= self.t('cancel')
+        button.btn.btn-primary(
+          type='button'
+          tabindex='3'
+          data-on-click='users.blocks.media_select_dlg:done'
+        )= self.t('apply')

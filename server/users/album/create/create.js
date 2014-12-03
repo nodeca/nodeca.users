@@ -31,5 +31,7 @@ module.exports = function (N, apiPath) {
     album.title = env.params.title;
     album.last_ts = new Date();
     album.save(callback);
+
+    env.res.album = album;
   });
 };

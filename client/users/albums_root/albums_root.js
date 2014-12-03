@@ -31,10 +31,16 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   };
 
 
-  // Reload album list when album successful created
+  // Create album button handler
   //
-  N.wire.on('users.album.create:done', function update_list() {
-    updateAlbumList();
+  N.wire.on('users.albums_root.create_album', function update_list() {
+    var params = { album: null };
+
+    N.wire.emit('users.album.create', params, function () {
+      if (params.album) {
+        updateAlbumList();
+      }
+    });
   });
 
 
