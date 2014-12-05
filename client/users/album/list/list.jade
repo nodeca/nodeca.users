@@ -12,6 +12,8 @@ each media in self.medias
         img.thumb__image(src=imageUrl)
 
         .thumb-caption.thumb-caption__m-secondary
+          if media.comments_count > 0
+            .pull-right.icon.icon-space-after.icon-quote= media.comments_count
           time.thumb-caption__line(datetime=media.ts)= self.date(media.ts, 'date')
 
     else if mType === mTypes.MEDIALINK
@@ -21,6 +23,8 @@ each media in self.medias
           img.thumb__image(src=media.medialink_data.thumb)
 
           .thumb-caption.thumb-caption__m-secondary
+            if media.comments_count > 0
+              .pull-right.icon.icon-space-after.icon-quote= media.comments_count
             time.thumb-caption__line(datetime=media.ts)= self.date(media.ts, 'date')
 
     else if mType === mTypes.BINARY
@@ -29,4 +33,6 @@ each media in self.medias
         .thumb__content= media.file_name
 
         .thumb-caption.thumb-caption__m-secondary
+          if media.comments_count > 0
+            .pull-right.icon.icon-space-after.icon-quote= media.comments_count
           time.thumb-caption__line(datetime=media.ts)= self.date(media.ts, 'date')

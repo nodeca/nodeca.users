@@ -62,7 +62,9 @@ module.exports = function (N, collectionName) {
 
     file_size      : { type: Number, default: 0 },
     file_name      : String,
-    description    : String
+    description    : String,
+
+    comments_count : { type: Number, default: 0 }
   }, {
     versionKey: false
   });

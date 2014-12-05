@@ -162,9 +162,22 @@ var createComment = function (mediaId, userId, callback) {
 // Creates multiple comments
 //
 var createMultipleComments = function (mediaId, usersId, callback) {
-  async.timesSeries(Charlatan.Helpers.rand(MIN_COMMENTS, MAX_COMMENTS), function (id, cb) {
+  var commentsCount = Charlatan.Helpers.rand(MIN_COMMENTS, MAX_COMMENTS);
+
+  async.timesSeries(commentsCount, function (id, cb) {
     createComment(mediaId, usersId[Charlatan.Helpers.rand(0, usersId.length - 1)], cb);
-  }, callback);
+  }, function (err) {
+    if (err) {
+      callback(err);
+      return;
+    }
+
+    models.users.MediaInfo.update(
+      { media_id: mediaId },
+      { $inc: { comments_count: commentsCount } },
+      callback
+    );
+  });
 };
 
 
@@ -184,7 +197,7 @@ var createComments = function (callback) {
     var usersId = _.pluck(results[0], 'user_id');
     usersId = _.uniq(usersId);
 
-    var mediasId = _.pluck(results[0], '_id');
+    var mediasId = _.pluck(results[0], 'media_id');
 
     // Create comments for prepared media and user list
     async.eachLimit(mediasId, numCPUs, function (mediaId, next) {

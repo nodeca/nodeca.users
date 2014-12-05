@@ -112,7 +112,7 @@ module.exports = function (N, apiPath) {
     env.res.user_hid = env.data.user.hid;
 
     N.models.users.Comment
-      .find({ 'media_id': env.data.media._id }, fields.post_in.join(' '))
+      .find({ 'media_id': env.data.media.media_id }, fields.post_in.join(' '))
       .where('st').in(env.data.statuses)
       .lean(true)
       .exec(function (err, result) {
