@@ -4,11 +4,22 @@
 //
 // Add files (from drop event)
 //
-// N.wire.emit('users.uploader:add', { files: event.dataTransfer.files, url: '/url/to/upload/method' });
-// - files    - required
-// - url      - required
-// - config   - required. name of server method that returns config for uploader
-// - uploaded - null. will be filled after upload. array of uploaded media (media_id, type, file_name, ts)
+// var params = {
+//   files: event.dataTransfer.files,
+//   url: '/url/to/upload/method',
+//   config: 'users.uploader_config',
+//   uploaded: null
+// };
+//
+// N.wire.emit('users.uploader:add', params, function () {
+//   params.uploaded.forEach(...);
+// });
+//
+// params:
+// - files      - required
+// - url        - required
+// - config     - required, name of server method that returns config for uploader
+// - uploaded   - null, will be filled after upload - array of uploaded media
 //
 
 'use strict';
@@ -21,8 +32,12 @@ var pica     = require('pica');
 
 var settings;
 var $uploadDialog;
+// Needed to terminate pending queue on abort
 var aborted;
+// Needed to check is confirmation dialog visible
+var closeConfirmation;
 var uploadedFiles;
+var requests;
 
 
 // Check file extension. Create unique id. Add initial progress info to dialog
@@ -175,8 +190,8 @@ function checkFileSize(data) {
 
   if (data.file.size > maxSize) {
     message = t('err_max_size', {
-      'file_name': data.file.name,
-      size: maxSize / (1024 * 1024)
+      file_name: data.file.name,
+      max_size_kb: Math.round(maxSize / 1024)
     });
     N.wire.emit('notify', message);
 
@@ -245,9 +260,46 @@ function startUpload(data, callback) {
   })
   .always(callback);
 
+  requests.push(jqXhr);
+}
+
+function abort() {
+  if (requests) {
+    requests.forEach(function (jqXhr) {
+      jqXhr.abort();
+    });
+  }
+
+  aborted = true;
+}
+
+function confirmClose() {
+  // Check `closeConfirmation` to avoid appear several confirmation dialogs
+  if (closeConfirmation) {
+    return;
+  }
+
+  closeConfirmation = true;
+
+  // Hide current dialog and show confirm dialog
   $uploadDialog.on('hidden.bs.modal', function () {
-    jqXhr.abort();
-  });
+    N.wire.emit('common.blocks.confirm', { message: t('abort_confirm'), errorOnCancel: true }, function (err) {
+      closeConfirmation = false;
+
+      // If abort confirmed
+      if (!err) {
+        abort();
+        return;
+      }
+
+      // Return uploading dialog back if not finished yet
+      if ($uploadDialog) {
+        $uploadDialog
+          .off('hidden.bs.modal')
+          .modal('show');
+      }
+    });
+  }).modal('hide');
 }
 
 
@@ -261,6 +313,7 @@ function startUpload(data, callback) {
 //
 
 // Load configuration from server
+//
 N.wire.before('users.uploader:add', function load_config(data, callback) {
   N.io.rpc(data.config).done(function (uploaderSettings) {
     settings = uploaderSettings;
@@ -270,29 +323,36 @@ N.wire.before('users.uploader:add', function load_config(data, callback) {
 
 
 // Init upload dialog
+//
 N.wire.before('users.uploader:add', function init_upload_dialog(data, callback) {
+  closeConfirmation = false;
+  aborted = false;
+  uploadedFiles = [];
+  requests = [];
+
   $uploadDialog = $(N.runtime.render('users.uploader'));
   $('body').append($uploadDialog);
 
   $uploadDialog
     .on('shown.bs.modal', function () {
+      $uploadDialog.off('shown.bs.modal');
       callback();
     })
-    .on('hidden.bs.modal', function () {
-      $uploadDialog.remove();
-      $uploadDialog = null;
-      uploadedFiles = null;
-      aborted = true;
+    // Close dialog on click outside `.modal-content`
+    .click(function (event) {
+      if (event.target !== event.currentTarget) {
+        return;
+      }
+
+      confirmClose();
     })
     .modal('show');
 });
 
 
 // Resize files if needed, upload files
+//
 N.wire.on('users.uploader:add', function add_files(data, callback) {
-  aborted = false;
-  uploadedFiles = [];
-
   async.eachLimit(
     data.files,
     4, // max parallel files upload
@@ -319,14 +379,29 @@ N.wire.on('users.uploader:add', function add_files(data, callback) {
       });
     },
     function () {
-      if ($uploadDialog) {
-        $uploadDialog.modal('hide');
+      data.uploaded = uploadedFiles.sort(function (a, b) {
+        return new Date(b.ts) - new Date(a.ts);
+      });
+
+      uploadedFiles = null;
+      requests = null;
+
+      // Uploader dialog already hidden by confirmation dialog
+      if (aborted || closeConfirmation) {
+        $uploadDialog.remove();
+        $uploadDialog = null;
+
+        callback();
+        return;
       }
 
-      if (!aborted) {
-        data.uploaded = uploadedFiles;
+      // Uploader dialog still visible, hide before remove
+      $uploadDialog.on('hidden.bs.modal', function () {
+        $uploadDialog.remove();
+        $uploadDialog = null;
+
         callback();
-      }
+      }).modal('hide');
     }
   );
 });
@@ -334,11 +409,19 @@ N.wire.on('users.uploader:add', function add_files(data, callback) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// Close dialog handler
+//
+N.wire.on('users.uploader:close', function close() {
+  confirmClose();
+});
+
 
 // Close dialog on sudden page exit (if user click back button in browser)
 //
 N.wire.on('navigate.exit', function teardown_page() {
-  if ($uploadDialog) {
-    $uploadDialog.modal('hide');
+  if (!$uploadDialog) {
+    return;
   }
+
+  abort();
 });

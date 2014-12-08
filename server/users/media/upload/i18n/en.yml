@@ -1,4 +1,5 @@
 en-US:
   err_permission: You don't have permissions to upload media
-  err_file_size: "File is too big (max #{max_size_kb} kb)"
+  err_file_size: "File is too big (max #{max_size_kb} KB)"
   err_quota_exceeded: "Your quota (#{quota_mb} MB) has exceeded"
+  err_album_not_found: Album not found

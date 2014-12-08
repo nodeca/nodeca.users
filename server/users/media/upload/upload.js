@@ -41,7 +41,10 @@ module.exports = function (N, apiPath) {
         }
 
         if (!album) {
-          callback(N.io.NOT_FOUND);
+          callback({
+            code:    N.io.CLIENT_ERROR,
+            message: env.t('err_album_not_found')
+          });
           return;
         }
 
