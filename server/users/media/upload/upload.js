@@ -78,18 +78,18 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Check file size
+  // Check file size early by header and terminate immediately for big uploads
   //
   N.wire.before(apiPath, function check_file_size(env, callback) {
     // `Content-Length` = (files + wrappers) + (params + wrappers)
     //
     // When single big file sent, `Content-Length` ~ FileSize.
     // Difference is < 200 bytes.
-    var fileSize = env.origin.req.headers['content-length'];
+    var size = env.origin.req.headers['content-length'];
 
-    if (!fileSize) {
-      // Handler work only with POST requests, and 411 (length required) error code not available in RPC
-      callback(411);
+    if (!size) {
+      // Don't announce code in N.io - it's not needed for RPC
+      callback(411/* Length required */);
       return;
     }
 
@@ -100,7 +100,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      if (users_media_single_quota_kb * 1024 < fileSize) {
+      if (size > users_media_single_quota_kb * 1024) {
         callback({
           code:    N.io.CLIENT_ERROR,
           message: env.t('err_file_size', { max_size_kb: users_media_single_quota_kb })

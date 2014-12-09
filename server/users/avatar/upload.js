@@ -54,21 +54,21 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Check file size
+  // Check file size early by header and terminate immediately for big uploads
   //
   N.wire.before(apiPath, function check_file_size(env) {
     // `Content-Length` = (files + wrappers) + (params + wrappers)
     //
     // When single big file sent, `Content-Length` ~ FileSize.
     // Difference is < 200 bytes.
-    var fileSize = env.origin.req.headers['content-length'];
+    var size = env.origin.req.headers['content-length'];
 
-    if (!fileSize) {
-      // Handler work only with POST requests, and 411 (length required) error code not available in RPC
-      return 411;
+    if (!size) {
+      // Don't announce code in N.io - it's not needed for RPC
+      return 411/* Length required */;
     }
 
-    if (fileSize > 20 * 1024 * 1024) { // 20 MB
+    if (size > 1 * 1024 * 1024) { // Don't allow > 1 MB
       // It should never happen, because avatar already resized on client side
       return N.io.FORBIDDEN;
     }
