@@ -1,4 +1,4 @@
-// Upload avatar
+// Upload avatar handler for uploading avatars via POST request
 //
 
 
@@ -25,9 +25,6 @@ module.exports = function (N, apiPath) {
   // Check permissions
   //
   N.wire.before(apiPath, function check_permissions(env, callback) {
-    // TODO: check quota and permissions
-
-    // Check is current user owner of album
     if (env.session.is_guest) {
       callback(N.io.FORBIDDEN);
       return;
@@ -54,6 +51,27 @@ module.exports = function (N, apiPath) {
       env.data.user = user;
       callback();
     });
+  });
+
+
+  // Check file size
+  //
+  N.wire.before(apiPath, function check_file_size(env) {
+    // `Content-Length` = (files + wrappers) + (params + wrappers)
+    //
+    // When single big file sent, `Content-Length` ~ FileSize.
+    // Difference is < 200 bytes.
+    var fileSize = env.origin.req.headers['content-length'];
+
+    if (!fileSize) {
+      // Handler work only with POST requests, and 411 (length required) error code not available in RPC
+      return 411;
+    }
+
+    if (fileSize > 20 * 1024 * 1024) { // 20 MB
+      // It should never happen, because avatar already resized on client side
+      return N.io.FORBIDDEN;
+    }
   });
 
 

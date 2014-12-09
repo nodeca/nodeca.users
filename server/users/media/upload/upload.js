@@ -1,5 +1,5 @@
-// Upload media
-
+// Upload media handler for uploading files via POST request
+//
 
 'use strict';
 
@@ -81,7 +81,17 @@ module.exports = function (N, apiPath) {
   // Check file size
   //
   N.wire.before(apiPath, function check_file_size(env, callback) {
+    // `Content-Length` = (files + wrappers) + (params + wrappers)
+    //
+    // When single big file sent, `Content-Length` ~ FileSize.
+    // Difference is < 200 bytes.
     var fileSize = env.origin.req.headers['content-length'];
+
+    if (!fileSize) {
+      // Handler work only with POST requests, and 411 (length required) error code not available in RPC
+      callback(411);
+      return;
+    }
 
     env.extras.settings.fetch('users_media_single_quota_kb', function (err, users_media_single_quota_kb) {
 
@@ -90,7 +100,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      if (!fileSize || (users_media_single_quota_kb * 1024 < fileSize)) {
+      if (users_media_single_quota_kb * 1024 < fileSize) {
         callback({
           code:    N.io.CLIENT_ERROR,
           message: env.t('err_file_size', { max_size_kb: users_media_single_quota_kb })
