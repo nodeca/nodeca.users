@@ -40,27 +40,17 @@ var uploadedFiles;
 var requests;
 
 
-// Check file extension. Create unique id. Add initial progress info to dialog
+// Check file extension
 //
 function checkFile(data) {
   var allowedFileExt = new RegExp('\.(' + settings.extentions.join('|') + ')$', 'i');
   var message;
-
-  data.uploaderFileId = 'upload_' + Math.floor(Math.random() * 1e10); // create unique file id
 
   if (!allowedFileExt.test(data.file.name)) {
     message = t('err_invalid_ext', { 'file_name': data.file.name });
     N.wire.emit('notify', message);
     return new Error(message);
   }
-
-  $(N.runtime.render(
-    'users.uploader.progress',
-    {
-      file_name: data.file.name,
-      element_id: data.uploaderFileId
-    }
-  )).appendTo('#uploader-files');
 }
 
 
@@ -353,27 +343,47 @@ N.wire.before('users.uploader:add', function init_upload_dialog(data, callback) 
 // Resize files if needed, upload files
 //
 N.wire.on('users.uploader:add', function add_files(data, callback) {
+  var uploadInfo = [];
+
+  // Create unique id. Add initial progress info to dialog
+  for (var i = 0; i < data.files.length; i++) {
+    var info = {
+      url: data.url,
+      file: data.files[i],
+      // create unique file id
+      uploaderFileId: 'upload_' + Math.floor(Math.random() * 1e10)
+    };
+
+    uploadInfo.push(info);
+
+    $(N.runtime.render(
+      'users.uploader.progress',
+      {
+        file_name: info.file.name,
+        element_id: info.uploaderFileId
+      }
+    )).appendTo('#uploader-files');
+  }
+
   async.eachLimit(
-    data.files,
+    uploadInfo,
     4, // max parallel files upload
-    function (file, callback) {
+    function (data, callback) {
       // Check if user termintae upload
       if (aborted) {
         callback(new Error('aborted'));
         return;
       }
 
-      var uploadInfo = { url: data.url, file: file };
-
       async.series([
-        function (next) { next(checkFile(uploadInfo)); },
+        function (next) { next(checkFile(data)); },
         function (next) {
           async.nextTick(function () {
-            resizeImage(uploadInfo, next);
+            resizeImage(data, next);
           });
         },
-        function (next) { next(checkFileSize(uploadInfo)); },
-        async.apply(startUpload, uploadInfo)
+        function (next) { next(checkFileSize(data)); },
+        async.apply(startUpload, data)
       ], function () {
         callback();
       });
