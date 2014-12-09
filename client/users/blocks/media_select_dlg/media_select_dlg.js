@@ -125,6 +125,11 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
             .removeClass('no-medias')
             .find('.media-select-dlg__content') // show uploaded medias
             .prepend($uploadedMedias);
+
+          params.uploaded.forEach(function (mediaInfo) {
+            options.selected.push(mediaInfo);
+            $dialog.find('#media-select-dlg__media-' + mediaInfo.media_id).addClass('selected');
+          });
         });
       }).modal('hide');
     }
