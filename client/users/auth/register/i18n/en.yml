@@ -4,7 +4,7 @@ en-US:
     email_desc: Enter email
     pass: Password
     pass_desc: Password
-    pass_help: >
+    pass_help:
       Must contain both digits and letters (other symbols also possible).
       Also should have > 8 symbols.
     nick: Nickname

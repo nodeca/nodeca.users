@@ -1,2 +1,5 @@
 en-US:
   message_busy_nick: This nick is already used.
+  message_invalid_nick: >
+    Must only include numbers, letters, dashes and underscores.
+    Also should have > 3 symbols.

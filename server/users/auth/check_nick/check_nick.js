@@ -15,6 +15,7 @@ module.exports = function (N, apiPath) {
 
     if (!N.models.users.User.validateNick(env.params.nick)) {
       env.res.error = true;
+      env.res.message = env.t('message_invalid_nick');
       callback();
       return;
     }
