@@ -132,4 +132,27 @@ module.exports = function (N, apiPath) {
       N.wire.emit('internal:users.login', env, callback);
     });
   });
+
+
+  // Send email
+  //
+  N.wire.after(apiPath, function send_email(env, callback) {
+    N.settings.get('general_project_name', function (err, general_project_name) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      N.mailer.send({
+        to: env.data.authLink.email,
+        subject: env.t('email_subject', { project_name: general_project_name }),
+        text: env.t('email_text', {
+          nick: env.data.user.nick,
+          project_name: general_project_name,
+          time: env.helpers.date(Date.now(), 'datetime'),
+          ip: env.req.ip
+        })
+      }, callback);
+    });
+  });
 };

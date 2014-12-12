@@ -24,6 +24,11 @@ en-US:
   change_exec:
     err_expired_token: Security token expired.
     err_broken_token: Invalid security token.
+    email_subject: '#{project_name}: password has been changed.'
+    email_text: |
+      Password for account #{nick} at #{project_name} was changed.
+
+      Time: #{time}, IP: #{ip}
 
   change_done_show:
     title: Change password
