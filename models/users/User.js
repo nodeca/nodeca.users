@@ -25,6 +25,7 @@ module.exports = function (N, collectionName) {
     usergroups     : [ Schema.Types.ObjectId ],
     joined_ts      : { type: Date, 'default': Date.now },
     joined_ip      : String,
+    last_active_ts : { type: Date, 'default': Date.now },
 
     // false -> deleted accounts
     exists         : { type: Boolean, 'default': true },

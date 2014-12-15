@@ -18,6 +18,10 @@
             .member-avatar__caption= self.t('change_avatar')
         else
           img.member-avatar__image(src=self.link_to('core.gridfs', { bucket: self.users[self.user._id].avatar_id }))
+      .member-sidebar__last-active
+        =self.t('last_active')
+        | 
+        time(datetime=self.user.last_active_ts)= self.date(self.user.last_active_ts, 'datetime')
       if own_page
         ul.member-sidebar__menu
           each item in self.menu_ordered

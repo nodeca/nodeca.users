@@ -36,12 +36,31 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Update activity info with fresh data if available
+  //
+  N.wire.before(apiPath, function fetch_activity_info(env, callback) {
+    N.redis.zscore('users:last_active', env.data.user._id, function (__, score) {
+      // Score not found, use `last_active_ts` from mongodb
+      if (!score) {
+        callback();
+        return;
+      }
+
+      // Use fresh `last_active_ts` from redis
+      env.data.user.last_active_ts = new Date(parseInt(score, 10));
+
+      callback();
+    });
+  });
+
+
   // Fill response
   //
   N.wire.on(apiPath, function fetch_user_by_hid(env, callback) {
     env.res.user = {};
     env.res.user._id = env.data.user._id;
     env.res.user.hid = env.data.user.hid;
+    env.res.user.last_active_ts = env.data.user.last_active_ts;
 
     env.res.avatar_exists = env.data.user.avatar_id ? true : false;
 
