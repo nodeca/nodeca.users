@@ -47,7 +47,6 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
     N.io.rpc('users.auth.reset_password.request_exec', form.fields)
       .done(function () {
-        N.wire.emit('common.blocks.recaptcha.update');
         N.wire.emit('navigate.to', { apiPath: 'users.auth.reset_password.request_done_show' });
       })
       .fail(function (err) {
