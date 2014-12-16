@@ -3,18 +3,20 @@
 'use strict';
 
 
-var ko          = require('knockout');
+var ko      = require('knockout');
+var _       = require('lodash');
+var History = window.History; // History.js
 
 
 // Knockout view model of the page.
 var view = null;
-var redirect_id;
+var redirectId;
 
 
 // Page enter
 //
 N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
-  redirect_id = data.params.redirect_id;
+  redirectId = data.params.redirect_id;
 
   var captchaRequired = N.runtime.page_data.captcha_required;
 
@@ -52,13 +54,45 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   //
   N.wire.on('users.auth.login.plain_exec', function login(form) {
     var loginParams = form.fields;
-    if (redirect_id) {
-      loginParams.redirect_id = redirect_id;
+
+    if (redirectId) {
+      loginParams.redirect_id = redirectId;
     }
 
     N.io.rpc('users.auth.login.plain_exec', loginParams)
       .done(function (res) {
-        window.location = res.redirect_url;
+
+        // If `redirectId` specified - use `redirect_url` form response
+        if (redirectId) {
+          window.location = res.redirect_url;
+          return;
+        }
+
+        // Get previous page url from history
+        var previousPageUrl = (History.getStateByIndex(History.getCurrentIndex() - 1) || {}).url;
+
+        // Check that url can be routed
+        var match = _.find(N.router.matchAll(previousPageUrl), function (match) {
+          return _.has(match.meta.methods, 'get');
+        });
+
+        if (!match) {
+          // This should never happen. If `previousPageUrl` not routable - redirect to defaults
+          window.location = res.redirect_url;
+          return;
+        }
+
+        // Check that previous page can be loaded, because it can return redirect or forbid access
+        N.io.rpc(match.meta.methods.get, match.params, function (err) {
+
+          if (err) {
+            window.location = res.redirect_url;
+            return;
+          }
+
+          // Navigate to previous page
+          window.location = previousPageUrl;
+        });
       })
       .fail(function (err) {
         if (err.captcha) {
