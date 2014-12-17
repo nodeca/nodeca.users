@@ -21,7 +21,7 @@
       .member-sidebar__last-active
         =self.t('last_active')
         | 
-        time(datetime=self.user.last_active_ts)= self.date(self.user.last_active_ts, 'datetime')
+        time(datetime=self.date(self.user.last_active_ts, 'iso'))= self.date(self.user.last_active_ts, 'datetime')
       if own_page
         ul.member-sidebar__menu
           each item in self.menu_ordered

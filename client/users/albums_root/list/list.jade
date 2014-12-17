@@ -15,5 +15,5 @@ each album in self.albums
         .thumb-caption__line.thumb-caption__m-secondary
           if album.count > 0
             .pull-right.icon.icon-space-after.icon-camera #{album.count}
-          time.thumb-caption__line(datetime=album.last_ts)= self.date(album.last_ts, 'date')
+          time.thumb-caption__line(datetime=self.date(album.last_ts, 'iso'))= self.date(album.last_ts, 'date')
 
