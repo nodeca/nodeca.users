@@ -153,6 +153,19 @@ module.exports = function (N, apiPath) {
     var form = new formidable.IncomingForm();
     form.uploadDir = tmpDir;
 
+    form.on('progress', function (bytesReceived, contentLength) {
+
+      // Terminate connection if `Content-Length` header is fake
+      if (bytesReceived > contentLength) {
+        form.removeAllListeners();
+
+        env.origin.req.removeAllListeners();
+        env.origin.req.connection.destroy();
+
+        callback({ code: N.io.BAD_REQUEST, message: 'Broken Content-Length header' });
+      }
+    });
+
     form.parse(env.origin.req, function (err, fields, files) {
       files = _.toArray(files);
 
