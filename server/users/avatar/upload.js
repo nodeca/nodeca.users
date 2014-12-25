@@ -64,8 +64,7 @@ module.exports = function (N, apiPath) {
     var size = env.origin.req.headers['content-length'];
 
     if (!size) {
-      // Don't announce code in N.io - it's not needed for RPC
-      return 411/* Length required */;
+      return N.io.LENGTH_REQUIRED;
     }
 
     if (size > 1 * 1024 * 1024) { // Don't allow > 1 MB
@@ -80,6 +79,14 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function upload_media(env, callback) {
     var form = new formidable.IncomingForm();
     form.uploadDir = tmpDir;
+
+    form.on('progress', function (bytesReceived, contentLength) {
+
+      // Terminate connection if `Content-Length` header is fake
+      if (bytesReceived > contentLength) {
+        form._error(new Error('Data size too big (should be equal to Content-Length)'));
+      }
+    });
 
     form.parse(env.origin.req, function (err, fields, files) {
       files = _.toArray(files);

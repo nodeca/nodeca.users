@@ -88,8 +88,7 @@ module.exports = function (N, apiPath) {
     var size = env.origin.req.headers['content-length'];
 
     if (!size) {
-      // Don't announce code in N.io - it's not needed for RPC
-      callback(411/* Length required */);
+      callback(N.io.LENGTH_REQUIRED);
       return;
     }
 
@@ -157,12 +156,7 @@ module.exports = function (N, apiPath) {
 
       // Terminate connection if `Content-Length` header is fake
       if (bytesReceived > contentLength) {
-        form.removeAllListeners();
-
-        env.origin.req.removeAllListeners();
-        env.origin.req.connection.destroy();
-
-        callback({ code: N.io.BAD_REQUEST, message: 'Broken Content-Length header' });
+        form._error(new Error('Data size too big (should be equal to Content-Length)'));
       }
     });
 
