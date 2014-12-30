@@ -48,7 +48,7 @@ module.exports = function (N, collectionName) {
     type           : Number,
     medialink_html : String,
 
-    // medialink_data contains:
+    // medialink_meta contains:
     //
     // {
     //   provider     : String,
@@ -58,7 +58,7 @@ module.exports = function (N, collectionName) {
     //   video_height : Number,
     //   video_url    : String
     // }
-    medialink_data : Schema.Types.Mixed,
+    medialink_meta : Schema.Types.Mixed,
 
     file_size      : { type: Number, default: 0 },
     file_name      : String,

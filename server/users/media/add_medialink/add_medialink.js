@@ -2,9 +2,6 @@
 
 'use strict';
 
-var _          = require('lodash');
-var medialinks = require('nodeca.core/lib/parser/medialinks');
-
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
@@ -48,33 +45,20 @@ module.exports = function (N, apiPath) {
   // Create media by media_url
   //
   N.wire.on(apiPath, function create_media(env, callback) {
-    var url = env.params.media_url;
-    var providers = medialinks(N.config.medialinks.providers, N.config.medialinks.albums);
-
-    // Find provider by url
-    var provider = _.find(providers, function (provider) {
-      for (var i = 0; i < provider.match.length; i++) {
-        if (provider.match[i].test(url)) {
-          return true;
-        }
-      }
-      return false;
-    });
-
-    if (!provider) {
-      callback({ code: N.io.CLIENT_ERROR, message: env.t('err_invalid_url') });
-      return;
-    }
-
-    provider.fetch(url, function (err, data) {
+    N.medialinker('albums').render(env.params.media_url, function(err, result) {
       if (err) {
         callback({ code: N.io.CLIENT_ERROR, message: env.t('err_cannot_parse') });
         return;
       }
 
+      if (!result) {
+        callback({ code: N.io.CLIENT_ERROR, message: env.t('err_invalid_url') });
+        return;
+      }
+
       var media = new N.models.users.MediaInfo();
-      media.medialink_html = provider.template(data);
-      media.medialink_data = data;
+      media.medialink_html = result.html;
+      media.medialink_meta = result.meta;
       media.user_id = env.data.album.user_id;
       media.album_id = env.data.album._id;
       media.type = N.models.users.MediaInfo.types.MEDIALINK;

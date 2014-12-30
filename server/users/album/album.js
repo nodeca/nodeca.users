@@ -51,17 +51,7 @@ module.exports = function (N, apiPath) {
   // Fill available medialink providers
   //
   N.wire.before(apiPath, function fill_providers(env) {
-    var providers = N.config.medialinks.providers;
-    var providerList = (N.config.medialinks.albums === true) ? Object.keys(providers) : N.config.medialinks.albums;
-
-    providerList = providerList.map(function (key) {
-      return {
-        name: providers[key].name || key,
-        home: providers[key].home || ''
-      };
-    });
-
-    env.res.medialink_providers = providerList;
+    env.res.medialink_providers = N.medialinker('albums').providers();
   });
 
 

@@ -21,7 +21,7 @@ each media in self.medias
       else if mType === mTypes.MEDIALINK
         .thumb__inner
           .thumb__icon.icon.icon-video
-          img.thumb__image(src=media.medialink_data.thumb)
+          img.thumb__image(src=media.medialink_meta.thumb)
 
       else if mType === mTypes.BINARY
         .thumb__icon.icon.icon-binary
