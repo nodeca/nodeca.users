@@ -13,7 +13,7 @@ each media in self.medias
 
         .thumb-caption.thumb-caption__m-secondary
           if media.comments_count > 0
-            .pull-right.icon.icon-space-after.icon-quote= media.comments_count
+            .pull-right.icon.icon-space-after.icon-comment= media.comments_count
           time.thumb-caption__line(datetime=self.date(media.ts, 'iso'))= self.date(media.ts, 'date')
 
     else if mType === mTypes.MEDIALINK
@@ -24,7 +24,7 @@ each media in self.medias
 
           .thumb-caption.thumb-caption__m-secondary
             if media.comments_count > 0
-              .pull-right.icon.icon-space-after.icon-quote= media.comments_count
+              .pull-right.icon.icon-space-after.icon-comment= media.comments_count
             time.thumb-caption__line(datetime=self.date(media.ts, 'iso'))= self.date(media.ts, 'date')
 
     else if mType === mTypes.BINARY
@@ -34,5 +34,5 @@ each media in self.medias
 
         .thumb-caption.thumb-caption__m-secondary
           if media.comments_count > 0
-            .pull-right.icon.icon-space-after.icon-quote= media.comments_count
+            .pull-right.icon.icon-space-after.icon-comment= media.comments_count
           time.thumb-caption__line(datetime=self.date(media.ts, 'iso'))= self.date(media.ts, 'date')
