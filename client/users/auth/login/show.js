@@ -4,13 +4,19 @@
 
 
 var ko      = require('knockout');
-var _       = require('lodash');
-var History = window.History; // History.js
 
 
 // Knockout view model of the page.
 var view = null;
 var redirectId;
+var previousPageParams = null;
+
+
+// Global listener to save previous page params
+//
+N.wire.on('navigate.exit', function save_previous_page_params(data) {
+  previousPageParams = data;
+});
 
 
 // Page enter
@@ -68,22 +74,14 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
           return;
         }
 
-        // Get previous page url from history
-        var previousPageUrl = (History.getStateByIndex(History.getCurrentIndex() - 1) || {}).url;
-
-        // Check that url can be routed
-        var match = _.find(N.router.matchAll(previousPageUrl), function (match) {
-          return _.has(match.meta.methods, 'get');
-        });
-
-        if (!match) {
-          // This should never happen. If `previousPageUrl` not routable - redirect to defaults
+        // If this page loaded directly - navigate to `redirect_url`
+        if (!previousPageParams) {
           window.location = res.redirect_url;
           return;
         }
 
         // Check that previous page can be loaded, because it can return redirect or forbid access
-        N.io.rpc(match.meta.methods.get, match.params, function (err) {
+        N.io.rpc(previousPageParams.apiPath, previousPageParams.params, function (err) {
 
           if (err) {
             window.location = res.redirect_url;
@@ -91,7 +89,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
           }
 
           // Navigate to previous page
-          window.location = previousPageUrl;
+          window.location = N.router.linkTo(previousPageParams.apiPath, previousPageParams.params);
         });
       })
       .fail(function (err) {
