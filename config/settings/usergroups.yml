@@ -35,3 +35,9 @@ setting_schemas:
       category_key: perm_admin
       type: boolean
       default: false
+
+    can_see_ip:
+      priority: 2030
+      category_key: perm_admin
+      type: boolean
+      default: false

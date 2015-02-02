@@ -21,7 +21,8 @@ module.exports.up = function (N, cb) {
           group.raw_settings = _.assign({}, group.raw_settings, {
             can_access_acp: { value: true },
             can_see_hellbanned: { value: true },
-            can_see_deleted_users: { value: true }
+            can_see_deleted_users: { value: true },
+            can_see_ip: { value: true }
           });
           group.save(callback);
         });
