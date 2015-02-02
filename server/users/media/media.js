@@ -31,6 +31,8 @@ module.exports = function (N, apiPath) {
   // Fetch media
   //
   N.wire.before(apiPath, function fetch_media(env, callback) {
+    var deletedTypes = N.models.users.MediaInfo.types.LIST_DELETED;
+
     N.models.users.MediaInfo
       .findOne({ media_id: env.params.media_id })
       .where({ user_id: env.data.user._id }) // Make sure that user is real owner
@@ -46,7 +48,7 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        if (!result.exists && env.session.user_id !== result.user_id.toString()) {
+        if (deletedTypes.indexOf(result.type) !== -1 && env.session.user_id !== result.user_id.toString()) {
           callback(N.io.NOT_FOUND);
           return;
         }
