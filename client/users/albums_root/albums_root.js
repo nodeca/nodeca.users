@@ -25,8 +25,6 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
       } else {
         $listContainer.html($(N.runtime.render('users.albums_root.list', albumsList)));
       }
-
-      N.wire.emit('navigate.replace', {});
     });
   };
 
