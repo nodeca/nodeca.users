@@ -138,8 +138,6 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function build_comments_list_and_users(env, callback) {
 
-    env.extras.puncher.start('collect users ids');
-
     env.res.comments = env.data.comments;
 
     env.data.users = env.data.users || [];
@@ -151,8 +149,6 @@ module.exports = function (N, apiPath) {
       }
     });
 
-    env.extras.puncher.stop();
-
     callback();
   });
 
@@ -162,11 +158,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function sanitize_statuses(env, callback) {
 
-    env.extras.puncher.start('fetch setting (\'can_see_hellbanned\')');
-
     env.extras.settings.fetch([ 'can_see_hellbanned' ], function (err, settings) {
-      env.extras.puncher.stop();
-
       if (err) {
         callback(err);
         return;
