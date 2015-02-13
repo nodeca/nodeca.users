@@ -48,10 +48,10 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
   // Handles the event when user drag file to drag drop zone
   //
-  N.wire.on('users.album:dd_area', function user_album_dd(event) {
+  N.wire.on('users.album:dd_area', function user_album_dd(data) {
     var x0, y0, x1, y1, ex, ey;
 
-    switch (event.type) {
+    switch (data.event.type) {
       case 'dragenter':
         $dropZone.addClass('active');
         break;
@@ -63,8 +63,8 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         y0 = $dropZone.offset().top;
         x1 = x0 + $dropZone.outerWidth();
         y1 = y0 + $dropZone.outerHeight();
-        ex = event.originalEvent.pageX;
-        ey = event.originalEvent.pageY;
+        ex = data.event.originalEvent.pageX;
+        ey = data.event.originalEvent.pageY;
 
         if (ex > x1 || ex < x0 || ey > y1 || ey < y0) {
           $dropZone.removeClass('active');
@@ -73,9 +73,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
       case 'drop':
         $dropZone.removeClass('active');
 
-        if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
+        if (data.event.dataTransfer && data.event.dataTransfer.files && data.event.dataTransfer.files.length) {
           var params = {
-            files: event.dataTransfer.files,
+            files: data.event.dataTransfer.files,
             url: N.router.linkTo('users.media.upload', { album_id: pageParams.album_id }),
             config: 'users.uploader_config',
             uploaded: null
@@ -100,10 +100,10 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
 N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
-  N.wire.on('users.album:add_medialink', function add_medialink(event) {
+  N.wire.on('users.album:add_medialink', function add_medialink(data) {
     var params = {
       album_id: pageParams.album_id,
-      providers: $(event.target).data('providers'),
+      providers: data.$this.data('providers'),
       media: null
     };
 

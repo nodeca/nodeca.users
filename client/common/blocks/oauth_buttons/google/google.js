@@ -13,9 +13,8 @@ var init = _.once(function () {
 
   // Set redirect action and redirect to provider
   //
-  N.wire.on('common.blocks.oauth_buttons.google', function set_action(event) {
-    var $element = $(event.target);
-    var url = $element.data('url');
+  N.wire.on('common.blocks.oauth_buttons.google', function set_action(data) {
+    var url = data.$this.data('url');
     var action = N.runtime.page_data.action;
     var path = 'users.auth.oauth.remember_action';
 

@@ -28,13 +28,13 @@ N.wire.on('users.album.edit:save', function save_album(form) {
 });
 
 
-N.wire.before('users.album.edit:delete', function confirm_delete_album(event, callback) {
+N.wire.before('users.album.edit:delete', function confirm_delete_album(data, callback) {
   N.wire.emit('common.blocks.confirm', t('delete_confirmation'), callback);
 });
 
 
-N.wire.on('users.album.edit:delete', function delete_album(event) {
-  N.io.rpc('users.album.destroy', { 'album_id': $(event.target).data('albumId') }).done(function () {
+N.wire.on('users.album.edit:delete', function delete_album(data) {
+  N.io.rpc('users.album.destroy', { album_id: data.$this.data('albumId') }).done(function () {
     N.wire.emit('navigate.to', { apiPath: 'users.albums_root', params: { 'user_hid': pageParams.user_hid } });
   });
 });

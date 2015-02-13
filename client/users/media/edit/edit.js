@@ -43,8 +43,8 @@ N.wire.on('users.media.edit', function show_media_edit_dlg(options, callback) {
 
 // Listen submit button
 //
-N.wire.on('users.media.edit:submit', function submit_media_edit_dlg(form) {
-  N.io.rpc('users.media.update', { media_id: params.media_id, album_id: form.fields.album_id })
+N.wire.on('users.media.edit:submit', function submit_media_edit_dlg(data) {
+  N.io.rpc('users.media.update', { media_id: params.media_id, album_id: data.fields.album_id })
     .done(function () {
       $dialog.modal('hide');
 

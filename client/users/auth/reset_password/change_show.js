@@ -33,9 +33,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
   // Form submit
   //
-  N.wire.on('users.auth.reset_password.change_exec', function change_password(form) {
+  N.wire.on('users.auth.reset_password.change_exec', function change_password(data) {
 
-    N.io.rpc('users.auth.reset_password.change_exec', form.fields)
+    N.io.rpc('users.auth.reset_password.change_exec', data.fields)
       .done(function () {
         // Reload the page in order to apply auto login.
         window.location = N.router.linkTo('users.auth.reset_password.change_done_show');

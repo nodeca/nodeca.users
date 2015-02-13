@@ -85,9 +85,8 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
 
   // Upload selected files
   //
-  N.wire.on('users.blocks.media_select_dlg:upload', function upload_files(event) {
-    var $target = $(event.target);
-    var files = $target.get(0).files;
+  N.wire.on('users.blocks.media_select_dlg:upload', function upload_files(data) {
+    var files = data.$this.get(0).files;
 
     if (files.length > 0) {
       var params = {
@@ -187,9 +186,8 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
   });
 
 
-  N.wire.on('users.blocks.media_select_dlg:media_select', function media_select (event) {
-    var $target = $(event.currentTarget);
-    var id = $target.data('media-id');
+  N.wire.on('users.blocks.media_select_dlg:media_select', function media_select (data) {
+    var id = data.$this.data('media-id');
     var $listItem = $('#media-select-dlg__media-' + id);
 
     if (_.findIndex(options.selected, function (mediaInfo) { return mediaInfo.media_id === id; }) === -1) {
@@ -197,23 +195,21 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
 
       options.selected.push({
         media_id: id,
-        file_name: $target.data('file-name'),
-        type: $target.data('type')
+        file_name: data.$this.data('file-name'),
+        type: data.$this.data('type')
       });
 
     } else {
       $listItem.removeClass('selected');
       options.selected = _.remove(options.selected, function (mediaInfo) { return mediaInfo.media_id !== id; });
     }
-
-    event.stopPropagation();
   });
 
 
   // Handle albums select change
   //
-  N.wire.on('users.blocks.media_select_dlg:album_select', function album_select (event) {
-    loadDialogContent($(event.target).val() || undefined);
+  N.wire.on('users.blocks.media_select_dlg:album_select', function album_select (data) {
+    loadDialogContent(data.$this.val() || undefined);
   });
 
 

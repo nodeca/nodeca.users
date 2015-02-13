@@ -9,8 +9,8 @@
 'use strict';
 
 
-N.wire.on(module.apiPath, function set_language_init(event, callback) {
-  var locale = $(event.currentTarget).data('locale');
+N.wire.on(module.apiPath, function set_language_init(data, callback) {
+  var locale = data.$this.data('locale');
 
   if (!locale) {
     callback(new Error('Missed locale name.'));

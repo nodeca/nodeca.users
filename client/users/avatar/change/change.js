@@ -563,11 +563,11 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
 
   // Handles the event when user drag file to drag drop zone
   //
-  N.wire.on('users.avatar.change:dd_area', function change_avatar_dd(event) {
+  N.wire.on('users.avatar.change:dd_area', function change_avatar_dd(data) {
     var x0, y0, x1, y1, ex, ey;
     var $dropZone = $('.avatar-change');
 
-    switch (event.type) {
+    switch (data.event.type) {
       case 'dragenter':
         $dropZone.addClass('active');
         break;
@@ -579,8 +579,8 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
         y0 = $dropZone.offset().top;
         x1 = x0 + $dropZone.outerWidth();
         y1 = y0 + $dropZone.outerHeight();
-        ex = event.originalEvent.pageX;
-        ey = event.originalEvent.pageY;
+        ex = data.event.originalEvent.pageX;
+        ey = data.event.originalEvent.pageY;
 
         if (ex > x1 || ex < x0 || ey > y1 || ey < y0) {
           $dropZone.removeClass('active');
@@ -589,8 +589,8 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
       case 'drop':
         $dropZone.removeClass('active');
 
-        if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
-          loadImage(event.dataTransfer.files[0]);
+        if (data.event.dataTransfer && data.event.dataTransfer.files && data.event.dataTransfer.files.length) {
+          loadImage(data.event.dataTransfer.files[0]);
         }
         break;
       default:

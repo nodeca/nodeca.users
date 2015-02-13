@@ -69,7 +69,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
   // Show delete avatar confirm
   //
-  N.wire.before('users.member:detete_avatar', function confirm_delete_avatar(event, callback) {
+  N.wire.before('users.member:detete_avatar', function confirm_delete_avatar(data, callback) {
     N.wire.emit('common.blocks.confirm', t('delete_avatar_confirm'), callback);
   });
 
