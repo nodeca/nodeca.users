@@ -4,14 +4,21 @@ i18n:
       core:
         group_names:
           register: Registration
+          votes: Votes
+          content: Content
 
         category_names:
+          votes_common: Common
           register_common: Common
           perm_admin: Administration
           perm_users: Users
 
         setting_names:
           general_ssl_force: SSL force
+
+          votes_add_max_time: Max time to add vote after create content (hours)
+
+          can_vote: Can vote
 
           validate_email: Should validate email after registration
 

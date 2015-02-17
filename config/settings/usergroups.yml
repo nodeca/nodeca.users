@@ -41,3 +41,7 @@ setting_schemas:
       category_key: perm_admin
       type: boolean
       default: false
+
+    can_vote:
+      extends: true
+      priority: 2030
