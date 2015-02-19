@@ -7,13 +7,6 @@ var Schema = Mongoose.Schema;
 
 module.exports = function (N, collectionName) {
 
-  var values = {
-    UP: 1,
-    DOWN: -1,
-    NONE: 0
-  };
-
-
   var types = {
     FORUM_POST: 1
   };
@@ -24,10 +17,10 @@ module.exports = function (N, collectionName) {
     // User who created vote
     from: Schema.ObjectId,
 
-    // Content id
+    // Content owner
     to: Schema.ObjectId,
 
-    // Content owner
+    // Content id
     for: Schema.ObjectId,
 
     // Content type
@@ -47,14 +40,9 @@ module.exports = function (N, collectionName) {
   // Indexes
 
   // Content list
-  Vote.index({ to: 1, from: 1 });
+  Vote.index({ for: 1, from: 1 });
 
   /////////////////////////////////////////////////////////////////////////////
-
-
-  // Export values
-  //
-  Vote.statics.values = values;
 
 
   // Export types
