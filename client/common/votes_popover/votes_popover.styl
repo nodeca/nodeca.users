@@ -1,0 +1,21 @@
+.votes-popover__list
+  padding 0
+
+.votes-popover__list-title
+  font-weight bold
+  margin-right 5px
+
+.votes-popover__vote, .votes-popover__list-title
+  list-style none
+  display inline-block
+
+.votes-popover__vote:after
+  margin-right 5px
+  content ","
+
+.votes-popover__vote:last-child:after
+  margin-right 0
+  content ""
+
+.votes-popover__list+.votes-popover__list
+  padding-top 14px
