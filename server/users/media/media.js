@@ -48,7 +48,7 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        if (deletedTypes.indexOf(result.type) !== -1 && env.session.user_id !== result.user_id.toString()) {
+        if (deletedTypes.indexOf(result.type) !== -1 && env.user_info.user_id !== String(result.user_id)) {
           callback(N.io.NOT_FOUND);
           return;
         }

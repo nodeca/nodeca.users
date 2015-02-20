@@ -100,7 +100,7 @@ module.exports = function (N, apiPath) {
 
     env.res.blocks = env.res.blocks || {};
 
-    if (String(env.data.user._id) === env.session.user_id) {
+    if (String(env.data.user._id) === env.user_info.user_id) {
       env.res.blocks.notepad = {};
     }
 

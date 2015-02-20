@@ -85,6 +85,6 @@ module.exports = function (N, apiPath) {
       return res;
     }, {});
 
-    N.settings.getStore('user').set(settings, { user_id: env.session.user_id }, callback);
+    N.settings.getStore('user').set(settings, { user_id: env.user_info.user_id }, callback);
   });
 };

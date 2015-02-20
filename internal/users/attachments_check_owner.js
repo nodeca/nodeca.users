@@ -2,7 +2,7 @@
 //
 // Expects:
 // - env.params.attach (Array)
-// - env.session.user_id
+// - env.user_info.user_id
 //
 'use strict';
 
@@ -17,7 +17,7 @@ module.exports = function (N, apiPath) {
     // Find media info by `media_id` (from params) and `user_id`
     N.models.users.MediaInfo
         .where('media_id').in(mediaIds)
-        .where('user_id').equals(env.session.user_id)
+        .where('user_id').equals(env.user_info.user_id)
         .select('media_id')
         .lean(true)
         .exec(function (err, result) {

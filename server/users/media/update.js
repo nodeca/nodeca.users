@@ -33,7 +33,7 @@ module.exports = function (N, apiPath) {
         }
 
         // Check media owner
-        if (env.session.user_id !== String(media.user_id)) {
+        if (env.user_info.user_id !== String(media.user_id)) {
           callback(N.io.FORBIDDEN);
           return;
         }
@@ -60,7 +60,7 @@ module.exports = function (N, apiPath) {
       }
 
       // Check album owner
-      if (env.session.user_id !== String(album.user_id)) {
+      if (env.user_info.user_id !== String(album.user_id)) {
         callback(N.io.FORBIDDEN);
         return;
       }

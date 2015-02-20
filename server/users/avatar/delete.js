@@ -27,7 +27,7 @@ module.exports = function (N, apiPath) {
   // Fetch user
   //
   N.wire.before(apiPath, function fetch_user(env, callback) {
-    N.models.users.User.findOne({ _id: env.session.user_id }).lean(true).exec(function (err, user) {
+    N.models.users.User.findOne({ _id: env.user_info.user_id }).lean(true).exec(function (err, user) {
       if (err) {
         callback(err);
         return;

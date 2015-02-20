@@ -28,8 +28,8 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function fetch_album(env, callback) {
 
     var queryParams = env.params.album_id ?
-                      { _id: env.params.album_id, user_id: env.session.user_id } :
-                      { user_id: env.session.user_id, default: true };
+                      { _id: env.params.album_id, user_id: env.user_info.user_id } :
+                      { user_id: env.user_info.user_id, default: true };
 
     N.models.users.Album
       .findOne(queryParams)
@@ -116,7 +116,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function check_quota(env, callback) {
     N.models.users.UserExtra
-      .findOne({ user_id: env.session.user_id })
+      .findOne({ user_id: env.user_info.user_id })
       .select('media_size')
       .lean(true)
       .exec(function (err, extra) {
@@ -219,7 +219,7 @@ module.exports = function (N, apiPath) {
 
     N.models.users.MediaInfo.createFile({
       album_id: env.data.album._id,
-      user_id: env.session.user_id,
+      user_id: env.user_info.user_id,
       path: fileInfo.path,
       name: fileInfo.name,
       // In case of blob fileInfo.name will be 'blob'.

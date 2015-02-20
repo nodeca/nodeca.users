@@ -17,7 +17,7 @@ module.exports = function (N, apiPath) {
   // Get current user hid and redirect to albums page
   //
   N.wire.on(apiPath, function redirect_to_albums(env, callback) {
-    User.findOne({ '_id': env.session.user_id }, function (err, user) {
+    User.findOne({ '_id': env.user_info.user_id }, function (err, user) {
       if (err) {
         callback(err);
       }

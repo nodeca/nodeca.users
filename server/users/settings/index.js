@@ -18,7 +18,7 @@ module.exports = function (N, apiPath) {
   // Fetch user
   //
   N.wire.before(apiPath, function fetch_user(env, callback) {
-    N.models.users.User.findOne({ _id: env.session.user_id }).exec(function (err, user) {
+    N.models.users.User.findOne({ _id: env.user_info.user_id }).exec(function (err, user) {
 
       if (err) {
         callback(err);
@@ -37,7 +37,7 @@ module.exports = function (N, apiPath) {
 
     env.res.setting_schemas = N.config.setting_schemas.user || {};
 
-    N.models.users.UserSettings.findOne({ user_id: env.session.user_id }).exec(function (err, settings) {
+    N.models.users.UserSettings.findOne({ user_id: env.user_info.user_id }).exec(function (err, settings) {
 
       if (err) {
         callback(err);

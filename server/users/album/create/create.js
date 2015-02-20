@@ -27,7 +27,7 @@ module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, function create_user_album(env, callback) {
     var album = new N.models.users.Album();
-    album.user_id = env.session.user_id;
+    album.user_id = env.user_info.user_id;
     album.title = env.params.title;
     album.last_ts = new Date();
     album.save(callback);

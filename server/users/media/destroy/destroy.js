@@ -29,7 +29,7 @@ module.exports = function (N, apiPath) {
         }
 
         // Check media owner
-        if (env.session.user_id !== String(media.user_id)) {
+        if (env.user_info.user_id !== String(media.user_id)) {
           callback(N.io.FORBIDDEN);
           return;
         }
@@ -50,7 +50,7 @@ module.exports = function (N, apiPath) {
     }
 
     N.models.users.UserExtra
-      .findOne({ user_id: env.session.user_id })
+      .findOne({ user_id: env.user_info.user_id })
       .select('media_size')
       .lean(true)
       .exec(function (err, extra) {
