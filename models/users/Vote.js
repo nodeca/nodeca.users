@@ -26,6 +26,9 @@ module.exports = function (N, collectionName) {
     // Content type
     type: Number,
 
+    // Hell banned
+    hb: { type: Boolean, default: false },
+
     // Vote value
     value: Number,
 
@@ -39,7 +42,11 @@ module.exports = function (N, collectionName) {
   /////////////////////////////////////////////////////////////////////////////
   // Indexes
 
-  // Content list
+  // Used on:
+  //
+  // - item votes/votes_hb count update (forum posts)
+  // - user own votes fetch, how he voted (forum posts)
+  //
   Vote.index({ for: 1, from: 1 });
 
   /////////////////////////////////////////////////////////////////////////////
