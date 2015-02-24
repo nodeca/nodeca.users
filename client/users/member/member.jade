@@ -12,12 +12,12 @@
     .member-sidebar
       .member-avatar
         if own_page
-          a.member-avatar__delete.btn.btn-xs.btn-default(href='#' data-on-click='users.member:detete_avatar').icon.icon-cancel
+          a.member-avatar__delete.btn.btn-xs.btn-default(href='#' data-on-click='users.member:delete_avatar').icon.icon-cancel
           a.member-avatar__link(href='#' data-on-click='users.member:change_avatar')
-            img.member-avatar__image(src=self.link_to('core.gridfs', { bucket: self.users[self.user._id].avatar_id }))
+            img.member-avatar__image()&attributes(self.avatar(self.user._id, self.users[self.user._id]))
             .member-avatar__caption= self.t('change_avatar')
         else
-          img.member-avatar__image(src=self.link_to('core.gridfs', { bucket: self.users[self.user._id].avatar_id }))
+          img.member-avatar__image()&attributes(self.avatar(self.user._id, self.users[self.user._id]))
       .member-sidebar__last-active
         =self.t('last_active')
         | 

@@ -3,8 +3,10 @@
 
 'use strict';
 
-var _   = require('lodash');
-var Bag = require('bag.js');
+var _           = require('lodash');
+var Bag         = require('bag.js');
+var identicon   = require('nodeca.users/lib/identicon');
+var avatarWidth = '$$ JSON.stringify(N.config.users.avatars.resize.orig.width) $$';
 
 
 // Store/restore blocks collapse state
@@ -69,17 +71,19 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
   // Show delete avatar confirm
   //
-  N.wire.before('users.member:detete_avatar', function confirm_delete_avatar(data, callback) {
+  N.wire.before('users.member:delete_avatar', function confirm_delete_avatar(data, callback) {
     N.wire.emit('common.blocks.confirm', t('delete_avatar_confirm'), callback);
   });
 
 
   // Click to delete avatar button
   //
-  N.wire.on('users.member:detete_avatar', function delete_avatar() {
-    N.io.rpc('users.avatar.delete').done(function (result) {
+  N.wire.on('users.member:delete_avatar', function delete_avatar() {
+    N.io.rpc('users.avatar.delete').done(function (/* result */) {
 
-      $('.member-avatar__image').attr('src', N.router.linkTo('core.gridfs', { bucket: result.avatar_id }));
+      var $img = $('.member-avatar__image');
+      $img.attr('src', identicon($img.data('user-id'), avatarWidth));
+
       $('.member-layout').removeClass('member-layout__m-avatar-exists');
     });
   });
