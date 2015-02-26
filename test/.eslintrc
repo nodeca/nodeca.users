@@ -1,2 +1,6 @@
-rules:
-  max-nested-callbacks: [ 1, 5 ]
+globals:
+  describe: false
+  it: false
+  TEST: false
+  before: false
+  after: false

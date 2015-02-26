@@ -1,13 +1,10 @@
 'use strict';
 
 
-/*global describe, it*/
-
-
 var assert = require('assert');
 
 
-var User = global.TEST_N.models.users.User;
+var User = TEST.N.models.users.User;
 
 
 describe('User', function () {
@@ -40,7 +37,7 @@ describe('User', function () {
 
   describe('Auth provider', function () {
     it('"plain" provider set/check password', function (done) {
-      var authLink = new global.TEST_N.models.users.AuthLink();
+      var authLink = new TEST.N.models.users.AuthLink();
 
       authLink.type = 'plain';
 
