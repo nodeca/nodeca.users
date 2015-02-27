@@ -10,10 +10,12 @@ module.exports = function (N, apiPath) {
     env.data.breadcrumbs = env.data.breadcrumbs || [];
 
     env.data.breadcrumbs.push({
-      text      : env.runtime.is_member ? user.name : user.nick,
-      route     : 'users.member',
-      params    : { 'user_hid': user.hid },
-      avatar_id : env.runtime.is_member ? user.avatar_id : null
+      text        : env.runtime.is_member ? user.name : user.nick,
+      route       : 'users.member',
+      params      : { 'user_hid': user.hid },
+      user_id     : user._id,
+      avatar_id   : env.runtime.is_member ? user.avatar_id : null,
+      show_avatar : true
     });
   });
 };

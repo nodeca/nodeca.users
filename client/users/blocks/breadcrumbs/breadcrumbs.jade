@@ -10,14 +10,14 @@ mixin breadcrumb_step(tail)
     //- link
     li.breadcrumbs__item
       a.breadcrumbs__link(href=self.link_to(item.route, item.params))
-        if item.avatar_id
-          img.breadcrumbs__icon(src=self.link_to('core.gridfs', { bucket: item.avatar_id + '_md' }))
+        if item.show_avatar
+          img.breadcrumbs__icon()&attributes(self.avatar(item.user_id, item, 'md'))
         = item.text
   else
     //- text only
     li.breadcrumbs__item
-      if item.avatar_id
-        img.breadcrumbs__icon(src=self.link_to('core.gridfs', { bucket: item.avatar_id + '_sm' }))
+      if item.show_avatar
+        img.breadcrumbs__icon()&attributes(self.avatar(item.user_id, item, 'sm'))
       = item.text
   if tail.length > 1
     //- next sublevel
