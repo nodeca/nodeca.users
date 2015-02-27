@@ -10,8 +10,7 @@ var user_in_fields = [
   'name',
   'nick',
   'post_count',
-  'avatar_id',
-  'avatar_fallback'
+  'avatar_id'
 ];
 
 module.exports = function (N, apiPath) {
@@ -68,7 +67,7 @@ module.exports = function (N, apiPath) {
       // sanitize user info for guests: show nick instead of user name
       if (env.user_info.is_guest) {
         user.name = user.nick;
-        user.avatar_id = user.avatar_fallback;
+        user.avatar_id = null;
       }
 
       env.res.user = user;

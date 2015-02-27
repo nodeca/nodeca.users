@@ -4,15 +4,10 @@
 var Mongoose      = require('mongoose');
 var Schema        = Mongoose.Schema;
 var xregexp       = require('xregexp').XRegExp;
-var retricon      = require('retricon');
 var configReader  = require('../../server/_lib/resize_parse');
-var _             = require('lodash');
-var async         = require('async');
 var util          = require('util');
 
 module.exports = function (N, collectionName) {
-
-  var avatarConfig;
 
   var User = new Schema({
     // user-friendly id (autoincremented)
@@ -36,10 +31,7 @@ module.exports = function (N, collectionName) {
     name           : String,
     post_count     : { type: Number, 'default': 0 },
 
-    avatar_id      : Schema.Types.ObjectId,
-
-    // id of default avatar with identicon
-    avatar_fallback: Schema.Types.ObjectId
+    avatar_id      : Schema.Types.ObjectId
   },
   {
     versionKey : false
@@ -146,69 +138,6 @@ module.exports = function (N, collectionName) {
   });
 
 
-  // Generate default avatar (identicon) by nick name.
-  // Set 'avatar_default' to true.
-  //
-  User.methods.createIdenticon = function (callback) {
-    var self = this;
-
-    var sizes = avatarConfig.types[avatarConfig.extentions[0]].resize;
-    var avatars = {};
-
-    _.forEach(sizes, function (val, key) {
-      var size = val.width || val.max_width;
-      var style = _.clone(retricon.style.github);
-
-      var halfTiles = ((style.tiles + 1) * 2);
-      var halfTileSize = Math.floor(size / halfTiles);
-      var borderExtra = (size - (halfTiles * halfTileSize)) / 2;
-
-      style.pixelPadding = 0;
-      style.imagePadding = halfTileSize + borderExtra;
-      style.pixelSize = halfTileSize * 2;
-
-      avatars[key] = retricon(self._id.toString(), style).toBuffer();
-    });
-
-    var origId = new Mongoose.Types.ObjectId();
-
-    async.each(Object.keys(avatars), function (key, cb) {
-      var opt = {
-        contentType: 'image/png'
-      };
-
-      if (key === 'orig') {
-        opt._id = origId;
-      } else {
-        opt.filename = origId + '_' + key;
-      }
-
-      N.models.core.File.put(avatars[key], opt, cb);
-    }, function (err) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      self.avatar_fallback = origId;
-
-      callback();
-    });
-  };
-
-
-  // Creates default avatar if avatar_id isn't set
-  //
-  User.pre('save', function (callback) {
-    if (!this.isNew) {
-      callback();
-      return;
-    }
-
-    this.createIdenticon(callback);
-  });
-
-
   // Set 'hid' for the new user. This hook should always be
   // the last one to avoid counter increment on error
   //
@@ -233,7 +162,7 @@ module.exports = function (N, collectionName) {
   N.wire.on('init:models', function emit_init_User(__, callback) {
     // Read config
     try {
-      avatarConfig = configReader(N.config.users.avatars);
+      configReader(N.config.users.avatars);
     } catch (e) {
       callback(util.format('Error in avatars config: %s.', e.message));
       return;

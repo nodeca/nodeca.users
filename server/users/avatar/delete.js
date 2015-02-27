@@ -39,7 +39,7 @@ module.exports = function (N, apiPath) {
       }
 
       env.data.user = user;
-      env.res.avatar_id = user.avatar_fallback;
+      env.res.avatar_id = null;
       callback();
     });
   });

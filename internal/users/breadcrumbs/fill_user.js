@@ -13,7 +13,7 @@ module.exports = function (N, apiPath) {
       text      : env.runtime.is_member ? user.name : user.nick,
       route     : 'users.member',
       params    : { 'user_hid': user.hid },
-      avatar_id : env.runtime.is_member ? user.avatar_id || user.avatar_fallback : user.avatar_fallback
+      avatar_id : env.runtime.is_member ? user.avatar_id : null
     });
   });
 };
