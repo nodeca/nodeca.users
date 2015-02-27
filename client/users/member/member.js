@@ -82,7 +82,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
     N.io.rpc('users.avatar.delete').done(function (/* result */) {
 
       var $img = $('.member-avatar__image');
-      $img.attr('src', identicon($img.data('user-id'), avatarWidth));
+      $img.attr('src', identicon(N.runtime.user_id, avatarWidth));
 
       $('.member-layout').removeClass('member-layout__m-avatar-exists');
     });
