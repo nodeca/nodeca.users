@@ -1,11 +1,12 @@
 // Change avatar dialog
 //
 
+/*global window*/
+
 'use strict';
 
 
 var _        = require('lodash');
-var raf      = require('raf');
 var pica     = require('pica');
 
 var readExif = require('nodeca.users/lib/exif');
@@ -59,7 +60,7 @@ function _cropperUpdate () {
 var cropperUpdate = _.debounce(function () {
   if (!redrawCropperStarted) {
     redrawCropperStarted = true;
-    raf(_cropperUpdate);
+    window.requestAnimationFrame(_cropperUpdate);
   }
 }, 10, { maxWait: 20 });
 
@@ -140,7 +141,7 @@ function _previewUpdate() {
 var previewUpdate = _.debounce(function () {
   if (!redrawPreviewStarted) {
     redrawPreviewStarted = true;
-    raf(_previewUpdate);
+    window.requestAnimationFrame(_previewUpdate);
   }
 }, 20, { maxWait: 40 });
 
