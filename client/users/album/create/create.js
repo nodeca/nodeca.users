@@ -63,6 +63,7 @@ N.wire.on('users.album.create', function show_album_create_dlg(params, callback)
   $dialog
     .on('shown.bs.modal', function () {
       $dialog.find('#album_name_dlg_input').focus();
+      N.wire.emit('users.album.create:shown');
     })
     .modal('show');
 });

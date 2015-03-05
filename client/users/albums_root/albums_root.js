@@ -12,7 +12,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
 
 N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
-  var updateAlbumList = function (albumId) {
+  function updateAlbumList (albumId, callback) {
     N.io.rpc('users.albums_root.list', pageParams).done(function (albumsList) {
       var $listContainer = $('.user-albumlist');
 
@@ -25,32 +25,38 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
       } else {
         $listContainer.html($(N.runtime.render('users.albums_root.list', albumsList)));
       }
+
+      callback();
     });
-  };
+  }
 
 
   // Create album button handler
   //
-  N.wire.on('users.albums_root.create_album', function update_list() {
+  N.wire.on('users.albums_root.create_album', function update_list(__, callback) {
     var params = { album: null };
 
     N.wire.emit('users.album.create', params, function () {
       if (params.album) {
-        updateAlbumList();
+        updateAlbumList(null, callback);
+        return;
       }
+
+      callback();
     });
   });
 
 
   // Handles the event when user drag file to album
   //
-  N.wire.on('users.albums_root.list:dragdrop', function albums_root_dd(data) {
+  N.wire.on('users.albums_root.list:dragdrop', function albums_root_dd(data, callback) {
     var $dropZone, x0, y0, x1, y1, ex, ey, id;
 
     switch (data.event.type) {
       case 'dragenter':
         $dropZone = data.$this.closest('.user-albumlist__item');
         $dropZone.addClass('active');
+
         break;
       case 'dragleave':
         // 'dragleave' occurs when user move cursor over child HTML element
@@ -67,6 +73,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         if (ex > x1 || ex < x0 || ey > y1 || ey < y0) {
           $dropZone.removeClass('active');
         }
+
         break;
       case 'drop':
         $dropZone = data.$this.closest('.user-albumlist__item');
@@ -80,11 +87,15 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
             url: N.router.linkTo('users.media.upload', { album_id: id }),
             config: 'users.uploader_config'
           }, function () {
-            updateAlbumList(id);
+            updateAlbumList(id, callback);
           });
+          return;
         }
+
         break;
       default:
     }
+
+    callback();
   });
 });
