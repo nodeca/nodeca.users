@@ -1,4 +1,5 @@
 - var own_page = (self.runtime.user_hid === self.user.hid)
+- self.add_raw_data('profile_tab', own_page)
 
 #content
   != self.partial('@users.blocks.breadcrumbs')
