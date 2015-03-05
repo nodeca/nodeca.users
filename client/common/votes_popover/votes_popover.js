@@ -19,17 +19,15 @@ N.wire.on('common.votes_popover', function show_votes_popover(data) {
 
     // Create popover
     data.$this.popover({
-      content: N.runtime.render('common.votes_popover', res),
+      template: N.runtime.render('common.votes_popover.template'),
       html: true,
       placement: data.$this.data('placement') || 'left',
+      content: N.runtime.render('common.votes_popover', res),
       trigger: 'focus'
     }).on('hidden.bs.popover', function () {
       // Destroy popover after close
       data.$this.popover('destroy');
     });
-
-    // Remove popover title
-    data.$this.attr('data-original-title', '');
 
     // Show popover
     data.$this.popover('show');
