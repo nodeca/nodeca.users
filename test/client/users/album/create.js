@@ -16,7 +16,7 @@ describe('Albums create dialog', function () {
 
       // Navigate to albums page
       .goto(function () {
-        return 'http://localhost:3000' + TEST.N.router.linkTo('users.albums_root', { user_hid: user.hid });
+        return TEST.N.router.linkTo('users.albums_root', { user_hid: user.hid });
       })
 
       .evaluateAsync(function (done) {
