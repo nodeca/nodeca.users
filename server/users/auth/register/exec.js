@@ -166,6 +166,7 @@ module.exports = function (N, apiPath) {
 
       if (err) {
         callback(err);
+        return;
       }
 
       env.data.validate_email = validate_email;
