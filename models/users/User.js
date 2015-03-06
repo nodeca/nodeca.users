@@ -107,6 +107,33 @@ module.exports = function (N, collectionName) {
   });
 
 
+  // Set `usergroups` for the new user if not defined
+  //
+  User.pre('save', function (callback) {
+    if (!this.isNew) {
+      callback();
+      return;
+    }
+
+    if (this.usergroups && this.usergroups.length) {
+      callback();
+      return;
+    }
+
+    var self = this;
+
+    N.settings.get('registered_user_group', function (err, registered_user_group) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      self.usergroups = [ registered_user_group ];
+      callback();
+    });
+  });
+
+
   // Creates UserExtra for new user
   //
   User.pre('save', function (callback) {
