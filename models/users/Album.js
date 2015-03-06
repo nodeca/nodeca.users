@@ -47,7 +47,7 @@ module.exports = function (N, collectionName) {
 
   // Update media count in album
   //
-  var updateCount = function (albumId, full, callback) {
+  function updateCount(albumId, full, callback) {
     var mTypes = N.models.users.MediaInfo.types;
 
     if (!full) {
@@ -63,12 +63,12 @@ module.exports = function (N, collectionName) {
 
       N.models.users.Album.update({ _id: albumId }, { count: result }, callback);
     });
-  };
+  }
 
 
   // Update album cover
   //
-  var updateCover = function (albumId, callback) {
+  function updateCover(albumId, callback) {
     var mTypes = N.models.users.MediaInfo.types;
 
     // Fetch album
@@ -114,7 +114,7 @@ module.exports = function (N, collectionName) {
             });
         });
     });
-  };
+  }
 
 
   // Update album info (count, last_ts, cover)

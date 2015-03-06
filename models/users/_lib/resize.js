@@ -54,7 +54,7 @@ var File;
 //
 // - callback - function (err, { path, type })
 //
-var createPreview = function (path, resizeConfig, imageType, callback) {
+function createPreview(path, resizeConfig, imageType, callback) {
   fs.stat(path, function (err, stats) {
     if (err) {
       callback(err);
@@ -150,7 +150,7 @@ var createPreview = function (path, resizeConfig, imageType, callback) {
       });
     });
   });
-};
+}
 
 
 // Save files to database
@@ -161,7 +161,7 @@ var createPreview = function (path, resizeConfig, imageType, callback) {
 //
 // - callback - function (err, originalFileId)
 //
-var saveFiles = function (previews, maxSize, callback) {
+function saveFiles(previews, maxSize, callback) {
   async.each(Object.keys(previews), function (key, next) {
 
     // Check file size
@@ -215,7 +215,7 @@ var saveFiles = function (previews, maxSize, callback) {
       }
     );
   });
-};
+}
 
 
 module.exports = function (src, options, callback) {
@@ -251,7 +251,7 @@ module.exports = function (src, options, callback) {
     });
   }, function (err) {
     // Delete all tmp files
-    var deleteTmpPreviews = function (callback) {
+    function deleteTmpPreviews(callback) {
       async.each(
         Object.keys(previews),
         function (key, next) {
@@ -263,7 +263,7 @@ module.exports = function (src, options, callback) {
           callback();
         }
       );
-    };
+    }
 
     if (err) {
       deleteTmpPreviews(function () {

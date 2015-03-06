@@ -138,7 +138,7 @@ module.exports = function (N, collectionName) {
   });
 
 
-  var saveFile = function (path, name, maxSize, callback) {
+  function saveFile(path, name, maxSize, callback) {
     fs.stat(path, function (err, stats) {
       if (err) {
         callback(err);
@@ -165,7 +165,7 @@ module.exports = function (N, collectionName) {
         callback(null, { id: info._id, size: stats.size });
       });
     });
-  };
+  }
 
 
   function updateMediaSize(media, callback) {

@@ -4,7 +4,7 @@
 
 module.exports = function (N, apiPath) {
 
-  var createRedirect = function (redirectId) {
+  function createRedirect(redirectId) {
     var loginParams = redirectId ? { 'redirect_id': redirectId } : {};
     return {
       code: N.io.REDIRECT,
@@ -12,7 +12,7 @@ module.exports = function (N, apiPath) {
         'Location': N.router.linkTo('users.auth.login.show', loginParams)
       }
     };
-  };
+  }
 
   N.wire.on(apiPath, function force_login_guest(env, callback) {
     if (env.user_info.is_member) {

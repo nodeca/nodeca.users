@@ -26,7 +26,7 @@ var models;
 
 // Creates random photos to album from test fixtures
 //
-var createMedia = function (userId, album, callback) {
+function createMedia(userId, album, callback) {
   var photoPath = PHOTOS[Charlatan.Helpers.rand(0, PHOTOS.length)];
 
   models.users.MediaInfo.createFile({
@@ -34,12 +34,12 @@ var createMedia = function (userId, album, callback) {
     user_id: userId,
     path: photoPath
   }, callback);
-};
+}
 
 
 // Creates one album
 //
-var createAlbum = function (userId, callback) {
+function createAlbum(userId, callback) {
   var album = new models.users.Album();
 
   async.series([
@@ -57,23 +57,23 @@ var createAlbum = function (userId, callback) {
       models.users.Album.updateInfo(album._id, true, next);
     }
   ], callback);
-};
+}
 
 
 // Creates multiple albums
 //
 // userId - albums owner
 //
-var createMultipleAlbums = function (userId, callback) {
+function createMultipleAlbums(userId, callback) {
   async.timesSeries(ALBUMS_COUNT, function (id, next) {
     createAlbum(userId, function (err) {
       next(err);
     });
   }, callback);
-};
+}
 
 
-var createAlbums = function (callback) {
+function createAlbums(callback) {
 
   var user_ids = [];
 
@@ -143,12 +143,12 @@ var createAlbums = function (callback) {
       createMultipleAlbums(uid, next);
     }, callback);
   });
-};
+}
 
 
 // Creates random comments to media
 //
-var createComment = function (mediaId, userId, callback) {
+function createComment(mediaId, userId, callback) {
   var comment = new models.users.Comment();
   comment.user_id = userId;
   comment.media_id = mediaId;
@@ -156,12 +156,12 @@ var createComment = function (mediaId, userId, callback) {
   comment.text = Charlatan.Lorem.paragraph(Charlatan.Helpers.rand(1, 2));
   comment.st = statuses.comment.VISIBLE;
   comment.save(callback);
-};
+}
 
 
 // Creates multiple comments
 //
-var createMultipleComments = function (mediaId, usersId, callback) {
+function createMultipleComments(mediaId, usersId, callback) {
   var commentsCount = Charlatan.Helpers.rand(MIN_COMMENTS, MAX_COMMENTS);
 
   async.timesSeries(commentsCount, function (id, cb) {
@@ -178,10 +178,10 @@ var createMultipleComments = function (mediaId, usersId, callback) {
       callback
     );
   });
-};
+}
 
 
-var createComments = function (callback) {
+function createComments(callback) {
 
   async.series([
     function (next) {
@@ -204,7 +204,7 @@ var createComments = function (callback) {
       createMultipleComments(mediaId, usersId, next);
     }, callback);
   });
-};
+}
 
 
 module.exports = function (N, callback) {
