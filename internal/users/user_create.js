@@ -30,40 +30,21 @@ module.exports = function (N, apiPath) {
   // Create user record
   //
   N.wire.on(apiPath, function user_create(env, callback) {
+    var user = new N.models.users.User();
 
-    N.settings.get('registered_user_group', function (err, registeredGroupId) {
+    user.nick       = env.data.reg_info.nick;
+    user.joined_ip  = env.req.ip;
+    user.locale     = env.runtime.locale || N.config.locales['default'];
+    user.email      = env.data.reg_info.email;
 
+    user.save(function (err, user) {
       if (err) {
         callback(err);
         return;
       }
 
-      // Allocate user hid
-      N.models.core.Increment.next('user', function (err, user_hid) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        var user = new N.models.users.User();
-
-        user.hid        = user_hid;
-        user.nick       = env.data.reg_info.nick;
-        user.usergroups = [ registeredGroupId ];
-        user.joined_ip  = env.req.ip;
-        user.locale     = env.runtime.locale || N.config.locales['default'];
-        user.email      = env.data.reg_info.email;
-
-        user.save(function (err, user) {
-          if (err) {
-            callback(err);
-            return;
-          }
-
-          env.data.user = user;
-          callback();
-        });
-      });
+      env.data.user = user;
+      callback();
     });
   });
 
