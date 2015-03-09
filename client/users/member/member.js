@@ -11,7 +11,7 @@ var avatarWidth = '$$ JSON.stringify(N.config.users.avatars.resize.orig.width) $
 
 // Store/restore blocks collapse state
 //
-N.wire.on('navigate.done:' + module.apiPath, function store_blocks_state(data) {
+N.wire.on('navigate.done:' + module.apiPath, function store_blocks_state(data, callback) {
   var key = [
     'blocks_collapsed',
     N.runtime.user_hid,
@@ -50,6 +50,8 @@ N.wire.on('navigate.done:' + module.apiPath, function store_blocks_state(data) {
         .find('.member-block__header-collapser')
         .addClass('collapsed');
     });
+
+    callback();
   });
 });
 
@@ -58,13 +60,15 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
   // Click to avatar
   //
-  N.wire.on('users.member:change_avatar', function change_avatar() {
+  N.wire.on('users.member:change_avatar', function change_avatar(__, callback) {
     var data = {};
 
     N.wire.emit('users.avatar.change', data, function () {
 
       $('.member-avatar__image').attr('src', N.router.linkTo('core.gridfs', { bucket: data.avatar_id }));
       $('.member-layout').addClass('member-layout__m-avatar-exists');
+
+      callback();
     });
   });
 
@@ -78,13 +82,15 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
   // Click to delete avatar button
   //
-  N.wire.on('users.member:delete_avatar', function delete_avatar() {
+  N.wire.on('users.member:delete_avatar', function delete_avatar(__, callback) {
     N.io.rpc('users.avatar.delete').done(function (/* result */) {
 
       var $img = $('.member-avatar__image');
       $img.attr('src', identicon(N.runtime.user_id, avatarWidth));
 
       $('.member-layout').removeClass('member-layout__m-avatar-exists');
+
+      callback();
     });
   });
 

@@ -48,7 +48,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
   // Handles the event when user drag file to drag drop zone
   //
-  N.wire.on('users.album:dd_area', function user_album_dd(data) {
+  N.wire.on('users.album:dd_area', function user_album_dd(data, callback) {
     var x0, y0, x1, y1, ex, ey;
 
     switch (data.event.type) {
@@ -85,11 +85,16 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
             $('#users-medias-list').prepend(
               $(N.runtime.render('users.album.list', { medias: params.uploaded, user_hid: pageParams.user_hid }))
             );
+            callback();
           });
+
+          return;
         }
         break;
       default:
     }
+
+    callback();
   });
 });
 
