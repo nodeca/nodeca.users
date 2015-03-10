@@ -2,7 +2,7 @@
 - var own_page = (self.runtime.user_hid === self.user_hid)
 - self.add_raw_data('profile_tab', own_page)
 
-#content.user-mediapage(class=self.media.type & mTypes.MASK_DELETED ? 'deleted' : '')
+#content.user-media-root(class=self.media.type & mTypes.MASK_DELETED ? 'deleted' : '')
   != self.partial('@users.blocks.breadcrumbs')
 
   .breadcrumbs.hidden-deleted
@@ -32,9 +32,9 @@
           = self.media.file_name
 
   if self.previous
-    a.user-mediapage__prev.btn.btn-default(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.previous }))= self.t('prev')
+    a.user-media-root__prev.btn.btn-default(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.previous }))= self.t('prev')
   if self.next
-    a.user-mediapage__next.btn.btn-default(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.next }))= self.t('next')
+    a.user-media-root__next.btn.btn-default(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.next }))= self.t('next')
 
   .hidden-deleted
     if own_page

@@ -1,7 +1,7 @@
 - var own_page = (self.runtime.user_hid === self.user_hid)
 - self.add_raw_data('profile_tab', own_page)
 
-#content.user-album-page(class=self.medias.length === 0 ? 'no-files' : '')
+#content.user-album-root(class=self.medias.length === 0 ? 'no-files' : '')
   != self.partial('@users.blocks.breadcrumbs')
 
   .breadcrumbs
@@ -49,4 +49,4 @@
     }
   )!= self.partial('@users.album.list')
 
-  p.user-album-page__no-files= self.t('no_files')
+  p.user-album-root__no-files= self.t('no_files')
