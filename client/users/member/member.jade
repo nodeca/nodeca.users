@@ -1,12 +1,15 @@
 - var own_page = (self.runtime.user_hid === self.user.hid)
 - self.add_raw_data('profile_tab', own_page)
 
-#content
-  != self.partial('@users.blocks.breadcrumbs')
+#content.user-member-page
+  //- != self.partial('@users.blocks.breadcrumbs')
 
-  //--header.page-head
+  header.page-head
     h1.page-head__title(itemprop='name')= self.users[self.user._id].name
-    p.page-head__descr.hidden-xs(itemprop='description')
+    p.page-head__descr.member__last-visit(itemprop='description')
+      =self.t('last_active')
+      | 
+      time(datetime=self.date(self.user.last_active_ts, 'iso'))= self.date(self.user.last_active_ts, 'datetime')
 
   - var modifier = self.avatar_exists ? 'member-layout__m-avatar-exists' : '';
   .member-layout(class=modifier)
@@ -19,10 +22,7 @@
             .member-avatar__caption= self.t('change_avatar')
         else
           img.member-avatar__image()&attributes(self.avatar(self.user._id, self.users[self.user._id]))
-      .member-sidebar__last-active
-        =self.t('last_active')
-        | 
-        time(datetime=self.date(self.user.last_active_ts, 'iso'))= self.date(self.user.last_active_ts, 'datetime')
+
       if own_page
         ul.member-sidebar__menu
           each item in self.menu_ordered
