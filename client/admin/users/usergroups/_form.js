@@ -55,17 +55,17 @@ function Setting(form, name, schema, config) {
   // at the same time.
   //
   this.overriden = ko.computed({
-    read:  function () { return this._overriden() || !this.ownerGroup.parentGroup(); }
-  , write: this._overriden
-  , owner: this
+    read:  function () { return this._overriden() || !this.ownerGroup.parentGroup(); },
+    write: this._overriden,
+    owner: this
   }).extend({ dirty: false });
 
   this.inherited = ko.computed(function () { return !this.overriden(); }, this);
 
   this.forced = ko.computed({
-    read:  function () { return this.overriden() && this._forced(); }
-  , write: this._forced
-  , owner: this
+    read:  function () { return this.overriden() && this._forced(); },
+    write: this._forced,
+    owner: this
   }).extend({ dirty: false });
 
   this.value = ko.computed({
@@ -78,12 +78,12 @@ function Setting(form, name, schema, config) {
       }
 
       return this.defaultValue;
-    }
-  , write: function (newValue) {
+    },
+    write: function (newValue) {
       this.overriden(true);
       this._value(newValue);
-    }
-  , owner: this
+    },
+    owner: this
   }).extend({ dirty: false });
 
   // Helpers.
@@ -135,8 +135,8 @@ Setting.prototype.markClean = function markClean() {
 //
 Setting.prototype.getOutputData = function getOutputData() {
   return {
-    value: this.value()
-  , force: this.forced()
+    value: this.value(),
+    force: this.forced()
   };
 };
 
@@ -190,50 +190,52 @@ function UserGroup(form, data) {
   }, this);
 
   this.parentGroup = ko.computed({
-    read:  function () { return form.groupsById[this.parentId()]; }
-  , write: function (group) { this.parentId(group ? group.id : null); }
-  , owner: this
+    read:  function () { return form.groupsById ? form.groupsById[this.parentId()] : null; },
+    write: function (group) { this.parentId(group ? group.id : null); },
+    owner: this
   });
 
   // Related settings and categories lists.
   // See Setting and SettingCategory classes for details.
   //
-  this.settings       = [];
-  this.settingsByName = {};
-  this.categories     = [];
+  this.settings     = _(form.setting_schemas)
+                          .map(function (schema, name) {
+                            var overriden = _.has(rawSettings, name);
 
-  // Collect setting models.
-  _.forEach(form.setting_schemas, function (schema, name) {
-    var setting, overriden = _.has(rawSettings, name);
+                            return new Setting(form, name, schema, {
+                              group:     this,
+                              overriden: overriden,
+                              forced:    overriden ? rawSettings[name].force : false,
+                              value:     overriden ? rawSettings[name].value : schema['default']
+                            });
+                          }, this)
+                          .sortBy('priority')
+                          .value();
 
-    setting = new Setting(form, name, schema, {
-      group:     this
-    , overriden: overriden
-    , forced:    overriden ? rawSettings[name].force : false
-    , value:     overriden ? rawSettings[name].value : schema['default']
-    });
+  this.settingsByName = this.settings.reduce(function (acc, s) {
+                          acc[s.name] = s;
+                          return acc;
+                        }, {});
 
-    this.settings.push(setting);
-    this.settingsByName[name] = setting;
-  }, this);
-
-  this.settings = _.sortBy(this.settings, 'priority');
-
-  // Collect category models.
-  _(form.setting_schemas).pluck('category_key').unique().forEach(function (name) {
-    var category = new SettingCategory(form, name, _.filter(this.settings, { categoryKey: name }));
-
-    this.categories.push(category);
-  }, this);
-
-  this.categories = _.sortBy(this.categories, 'priority');
+  this.categories    = _(form.setting_schemas)
+                          .pluck('category_key')
+                          .unique()
+                          .map(function (name) {
+                            return new SettingCategory(
+                              form,
+                              name,
+                              _.filter(this.settings, { categoryKey: name })
+                            );
+                          }, this)
+                          .sortBy('priority')
+                          .value();
 
   // Helpers.
   //
   this.isDirty = ko.computed(function () {
     return this.name.isDirty()     ||
            this.parentId.isDirty() ||
-           _(this.settings).invoke('isDirty').any();
+           this.settings.some(function (s) { return s.isDirty(); });
   }, this);
 }
 
@@ -259,9 +261,9 @@ UserGroup.prototype.markClean = function markClean() {
 //
 UserGroup.prototype.getOutputData = function getOutputData() {
   var result = {
-    short_name:   this.name()
-  , parent_group: this.parentId()
-  , raw_settings: {}
+    short_name:   this.name(),
+    parent_group: this.parentId(),
+    raw_settings: {}
   };
 
   // Add `_id` property only when editing an existent group (not for new).
@@ -292,16 +294,15 @@ function Form(page_data) {
   // Settings filter interface switcher.
   this.filter = ko.observable('');
 
-  this.groups     = [];
-  this.groupsById = {};
-
   // Create view models for all group data recieved from the server.
-  _.forEach(page_data.groups_data, function (data) {
-    var group = new UserGroup(this, data);
+  this.groups     = page_data.groups_data.map(function (data) {
+                                            return new UserGroup(this, data);
+                                          }, this);
 
-    this.groups.push(group);
-    this.groupsById[group.id] = group;
-  }, this);
+  this.groupsById = this.groups.reduce(function (acc, g) {
+                                  acc[g.id] = g;
+                                  return acc;
+                                }, {});
 
   this.isNewGroup = !_.has(page_data, 'current_group_id');
 
@@ -314,10 +315,10 @@ function Form(page_data) {
 
   // Select groups suitable for 'inherits' list.
   // Excludes current group and it's descendants.
-  this.otherGroups = _.filter(this.groups, function (group) {
-    return group.id !== this.currentGroup.id &&
-           !group.isDescendantOf(this.currentGroup);
-  }, this);
+  this.otherGroups = this.groups.filter(function (group) {
+                                  return group.id !== this.currentGroup.id &&
+                                         !group.isDescendantOf(this.currentGroup);
+                                }, this);
 }
 
 // Sends 'create' request for `currentGroup`.
@@ -329,8 +330,8 @@ Form.prototype.create = function create() {
     self.currentGroup.markClean();
 
     N.wire.emit('notify', {
-      type: 'info'
-    , message: N.runtime.t('admin.users.usergroups.form.created')
+      type: 'info',
+      message: N.runtime.t('admin.users.usergroups.form.created')
     });
 
     N.wire.emit('navigate.to', { apiPath: 'admin.users.usergroups.index' });
@@ -346,8 +347,8 @@ Form.prototype.update = function update() {
     self.currentGroup.markClean();
 
     N.wire.emit('notify', {
-      type: 'info'
-    , message: N.runtime.t('admin.users.usergroups.form.updated')
+      type: 'info',
+      message: N.runtime.t('admin.users.usergroups.form.updated')
     });
   });
 };

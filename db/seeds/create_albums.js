@@ -125,10 +125,7 @@ function createAlbums(callback) {
             return;
           }
 
-          user_ids = user_ids.concat(_(data)
-                                        .pluck('moderators')
-                                        .flatten()
-                                        .valueOf());
+          user_ids = user_ids.concat(_(data).pluck('moderators').flatten().value());
           next();
         });
       });
