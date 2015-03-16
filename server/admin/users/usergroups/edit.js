@@ -30,7 +30,9 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      var currentGroup = _.find(groups, { id: env.params._id });
+      var currentGroup = _.find(groups, function (g) {
+        return String(g._id) === env.params._id;
+      });
 
       if (!currentGroup) {
         callback(N.io.NOT_FOUND);

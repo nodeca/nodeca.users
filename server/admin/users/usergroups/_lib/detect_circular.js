@@ -31,7 +31,9 @@ module.exports = function detectCircular(N, groupId, parentId, callback) {
     // Returns `null` if no circular dependency found
     // or group id of first detected circular dependency
     function checkGroup(groupId) {
-      var group = _.find(groups, { id: groupId });
+      var group = _.find(groups, function (g) {
+        return String(g._id) === String(groupId);
+      });
 
       if (_.contains(descendants, groupId)) {
         return groupId;

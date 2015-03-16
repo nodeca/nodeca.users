@@ -19,5 +19,5 @@ en-US:
     show_inherited: inherited
 
   submit: Save
-  created: Group is created.
-  updated: Group is updated.
+  created: Group created.
+  updated: Settings updated.

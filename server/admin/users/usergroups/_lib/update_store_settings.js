@@ -26,8 +26,10 @@ module.exports = function updateStoreSettings(N, callback) {
     // Get full settings list for specified group
     // For inherited settings automatically extract values from parents
     function fetchSettings(groupId) {
-      var group  = _.find(groups, { id: groupId })
-        , result = {};
+      var group  = _.find(groups, function (g) {
+            return String(g._id) === String(groupId);
+          }),
+          result = {};
 
       // If parent group exists - fetch it's settings values first
       if (group.parent_group) {
