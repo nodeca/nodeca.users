@@ -18,10 +18,9 @@ module.exports = function (N, apiPath) {
     // Fill Default settings and their configuration
     res.setting_schemas = N.config.setting_schemas.usergroup || {};
 
-    // We always fetch all groups, to calculate inreritances on client
+    // We always fetch all groups, to calculate inheritances on client
     N.models.users.UserGroup
         .find()
-        .select('-settings')
         .sort('_id')
         .exec(function (err, groups) {
 

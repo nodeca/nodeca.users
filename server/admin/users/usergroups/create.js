@@ -3,7 +3,6 @@
 'use strict';
 
 
-var updateStoreSettings = require('./_lib/update_store_settings');
 var PARAMS_SCHEMA       = require('./_lib/params_schema');
 
 
@@ -66,9 +65,8 @@ module.exports = function (N, apiPath) {
       //
       // See ./_lib/params_schema.js for details on raw settings format.
       var group = new UserGroup({
-        short_name:   env.params.short_name
-      , parent_group: env.params.parent_group
-      , raw_settings: env.params.raw_settings
+        short_name:   env.params.short_name,
+        parent_group: env.params.parent_group
       });
 
       group.save(function (err) {
@@ -78,7 +76,21 @@ module.exports = function (N, apiPath) {
         }
 
         // Recalculate store settings of all groups.
-        updateStoreSettings(N, callback);
+        var store = N.settings.getStore('usergroup');
+
+        if (!store) {
+          callback('Settings store `usergroup` is not registered.');
+          return;
+        }
+
+        store.set(env.params.settings, { usergroup_id: group._id }, function(err) {
+          if (err) {
+            callback(err);
+            return;
+          }
+
+          store.updateInherited(callback);
+        });
       });
     });
   });

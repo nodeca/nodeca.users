@@ -161,12 +161,12 @@ function SettingCategory(form, name, settings) {
 //
 // form (Form): See below for Form class.
 // data (Object): UserGroup data retrieved from the database at the server-side.
-// The used fields are: _id, is_protected, parent_group and raw_settings.
+// The used fields are: _id, is_protected, parent_group and settings.
 //
 function UserGroup(form, data) {
   data = data || {};
 
-  var rawSettings = data.raw_settings || {};
+  var settings = data.settings || {};
 
   // Read-only slots.
   //
@@ -200,13 +200,13 @@ function UserGroup(form, data) {
   //
   this.settings     = _(form.setting_schemas)
                           .map(function (schema, name) {
-                            var overriden = _.has(rawSettings, name);
+                            var overriden = _.has(settings, name);
 
                             return new Setting(form, name, schema, {
                               group:     this,
                               overriden: overriden,
-                              forced:    overriden ? rawSettings[name].force : false,
-                              value:     overriden ? rawSettings[name].value : schema['default']
+                              forced:    overriden ? settings[name].force : false,
+                              value:     overriden ? settings[name].value : schema['default']
                             });
                           }, this)
                           .sortBy('priority')
@@ -263,7 +263,7 @@ UserGroup.prototype.getOutputData = function getOutputData() {
   var result = {
     short_name:   this.name(),
     parent_group: this.parentId(),
-    raw_settings: {}
+    settings: {}
   };
 
   // Add `_id` property only when editing an existent group (not for new).
@@ -271,9 +271,11 @@ UserGroup.prototype.getOutputData = function getOutputData() {
     result._id = this.id;
   }
 
-  _.forEach(this.settings, function (setting) {
+  this.settings.forEach(function (setting) {
     if (setting.overriden()) {
-      result.raw_settings[setting.name] = setting.getOutputData();
+      result.settings[setting.name] = setting.getOutputData();
+    } else {
+      result.settings[setting.name] = null;
     }
   });
 
@@ -294,15 +296,15 @@ function Form(page_data) {
   // Settings filter interface switcher.
   this.filter = ko.observable('');
 
-  // Create view models for all group data recieved from the server.
-  this.groups     = page_data.groups_data.map(function (data) {
-                                            return new UserGroup(this, data);
-                                          }, this);
+  this.groups     = [];
+  this.groupsById = {};
 
-  this.groupsById = this.groups.reduce(function (acc, g) {
-                                  acc[g.id] = g;
-                                  return acc;
-                                }, {});
+  // Create view models for all group data recieved from the server.
+  page_data.groups_data.forEach(function (data) {
+    var group = new UserGroup(this, data);
+    this.groups.push(group);
+    this.groupsById[group.id] = group;
+  }, this);
 
   this.isNewGroup = !_.has(page_data, 'current_group_id');
 

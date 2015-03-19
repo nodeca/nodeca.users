@@ -3,6 +3,7 @@
 
 var _        = require('lodash');
 var memoizee = require('memoizee');
+var async    = require('async');
 
 
 module.exports = function (N) {
@@ -21,9 +22,9 @@ module.exports = function (N) {
   //
   var fetchUsrGrpSettingsCached = memoizee(fetchUsrGrpSettings, {
     // Memoizee options. Revalidate cache after each 60 sec.
-    async:     true
-  , maxAge:    60000
-  , primitive: true
+    async:     true,
+    maxAge:    60000,
+    primitive: true
   });
 
 
@@ -33,8 +34,8 @@ module.exports = function (N) {
   //
   var UsergroupStore = N.settings.createStore({
     get: function (keys, params, options, callback) {
-      var self  = this
-        , fetch = options.skipCache ? fetchUsrGrpSettings : fetchUsrGrpSettingsCached;
+      var self  = this,
+          fetch = options.skipCache ? fetchUsrGrpSettings : fetchUsrGrpSettingsCached;
 
       if (!_.isArray(params.usergroup_ids) || _.isEmpty(params.usergroup_ids)) {
         callback('usergroup_ids param required to be non-empty array for getting settings from usergroup store');
@@ -57,8 +58,8 @@ module.exports = function (N) {
               values.push(group.settings[key]);
             } else {
               values.push({
-                value: self.getDefaultValue(key)
-              , force: false // Default value SHOULD NOT be forced.
+                value: self.getDefaultValue(key),
+                force: false // Default value SHOULD NOT be forced.
               });
             }
           });
@@ -69,12 +70,13 @@ module.exports = function (N) {
 
         callback(null, results);
       });
-    }
+    },
+
     // ##### Params
     //
     // - usergroup_id (String|ObjectId)
     //
-  , set: function (settings, params, callback) {
+    set: function (settings, params, callback) {
       if (!params.usergroup_id) {
         callback('usergroup_id param is required for saving settings into usergroup store');
         return;
@@ -92,11 +94,17 @@ module.exports = function (N) {
         // Make sure we have settings storages.
         group.settings = group.settings || {};
 
-        _.forEach(settings, function (options, key) {
-          if (null === options) {
+        Object.keys(settings).forEach(function (key) {
+          var setting = settings[key];
+
+          if (null === setting) {
             delete group.settings[key];
           } else {
-            group.settings[key] = options;
+            group.settings[key] = {
+              value: setting.value,
+              force: setting.force,
+              own:   true
+            };
           }
         });
 
@@ -105,6 +113,92 @@ module.exports = function (N) {
       });
     }
   });
+
+  // Walk through all existent usergroups and recalculate their permissions
+  //
+  UsergroupStore.updateInherited = function updateInherited(callback) {
+    var self = this;
+
+    N.models.users.UserGroup
+        .find()
+        .select('_id parent_group settings')
+        .exec(function (err, groups) {
+
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      // Get group from groups array by its id
+      //
+      function getGroupById(id) {
+        return groups.filter(function (g) {
+          // Universal way for equal check on: Null, ObjectId, and String.
+          return String(g._id) === String(id);
+        })[0];
+      }
+
+      // Find first own setting for group.
+      //
+      function findInheritedSetting(groupId, settingName) {
+        if (!groupId) {
+          return null;
+        }
+
+        var group = getGroupById(groupId);
+
+        // Setting exists, and it is not inherited from another section.
+        if (group &&
+            group.settings &&
+            group.settings[settingName] &&
+            group.settings[settingName].own) {
+          return group.settings[settingName];
+        }
+
+        // Recursively walk through ancestors sequence.
+        if (group.parent_group) {
+          return findInheritedSetting(group.parent_group, settingName);
+        }
+
+        return null;
+      }
+
+      // Get full settings list for specified group
+      // For inherited settings automatically extract values from parents
+      function fetchSettings(groupId) {
+        var group = getGroupById(groupId),
+            result = {};
+
+        self.keys.forEach(function (settingName) {
+          // Do not touch own settings. We only update inherited settings.
+          if (group.settings[settingName] &&
+              group.settings[settingName].own) {
+            return;
+          }
+
+          var setting = findInheritedSetting(group.parent_group, settingName);
+
+          if (setting) {
+            // Set/update inherited setting.
+            group.settings[settingName] = {
+              value: setting.value,
+              force: setting.force,
+              own:   false
+            };
+          } else {
+            // Drop deprecated inherited setting.
+            delete group.settings[settingName];
+          }
+        });
+
+        return result;
+      }
+
+      async.each(groups, function (group, next) {
+        self.set(fetchSettings(group.id), { usergroup_id: group._id }, next);
+      }, callback);
+    });
+  };
 
   return UsergroupStore;
 };

@@ -6,7 +6,6 @@
 var _ = require('lodash');
 
 var detectCircular      = require('./_lib/detect_circular');
-var updateStoreSettings = require('./_lib/update_store_settings');
 var PARAMS_SCHEMA       = require('./_lib/params_schema');
 
 
@@ -93,17 +92,6 @@ module.exports = function (N, apiPath) {
       group.short_name   = env.params.short_name;
       group.parent_group = env.params.parent_group;
 
-      // Raw settings contains interface state:
-      // - Full settings list for Root groups
-      // - List of overriden settings for inherited groups
-      //
-      // We store interface data separately, and then use it
-      // to calculate final `store` values (permissions)
-      //
-      // See ./_lib/params_schema.js for details on raw settings format.
-      group.raw_settings = env.params.raw_settings;
-      group.markModified('raw_settings');
-
       group.save(function (err) {
         if (err) {
           callback(err);
@@ -111,7 +99,21 @@ module.exports = function (N, apiPath) {
         }
 
         // Recalculate store settings of all groups.
-        updateStoreSettings(N, callback);
+        var store = N.settings.getStore('usergroup');
+
+        if (!store) {
+          callback('Settings store `usergroup` is not registered.');
+          return;
+        }
+
+        store.set(env.params.settings, { usergroup_id: group._id }, function(err) {
+          if (err) {
+            callback(err);
+            return;
+          }
+
+          store.updateInherited(callback);
+        });
       });
     });
   });

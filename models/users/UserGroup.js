@@ -26,10 +26,14 @@ module.exports = function (N, collectionName) {
     // Parent group, all non-overriden settings will be inherited from it.
     parent_group : Schema.Types.ObjectId,
 
-    // Own settings of a group (i.e. not inherited). Used by the admin interface.
-    raw_settings : { type: Schema.Types.Mixed, 'default': {} },
-
-    // Settings storage. Used only the the UsergroupStore.
+    // Settings storage. Used only in the UsergroupStore. Format:
+    //
+    //     settings:
+    //       setting1_key:
+    //         value: Mixed
+    //         own:   Boolean
+    //         force: Boolean
+    //
     settings     : { type: Schema.Types.Mixed, 'default': {} }
   },
   {
