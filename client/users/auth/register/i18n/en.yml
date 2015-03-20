@@ -20,5 +20,7 @@ en-US:
       Please follow instructions in activation email.
 
   activate_exec:
-    success: Account is activated.
     err_invalid_token: Invalid security token.
+
+  activate_done:
+    success: Account is activated.

@@ -22,7 +22,6 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function prepare_response(env) {
     env.res.head.title = env.t('title');
-    env.res.success = false; // Just initial value.
   });
 
 
@@ -152,17 +151,21 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      env.res.success = true;
-
       N.wire.emit('internal:users.login', env, function (err) {
         if (err) {
           callback(err);
           return;
         }
 
-        env.res.redirect_url = env.data.redirect_url;
-
-        callback();
+        // Use redirect instead of direct page rendering, because
+        // we need to reload client environment with the new user data
+        //
+        callback({
+          code: N.io.REDIRECT,
+          head: {
+            'Location': N.router.linkTo('users.auth.register.activate_done')
+          }
+        });
       });
     });
   });

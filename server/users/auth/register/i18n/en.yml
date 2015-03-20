@@ -16,6 +16,8 @@ en-US:
   activate_show:
     title: Registration
 
-
   activate_exec:
+    title: Registration
+
+  activate_done:
     title: Registration
