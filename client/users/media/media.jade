@@ -45,7 +45,7 @@
 
 
     p= self.media.description
-    p= self.date(self.media.ts, 'date')
+    p= self.date(self.media.ts, 'relative')
 
     .row
       .col-md-8.col-md-offset-2
@@ -60,7 +60,7 @@
                 div= comment.text
                 div
                   a= user.name
-                  span= self.date(comment.ts, 'date')
+                  span= self.date(comment.ts, 'relative')
                   a Edit
                   a Delte
                   a Complain

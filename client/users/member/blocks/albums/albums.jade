@@ -23,4 +23,4 @@
               .thumb__content No cover
             .thumb-caption
               .thumb-caption__line= album.title
-              time.thumb-caption__line.thumb-caption__m-secondary(datetime=self.date(album.last_ts, 'iso'))= self.date(album.last_ts, 'date')
+              time.thumb-caption__line.thumb-caption__m-secondary(datetime=self.date(album.last_ts, 'iso'))= self.date(album.last_ts, 'relative')

@@ -26,7 +26,7 @@
               .thumb-caption.thumb-caption__m-secondary
                 if media.comments_count > 0
                   .pull-right.icon.icon-space-after.icon-comment= media.comments_count
-                time.thumb-caption__line(datetime=self.date(media.ts, 'iso'))= self.date(media.ts, 'date')
+                time.thumb-caption__line(datetime=self.date(media.ts, 'iso'))= self.date(media.ts, 'relative')
 
           else if mType === mTypes.MEDIALINK
             .thumb
@@ -36,7 +36,7 @@
                 .thumb-caption.thumb-caption__m-secondary
                   if media.comments_count > 0
                     .pull-right.icon.icon-space-after.icon-comment= media.comments_count
-                  time.thumb-caption__line(datetime=self.date(media.ts, 'iso'))= self.date(media.ts, 'date')
+                  time.thumb-caption__line(datetime=self.date(media.ts, 'iso'))= self.date(media.ts, 'relative')
 
           else if mType === mTypes.BINARY
             a.thumb(href=href)
@@ -45,4 +45,4 @@
               .thumb-caption.thumb-caption__m-secondary
                 if media.comments_count > 0
                   .pull-right.icon.icon-space-after.icon-comment= media.comments_count
-                time.thumb-caption__line(datetime=self.date(media.ts, 'iso'))= self.date(media.ts, 'date')
+                time.thumb-caption__line(datetime=self.date(media.ts, 'iso'))= self.date(media.ts, 'relative')
