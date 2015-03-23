@@ -19,7 +19,6 @@ module.exports = function (N, apiPath) {
     // We always fetch all groups, to calculate inreritances on client
     N.models.users.UserGroup
         .find()
-        .select('-settings')
         .sort('_id')
         .lean(true)
         .exec(function (err, groupsData) {
