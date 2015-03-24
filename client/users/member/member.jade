@@ -9,7 +9,7 @@
     p.page-head__descr.member__last-visit(itemprop='description')
       =self.t('last_active')
       | 
-      time(datetime=self.date(self.user.last_active_ts, 'iso'))= self.date(self.user.last_active_ts, 'relative')
+      time(datetime=self.date(self.user.last_active_ts, 'iso'))= self.date(self.user.last_active_ts, 'compact')
 
   - var modifier = self.avatar_exists ? 'member-layout__m-avatar-exists' : '';
   .member-layout(class=modifier)
