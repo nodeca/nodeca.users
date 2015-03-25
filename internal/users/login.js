@@ -21,44 +21,64 @@ module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, function user_internal_login(env, callback) {
 
-    // delete old session (don't wait until compleete)
+    // delete old session (don't wait until complete)
     if (env.session_id) {
       N.redis.del('sess:' + env.session_id);
     }
 
-    env.session_id      = null; // Generate new sid on session save.
-    env.session.user_id = env.data.user._id.toString();
+    var token = new N.models.users.TokenLogin({
+      user_id:     env.data.user._id,
+      ip:          env.req.ip,
+      authlink_id: env.data.authLink._id
+    });
 
-    // fill redirect with default value
-    env.data.redirect_url = N.router.linkTo('users.profile_redirect');
-
-    // if no specific redirect requested - redirect to default
-    if (!env.data.redirect_id) {
-      callback();
-      return;
-    }
-
-    // Try to find active redirect, bunded to this ip
-    LoginRedirect.findOne({ '_id': env.data.redirect_id, used: false, ip: env.req.ip })
-        .lean(true)
-        .exec(function (err, link) {
-
+    token.save(function (err) {
       if (err) {
         callback(err);
         return;
       }
 
-      // If redirect requested, but not found - redirect to default.
-      if (!link) {
+      env.session_id      = token.session_id;
+
+      // Attach user id to the existing session, while preserving existing
+      // session data.
+      //
+      // So if something is saved for a guest, it'll still be available when
+      // he logs in.
+      //
+      env.session.user_id = token.user_id.toString();
+
+      // fill redirect with default value
+      env.data.redirect_url = N.router.linkTo('users.profile_redirect');
+
+      // if no specific redirect requested - redirect to default
+      if (!env.data.redirect_id) {
         callback();
         return;
       }
 
-      // update redirect url
-      env.data.redirect_url = link.url;
+      // Try to find active redirect bound to this ip
+      LoginRedirect.findOne({ '_id': env.data.redirect_id, used: false, ip: env.req.ip })
+          .lean(true)
+          .exec(function (err, link) {
 
-      // mark redirect as used
-      LoginRedirect.update({ _id: link._id }, { $set: { used: true } }, callback);
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        // If redirect requested, but not found - redirect to default.
+        if (!link) {
+          callback();
+          return;
+        }
+
+        // update redirect url
+        env.data.redirect_url = link.url;
+
+        // mark redirect as used
+        LoginRedirect.update({ _id: link._id }, { $set: { used: true } }, callback);
+      });
     });
   });
 
