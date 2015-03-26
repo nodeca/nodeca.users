@@ -21,13 +21,32 @@
       dt Location:
       dd: a(href='#') New Urupinsk
 
-    dl.member-about-text.dl-horizontal
-      dt Contacts:
-      dd ICQ
-      dd Skype
-      dd Hangout
-      dd Jabber
-      dd Email
+    if self.blocks.about.contacts && self.blocks.about.contacts.length !== 0
+      dl.member-about-text.dl-horizontal
+        dt Contacts:
+        dd
+
+          ul.member-block__contacts-inline.collapse.in
+            each contact in self.blocks.about.contacts
+              - var messenger = self.blocks.about.messengers[contact.messenger]
+              li.member-block__contacts-inline-item
+                button.btn.btn-link(
+                  class=messenger.icon_class
+                  data-toggle='popover'
+                  data-trigger='click;focus'
+                  data-placement='top'
+                  data-content=contact.value
+                )
+            li
+              button.btn.btn-link.icon.icon-expand(href='.member-block__contacts-inline,.member-block__contacts-expand', data-toggle='collapse')
+
+          ul.member-block__contacts-expand.collapse.out
+            each contact in self.blocks.about.contacts
+              - var messenger = self.blocks.about.messengers[contact.messenger]
+              li.member-block__contacts-expand-item
+                span.member-block__contacts-expand-name= messenger.name
+                span.member-block__contacts-expand-value= contact.value
+
 
     dl.member-about-text.dl-horizontal
       dt Birthday:

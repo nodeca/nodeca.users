@@ -104,7 +104,6 @@ module.exports = function (N, apiPath) {
       env.res.blocks.notepad = {};
     }
 
-    env.res.blocks.about = {};
     env.res.blocks.bookmarks = {};
     env.res.blocks.friends = {};
     env.res.blocks.blog = {};

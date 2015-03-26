@@ -1,0 +1,17 @@
+users:
+  messengers:
+    skype:
+      name: Skype
+      icon_class: icon icon-skype
+    icq:
+      name: ICQ
+      icon_class: icon icon-icq
+    jabber:
+      name: Jabber
+      icon_class: icon icon-jabber
+    email:
+      name: Email
+      icon_class: icon icon-mail
+    hangout:
+      name: Hangout
+      icon_class: icon icon-comment
