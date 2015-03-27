@@ -8,23 +8,15 @@
 'use strict';
 
 
-var Mongoose = require('mongoose');
-var Schema   = Mongoose.Schema;
-var crypto   = require('crypto');
-
-
-var SESSION_ID_LENGTH = 20;
-
-
-function generateSecretKey() {
-  return crypto.randomBytes(SESSION_ID_LENGTH).toString('hex');
-}
+var Mongoose    = require('mongoose');
+var Schema      = Mongoose.Schema;
+var createToken = require('nodeca.core/lib/random_token');
 
 
 module.exports = function (N, collectionName) {
 
   var TokenLogin = new Schema({
-    session_id:      { type: String, 'default': generateSecretKey },
+    session_id:      { type: String, 'default': createToken },
     user_id:         Schema.Types.ObjectId,
     authlink_id:     Schema.Types.ObjectId,
     ip:              String

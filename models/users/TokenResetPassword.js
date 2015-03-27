@@ -10,22 +10,16 @@
 
 var Mongoose = require('mongoose');
 var Schema   = Mongoose.Schema;
-var crypto   = require('crypto');
+var createToken = require('nodeca.core/lib/random_token');
 
 
 var TOKEN_EXPIRE_TIMEOUT    = 15 * 60; // 15 minutes in seconds.
-var TOKEN_SECRET_KEY_LENGTH = 32;
-
-
-function generateSecretKey() {
-  return crypto.randomBytes(TOKEN_SECRET_KEY_LENGTH).toString('hex');
-}
 
 
 module.exports = function (N, collectionName) {
 
   var TokenResetPassword = new Schema({
-    secret_key:      { type: String, 'default': generateSecretKey },
+    secret_key:      { type: String, 'default': createToken },
     create_ts:       { type: Date,   'default': Date, expires: TOKEN_EXPIRE_TIMEOUT },
     authlink_id:     Schema.Types.ObjectId,
     ip:              { type: String }

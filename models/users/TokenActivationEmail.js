@@ -9,23 +9,17 @@
 'use strict';
 
 
-var Mongoose = require('mongoose');
-var Schema   = Mongoose.Schema;
-var crypto   = require('crypto');
+var Mongoose    = require('mongoose');
+var Schema      = Mongoose.Schema;
+var createToken = require('nodeca.core/lib/random_token');
 
 
 var TOKEN_EXPIRE_TIMEOUT    = 6 * 60 * 60; // 6 hours in seconds.
-var TOKEN_SECRET_KEY_LENGTH = 16;
-
-
-function generateSecretKey() {
-  return crypto.randomBytes(TOKEN_SECRET_KEY_LENGTH).toString('hex');
-}
 
 
 module.exports = function (N, collectionName) {
   var TokenActivationEmail = new Schema({
-    secret_key:       { type: String, 'default': generateSecretKey },
+    secret_key:       { type: String, 'default': createToken },
     create_ts:        { type: Date,   'default': Date.now, expires: TOKEN_EXPIRE_TIMEOUT },
     ip:               { type: String },
     reg_info:         {},
