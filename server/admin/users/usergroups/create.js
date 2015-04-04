@@ -27,7 +27,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      if (0 === count) {
+      if (count === 0) {
         callback({
           code: N.io.BAD_REQUEST
         , message: env.t('error_nonexistent_parent_group')
@@ -48,7 +48,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      if (0 !== count) {
+      if (count !== 0) {
         callback({
           code: N.io.BAD_REQUEST
         , message: env.t('error_short_name_busy')

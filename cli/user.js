@@ -10,60 +10,60 @@ var async = require('async');
 
 
 module.exports.parserParameters = {
-  addHelp:     true
-, help:        'Create user and assign with some groups'
-, description: 'Create user'
+  addHelp:     true,
+  help:        'Create user and assign with some groups',
+  description: 'Create user'
 };
 
 
 module.exports.commandLineArguments = [
   {
-    args: [ 'action' ]
-  , options: {
-      help: 'cli command add/update'
-    , choices: [ 'add', 'update' ]
+    args: [ 'action' ],
+    options: {
+      help: 'cli command add/update',
+      choices: [ 'add', 'update' ]
     }
-  }
-, {
-    args: [ '-g', '--group' ]
-  , options: {
-      dest: 'mark_to_add'
-    , help: 'add user to group'
-    , action: 'append'
-    , defaultValue: []
-    , type: 'string'
+  },
+  {
+    args: [ '-g', '--group' ],
+    options: {
+      dest: 'mark_to_add',
+      help: 'add user to group',
+      action: 'append',
+      defaultValue: [],
+      type: 'string'
     }
-  }
-, {
-    args: [ '-G', '--no-group' ]
-  , options: {
-      dest: 'mark_to_remove'
-    , help: 'remove user from group'
-    , action: 'append'
-    , defaultValue: []
-    , type: 'string'
+  },
+  {
+    args: [ '-G', '--no-group' ],
+    options: {
+      dest: 'mark_to_remove',
+      help: 'remove user from group',
+      action: 'append',
+      defaultValue: [],
+      type: 'string'
     }
-  }
-, {
-    args: [ '-u', '--user' ]
-  , options: {
-      help: 'target user'
-    , type: 'string'
-    , required: true
+  },
+  {
+    args: [ '-u', '--user' ],
+    options: {
+      help: 'target user',
+      type: 'string',
+      required: true
     }
-  }
-, {
-    args: [ '-p', '--pass' ]
-  , options: {
-      help: 'user passsword. required only for add command'
-    , type: 'string'
+  },
+  {
+    args: [ '-p', '--pass' ],
+    options: {
+      help: 'user passsword. required only for add command',
+      type: 'string'
     }
-  }
-, {
-    args: [ '-e', '--email' ]
-  , options: {
-      help: 'user email. required only for add command'
-    , type: 'string'
+  },
+  {
+    args: [ '-e', '--email' ],
+    options: {
+      help: 'user email. required only for add command',
+      type: 'string'
     }
   }
 ];
@@ -77,9 +77,9 @@ module.exports.run = function (N, args, callback) {
       return;
     }
 
-    var user     = null
-      , toAdd    = {}
-      , toRemove = [];
+    var user     = null,
+        toAdd    = {},
+        toRemove = [];
 
     // FIXME check toRemove and toAdd intersection
     async.series([
@@ -105,15 +105,15 @@ module.exports.run = function (N, args, callback) {
           // FIXME check all groups were found from both lists?
           next();
         });
-      }
+      },
 
       // find or create user
-    , function (next) {
+      function (next) {
         // FIXME test existing login and email
         var User = N.models.users.User;
         var auth = new N.models.users.AuthLink();
 
-        if ('add' === args.action) {
+        if (args.action === 'add') {
           // FIXME user revalidator for pass and email test
           if (!args.pass || !args.email) {
             next('Invalid password or email');
@@ -163,10 +163,10 @@ module.exports.run = function (N, args, callback) {
           user = doc;
           next();
         });
-      }
+      },
 
       // update groups
-    , function (next) {
+      function (next) {
         if (!_.isEmpty(toRemove) && !_.isEmpty(user.usergroups)) {
           user.usergroups = user.usergroups.filter(function (group) {
             return toRemove.indexOf(group.toString()) === -1;

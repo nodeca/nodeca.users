@@ -4,8 +4,8 @@
 
 
 module.exports = function (N, apiPath) {
-  var UserGroup = N.models.users.UserGroup
-    , User      = N.models.users.User;
+  var UserGroup = N.models.users.UserGroup,
+      User      = N.models.users.User;
 
 
   N.validate(apiPath, {
@@ -26,16 +26,16 @@ module.exports = function (N, apiPath) {
 
       if (!group) {
         callback({
-          code: N.io.BAD_REQUEST
-        , message: env.t('error_not_exists')
+          code: N.io.BAD_REQUEST,
+          message: env.t('error_not_exists')
         });
         return;
       }
 
       if (group.is_protected) {
         callback({
-          code: N.io.BAD_REQUEST
-        , message: env.t('error_protected')
+          code: N.io.BAD_REQUEST,
+          message: env.t('error_protected')
         });
         return;
       }
@@ -83,10 +83,10 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      if (0 !== usersCount) {
+      if (usersCount !== 0) {
         callback({
-          code: N.io.BAD_REQUEST
-        , message: env.t('error_not_empty')
+          code: N.io.BAD_REQUEST,
+          message: env.t('error_not_empty')
         });
         return;
       }

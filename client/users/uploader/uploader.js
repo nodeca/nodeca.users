@@ -115,7 +115,7 @@ function resizeImage(data, callback) {
       scaledHeight = resizeConfig.height;
     }
 
-    var quality = (ext === 'jpeg' || ext === 'jpg') ? resizeConfig.jpeg_quality : undefined;
+    var quality = (ext === 'jpeg' || ext === 'jpg') ? resizeConfig.jpeg_quality : void(0);
 
     var width = Math.min(img.height * scaledWidth / scaledHeight, img.width);
     var cropX = (width - img.width) / 2;

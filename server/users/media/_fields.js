@@ -2,6 +2,9 @@
 // Placed in separate file, to be modifiable via hooks
 
 
+'use strict';
+
+
 exports.post_in = [
   '_id',
   'to',

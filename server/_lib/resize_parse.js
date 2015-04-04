@@ -59,8 +59,8 @@ var resizeConfigRules = {
   additionalProperties: false,
   properties: {
     skip_size:    { type: 'number' },
-    type:         { enum: [ 'jpeg', 'png', 'gif' ] },
-    from:         { enum: [ 'orig', 'md', 'sm' ] },
+    type:         { 'enum': [ 'jpeg', 'png', 'gif' ] },
+    from:         { 'enum': [ 'orig', 'md', 'sm' ] },
     width:        { type: 'number' },
     height:       { type: 'number' },
     max_width:    { type: 'number' },

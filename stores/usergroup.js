@@ -97,7 +97,7 @@ module.exports = function (N) {
         Object.keys(settings).forEach(function (key) {
           var setting = settings[key];
 
-          if (null === setting) {
+          if (setting === null) {
             delete group.settings[key];
           } else {
             group.settings[key] = {

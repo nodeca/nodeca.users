@@ -209,6 +209,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
   // Handle albums select change
   //
   N.wire.on('users.blocks.media_select_dlg:album_select', function album_select (data) {
+    /*eslint-disable no-undefined*/
     loadDialogContent(data.$this.val() || undefined);
   });
 

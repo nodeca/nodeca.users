@@ -29,7 +29,7 @@ module.exports = function (N, apiPath) {
 
     var queryParams = env.params.album_id ?
                       { _id: env.params.album_id, user_id: env.user_info.user_id } :
-                      { user_id: env.user_info.user_id, default: true };
+                      { user_id: env.user_info.user_id, 'default': true };
 
     N.models.users.Album
       .findOne(queryParams)

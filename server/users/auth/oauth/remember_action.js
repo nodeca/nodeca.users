@@ -6,7 +6,7 @@
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
-    action:      { type: 'string', enum: [ 'login', 'register' ], required: true },
+    action:      { type: 'string', 'enum': [ 'login', 'register' ], required: true },
     redirect_id: { type: 'string', minLength: 1 }
   });
 

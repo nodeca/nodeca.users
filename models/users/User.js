@@ -83,7 +83,7 @@ module.exports = function (N, collectionName) {
    *  - has at least one letter
    **/
   User.statics.validatePassword = function validatePassword(str) {
-    return 8 <= str.length && /\d/.test(str) && PASSWORD_RE.test(str);
+    return str.length >= 8 && /\d/.test(str) && PASSWORD_RE.test(str);
   };
 
 

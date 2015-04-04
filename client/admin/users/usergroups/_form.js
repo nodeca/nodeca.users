@@ -71,7 +71,7 @@ function Setting(form, name, schema, config) {
   this.value = ko.computed({
     read: function () {
       if (this.overriden()) {
-        return 'number' === this.valueType ? Number(this._value()) : this._value();
+        return this.valueType === 'number' ? Number(this._value()) : this._value();
 
       } else if (this.parentSetting()) {
         return this.parentSetting().value();
@@ -91,13 +91,13 @@ function Setting(form, name, schema, config) {
   this.visible = ko.computed(function () {
     var filter = form.filter();
 
-    if ('overriden' === filter) {
+    if (filter === 'overriden') {
       return this.overriden();
 
-    } else if ('inherited' === filter) {
+    } else if (filter === 'inherited') {
       return this.inherited();
 
-    } else if ('forced' === filter) {
+    } else if (filter === 'forced') {
       return this.forced();
 
     }
