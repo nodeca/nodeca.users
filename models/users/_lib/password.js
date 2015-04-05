@@ -24,7 +24,7 @@ exports.check = function checkPassword(pass, hash, callback) {
     return;
   }
 
-  var parts = hash.split('$').shift();
+  var parts = hash.split('$').slice(1);
 
   var itCount = parseInt(parts[1], 10),
       salt    = new Buffer(parts[2], 'base64'),
