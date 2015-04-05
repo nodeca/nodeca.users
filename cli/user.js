@@ -114,7 +114,7 @@ module.exports.run = function (N, args, callback) {
         var auth = new N.models.users.AuthLink();
 
         if (args.action === 'add') {
-          // FIXME user revalidator for pass and email test
+          // FIXME user validator for pass and email test
           if (!args.pass || !args.email) {
             next('Invalid password or email');
             return;

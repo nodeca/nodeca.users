@@ -23,7 +23,7 @@
 
 var _           = require('lodash');
 var mimoza      = require('mimoza');
-var revalidator = require('revalidator');
+var validator   = require('is-my-json-valid');
 var util        = require('util');
 
 var configRules = {
@@ -44,8 +44,11 @@ var configRules = {
   }
 };
 
+var validateConfigRules = validator(configRules, { verbose: true });
+
+
 var typeConfigRules = {
-  additionalProperties: false,
+  additionalProperties: true,
   properties: {
     max_size:      { type: 'number' },
     jpeg_quality:  { type: 'number' },
@@ -54,9 +57,11 @@ var typeConfigRules = {
   }
 };
 
+var validateTypeConfigRules = validator(typeConfigRules, { verbose: true });
+
 
 var resizeConfigRules = {
-  additionalProperties: false,
+  additionalProperties: true,
   properties: {
     skip_size:    { type: 'number' },
     type:         { 'enum': [ 'jpeg', 'png', 'gif' ] },
@@ -70,9 +75,11 @@ var resizeConfigRules = {
   }
 };
 
+var validateResizeConfigRules = validator(resizeConfigRules, { verbose: true });
+
+
 module.exports = _.memoize(function (uploadsConfig) {
   var config = _.cloneDeep(uploadsConfig);
-  revalidator.validate.messages.additionalProperties = 'not allowed';
 
   config.types = config.types || {};
   config.resize = config.resize || {};
@@ -81,26 +88,29 @@ module.exports = _.memoize(function (uploadsConfig) {
   var errors = [];
 
   // Check common uploads options
-  var validationResult = revalidator.validate(config, configRules);
-  errors = errors.concat(validationResult.errors);
+  if (!validateConfigRules(config)) {
+    errors = errors.concat(validateConfigRules.errors);
+  }
 
   // Check type specific options
   _.forEach(config.types, function (type) {
-    validationResult = revalidator.validate(type, typeConfigRules);
-    errors = errors.concat(validationResult.errors);
+    if (!validateTypeConfigRules(config)) {
+      errors = errors.concat(validateTypeConfigRules.errors);
+    }
   });
 
   // Check resize options
   _.forEach(config.resize, function (resize) {
-    validationResult = revalidator.validate(resize, resizeConfigRules);
-    errors = errors.concat(validationResult.errors);
+    if (!validateResizeConfigRules(config)) {
+      errors = errors.concat(validateResizeConfigRules.errors);
+    }
   });
 
   // Throw an error if validation failed
   if (errors.length > 0) {
     var errorMessages = [];
     for (var i = 0; i < errors.length; i++) {
-      errorMessages.push(util.format("'%s' %s", errors[i].property, errors[i].message));
+      errorMessages.push(util.format("'%s' %s '%s'", errors[i].field, errors[i].message, errors[i].value));
     }
     throw new Error(errorMessages.join(', '));
   }

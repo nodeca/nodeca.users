@@ -12,7 +12,7 @@ module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
     properties: {
-      provider: { type: 'String', required: true }
+      provider: { type: 'string', required: true }
     },
     additionalProperties: true
   });

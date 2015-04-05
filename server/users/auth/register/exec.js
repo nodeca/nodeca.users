@@ -6,7 +6,7 @@
 
 
 var _           = require('lodash');
-var revalidator = require('revalidator');
+var validator   = require('is-my-json-valid');
 var recaptcha   = require('nodeca.core/lib/recaptcha.js');
 
 
@@ -36,22 +36,24 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Form input validator
+  var validate = validator({
+    type: 'object',
+    properties: {
+      email: { format: 'email',                               required: true },
+      pass:  { conform: N.models.users.User.validatePassword, required: true },
+      nick:  { conform: N.models.users.User.validateNick,     required: true }
+    }
+  }, { verbose: true });
+
+
   // Validate form data
   //
   N.wire.before(apiPath, function validate_params(env) {
-    var report = revalidator.validate(env.params, {
-      type: 'object',
-      properties: {
-        email: { format: 'email',                               required: true },
-        pass:  { conform: N.models.users.User.validatePassword, required: true },
-        nick:  { conform: N.models.users.User.validateNick,     required: true }
-      }
-    });
-
-    if (!report.valid) {
-      _.forEach(report.errors, function (error) {
+    if (!validate(env.params)) {
+      _.forEach(validate.errors, function (error) {
         // Don't customize form text, just highlight the field.
-        env.data.errors[error.property] = null;
+        env.data.errors[error.field] = null;
       });
 
       // terminate
