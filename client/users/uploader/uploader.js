@@ -47,7 +47,7 @@ function checkFile(data) {
   var message;
 
   if (!allowedFileExt.test(data.file.name)) {
-    message = t('err_invalid_ext', { 'file_name': data.file.name });
+    message = t('err_invalid_ext', { file_name: data.file.name });
     N.wire.emit('notify', message);
     return new Error(message);
   }
@@ -83,7 +83,7 @@ function resizeImage(data, callback) {
     .text(t('progress.compressing'))
     .show(0);
 
-  img.onload = function() {
+  img.onload = function () {
     // To scale image we calculate new width and height, resize image by height and crop by width
     var scaledHeight, scaledWidth;
 
@@ -115,7 +115,7 @@ function resizeImage(data, callback) {
       scaledHeight = resizeConfig.height;
     }
 
-    var quality = (ext === 'jpeg' || ext === 'jpg') ? resizeConfig.jpeg_quality : void(0);
+    var quality = (ext === 'jpeg' || ext === 'jpg') ? resizeConfig.jpeg_quality : void 0;
 
     var width = Math.min(img.height * scaledWidth / scaledHeight, img.width);
     var cropX = (width - img.width) / 2;
@@ -213,7 +213,7 @@ function startUpload(data, callback) {
     dataType: 'json',
     processData: false,
     contentType: false,
-    xhr: function() {
+    xhr: function () {
       var xhr = $.ajaxSettings.xhr();
       var progress;
 

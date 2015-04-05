@@ -19,8 +19,8 @@ module.exports = function (N, apiPath) {
   // On error destroy created User, AuthLink, and pass `err` to `callback`.
   //
   function fail(user_id, err, callback) {
-    N.models.users.User.remove({ '_id' : user_id }, function () {
-      N.models.users.AuthLink.remove({ 'user_id' : user_id }, function () {
+    N.models.users.User.remove({ _id : user_id }, function () {
+      N.models.users.AuthLink.remove({ user_id : user_id }, function () {
         callback(err);
       });
     });

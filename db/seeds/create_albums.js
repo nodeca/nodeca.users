@@ -118,7 +118,7 @@ function createAlbums(callback) {
             .where('_id').in(_.pluck(sections, '_id'))
             .select('moderators')
             .lean(true)
-            .exec(function(err, data) {
+            .exec(function (err, data) {
 
           if (err) {
             next(err);

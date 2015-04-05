@@ -23,7 +23,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function fetch_album(env, callback) {
     N.models.users.Album
-      .findOne({ '_id': env.params.album_id })
+      .findOne({ _id: env.params.album_id })
       .lean(true)
       .exec(function (err, album) {
         if (err) {
@@ -80,9 +80,9 @@ module.exports = function (N, apiPath) {
     N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
 
     env.data.breadcrumbs.push({
-      'text': album.title,
-      'route': 'users.album',
-      'params': { 'user_hid': user.hid, 'album_id': album._id }
+      text:   album.title,
+      route:  'users.album',
+      params: { user_hid: user.hid, album_id: album._id }
     });
 
     env.res.breadcrumbs = env.data.breadcrumbs;

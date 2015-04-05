@@ -48,7 +48,7 @@ var $dialog, cropper, canvas, canvasPreview, canvasPreviewCtx;
 
 var redrawCropperStarted = false;
 
-function _cropperUpdate () {
+function _cropperUpdate() {
   cropper.style.top = (cropperTop * viewRatio + viewOffsetY) + 'px';
   cropper.style.left = (cropperLeft * viewRatio + viewOffsetX) + 'px';
   cropper.style.width = (cropperRight - cropperLeft) * viewRatio + 'px';

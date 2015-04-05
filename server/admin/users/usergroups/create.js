@@ -29,8 +29,8 @@ module.exports = function (N, apiPath) {
 
       if (count === 0) {
         callback({
-          code: N.io.BAD_REQUEST
-        , message: env.t('error_nonexistent_parent_group')
+          code: N.io.BAD_REQUEST,
+          message: env.t('error_nonexistent_parent_group')
         });
       }
 
@@ -50,8 +50,8 @@ module.exports = function (N, apiPath) {
 
       if (count !== 0) {
         callback({
-          code: N.io.BAD_REQUEST
-        , message: env.t('error_short_name_busy')
+          code: N.io.BAD_REQUEST,
+          message: env.t('error_short_name_busy')
         });
         return;
       }
@@ -83,7 +83,7 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        store.set(env.params.settings, { usergroup_id: group._id }, function(err) {
+        store.set(env.params.settings, { usergroup_id: group._id }, function (err) {
           if (err) {
             callback(err);
             return;

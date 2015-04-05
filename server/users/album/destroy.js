@@ -21,7 +21,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function fetch_album(env, callback) {
     N.models.users.Album
-      .findOne({ '_id': env.params.album_id })
+      .findOne({ _id: env.params.album_id })
       .lean(false) // Use as mongoose model
       .exec(function (err, album) {
         if (err) {

@@ -86,8 +86,8 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function fetch_media(env, callback) {
     N.models.users.Album
-      .findOne({ '_id': env.data.media.album_id })
-      .where({ 'user_id': env.data.user._id })//Make sure that user is real owner
+      .findOne({ _id: env.data.media.album_id })
+      .where({ user_id: env.data.user._id }) // Make sure that user is real owner
       .lean(true)
       .exec(function (err, result) {
         if (err) {
@@ -114,7 +114,7 @@ module.exports = function (N, apiPath) {
     env.res.user_hid = env.data.user.hid;
 
     N.models.users.Comment
-      .find({ 'media_id': env.data.media.media_id }, fields.post_in.join(' '))
+      .find({ media_id: env.data.media.media_id }, fields.post_in.join(' '))
       .where('st').in(env.data.statuses)
       .lean(true)
       .exec(function (err, result) {
@@ -164,7 +164,7 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      //sanitize commets statuses
+      // Sanitize commets statuses
       var comments = env.res.comments;
       comments.forEach(function (comment) {
         Comment.sanitize(comment, {
@@ -254,7 +254,7 @@ module.exports = function (N, apiPath) {
     env.data.breadcrumbs.push({
       text   : env.data.album.title,
       route  : 'users.album',
-      params : { 'user_hid': env.data.user.hid, 'album_id': env.data.album._id }
+      params : { user_hid: env.data.user.hid, album_id: env.data.album._id }
     });
 
     env.res.breadcrumbs = env.data.breadcrumbs;

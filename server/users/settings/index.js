@@ -51,7 +51,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  //Fill head and breadcrumbs
+  // Fill head and breadcrumbs
   //
   N.wire.after(apiPath, function fill_head_and_breadcrumbs(env) {
     env.res.head = env.res.head || {};

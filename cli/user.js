@@ -132,8 +132,8 @@ module.exports.run = function (N, args, callback) {
             }
 
             var provider = auth.providers.create({
-              'type': 'plain'
-            , 'email': args.email
+              type:   'plain',
+              email:  args.email
             });
 
             provider.setPass(args.pass, function (err) {

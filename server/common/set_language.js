@@ -25,8 +25,8 @@ module.exports = function (N, apiPath) {
     }
 
     env.extras.setCookie('locale', locale, {
-      path: '/'
-    , maxAge: LOCALE_COOKIE_MAX_AGE
+      path: '/',
+      maxAge: LOCALE_COOKIE_MAX_AGE
     });
 
     if (env.session) {

@@ -8,7 +8,7 @@ module.exports.up = function (N, cb) {
   var usergroupStore = N.settings.getStore('usergroup');
 
   async.series([
-    //add usergroup settings for administrators, members
+    // add usergroup settings for administrators, members
     function (callback) {
       models.users.UserGroup.find({ short_name: { $in: [ 'administrators', 'members' ] } })
         .exec(function (err, groups) {

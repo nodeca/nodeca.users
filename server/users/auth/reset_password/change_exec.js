@@ -6,8 +6,8 @@
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
-    secret_key: { type: 'string', required: true }
-  , password:   { type: 'string', required: true }
+    secret_key: { type: 'string', required: true },
+    password:   { type: 'string', required: true }
   });
 
 

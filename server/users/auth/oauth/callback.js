@@ -24,7 +24,7 @@ module.exports = function (N, apiPath) {
     return ({
       code: N.io.REDIRECT,
       head: {
-        'Location': N.router.linkTo(apiPath)
+        Location: N.router.linkTo(apiPath)
       }
     });
   }
@@ -58,7 +58,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, { priority: -5 }, function check_email_uniqueness(env, callback) {
 
-    if ((env.session.oauth.action !== 'register')){
+    if (env.session.oauth.action !== 'register') {
       callback();
       return;
     }
@@ -93,9 +93,9 @@ module.exports = function (N, apiPath) {
     // Find authlink for oauth data
     N.models.users.AuthLink
         .findOne({
-          'provider_user_id': env.data.oauth.provider_user_id,
-          'type': env.params.provider,
-          'exist' : true
+          provider_user_id: env.data.oauth.provider_user_id,
+          type:             env.params.provider,
+          exist:            true
         })
         .lean(true)
         .exec(function (err, authLink) {
@@ -139,7 +139,7 @@ module.exports = function (N, apiPath) {
           callback({
             code: N.io.REDIRECT,
             head: {
-              'Location': env.data.redirect_url
+              Location: env.data.redirect_url
             }
           });
         });

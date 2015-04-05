@@ -26,7 +26,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, function get_user_albums(env, callback) {
     N.models.users.Album
-      .find({ 'user_id': env.data.user._id })
+      .find({ user_id: env.data.user._id })
       .sort('-default -last_ts')
       .lean(true)
       .exec(function (err, result) {

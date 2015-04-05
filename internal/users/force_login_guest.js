@@ -5,11 +5,11 @@
 module.exports = function (N, apiPath) {
 
   function createRedirect(redirectId) {
-    var loginParams = redirectId ? { 'redirect_id': redirectId } : {};
+    var loginParams = redirectId ? { redirect_id: redirectId } : {};
     return {
       code: N.io.REDIRECT,
       head: {
-        'Location': N.router.linkTo('users.auth.login.show', loginParams)
+        Location: N.router.linkTo('users.auth.login.show', loginParams)
       }
     };
   }

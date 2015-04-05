@@ -50,7 +50,7 @@ module.exports = function (N, apiPath) {
 
     // Check 'can_see_deleted_users' permission
     if (!env.data.settings.can_see_deleted_users) {
-      query.where({ 'exists': true });
+      query.where({ exists: true });
     }
 
     query.exec(function (err, user) {

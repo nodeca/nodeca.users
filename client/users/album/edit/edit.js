@@ -35,7 +35,7 @@ N.wire.before('users.album.edit:delete', function confirm_delete_album(data, cal
 
 N.wire.on('users.album.edit:delete', function delete_album(data) {
   N.io.rpc('users.album.destroy', { album_id: data.$this.data('albumId') }).done(function () {
-    N.wire.emit('navigate.to', { apiPath: 'users.albums_root', params: { 'user_hid': pageParams.user_hid } });
+    N.wire.emit('navigate.to', { apiPath: 'users.albums_root', params: { user_hid: pageParams.user_hid } });
   });
 });
 
@@ -46,7 +46,7 @@ N.wire.on('users.album.edit:select_cover', function select_cover() {
     $('#album-edit__cover input[name="cover_id"]').val(data.cover_id);
     $('#album-edit__cover').addClass('has-cover');
 
-    var imageUrl = N.router.linkTo('core.gridfs', { 'bucket': data.cover_id + '_sm' });
+    var imageUrl = N.router.linkTo('core.gridfs', { bucket: data.cover_id + '_sm' });
     $('#album-edit__cover-img').attr('src', imageUrl);
   });
 });

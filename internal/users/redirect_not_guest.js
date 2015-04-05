@@ -12,7 +12,7 @@ module.exports = function (N, apiPath) {
       return {
         code: N.io.REDIRECT,
         head: {
-          'Location': '/'
+          Location: '/'
         }
       };
     }

@@ -12,7 +12,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
 
 N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
-  function updateAlbumList (albumId, callback) {
+  function updateAlbumList(albumId, callback) {
     N.io.rpc('users.albums_root.list', pageParams).done(function (albumsList) {
       var $listContainer = $('.user-albumlist');
 

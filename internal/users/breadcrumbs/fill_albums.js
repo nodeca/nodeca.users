@@ -19,7 +19,7 @@ module.exports = function (N, apiPath) {
     env.data.breadcrumbs.push({
       text   : env.t('@users.albums_root.breadcrumbs_title'),
       route  : 'users.albums_root',
-      params : { 'user_hid': user.hid }
+      params : { user_hid: user.hid }
     });
   });
 };

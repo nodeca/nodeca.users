@@ -33,11 +33,11 @@ module.exports = function (N, apiPath) {
     // Check if data already loaded.
     if (env.data.user) { return callback(); }
 
-    var query = User.findOne({ 'hid': env.params.user_hid }).lean(true);
+    var query = User.findOne({ hid: env.params.user_hid }).lean(true);
 
     // Check 'can_see_deleted_users' permission
     if (!env.data.settings.can_see_deleted_users) {
-      query.where({ 'exists': true });
+      query.where({ exists: true });
     }
 
     query.exec(function (err, user) {

@@ -28,7 +28,7 @@ module.exports = function (N, apiPath) {
     }
 
     N.models.users.Album
-      .findOne({ '_id': env.params.album_id })
+      .findOne({ _id: env.params.album_id })
       .lean(true)
       .exec(function (err, album) {
         if (err) {

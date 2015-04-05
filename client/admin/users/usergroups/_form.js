@@ -20,8 +20,8 @@ var N;
 // config (Object): Must contain: `group`, `overriden`, `forced`, and `value`.
 //
 function Setting(form, name, schema, config) {
-  var tName = 'admin.core.setting_names.' + name
-    , tHelp = 'admin.core.setting_names.' + name + '_help';
+  var tName = 'admin.core.setting_names.' + name,
+      tHelp = 'admin.core.setting_names.' + name + '_help';
 
   // Read-only slots.
   //

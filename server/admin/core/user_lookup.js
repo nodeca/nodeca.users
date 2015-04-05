@@ -13,8 +13,8 @@ function escapeRegexp(source) {
 //
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
-    nick:   { type: 'string',  required: true,  minLength: 1     }
-  , strict: { type: 'boolean', required: false, 'default': false }
+    nick:   { type: 'string',  required: true,  minLength: 1     },
+    strict: { type: 'boolean', required: false, 'default': false }
   });
 
   N.wire.on(apiPath, function moderator_find_user(env, callback) {

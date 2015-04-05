@@ -74,7 +74,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  //Fill head and breadcrumbs
+  // Fill head and breadcrumbs
   //
   N.wire.after(apiPath, function fill_head_and_breadcrumbs(env) {
     var user = env.data.user;

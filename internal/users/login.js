@@ -58,7 +58,7 @@ module.exports = function (N, apiPath) {
       }
 
       // Try to find active redirect bound to this ip
-      LoginRedirect.findOne({ '_id': env.data.redirect_id, used: false, ip: env.req.ip })
+      LoginRedirect.findOne({ _id: env.data.redirect_id, used: false, ip: env.req.ip })
           .lean(true)
           .exec(function (err, link) {
 

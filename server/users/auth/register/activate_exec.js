@@ -70,7 +70,7 @@ module.exports = function (N, apiPath) {
     }
 
     N.models.users.User
-        .findOne({ 'nick': token.reg_info.nick })
+        .findOne({ nick: token.reg_info.nick })
         .select('_id')
         .lean(true)
         .exec(function (err, id) {
@@ -163,7 +163,7 @@ module.exports = function (N, apiPath) {
         callback({
           code: N.io.REDIRECT,
           head: {
-            'Location': N.router.linkTo('users.auth.register.activate_done')
+            Location: N.router.linkTo('users.auth.register.activate_done')
           }
         });
       });

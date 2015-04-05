@@ -13,7 +13,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.before(apiPath, function fetch_user_media (env, callback) {
+  N.wire.before(apiPath, function fetch_user_media(env, callback) {
     N.models.users.MediaInfo
       .findOne({ media_id: env.params.media_id })
       .lean(true)

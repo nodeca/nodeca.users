@@ -29,7 +29,7 @@ N.wire.after('navigate.done:' + module.apiPath, function uploader_setup() {
         uploaded: null
       };
 
-      N.wire.emit('users.uploader:add', params, function() {
+      N.wire.emit('users.uploader:add', params, function () {
         $('#users-medias-list').prepend(
           $(N.runtime.render('users.album.list', { medias: params.uploaded, user_hid: pageParams.user_hid }))
         );

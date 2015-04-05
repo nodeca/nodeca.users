@@ -14,7 +14,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function fetch_album(env, callback) {
     N.models.users.Album
-      .findOne({ '_id': env.params.album_id })
+      .findOne({ _id: env.params.album_id })
       .lean(true)
       .exec(function (err, album) {
         if (err) {
@@ -45,7 +45,7 @@ module.exports = function (N, apiPath) {
   // Create media by media_url
   //
   N.wire.on(apiPath, function create_media(env, callback) {
-    N.medialinker('albums').render(env.params.media_url, function(err, result) {
+    N.medialinker('albums').render(env.params.media_url, function (err, result) {
       if (err) {
         callback({ code: N.io.CLIENT_ERROR, message: env.t('err_cannot_parse') });
         return;

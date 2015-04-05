@@ -194,7 +194,8 @@ function saveFiles(previews, maxSize, callback) {
       function (key, next) {
         var data = previews[key];
 
-        var params = { 'contentType': mimoza.getMimeType(data.type) };
+        var params = { contentType: mimoza.getMimeType(data.type) };
+
         if (key === 'orig') {
           params._id = origId;
         } else {

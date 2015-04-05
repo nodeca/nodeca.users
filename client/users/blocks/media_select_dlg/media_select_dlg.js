@@ -99,7 +99,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
       // Hide current dialog and start uploader dialog
       $dialog.on('hidden.bs.modal', function () {
 
-        N.wire.emit('users.uploader:add', params, function() {
+        N.wire.emit('users.uploader:add', params, function () {
           if (params.uploaded.length === 0) {
 
             // No files uploaded. Show media select dialog again
@@ -157,7 +157,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
 
   // Append more photos button handler
   //
-  N.wire.on('users.blocks.media_select_dlg:more_photos', function more_photos () {
+  N.wire.on('users.blocks.media_select_dlg:more_photos', function more_photos() {
     N.io.rpc('users.media_select.index', {
       user_hid: N.runtime.user_hid,
       album_id: albumID,
@@ -186,7 +186,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
   });
 
 
-  N.wire.on('users.blocks.media_select_dlg:media_select', function media_select (data) {
+  N.wire.on('users.blocks.media_select_dlg:media_select', function media_select(data) {
     var id = data.$this.data('media-id');
     var $listItem = $('#media-select-dlg__media-' + id);
 
@@ -208,7 +208,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
 
   // Handle albums select change
   //
-  N.wire.on('users.blocks.media_select_dlg:album_select', function album_select (data) {
+  N.wire.on('users.blocks.media_select_dlg:album_select', function album_select(data) {
     /*eslint-disable no-undefined*/
     loadDialogContent(data.$this.val() || undefined);
   });
@@ -216,7 +216,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
 
   // OK button handler
   //
-  N.wire.on('users.blocks.media_select_dlg:done', function apply () {
+  N.wire.on('users.blocks.media_select_dlg:done', function ok() {
     destroyDialog(doneCallback);
   });
 

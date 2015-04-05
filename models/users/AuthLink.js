@@ -18,39 +18,39 @@ module.exports = function (N, collectionName) {
   //
   var AuthLink = new Schema({
 
-    user_id          : Schema.Types.ObjectId,
+    user_id:          Schema.Types.ObjectId,
 
     // Provider types.
     //
     // - `plain` - just email/password pair
     // - `yandex`, `facebook`, `vkontakte`, `twitter` - different oauth
-    type             : String,
+    type:             String,
 
     // Email is mandatory to `email` provider
     // We also will require it everywhere, when possible (twitter don't have it)
-    email            : String,
+    email:            String,
 
     // For oauth providers only, external user id
-    provider_user_id : String,
+    provider_user_id: String,
 
     // true if active, false when deleted
-    exists           : { type: Boolean, 'default': true },
+    exists:           { type: Boolean, 'default': true },
 
     // Creation date
-    ts               : { type: Date, 'default': Date.now },
+    ts:               { type: Date, 'default': Date.now },
 
     // Creation ip
-    ip               : String,
+    ip:               String,
 
     // Last login date
-    last_ts          : { type: Date, 'default': Date.now },
+    last_ts:          { type: Date, 'default': Date.now },
 
     // Last login ip
-    last_ip          : String,
+    last_ip:          String,
 
     // metadata, if we like to extract extended info from oauth providers
     // pass, first_name, last_name
-    meta             : {}
+    meta:             {}
   },
   {
     versionKey : false
@@ -80,7 +80,7 @@ module.exports = function (N, collectionName) {
       return;
     }
     var self = this;
-    password.hash(pass, function(err, hash) {
+    password.hash(pass, function (err, hash) {
       if (err) {
         callback(err);
         return;

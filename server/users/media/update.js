@@ -15,7 +15,7 @@ module.exports = function (N, apiPath) {
 
   // Fetch media
   //
-  N.wire.before(apiPath, function fetch_media (env, callback) {
+  N.wire.before(apiPath, function fetch_media(env, callback) {
     var mTypes = N.models.users.MediaInfo.types;
 
     N.models.users.MediaInfo

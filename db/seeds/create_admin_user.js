@@ -40,23 +40,23 @@ module.exports = function (N, cb) {
     function (next) {
       // get administrators group Id
       models.users.UserGroup.findOne({ short_name: 'administrators' })
-        .exec(function(err, group) {
-          if (err) {
-            next(err);
-            return;
-          }
-          user.hid = 1;
-          user.nick = login;
-          user.email = email;
-          user.joined_ts = new Date();
-          user.post_count = 1;
-          user.usergroups = [ group ];
+          .exec(function (err, group) {
+        if (err) {
+          next(err);
+          return;
+        }
+        user.hid = 1;
+        user.nick = login;
+        user.email = email;
+        user.joined_ts = new Date();
+        user.post_count = 1;
+        user.usergroups = [ group ];
 
-          user.first_name = 'Admin';
-          user.last_name = 'Adminovski';
+        user.first_name = 'Admin';
+        user.last_name = 'Adminovski';
 
-          user.save(next);
-        });
+        user.save(next);
+      });
     },
 
     // create auth link

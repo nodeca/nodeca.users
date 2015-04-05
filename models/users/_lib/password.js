@@ -24,13 +24,12 @@ exports.check = function checkPassword(pass, hash, callback) {
     return;
   }
 
-  var parts = hash.split('$');
-  parts.shift();
+  var parts = hash.split('$').shift();
 
-  var itCount = parseInt(parts[1], 10);
-  var salt = new Buffer(parts[2],'base64');
-  var test = parts[3];
-  var keyLen = (new Buffer(test, 'base64')).length;
+  var itCount = parseInt(parts[1], 10),
+      salt    = new Buffer(parts[2], 'base64'),
+      test    = parts[3],
+      keyLen  = (new Buffer(test, 'base64')).length;
 
   callback(null, test === pbkdf2(new Buffer(pass), salt, itCount, keyLen).toString('base64'));
 };

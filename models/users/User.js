@@ -97,8 +97,7 @@ module.exports = function (N, collectionName) {
     if (this.isModified('nick') || this.isModified('first_name') || this.isModified('last_name')) {
       if (!!this.first_name && !!this.last_name) {
         this.name = this.first_name + ' (' + this.nick + ') ' + this.last_name;
-      }
-      else {
+      } else {
         this.name = this.nick;
       }
     }
@@ -175,7 +174,7 @@ module.exports = function (N, collectionName) {
     }
 
     var self = this;
-    N.models.core.Increment.next('user', function(err, value) {
+    N.models.core.Increment.next('user', function (err, value) {
       if (err) {
         callback(err);
         return;

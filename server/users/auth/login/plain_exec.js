@@ -143,7 +143,11 @@ module.exports = function (N, apiPath) {
     }
 
     N.models.users.AuthLink
-        .findOne({ 'email': env.params.email_or_nick, 'type': 'plain', 'exists' : true })
+        .findOne({
+          email: env.params.email_or_nick,
+          type: 'plain',
+          exists: true
+        })
         .exec(function (err, authLink) {
 
       if (err) {
@@ -248,7 +252,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, function login_do(env, callback) {
 
-    env.data.authLink.checkPass(env.params.pass, function(err, success) {
+    env.data.authLink.checkPass(env.params.pass, function (err, success) {
       if (err) {
         callback(err);
         return;

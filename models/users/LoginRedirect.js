@@ -10,11 +10,13 @@ var Schema = Mongoose.Schema;
 module.exports = function (N, collectionName) {
 
   var LoginRedirect = new Schema({
-    'url'   : String,
+    url:    String,
+
     // Reject all users with different ip
-    'ip'    : String,
+    ip:     String,
+
     // Allow use redirect only once
-    'used'  : { type: Boolean, 'default': false }
+    used:   { type: Boolean, 'default': false }
   }, {
     versionKey: false,
     // 1 MB, ~10000 records

@@ -34,8 +34,8 @@ module.exports = function (N, apiPath) {
 
       if (count === 0) {
         callback({
-          code: N.io.BAD_REQUEST
-        , message: env.t('error_nonexistent_parent_group')
+          code: N.io.BAD_REQUEST,
+          message: env.t('error_nonexistent_parent_group')
         });
       }
 
@@ -48,7 +48,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function usergroup_search(env, callback) {
 
-    UserGroup.findById(env.params._id).exec(function(err, group) {
+    UserGroup.findById(env.params._id).exec(function (err, group) {
 
       if (err) {
         callback(err);
@@ -57,8 +57,8 @@ module.exports = function (N, apiPath) {
 
       if (!group) {
         callback({
-          code: N.io.BAD_REQUEST
-        , message: env.t('error_not_exists')
+          code: N.io.BAD_REQUEST,
+          message: env.t('error_not_exists')
         });
         return;
       }
@@ -83,8 +83,8 @@ module.exports = function (N, apiPath) {
 
       if (circularGroup) {
         callback({
-          code: N.io.BAD_REQUEST
-        , message: env.t('error_circular_dependency')
+          code: N.io.BAD_REQUEST,
+          message: env.t('error_circular_dependency')
         });
         return;
       }
@@ -106,7 +106,7 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        store.set(env.params.settings, { usergroup_id: group._id }, function(err) {
+        store.set(env.params.settings, { usergroup_id: group._id }, function (err) {
           if (err) {
             callback(err);
             return;

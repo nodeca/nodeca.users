@@ -17,7 +17,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function usergroup_search(env, callback) {
 
-    UserGroup.findById(env.params._id).exec(function(err, group) {
+    UserGroup.findById(env.params._id).exec(function (err, group) {
 
       if (err) {
         callback(err);
@@ -53,7 +53,7 @@ module.exports = function (N, apiPath) {
 
     UserGroup.findOne({ parent_group: env.data.userGroup._id })
         .lean(true)
-        .exec(function(err, child) {
+        .exec(function (err, child) {
 
       if (err) {
         callback(err);
@@ -77,7 +77,7 @@ module.exports = function (N, apiPath) {
     var group = env.data.userGroup;
 
     // Delete only if no users in group.
-    User.count({ usergroups: group._id }).exec(function(err, usersCount) {
+    User.count({ usergroups: group._id }).exec(function (err, usersCount) {
       if (err) {
         callback(err);
         return;

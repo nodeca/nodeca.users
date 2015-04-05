@@ -18,7 +18,7 @@ function Setting(name, schema, value) {
 
   this.value = ko.observable(value || schema.default);
 
-  this.modified = ko.computed(function() {
+  this.modified = ko.computed(function () {
     return self._value !== self.value();
   });
 }
