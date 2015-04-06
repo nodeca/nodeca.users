@@ -21,16 +21,22 @@ var nextMediaID;
 
 
 function loadDialogContent(selectedAlbumID) {
-  var user_hid = N.runtime.user_hid;
+  var params = {
+    user_hid: N.runtime.user_hid
+  };
 
-  N.io.rpc('users.media_select.index', { album_id: selectedAlbumID, user_hid: user_hid }).done(function (res) {
+  if (selectedAlbumID) {
+    params.album_id = selectedAlbumID;
+  }
+
+  N.io.rpc('users.media_select.index', params).done(function (res) {
     // Add virtual item (all photos) to albums list
     res.albums.unshift({ title: t('all') });
 
     var $dlgBody = $(N.runtime.render('users.blocks.media_select_dlg.dlg_body', {
       albums: res.albums,
       medias: res.medias,
-      user_hid: user_hid,
+      user_hid: N.runtime.user_hid,
       selected_album_id: selectedAlbumID
     }));
 
@@ -158,11 +164,16 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
   // Append more photos button handler
   //
   N.wire.on('users.blocks.media_select_dlg:more_photos', function more_photos() {
-    N.io.rpc('users.media_select.index', {
+    var params = {
       user_hid: N.runtime.user_hid,
-      album_id: albumID,
       from_media_id: nextMediaID
-    }).done(function (req) {
+    };
+
+    if (albumID) {
+      params.album_id = albumID;
+    }
+
+    N.io.rpc('users.media_select.index', params).done(function (req) {
 
       var $medias = $(N.runtime.render('users.blocks.media_select_dlg.media_list', {
         medias: req.medias,
@@ -209,8 +220,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
   // Handle albums select change
   //
   N.wire.on('users.blocks.media_select_dlg:album_select', function album_select(data) {
-    /*eslint-disable no-undefined*/
-    loadDialogContent(data.$this.val() || undefined);
+    loadDialogContent(data.$this.val());
   });
 
 
