@@ -15,6 +15,7 @@ module.exports = function (N, apiPath) {
 
     // Delete session from redis first, because otherwise in case of failure
     // users can still log in using this session even if a mongo token is gone
+    // (and clearing all tokens in mongo afterwards won't affect this session).
     //
     N.redis.del('sess:' + env.session_id, function (err) {
       if (err) {
@@ -28,12 +29,23 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        // If there are no errors, we can finally set session to null,
-        // so core could reset user cookie
+        // Repeat session deletion, because session might be restored in the time
+        // between redis and mongo calls above (e.g. race condition with a parallel
+        // request).
         //
-        env.session = null;
+        N.redis.del('sess:' + env.session_id, function (err) {
+          if (err) {
+            callback(err);
+            return;
+          }
 
-        callback();
+          // If there are no errors, we can finally set session to null,
+          // so core could reset user cookie
+          //
+          env.session = null;
+
+          callback();
+        });
       });
     });
   });
