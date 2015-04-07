@@ -151,20 +151,34 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      N.wire.emit('internal:users.login', env, function (err) {
+      // authLink info is needed to create TokenLogin
+      //
+      // TODO: when we will have oauth registration, it should select link based on
+      //       env.data.oauth_info
+      //
+      N.models.users.AuthLink.findOne({ user_id: env.data.user._id }, function (err, authLink) {
         if (err) {
           callback(err);
           return;
         }
 
-        // Use redirect instead of direct page rendering, because
-        // we need to reload client environment with the new user data
-        //
-        callback({
-          code: N.io.REDIRECT,
-          head: {
-            Location: N.router.linkTo('users.auth.register.activate_done')
+        env.data.authLink = authLink;
+
+        N.wire.emit('internal:users.login', env, function (err) {
+          if (err) {
+            callback(err);
+            return;
           }
+
+          // Use redirect instead of direct page rendering, because
+          // we need to reload client environment with the new user data
+          //
+          callback({
+            code: N.io.REDIRECT,
+            head: {
+              Location: N.router.linkTo('users.auth.register.activate_done')
+            }
+          });
         });
       });
     });
