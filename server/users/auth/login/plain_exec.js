@@ -18,8 +18,8 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     email_or_nick: { type: 'string' },
     pass:          { type: 'string' },
-    recaptcha_challenge_field: { type: 'string', 'default': '' },
-    recaptcha_response_field:  { type: 'string', 'default': '' },
+    recaptcha_challenge_field: { type: 'string' },
+    recaptcha_response_field:  { type: 'string' },
     redirect_id: { format: 'mongo' }
   });
 
