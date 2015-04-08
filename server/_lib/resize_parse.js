@@ -26,10 +26,32 @@ var mimoza      = require('mimoza');
 var validator   = require('is-my-json-valid');
 var util        = require('util');
 
-var configRules = {
+
+var resizeConfigSchema = {
+  type: 'object',
+  additionalProperties: false,
+  patternProperties: {
+    '^(orig|md|sm)$': {
+      additionalProperties: false,
+      properties: {
+        skip_size:    { type: 'number' },
+        type:         { 'enum': [ 'jpeg', 'png', 'gif' ] },
+        from:         { 'enum': [ 'orig', 'md', 'sm' ] },
+        width:        { type: 'number' },
+        height:       { type: 'number' },
+        max_width:    { type: 'number' },
+        max_height:   { type: 'number' },
+        jpeg_quality: { type: 'number' },
+        unsharp:      { type: 'boolean' }
+      }
+    }
+  }
+};
+
+var configSchema = {
   additionalProperties: false,
   properties: {
-    extentions: {
+    extentions:    {
       type: 'array',
       uniqueItems: true,
       minItems: 1,
@@ -39,43 +61,33 @@ var configRules = {
     max_size:      { type: 'number' },
     jpeg_quality:  { type: 'number' },
     gif_animation: { type: 'boolean' },
-    resize:        { type: 'object' },
-    types:         { type: 'object' }
+    resize:        resizeConfigSchema,
+    types:         {
+      type: 'object',
+      additionalProperties: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          max_size: { type: 'number' }
+        }
+      },
+      patternProperties: {
+        '^(jpeg|png|gif)$': {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            max_size:      { type: 'number' },
+            jpeg_quality:  { type: 'number' },
+            gif_animation: { type: 'boolean' },
+            resize:        resizeConfigSchema
+          }
+        }
+      }
+    }
   }
 };
 
-var validateConfigRules = validator(configRules, { verbose: true });
-
-
-var typeConfigRules = {
-  additionalProperties: true,
-  properties: {
-    max_size:      { type: 'number' },
-    jpeg_quality:  { type: 'number' },
-    gif_animation: { type: 'boolean' },
-    resize:        { type: 'object' }
-  }
-};
-
-var validateTypeConfigRules = validator(typeConfigRules, { verbose: true });
-
-
-var resizeConfigRules = {
-  additionalProperties: true,
-  properties: {
-    skip_size:    { type: 'number' },
-    type:         { 'enum': [ 'jpeg', 'png', 'gif' ] },
-    from:         { 'enum': [ 'orig', 'md', 'sm' ] },
-    width:        { type: 'number' },
-    height:       { type: 'number' },
-    max_width:    { type: 'number' },
-    max_height:   { type: 'number' },
-    jpeg_quality: { type: 'number' },
-    unsharp:      { type: 'boolean' }
-  }
-};
-
-var validateResizeConfigRules = validator(resizeConfigRules, { verbose: true });
+var validate = validator(configSchema, { verbose: true });
 
 
 module.exports = _.memoize(function (uploadsConfig) {
@@ -84,34 +96,12 @@ module.exports = _.memoize(function (uploadsConfig) {
   config.types = config.types || {};
   config.resize = config.resize || {};
 
-  // Validate options
-  var errors = [];
+  // Check uploads options, throw an error if validation failed
+  if (!validate(config)) {
+    var errorMessages = validate.errors.map(function (error) {
+      return util.format("'%s' %s '%s'", error.field, error.message, error.value);
+    });
 
-  // Check common uploads options
-  if (!validateConfigRules(config)) {
-    errors = errors.concat(validateConfigRules.errors);
-  }
-
-  // Check type specific options
-  _.forEach(config.types, function (type) {
-    if (!validateTypeConfigRules(config)) {
-      errors = errors.concat(validateTypeConfigRules.errors);
-    }
-  });
-
-  // Check resize options
-  _.forEach(config.resize, function (resize) {
-    if (!validateResizeConfigRules(config)) {
-      errors = errors.concat(validateResizeConfigRules.errors);
-    }
-  });
-
-  // Throw an error if validation failed
-  if (errors.length > 0) {
-    var errorMessages = [];
-    for (var i = 0; i < errors.length; i++) {
-      errorMessages.push(util.format("'%s' %s '%s'", errors[i].field, errors[i].message, errors[i].value));
-    }
     throw new Error(errorMessages.join(', '));
   }
 
