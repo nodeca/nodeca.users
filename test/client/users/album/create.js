@@ -1,4 +1,4 @@
-/*global $, assert, trigger*/
+/*global $, assert, trigger, document*/
 
 'use strict';
 
