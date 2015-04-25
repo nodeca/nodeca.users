@@ -17,7 +17,7 @@ en-US:
       Must contain both digits and letters (other symbols also possible).
       Also should have > 8 symbols.
 
-    apply: Ok
+    ok: Ok
 
   change_done_show:
     message: Your password was changed.

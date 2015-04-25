@@ -1,7 +1,7 @@
 en-US:
   title: Select files
   cancel: Cancel
-  apply: OK
+  ok: OK
   all: All
   dlg_body:
     create_album: New album
