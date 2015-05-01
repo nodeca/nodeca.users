@@ -1,0 +1,2 @@
+cron:
+  cleanup_deleted_media: 0 0 5 * * * # everyday at 5:00
