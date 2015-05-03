@@ -71,6 +71,11 @@ N.wire.once('navigate.done', function identicon_replace() {
       throw new Error('invalid avatar size: ' + size_name);
     }
 
+    // If current user miss avatar info - try to restore
+    if (user_id === N.runtime.user_id && N.runtime.user_avatar) {
+      avatar_id = avatar_id || N.runtime.user_avatar;
+    }
+
     $img.removeClass('_identicon');
     if (avatar_id) {
       $img.attr('src', N.router.linkTo('core.gridfs', { bucket: avatar_id + (size_name ? '_' + size_name : '') }));

@@ -1,12 +1,13 @@
-if self.is_member
+if self.runtime.is_member
   li.dropdown
-    a.dropdown-toggle.icon.icon-space-after.icon-user(href='#', data-toggle='dropdown')
-      | #{self.user_name}
-      b.caret
+    a.dropdown-toggle(href='#', data-toggle='dropdown')
+      img.navbar-auth__avatar()&attributes(self.avatar(self.runtime.user_id, 'md'))
     ul.dropdown-menu
-      li: a(href=self.link_to('users.profile'))= self.t('profile')
+      li: a(href=self.link_to('users.profile'))=self.t('profile')
+
       - if (self.settings.can_access_acp)
         li: a(href=self.link_to('admin.core.dashboard'), target='_blank')= self.t('admin')
+
       li.divider
       li: a(href='#', data-on-click='common.blocks.logout')= self.t('logout')
 else
