@@ -1,3 +1,3 @@
 cron:
-  cleanup_deleted_media: 0 0 5 * * * # everyday at 5:00
+  deleted_media_cleanup: 0 0 5 * * * # everyday at 5:00
   last_active_update:    0 */10 * * * * # every 10 minutes
