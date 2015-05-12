@@ -107,10 +107,10 @@ module.exports = function (N, apiPath) {
       }
 
       // Check CSRF
-      if (!env.session.csrf || !fields.csrf || (env.session.csrf !== fields.csrf)) {
+      if (!env.session.token_csrf || !fields.csrf || (env.session.token_csrf !== fields.csrf)) {
         fail({
           code: N.io.INVALID_CSRF_TOKEN,
-          data: { token: env.session.csrf }
+          data: { token: env.session.token_csrf }
         });
         return;
       }

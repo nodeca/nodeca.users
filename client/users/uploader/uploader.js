@@ -202,7 +202,7 @@ function startUpload(data, callback) {
   var formData = new FormData();
 
   formData.append('file', data.file);
-  formData.append('csrf', N.runtime.csrf);
+  formData.append('csrf', N.runtime.token_csrf);
 
   var $progressInfo = $('#' + data.uploaderFileId);
 

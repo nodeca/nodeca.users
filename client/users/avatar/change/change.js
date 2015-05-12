@@ -641,7 +641,7 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
 
         formData = new FormData();
         formData.append('file', blob);
-        formData.append('csrf', N.runtime.csrf);
+        formData.append('csrf', N.runtime.token_csrf);
 
         callback();
 
