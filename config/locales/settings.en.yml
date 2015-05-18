@@ -4,8 +4,7 @@ i18n:
       core:
         group_names:
           register: Registration
-          votes: Votes
-          content: Content
+          votes: Voting
 
         category_names:
           votes_common: Common
