@@ -219,6 +219,19 @@ gridIntervalTightXs = 10px //round(gridInterval / downScaleXs)
   .thumb__inner
     border-radius cornerRadiusSm
 
+
+// Reset styles for bigger image sizes
+.thumb__m-md, .thumb__m-orig
+  .thumb
+  &.thumb
+    width auto
+    height auto
+
+  .thumb__image
+    max-width 100%
+    max-height none
+
+
 //
 // Responsive rules (reduce size)
 //
