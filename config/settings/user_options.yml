@@ -4,7 +4,7 @@ setting_schemas:
       type: boolean
       default: false
       category_key: editor
-    edit_no_smiles:
+    edit_no_emojis:
       type: boolean
       default: false
       category_key: editor

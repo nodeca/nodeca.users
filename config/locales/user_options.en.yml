@@ -6,5 +6,5 @@ i18n:
         editor: Editor
 
       setting_names:
-        edit_no_mlinks: Disallow parse medialinks
-        edit_no_smiles: Disallow parse smiles
+        edit_no_mlinks: Don't parse medialinks
+        edit_no_emojis: Don't parse emoticons
