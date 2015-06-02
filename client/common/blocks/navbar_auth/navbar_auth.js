@@ -7,7 +7,7 @@ N.wire.once('navigate.done', function () {
     return;
   }
 
-  N.live.on('users.private.logout.' + N.runtime.user_id, function () {
+  N.live.on('remote.users.private.logout.' + N.runtime.user_id, function () {
     var $reloadDialog = $(N.runtime.render('common.blocks.navbar_auth.reload_after_logout_dlg'));
 
     $('body').append($reloadDialog);
