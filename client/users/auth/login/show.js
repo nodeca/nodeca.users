@@ -68,6 +68,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
     N.io.rpc('users.auth.login.plain_exec', loginParams)
       .done(function (res) {
 
+        // Notify other browser tabs about login
+        N.live.emit('local.users.auth.login');
+
         // If `redirectId` specified - use `redirect_url` form response
         if (redirectId) {
           window.location = res.redirect_url;

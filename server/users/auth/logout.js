@@ -44,9 +44,6 @@ module.exports = function (N, apiPath) {
           //
           env.session = null;
 
-          // Notify user about logout
-          N.live.emit('users.private.logout.' + env.user_info.user_id, {});
-
           callback();
         });
       });
