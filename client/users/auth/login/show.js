@@ -84,16 +84,14 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         }
 
         // Check that previous page can be loaded, because it can return redirect or forbid access
-        N.io.rpc(previousPageParams.apiPath, previousPageParams.params, function (err) {
-
-          if (err) {
+        N.io.rpc(previousPageParams.apiPath, previousPageParams.params, { handleAllErrors: true })
+          .done(function () {
+            // Navigate to previous page
+            window.location = N.router.linkTo(previousPageParams.apiPath, previousPageParams.params);
+          })
+          .fail(function () {
             window.location = res.redirect_url;
-            return;
-          }
-
-          // Navigate to previous page
-          window.location = N.router.linkTo(previousPageParams.apiPath, previousPageParams.params);
-        });
+          });
       })
       .fail(function (err) {
         if (err.captcha) {
