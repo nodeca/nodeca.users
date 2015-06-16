@@ -33,10 +33,13 @@ module.exports = function (N, apiPath) {
       env.session.locale = locale;
     }
 
-    if (env.user_info.user_id) {
-      N.models.users.User.update({ _id: env.user_info.user_id }, { locale: locale }, callback);
-    } else {
+    env.user_info.locale = locale;
+
+    if (!env.user_info.user_id) {
       callback();
+      return;
     }
+
+    N.models.users.User.update({ _id: env.user_info.user_id }, { locale: locale }, callback);
   });
 };
