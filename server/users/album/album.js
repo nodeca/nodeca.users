@@ -67,7 +67,7 @@ module.exports = function (N, apiPath) {
   // Fill head meta
   //
   N.wire.after(apiPath, function fill_head(env) {
-    var username = env.runtime.is_member ? env.data.user.name : env.data.user.nick;
+    var username = env.user_info.is_member ? env.data.user.name : env.data.user.nick;
 
     env.res.head = env.res.head || {};
 

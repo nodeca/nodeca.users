@@ -239,7 +239,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function fill_head(env) {
     var user = env.data.user;
-    var username = env.runtime.is_member ? user.name : user.nick;
+    var username = env.user_info.is_member ? user.name : user.nick;
 
     env.res.head = env.res.head || {};
     env.res.head.title = env.t('title', { album: env.data.album.title, username: username });

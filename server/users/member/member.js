@@ -95,7 +95,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function fill_head_and_breadcrumbs(env) {
     var user = env.data.user;
-    var name = env.runtime.is_member ? user.name : user.nick;
+    var name = env.user_info.is_member ? user.name : user.nick;
 
     env.res.head = env.res.head || {};
     env.res.head.title = name;

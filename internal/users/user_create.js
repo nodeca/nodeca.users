@@ -34,7 +34,7 @@ module.exports = function (N, apiPath) {
 
     user.nick       = env.data.reg_info.nick;
     user.joined_ip  = env.req.ip;
-    user.locale     = env.runtime.locale || N.config.locales['default'];
+    user.locale     = env.user_info.locale || N.config.locales['default'];
     user.email      = env.data.reg_info.email;
 
     user.save(function (err, user) {

@@ -39,7 +39,7 @@ module.exports = function (N, apiPath) {
     var user = env.data.user;
 
     env.res.head = env.res.head || {};
-    env.res.head.title = env.t('title_with_user', { user: env.runtime.is_member ? user.name : user.nick });
+    env.res.head.title = env.t('title_with_user', { user: env.user_info.is_member ? user.name : user.nick });
   });
 
 
