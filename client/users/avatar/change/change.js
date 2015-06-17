@@ -31,6 +31,9 @@ var cropperTop,
     cropperRight,
     cropperBottom,
     cropperLeft,
+    // Cropper size
+    cropperMinHeight,
+    cropperMinWidth,
     // Canvas shift + real scale
     viewOffsetX,  // viewport (canvas) offset from parent element
     viewOffsetY,
@@ -188,7 +191,7 @@ function cropperResize(mouseX, mouseY, dir) {
       refX = cropperLeft + (cropperRight - cropperLeft) / 2;
       refY = cropperTop;
       maxBottom = imageHeight;
-      minBottom = refY + avatarHeight;
+      minBottom = refY + cropperMinHeight;
       bottom = clamp(mouseY, minBottom, maxBottom);
       top = refY;
       left = refX - (bottom - top) * ratio / 2;
@@ -208,7 +211,7 @@ function cropperResize(mouseX, mouseY, dir) {
       refX = cropperLeft + (cropperRight - cropperLeft) / 2;
       refY = cropperBottom;
       minTop = 0;
-      maxTop = refY - avatarHeight;
+      maxTop = refY - cropperMinHeight;
       top = clamp(mouseY, minTop, maxTop);
       bottom = refY;
       left = refX - (bottom - top) * ratio / 2;
@@ -228,7 +231,7 @@ function cropperResize(mouseX, mouseY, dir) {
       refX = cropperRight;
       refY = cropperTop + (cropperBottom - cropperTop) / 2;
       minLeft = 0;
-      maxLeft = refX - avatarWidth;
+      maxLeft = refX - cropperMinWidth;
       left = clamp(mouseX, minLeft, maxLeft);
       right = refX;
       top = refY - (right - left) / ratio / 2;
@@ -247,7 +250,7 @@ function cropperResize(mouseX, mouseY, dir) {
       // The middle of left cropper border
       refX = cropperLeft;
       refY = cropperTop + (cropperBottom - cropperTop) / 2;
-      minRight = refX + avatarWidth;
+      minRight = refX + cropperMinWidth;
       maxRight = imageWidth;
       right = clamp(mouseX, minRight, maxRight);
       left = refX;
@@ -267,7 +270,7 @@ function cropperResize(mouseX, mouseY, dir) {
       // Top left corner
       refX = cropperLeft;
       refY = cropperTop;
-      minRight = refX + avatarWidth;
+      minRight = refX + cropperMinWidth;
       maxRight = imageWidth;
       right = clamp(mouseX, minRight, maxRight);
       left = refX;
@@ -286,7 +289,7 @@ function cropperResize(mouseX, mouseY, dir) {
       refX = cropperRight;
       refY = cropperBottom;
       minLeft = 0;
-      maxLeft = refX - avatarWidth;
+      maxLeft = refX - cropperMinWidth;
       left = clamp(mouseX, minLeft, maxLeft);
       right = refX;
       bottom = refY;
@@ -304,7 +307,7 @@ function cropperResize(mouseX, mouseY, dir) {
       refX = cropperLeft;
       refY = cropperBottom;
       minTop = 0;
-      maxTop = refY - avatarHeight;
+      maxTop = refY - cropperMinHeight;
       top = clamp(mouseY, minTop, maxTop);
       left = refX;
       bottom = refY;
@@ -321,7 +324,7 @@ function cropperResize(mouseX, mouseY, dir) {
       // Right top corner
       refX = cropperRight;
       refY = cropperTop;
-      minBottom = refY + avatarHeight;
+      minBottom = refY + cropperMinHeight;
       maxBottom = imageHeight;
       bottom = clamp(mouseY, minBottom, maxBottom);
       right = refX;
@@ -412,13 +415,17 @@ function orientationApply(canvas, ctx, orientation) {
 }
 
 
-// Update viewRatio, viewOffsetX, viewOffsetY on image load & window resize
+// Update viewRatio, viewOffsetX, viewOffsetY, cropperMinWidth, cropperMinHeight on image load & window resize
 //
 function viewParamsUpdate() {
   viewOffsetX = canvas.offsetLeft;
   viewOffsetY = canvas.offsetTop;
 
   viewRatio = canvas.offsetWidth / imageWidth;
+
+  // Cropper size should be bigger than 3x resize mark (to user be able interact with marks)
+  cropperMinWidth = Math.max(avatarWidth, Math.round($dialog.find('.avatar-cropper__mark').width() * 3 / viewRatio));
+  cropperMinHeight = Math.max(avatarHeight, Math.round($dialog.find('.avatar-cropper__mark').height() * 3 / viewRatio));
 }
 
 
