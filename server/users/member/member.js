@@ -39,6 +39,23 @@ module.exports = function (N, apiPath) {
   // Update activity info with fresh data if available
   //
   N.wire.before(apiPath, function fetch_activity_info(env, callback) {
+    if (String(env.data.user._id) === env.user_info.user_id) {
+      // User is viewing its own profile. Since redis last_active_ts is not
+      // yet updated, just show her the current redis time.
+      //
+      N.redis.time(function (err, time) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        env.data.user.last_active_ts = new Date(Math.floor(time[0] * 1000 + time[1] / 1000));
+        callback();
+      });
+
+      return;
+    }
+
     N.redis.zscore('users:last_active', env.data.user._id, function (__, score) {
       // Score not found, use `last_active_ts` from mongodb
       if (!score) {
