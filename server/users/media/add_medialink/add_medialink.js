@@ -58,7 +58,7 @@ module.exports = function (N, apiPath) {
 
       var media = new N.models.users.MediaInfo();
       media.medialink_html = result.html;
-      media.medialink_meta = result.meta;
+      media.medialink_meta = { thumb: result.thumb };
       media.user_id = env.data.album.user_id;
       media.album_id = env.data.album._id;
       media.type = N.models.users.MediaInfo.types.MEDIALINK;
