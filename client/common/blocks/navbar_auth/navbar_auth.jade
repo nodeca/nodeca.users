@@ -3,7 +3,7 @@ if self.runtime.is_member
     a.dropdown-toggle(href='#', data-toggle='dropdown')
       img.navbar-auth__avatar()&attributes(self.avatar(self.runtime.user_id, 'md'))
     ul.dropdown-menu
-      li: a(href=self.link_to('users.profile'))=self.t('profile')
+      li: a(href=self.link_to('users.member', { user_hid: self.runtime.user_hid }))=self.t('profile')
 
       - if (self.settings.can_access_acp)
         li: a(href=self.link_to('admin.core.dashboard'), target='_blank')= self.t('admin')
