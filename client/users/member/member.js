@@ -68,6 +68,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
       $('.member-avatar__image').attr('src', N.router.linkTo('core.gridfs', { bucket: data.avatar_id }));
       $('.member-layout').addClass('member-layout__m-avatar-exists');
 
+      // Update avatar in navbar
+      N.live.emit('local.users.avatar.change', data.avatar_id, true);
+
       callback();
     });
   });
@@ -89,6 +92,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
       $img.attr('src', identicon(N.runtime.user_id, avatarWidth));
 
       $('.member-layout').removeClass('member-layout__m-avatar-exists');
+
+      // Update avatar in navbar
+      N.live.emit('local.users.avatar.change', null, true);
 
       callback();
     });
