@@ -2,14 +2,7 @@
   "name"            : "nodeca.users",
   "description"     : "Nodeca users app",
   "version"         : "0.0.1",
-  "keywords"        : ["nodeca", "users", "app"],
-  "homepage"        : "https://github.com/nodeca/nodeca.users",
-
-  "author"          : "Aleksey V Zapparov <ixti@member.fsf.org> (http://ixti.net/)",
-
-  "bugs"            : { "url": "https://github.com/nodeca/nodeca.users/issues" },
-  "license"         : { "type": "MIT", "url": "https://github.com/nodeca/nodeca.users/blob/master/LICENSE" },
-  "repository"      : { "type": "git", "url": "git://github.com/nodeca/nodeca.users.git" },
-
-  "main"            : "./index.js"
+  "keywords"        : ["nodeca", "users"],
+  "license"         : "MIT",
+  "repository"      : "nodeca/nodeca.users"
 }
