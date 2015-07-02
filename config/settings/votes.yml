@@ -4,13 +4,6 @@ setting_groups:
 
 setting_schemas:
   global:
-    can_vote:
-      priority: 10
-      group_key: votes
-      category_key: votes_common
-      type: boolean
-      default: true
-
     votes_add_max_time:
       priority: 20
       group_key: votes

@@ -1,5 +1,11 @@
 setting_schemas:
   usergroup:
+    can_vote:
+      priority: 1030
+      category_key: perm_users
+      type: boolean
+      default: true
+
     users_can_upload_media:
       priority: 1040
       category_key: perm_users
@@ -41,7 +47,3 @@ setting_schemas:
       category_key: perm_admin
       type: boolean
       default: false
-
-    can_vote:
-      extends: true
-      priority: 2030
