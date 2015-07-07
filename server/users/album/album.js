@@ -4,6 +4,9 @@
 'use strict';
 
 
+var _ = require('lodash');
+
+
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
@@ -48,10 +51,30 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Fill available medialink providers
+  // Fill available embed providers
   //
-  N.wire.before(apiPath, function fill_providers(env) {
-    env.res.medialink_providers = N.medialinker('albums').providers();
+  N.wire.before(apiPath, function fill_providers(env, callback) {
+    var data = {};
+
+    env.res.medialink_providers = [];
+
+    N.wire.emit('internal:users.album.init_embedza', data, function (err) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      _.forEach(data.embedza.providers, function (provider) {
+        if (provider.enabled) {
+          env.res.medialink_providers.push({
+            home: provider.home,
+            name: provider.name
+          });
+        }
+      });
+
+      callback();
+    });
   });
 
 

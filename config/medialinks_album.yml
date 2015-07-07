@@ -1,3 +1,0 @@
-medialinks:
-  # Allowed providers for albums
-  albums: [ youtube_block, vimeo_block, rutube_block ]

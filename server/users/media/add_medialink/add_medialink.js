@@ -45,30 +45,54 @@ module.exports = function (N, apiPath) {
   // Create media by media_url
   //
   N.wire.on(apiPath, function create_media(env, callback) {
-    N.medialinker('albums').render(env.params.media_url, function (err, result) {
+    var data = {};
+
+    N.wire.emit('internal:users.album.init_embedza', data, function (err) {
       if (err) {
-        callback({ code: N.io.CLIENT_ERROR, message: env.t('err_cannot_parse') });
+        callback(err);
         return;
       }
 
-      if (!result) {
-        callback({ code: N.io.CLIENT_ERROR, message: env.t('err_invalid_url') });
-        return;
-      }
+      // Get thumb url
+      data.embedza.render(env.params.media_url, 'thumb_url', function (err, thumb) {
+        if (err) {
+          callback({ code: N.io.CLIENT_ERROR, message: env.t('err_cannot_parse') });
+          return;
+        }
 
-      var media = new N.models.users.MediaInfo();
-      media.medialink_html = result.html;
-      media.medialink_meta = { thumb: result.thumb };
-      media.user_id = env.data.album.user_id;
-      media.album_id = env.data.album._id;
-      media.type = N.models.users.MediaInfo.types.MEDIALINK;
+        if (!thumb) {
+          callback({ code: N.io.CLIENT_ERROR, message: env.t('err_invalid_url') });
+          return;
+        }
 
-      // In case of medialink, we have no file, but we should specify file_id for media page
-      media.media_id = media._id;
+        // Get video
+        data.embedza.render(env.params.media_url, 'block', function (err, block) {
+          if (err) {
+            callback({ code: N.io.CLIENT_ERROR, message: env.t('err_cannot_parse') });
+            return;
+          }
 
-      env.res.media = media;
+          if (!block) {
+            callback({ code: N.io.CLIENT_ERROR, message: env.t('err_invalid_url') });
+            return;
+          }
 
-      media.save(callback);
+          var media = new N.models.users.MediaInfo();
+
+          media.medialink_html = block.html;
+          media.medialink_meta = { thumb: thumb.html };
+          media.user_id = env.data.album.user_id;
+          media.album_id = env.data.album._id;
+          media.type = N.models.users.MediaInfo.types.MEDIALINK;
+
+          // In case of medialink, we have no file, but we should specify file_id for media page
+          media.media_id = media._id;
+
+          env.res.media = media;
+
+          media.save(callback);
+        });
+      });
     });
   });
 
