@@ -1,6 +1,6 @@
 album:
 
-  # Enabled providers ID array ('youtube', 'vimeo', ...). `true` to enable all providers
+  # Enabled providers ID array ('youtube.com', 'vimeo.com', ...). `true` to enable all providers
   embed:
-    - youtube
-    - vimeo
+    - youtube.com
+    - vimeo.com

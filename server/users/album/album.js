@@ -64,13 +64,15 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      _.forEach(data.embedza.providers, function (provider) {
-        if (provider.enabled) {
-          env.res.medialink_providers.push({
-            home: provider.home,
-            name: provider.name
-          });
+      data.embedza.forEach(function (domain) {
+        if (!domain.enabled) {
+          return; // continue
         }
+
+        env.res.medialink_providers.push({
+          home: 'http://' + domain.id,
+          name: domain.id
+        });
       });
 
       callback();

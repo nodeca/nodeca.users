@@ -5,38 +5,41 @@
 'use strict';
 
 
-var _ = require('lodash');
-
-
-var Embedza = require('embedza');
+var _         = require('lodash');
+var Embedza   = require('embedza');
+var templates = require('embedza/lib/templates');
 
 
 module.exports = function (N, apiPath) {
 
-  var enabledProviders;
-
-  // If config is array - convert to hash (embedza compatible)
-  if (_.isArray(N.config.album.embed)) {
-    enabledProviders = {};
-    N.config.album.embed.forEach(function (id) {
-      enabledProviders[id] = true;
+  // Apply 'thumb_url' template to enabled providers
+  templates['default_thumb_url'] = function (result) {
+    var thumbnail = _.find(result.snippets, function (snippet) {
+      return snippet.tags.indexOf('thumbnail') !== -1;
     });
-  } else {
-    enabledProviders = N.config.album.embed;
-  }
+
+    return thumbnail.href;
+  };
+
+  templates['vimeo.com_thumb_url'] = function (result) {
+    var thumbnail = _.find(result.snippets, function (snippet) {
+      return snippet.tags.indexOf('thumbnail') !== -1;
+    });
+
+    return thumbnail.href.replace(/_[0-9]+\.jpg$/, '_200.jpg');
+  };
+
+  templates['youtube.com_thumb_url'] = function (result) {
+    var thumbnail = _.find(result.snippets, function (snippet) {
+      return snippet.tags.indexOf('thumbnail') !== -1;
+    });
+
+    return thumbnail.href.replace('hqdefault.jpg', 'mqdefault.jpg');
+  };
 
   var instance = new Embedza({
     cache: N.models.core.EmbedzaCache,
-    enabledProviders: enabledProviders
-  });
-
-  // Apply thumb url template to enabled providers
-  Object.keys(instance.providers).forEach(function (id) {
-    if (instance.providers[id].enabled) {
-      instance.providers[id].template_thumb_url = function (__, data) {
-        return data.thumbnail_url.replace(/^https?:/, '').replace(/\?.+$/, '?size=s');
-      };
-    }
+    enabledProviders: N.config.album.embed
   });
 
   N.wire.on(apiPath, function init_embedza_for_albums(data) {
