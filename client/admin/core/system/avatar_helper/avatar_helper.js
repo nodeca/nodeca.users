@@ -1,4 +1,4 @@
-// Register avatar helper, and display avatars on page load
+// Register avatar helper, and display avatars on page load/page update
 //
 
 'use strict';
@@ -56,12 +56,10 @@ function avatar_helper(user_id, user, size_name) {
 }
 
 
-N.wire.once('init:assets', function avatar_helper_register() {
-  N.runtime.render.helpers.avatar = avatar_helper;
-});
-
-N.wire.once('navigate.done', function identicon_replace() {
-  $('._identicon').each(function (n, img) {
+// Replace placeholders (images with "_identicon" class) with avatars
+//
+function replace_placeholders(selector, users) {
+  selector.find('._identicon').each(function (n, img) {
     var $img = $(img),
         user_id = $img.data('user-id'),
         avatar_id = $img.data('avatar-id'),
@@ -71,6 +69,16 @@ N.wire.once('navigate.done', function identicon_replace() {
       throw new Error('invalid avatar size: ' + size_name);
     }
 
+    // If current user is missing avatar info - try to restore
+    if (user_id === N.runtime.user_id && N.runtime.user_avatar) {
+      avatar_id = avatar_id || N.runtime.user_avatar;
+    }
+
+    // Avatar id is not specified, but we can retrieve it from locals
+    if (users && users[user_id]) {
+      avatar_id = avatar_id || users[user_id].avatar_id;
+    }
+
     $img.removeClass('_identicon');
     if (avatar_id) {
       $img.attr('src', N.router.linkTo('core.gridfs', { bucket: avatar_id + (size_name ? '_' + size_name : '') }));
@@ -78,4 +86,25 @@ N.wire.once('navigate.done', function identicon_replace() {
       $img.attr('src', identicon(user_id, avatarSizes[size_name ? size_name : 'orig']));
     }
   });
+}
+
+
+N.wire.once('init:assets', function avatar_helper_register() {
+  N.runtime.render.helpers.avatar = avatar_helper;
+});
+
+
+N.wire.on('navigate.done', function identicon_replace(data) {
+  if (data.locals) {
+    // page generated on client-side, so we have all the locals
+    replace_placeholders($(document), data.locals.users);
+  } else {
+    // page generated on server-side with users provided through page_data
+    replace_placeholders($(document), N.runtime.page_data.users);
+  }
+});
+
+
+N.wire.on('navigate.update', function identicon_replace(data) {
+  replace_placeholders(data.$, data.locals.users);
 });
