@@ -12,7 +12,7 @@ module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, function attachments_check_owner(env, callback) {
 
-    var mediaIds = _.uniq(_.pluck(env.params.attach, 'media_id'));
+    var mediaIds = _.uniq(env.params.attach);
 
     // Find media info by `media_id` (from params) and `user_id`
     N.models.users.MediaInfo
