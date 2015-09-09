@@ -45,6 +45,9 @@ var data;
 // Dialog elements
 var $dialog, cropper, canvas, canvasPreview, canvasPreviewCtx;
 
+// Timer to detect zoom and dialog size change
+var sizeCheckInterval;
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Redraw cropper frame
@@ -689,6 +692,8 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
       return;
     }
 
+    clearInterval(sizeCheckInterval);
+
     $dialog.remove();
 
     $('body').off('.nd.avatar_change');
@@ -732,10 +737,21 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
 
   initCropper();
 
-  $(window).on('resize.nd.avatar_change', function () {
+  var lastWidth = $dialog.width();
+
+  // We can't use `resize` event here because zoom level also change width, but doesn't fire `resize`
+  sizeCheckInterval = setInterval(function () {
+    var newWidth = $dialog.width();
+
+    if (lastWidth === newWidth) {
+      return;
+    }
+
+    lastWidth = newWidth;
+
     viewParamsUpdate();
     cropperUpdate();
-  });
+  }, 500);
 
   $('.avatar-change__upload').on('change', function () {
     var files = $(this)[0].files;
