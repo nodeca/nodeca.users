@@ -1,0 +1,30 @@
+// Attachment generic classes
+//
+
+.attach__m-md, .attach__m-orig
+  max-width 100%
+  display inline-block
+  border-radius 2px
+  position relative
+
+  & > img
+    max-width 100%
+    border-radius 2px
+
+.attach__spacer + img
+  position absolute
+  top 0
+  left 0
+
+// Link to the original image
+.attach__link-control
+  position absolute
+  bottom 3px
+  right 3px
+  opacity 0
+
+.attach:hover .attach__link-control
+  opacity 1
+
+.attach__spacer
+  display block
