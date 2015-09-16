@@ -17,11 +17,21 @@
   left 0
 
 // Link to the original image
-.attach__link-control
+a.attach__link-control
+  display block
+  transition .2s ease .1s
   position absolute
   bottom 3px
   right 3px
   opacity 0
+  height 30px
+  line-height 30px
+  width 30px
+  text-align center
+  color white
+  background-color rgba(0, 0, 0, .3)
+  border-radius 3px
+
 
 .attach:hover .attach__link-control
   opacity 1
