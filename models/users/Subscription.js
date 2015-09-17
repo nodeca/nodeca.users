@@ -8,10 +8,13 @@ var Schema = Mongoose.Schema;
 module.exports = function (N, collectionName) {
 
   var types = {
-    UNSUBSCRIBED: 1,
-    TRECKING: 2
-    // TODO: add all types
+    SUBSCRIBED: 1,
+    IMMEDIATE: 2,
+    UNSUBSCRIBED: 3,
+    MUTED: 4
   };
+
+  types.LIST_SUBSCRIBED = [ types.SUBSCRIBED, types.IMMEDIATE ];
 
 
   var Subscription = new Schema({
