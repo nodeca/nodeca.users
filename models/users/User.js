@@ -173,6 +173,13 @@ module.exports = function (N, collectionName) {
       return;
     }
 
+    if (this.hid) {
+      // hid is already defined when this user was created, used in vbconvert;
+      // it's caller responsibility to increase Increment accordingly
+      callback();
+      return;
+    }
+
     var self = this;
     N.models.core.Increment.next('user', function (err, value) {
       if (err) {
