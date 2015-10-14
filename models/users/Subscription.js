@@ -25,6 +25,9 @@ module.exports = function (N, collectionName) {
     // Content id
     to: Schema.ObjectId,
 
+    // Content type
+    to_type: Number,
+
     // Subscription type
     type: Number
   }, {
@@ -48,6 +51,11 @@ module.exports = function (N, collectionName) {
   // Export types
   //
   Subscription.statics.types = types;
+
+
+  // Export content types
+  //
+  Subscription.statics.to_types = {};
 
 
   N.wire.on('init:models', function emit_init_Subscription(__, callback) {
