@@ -9,8 +9,6 @@ var recaptcha = require('nodeca.core/lib/recaptcha');
 
 
 module.exports = function (N, apiPath) {
-  var rateLimit = require('./_rate_limit')(N);
-
 
   // Don't set "required" flag, to manually check data &
   // fill form errors
@@ -21,14 +19,6 @@ module.exports = function (N, apiPath) {
     'g-recaptcha-response':  { type: 'string' },
     redirect_id: { format: 'mongo' }
   });
-
-
-  // Touch rate limits in lazy style - do not wait for callbacks.
-  //
-  function updateRateLimits(clientIp) {
-    rateLimit.ip.update(clientIp);
-    rateLimit.total.update();
-  }
 
 
   // Kick logged-in members
@@ -45,8 +35,7 @@ module.exports = function (N, apiPath) {
         _.isEmpty(env.params.pass)) {
       return {
         code:    N.io.CLIENT_ERROR,
-        message: env.t('err_login_failed'),
-        captcha: false
+        message: env.t('err_login_failed')
       };
     }
   });
@@ -57,77 +46,33 @@ module.exports = function (N, apiPath) {
   // Do soft limit - ask user to enter captcha to make sure he is not a bot.
   //
   N.wire.before(apiPath, function check_total_rate_limit(env, callback) {
-    rateLimit.total.check(function (err, isExceeded) {
-      if (err) {
-        callback(err);
-        return;
-      }
+    if (!N.config.options.recaptcha) {
+      callback();
+      return;
+    }
 
-      env.data.captcha_required = isExceeded;
+    var privateKey = N.config.options.recaptcha.private_key,
+        clientIp   = env.req.ip,
+        response   = env.params['g-recaptcha-response'];
 
-      // If limit is not exceeded - skip captcha check.
-      if (!env.data.captcha_required) {
-        callback();
-        return;
-      }
-
-      var privateKey = N.config.options.recaptcha.private_key,
-          clientIp   = env.req.ip,
-          response   = env.params['g-recaptcha-response'];
-
-      if (!response) {
-        updateRateLimits(clientIp);
-        callback({
-          code:    N.io.CLIENT_ERROR,
-          message: env.t('err_captcha_wrong'),
-          captcha: env.data.captcha_required
-        });
-        return;
-      }
-
-      if (!N.config.options.recaptcha) {
-        callback();
-        return;
-      }
-
-      recaptcha.verify(privateKey, clientIp, response, function (err, valid) {
-        if (err) {
-          callback(new Error('Captcha service error'));
-          return;
-        }
-
-        if (!valid) {
-          updateRateLimits(clientIp);
-          callback({
-            code:    N.io.CLIENT_ERROR,
-            message: env.t('err_captcha_wrong'),
-            captcha: env.data.captcha_required
-          });
-          return;
-        }
-
-        callback();
+    if (!response) {
+      callback({
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('err_captcha_wrong')
       });
-    });
-  });
+      return;
+    }
 
-
-  // Check for too many invalid logins (5 attempts / 300 seconds) from single IP
-  // Do hard limit - ask user to wait 5 minutes.
-  //
-  N.wire.before(apiPath, function check_ip_rate_limit(env, callback) {
-    rateLimit.ip.check(env.req.ip, function (err, isExceeded) {
+    recaptcha.verify(privateKey, clientIp, response, function (err, valid) {
       if (err) {
-        callback(err);
+        callback(new Error('Captcha service error'));
         return;
       }
 
-      if (isExceeded) {
-        updateRateLimits(env.req.ip);
+      if (!valid) {
         callback({
           code:    N.io.CLIENT_ERROR,
-          message: env.t('err_too_many_attempts'),
-          captcha: env.data.captcha_required
+          message: env.t('err_captcha_wrong')
         });
         return;
       }
@@ -237,12 +182,9 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function check_fetched(env, callback) {
 
     if (!env.data.user || !env.data.authLink) {
-      updateRateLimits(env.req.ip);
       callback({
         code:    N.io.CLIENT_ERROR,
-        message: env.t('err_login_failed'),
-        fields:  [ 'email_or_nick', 'pass' ],
-        captcha: env.data.captcha_required
+        message: env.t('err_login_failed')
       });
       return;
     }
@@ -263,12 +205,9 @@ module.exports = function (N, apiPath) {
 
       // password mismatch
       if (!success) {
-        updateRateLimits(env.req.ip);
         callback({
           code:    N.io.CLIENT_ERROR,
-          message: env.t('err_login_failed'),
-          fields:  [ 'email_or_nick', 'pass' ],
-          captcha: env.data.captcha_required
+          message: env.t('err_login_failed')
         });
         return;
       }

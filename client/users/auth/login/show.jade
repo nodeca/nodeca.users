@@ -37,10 +37,6 @@
             placeholder=self.t('password_desc')
           )
 
-        //- Captcha is shown only when rate limit reached or there was a captcha
-        //- error in previous request.
-        - self.add_raw_data('captcha_required', self.captcha_required)
-
         // ko with: recaptcha_response_field
         != self.partial('@common.blocks.recaptcha')
         // /ko

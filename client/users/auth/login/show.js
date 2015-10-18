@@ -24,13 +24,11 @@ N.wire.on('navigate.exit', function save_previous_page_params(data) {
 N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
   redirectId = data.params.redirect_id;
 
-  var captchaRequired = N.runtime.page_data.captcha_required;
-
   view = {
     message: ko.observable(null),
 
     recaptcha_response_field: {
-      visible: ko.observable(N.runtime.recaptcha && captchaRequired),
+      visible: Boolean(N.runtime.recaptcha),
       css:     '',
       message: null
     }
@@ -38,9 +36,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
 
   ko.applyBindings(view, $('#content')[0]);
 
-  if (captchaRequired) {
-    N.wire.emit('common.blocks.recaptcha.create');
-  }
+  N.wire.emit('common.blocks.recaptcha.create');
 });
 
 
@@ -94,17 +90,10 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
           });
       })
       .fail(function (err) {
-        if (err.captcha) {
-          // If ReCaptcha is already created, just update it. Create otherwise.
-          if (view.recaptcha_response_field.visible()) {
-            N.wire.emit('common.blocks.recaptcha.update');
-          } else {
-            N.wire.emit('common.blocks.recaptcha.create');
-          }
-        }
+        // Force captcha on every attempt.
+        N.wire.emit('common.blocks.recaptcha.update');
 
         view.message(err.message);
-        view.recaptcha_response_field.visible(err.captcha);
       });
   });
 });
