@@ -35,7 +35,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
     nick:  new Control(t('')),
 
     recaptcha_response_field: {
-      visible: true,
+      visible: Boolean(N.runtime.recaptcha),
       css:     ko.observable(''),
       message: ko.observable(null)
     }

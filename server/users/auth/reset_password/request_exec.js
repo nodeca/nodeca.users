@@ -27,6 +27,11 @@ module.exports = function (N, apiPath) {
         clientIp   = env.req.ip,
         response   = env.params['g-recaptcha-response'];
 
+    if (!N.config.options.recaptcha) {
+      callback();
+      return;
+    }
+
     recaptcha.verify(privateKey, clientIp, response, function (err, valid) {
       if (err) {
         callback(new Error('Captcha service error'));

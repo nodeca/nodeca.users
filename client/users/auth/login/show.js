@@ -30,7 +30,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
     message: ko.observable(null),
 
     recaptcha_response_field: {
-      visible: ko.observable(captchaRequired),
+      visible: ko.observable(N.runtime.recaptcha && captchaRequired),
       css:     '',
       message: null
     }

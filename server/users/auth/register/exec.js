@@ -128,6 +128,11 @@ module.exports = function (N, apiPath) {
   // Check recaptcha
   //
   N.wire.before(apiPath, function validate_recaptcha(env, callback) {
+    if (!N.config.options.recaptcha) {
+      callback();
+      return;
+    }
+
     if (!_.isEmpty(env.data.errors)) {
       // Skip if some other fields are incorrect in order to not change
       // captcha words and not annoy the user by forcing him to retype.

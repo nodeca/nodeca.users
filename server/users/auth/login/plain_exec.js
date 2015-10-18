@@ -85,6 +85,11 @@ module.exports = function (N, apiPath) {
         return;
       }
 
+      if (!N.config.options.recaptcha) {
+        callback();
+        return;
+      }
+
       recaptcha.verify(privateKey, clientIp, response, function (err, valid) {
         if (err) {
           callback(new Error('Captcha service error'));
