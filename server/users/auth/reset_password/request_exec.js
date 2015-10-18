@@ -10,8 +10,7 @@ var recaptcha = require('nodeca.core/lib/recaptcha');
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     email:                     { type: 'string', required: true },
-    recaptcha_challenge_field: { type: 'string', required: true },
-    recaptcha_response_field:  { type: 'string', required: true }
+    'g-recaptcha-response':    { type: 'string', required: true }
   });
 
 
@@ -26,10 +25,9 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function verify_captcha(env, callback) {
     var privateKey = N.config.options.recaptcha.private_key,
         clientIp   = env.req.ip,
-        challenge  = env.params.recaptcha_challenge_field,
-        response   = env.params.recaptcha_response_field;
+        response   = env.params['g-recaptcha-response'];
 
-    recaptcha.verify(privateKey, clientIp, challenge, response, function (err, valid) {
+    recaptcha.verify(privateKey, clientIp, response, function (err, valid) {
       if (err) {
         callback(new Error('Captcha service error'));
         return;

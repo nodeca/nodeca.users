@@ -3,7 +3,7 @@ en-US:
     title: Change password
 
   request_exec:
-    err_captcha_wrong: Wrong CAPTCHA, try again.
+    err_captcha_wrong: CAPTCHA verification failed, try again.
     err_email_unknown: Unknown email address.
 
     email_subject: '#{project_name}: password change confirmation.'

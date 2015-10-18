@@ -18,8 +18,7 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     email_or_nick: { type: 'string' },
     pass:          { type: 'string' },
-    recaptcha_challenge_field: { type: 'string' },
-    recaptcha_response_field:  { type: 'string' },
+    'g-recaptcha-response':  { type: 'string' },
     redirect_id: { format: 'mongo' }
   });
 
@@ -74,20 +73,19 @@ module.exports = function (N, apiPath) {
 
       var privateKey = N.config.options.recaptcha.private_key,
           clientIp   = env.req.ip,
-          challenge  = env.params.recaptcha_challenge_field,
-          response   = env.params.recaptcha_response_field;
+          response   = env.params['g-recaptcha-response'];
 
       if (!response) {
         updateRateLimits(clientIp);
         callback({
           code:    N.io.CLIENT_ERROR,
-          message: env.t('err_captcha_empty'),
+          message: env.t('err_captcha_wrong'),
           captcha: env.data.captcha_required
         });
         return;
       }
 
-      recaptcha.verify(privateKey, clientIp, challenge, response, function (err, valid) {
+      recaptcha.verify(privateKey, clientIp, response, function (err, valid) {
         if (err) {
           callback(new Error('Captcha service error'));
           return;

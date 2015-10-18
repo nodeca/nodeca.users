@@ -17,8 +17,7 @@ module.exports = function (N, apiPath) {
     email: { type: 'string', required: false },
     pass:  { type: 'string', required: false },
     nick:  { type: 'string', required: false },
-    recaptcha_challenge_field: { type: 'string', required: false },
-    recaptcha_response_field:  { type: 'string', required: false }
+    'g-recaptcha-response':  { type: 'string', required: false }
   });
 
 
@@ -132,10 +131,9 @@ module.exports = function (N, apiPath) {
 
     var privateKey = N.config.options.recaptcha.private_key,
         clientIp   = env.req.ip,
-        challenge  = env.params.recaptcha_challenge_field,
-        response   = env.params.recaptcha_response_field;
+        response   = env.params['g-recaptcha-response'];
 
-    recaptcha.verify(privateKey, clientIp, challenge, response, function (err, result) {
+    recaptcha.verify(privateKey, clientIp, response, function (err, result) {
       if (err) {
         callback(new Error('Captcha service error'));
         return;

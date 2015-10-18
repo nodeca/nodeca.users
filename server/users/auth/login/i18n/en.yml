@@ -4,11 +4,5 @@ en-US:
       Can't login. Check, that your email/nick and password are correct and try
       again. Or use link below to reset your password.
 
-    err_too_many_attempts:
-      Too many login attempts. You should wait 5 minutes and try again.
-
-    err_captcha_empty:
-      CAPTCHA should be filled.
-
-    err_captcha_wrong:
-      Wrong CAPTCHA, try again.
+    err_too_many_attempts: Too many login attempts. You should wait 5 minutes and try again.
+    err_captcha_wrong: CAPTCHA verification failed, try again.

@@ -5,7 +5,7 @@ en-US:
   exec:
     err_busy_email: This email is already used.
     err_busy_nick: This nick is already used.
-    err_wrong_captcha: Wrong CAPTCHA, try again.
+    err_wrong_captcha: CAPTCHA verification failed, try again.
 
     email_subject: '#{project_name}: activate your account'
     email_text: |
