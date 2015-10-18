@@ -39,11 +39,17 @@ module.exports = function (N, apiPath) {
   var validate = validator({
     type: 'object',
     properties: {
-      email: { format: 'email',                               required: true },
-      pass:  { conform: N.models.users.User.validatePassword, required: true },
-      nick:  { conform: N.models.users.User.validateNick,     required: true }
+      email: { format: 'email', required: true },
+      pass:  { format: 'pass',  required: true },
+      nick:  { format: 'nick',  required: true }
     }
-  }, { verbose: true });
+  }, {
+    verbose: true,
+    formats: {
+      pass: N.models.users.User.validatePassword,
+      nick: N.models.users.User.validateNick
+    }
+  });
 
 
   // Validate form data
@@ -52,7 +58,7 @@ module.exports = function (N, apiPath) {
     if (!validate(env.params)) {
       _.forEach(validate.errors, function (error) {
         // Don't customize form text, just highlight the field.
-        env.data.errors[error.field] = null;
+        env.data.errors[error.field.replace(/^data[.]/, '')] = null;
       });
 
       // terminate
@@ -133,13 +139,13 @@ module.exports = function (N, apiPath) {
         clientIp   = env.req.ip,
         response   = env.params['g-recaptcha-response'];
 
-    recaptcha.verify(privateKey, clientIp, response, function (err, result) {
+    recaptcha.verify(privateKey, clientIp, response, function (err, valid) {
       if (err) {
         callback(new Error('Captcha service error'));
         return;
       }
 
-      if (!result) {
+      if (!valid) {
         env.data.errors.recaptcha_response_field = env.t('err_wrong_captcha');
       }
 
