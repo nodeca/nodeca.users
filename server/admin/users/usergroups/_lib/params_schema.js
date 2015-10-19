@@ -19,18 +19,22 @@ module.exports = {
     required: true,
     patternProperties: {
       '.*': {
-        type: [ 'object', 'null' ],
-        required: true,
-        additionalProperties: false,
-        properties: {
-          value: {
-            required: true
-          },
-          force: {
-            type: 'boolean',
-            required: true
+        anyOf: [
+          { type: 'null' },
+          {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              value: {
+                required: true
+              },
+              force: {
+                type: 'boolean',
+                required: true
+              }
+            }
           }
-        }
+        ]
       }
     }
   }
