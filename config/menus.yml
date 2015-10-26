@@ -1,10 +1,9 @@
 menus:
   common:
     navbar:
-      profile:
-        to: users.profile_redirect
+      tracker:
+        to: users.tracker
         priority: 10
-        autoselect: false
   admin:
     navbar:
       users:

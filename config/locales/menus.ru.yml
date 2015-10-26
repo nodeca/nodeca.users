@@ -3,4 +3,4 @@ i18n:
     common:
       menus:
         navbar:
-          profile: Профиль
+          tracker: Трекер

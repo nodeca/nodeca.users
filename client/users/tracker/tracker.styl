@@ -1,0 +1,48 @@
+@import "nodeca.core/client/common/_variables"
+
+.user-tracker-items
+  list-style none
+  padding 0
+
+.user-tracker-items__title
+  font-family sansWideFontFamily
+  font-size 18px
+  color grayLight
+  padding 10px 0
+
+.user-tracker-item
+  border-top 1px solid grayLightest
+  padding 10px 0
+
+.user-tracker-item__title
+  font-family sansWideFontFamily
+  position relative
+  font-weight normal
+  font-size 16px
+  line-height inherit
+  margin-top 0
+  margin-bottom 0
+
+.user-tracker-item__title-link
+  color grayDark
+  &:hover
+    color linkColorHover
+
+.user-tracker-item__updated
+  color grayLight
+
+.user-tracker-item__desc
+  font-size 11px
+  margin 0 0 0 .7em
+  color grayLight
+
+a.user-tracker-item__desc-link
+  color inherit
+  &:hover
+    color linkColorHover
+
+.user-tracker-item__author
+  font-size 11px
+  color grayLight
+  &:hover
+    color linkColorHover

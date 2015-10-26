@@ -1,0 +1,9 @@
+- self.users = self.users || {};
+
+#content.user-tracker
+  != self.partial('@users.blocks.breadcrumbs')
+
+  ul.user-tracker-items
+
+    each item in self.items
+      != self.partial('@users.tracker.blocks.' + item.type, { data: item.data })

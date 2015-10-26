@@ -9,7 +9,7 @@ i18n:
     common:
       menus:
         navbar:
-          profile: Profile
+          tracker: Tracker
           profile.news: News
           profile.messages: Messages
           profile.albums: Albums

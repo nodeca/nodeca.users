@@ -1,7 +1,7 @@
 router:
   http.get:
-    users.profile_redirect:
-      "/profile": ~
+    users.tracker:
+      "/tracker": ~
 
     users.member:
       "/member{user_hid}":
