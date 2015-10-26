@@ -111,7 +111,7 @@ module.exports.run = function (N, args, callback) {
       function (next) {
         // FIXME test existing login and email
         var User = N.models.users.User;
-        var auth = new N.models.users.AuthLink();
+        var authLink = new N.models.users.AuthLink();
 
         if (args.action === 'add') {
           // FIXME user validator for pass and email test
@@ -131,21 +131,20 @@ module.exports.run = function (N, args, callback) {
               return;
             }
 
-            var provider = auth.providers.create({
-              type:   'plain',
-              email:  args.email
-            });
+            authLink.type = 'plain';
+            authLink.email = args.email;
 
-            provider.setPass(args.pass, function (err) {
+            authLink.setPass(args.pass, function (err) {
               if (err) {
                 next(err);
                 return;
               }
 
-              auth.user_id = user._id;
-              auth.providers.push(provider);
+              authLink.user_id = user._id;
+              authLink.ip = '127.0.0.1';
+              authLink.last_ip = '127.0.0.1';
 
-              auth.save(next);
+              authLink.save(next);
             });
           });
 
