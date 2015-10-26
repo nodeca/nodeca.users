@@ -195,7 +195,7 @@ module.exports.run = function (N, args, callback) {
 
       /*eslint-disable no-console*/
       console.log('OK\n');
-      process.exit(0);
+      N.shutdown();
     });
   });
 };
