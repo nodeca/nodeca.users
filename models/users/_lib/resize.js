@@ -137,6 +137,9 @@ function createPreview(path, resizeConfig, imageType, callback) {
         gmInstance.resize(null, scaledHeight);
       }
 
+      // TODO: save original image instead if no crop is required,
+      //       but still need to do something about exif
+
       // Save file
       gmInstance.crop(scaledWidth, scaledHeight).write(tmpFilePath, function (err) {
         if (err) {
