@@ -2,9 +2,9 @@
 //
 // env.res.items:
 //
-// - data - render data
-// - ts - data timestamp
 // - type - template block
+// - last_ts - sort timestamp
+// - id - data _id
 //
 'use strict';
 
@@ -55,7 +55,7 @@ module.exports = function (N, apiPath) {
   // Sort tracked items
   //
   N.wire.after(apiPath, function sort_items(env) {
-    env.data.items = _.sortByOrder(env.data.items, 'ts', 'desc');
+    env.data.items = _.sortByOrder(env.data.items, 'last_ts', 'desc');
   });
 
 
