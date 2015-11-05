@@ -12,6 +12,9 @@ router:
     users.settings.index:
       "/settings": ~
 
+    users.subscriptions.index:
+      "/subscriptions": ~
+
     users.albums_root:
       "/member{user_hid}/albums":
         user_hid:

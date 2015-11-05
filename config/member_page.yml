@@ -26,6 +26,9 @@ users:
       drafts:
         to: users.drafts
         priority: 80
+      subscriptions:
+        to: users.subscriptions.index
+        priority: 90
       settings:
         to: users.settings.index
         priority: 100

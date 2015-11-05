@@ -1,0 +1,37 @@
+-  self.icon = function(type) {
+-   var types = '$$ JSON.stringify(N.models.users.Subscription.types) $$'
+-
+-   switch(type) {
+-     case types.WATCHING:
+-       return 'icon-track-watching';
+-     case types.TRACKING:
+-       return 'icon-track-tracking';
+-     case types.NORMAL:
+-       return 'icon-track-normal';
+-     case types.MUTED:
+-       return 'icon-track-muted';
+-   }
+- }
+
+#content.user-subscriptions-root
+  != self.partial('@users.blocks.breadcrumbs')
+
+  header.page-head
+    h1.page-head__title(itemprop='name')= self.t('title')
+    p.page-head__descr.hidden-xs(itemprop='description')
+
+  ul.nav.nav-tabs(role='tablist')
+    - var i = 0;
+    each tab in self.tabs
+      li(role='presentation' class=(i === 0) ? 'active' : '')
+        a(href=('#' + tab.block_name) aria-controls='forum-topics' role='tab' data-toggle='tab')=self.t('@users.subscriptions.' + tab.block_name)
+      - i++;
+
+  .tab-content
+    - i = 0;
+    each tab in self.tabs
+      .tab-pane(role='tabpanel' class=(i === 0) ? 'active' : '' id=tab.block_name)
+        ul.user-subscriptions-list
+          each item in tab.items
+            !=self.partial('@users.subscriptions.blocks.' + tab.block_name, { item: item, block_name: tab.block_name })
+      - i++;

@@ -1,0 +1,38 @@
+@import "nodeca.core/client/common/_variables"
+
+.user-subscriptions-list
+  list-style none
+  padding 0
+
+.user-subscriptions-item
+  border-top 1px solid grayLightest
+  padding 10px 0
+  &:first-child
+    border-top none
+
+.user-subscriptions-item__title
+  font-family sansWideFontFamily
+  position relative
+  font-weight normal
+  font-size 16px
+  line-height inherit
+  margin-top 0
+  margin-bottom 0
+
+.user-subscriptions-item__btn-delete
+  margin-left 10px
+
+.user-subscriptions-item__title-link
+  color grayDark
+  &:hover
+    color linkColorHover
+
+.user-subscriptions-item__desc
+  font-size 11px
+  margin 0 0 0 .7em
+  color grayLight
+
+.user-subscriptions-item__desc-link
+  color inherit
+  &:hover
+    color linkColorHover
