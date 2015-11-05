@@ -3,6 +3,7 @@ menus:
     navbar:
       tracker:
         to: users.tracker
+        autoselect: false
         priority: 10
   admin:
     navbar:
