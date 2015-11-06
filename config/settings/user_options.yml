@@ -1,0 +1,10 @@
+setting_schemas:
+  user:
+    default_subscription_mode:
+      priority: 10
+      category_key: subscriptions
+      type: dropdown
+      values:
+        - WATCHING
+        - TRACKING
+      default: TRACKING

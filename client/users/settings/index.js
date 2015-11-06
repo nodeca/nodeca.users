@@ -18,6 +18,16 @@ function Setting(name, schema, value) {
 
   this.value = ko.observable(value || schema.default);
 
+  this.valueOptions = _.map(schema.values, function (option) {
+    var titlePath = '@users.setting_values.' + name + '.' + option.name;
+
+    return {
+      name: option.name,
+      value: option.value,
+      title: t.exists(titlePath) ? t(titlePath) : option.name
+    };
+  });
+
   this.modified = ko.computed(function () {
     return self._value !== self.value();
   });

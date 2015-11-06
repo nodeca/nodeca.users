@@ -1,0 +1,14 @@
+i18n:
+  en-US:
+    users:
+
+      setting_cat:
+        subscriptions: Subscriptions
+
+      setting_names:
+        default_subscription_mode: Default subscription mode
+
+      setting_values:
+        default_subscription_mode:
+          WATCHING: Watching
+          TRACKING: Tracking

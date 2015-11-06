@@ -33,6 +33,12 @@ module.exports = function (N, apiPath) {
 
       switch (schema[key].type) {
 
+        case 'dropdown':
+          if (!_.find(schema[key].values, 'value', value)) {
+            valid = false;
+          }
+          break;
+
         case 'boolean':
           if (!_.isBoolean(value)) {
             valid = false;

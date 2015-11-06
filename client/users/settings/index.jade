@@ -23,6 +23,11 @@
           input.form-control(type='text' data-bind='value: value, valueUpdate: "keyup"')
           // /ko
 
+          // ko if: type === 'dropdown'
+          label(data-bind='text: name')
+          select.form-control(data-bind="options: valueOptions, optionsText: 'title', optionsValue: 'value', value: value")
+          // /ko
+
           // ko if: type === 'number'
           label(data-bind='text: name')
           input.form-control(type='number' data-bind='value: value, valueUpdate: "keyup"')
