@@ -4,7 +4,6 @@ en-US:
   delete_avatar_confirm: Are you sure want to delete avatar?
   last_active: 'Last active:'
   menu:
-    feed: What's new
     messages: Messages
     albums: Albums
     blog: Blog

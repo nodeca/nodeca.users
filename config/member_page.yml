@@ -2,9 +2,6 @@ users:
   member_page:
 
     menu:
-      feed:
-        to: users.feed
-        priority: 10
       messages:
         to: users.messages
         priority: 20
