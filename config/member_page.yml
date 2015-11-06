@@ -21,14 +21,11 @@ users:
         to: users.bookmarks
         priority: 60
       subscribtions:
-        to: users.subscribtions
+        to: users.subscriptions.index
         priority: 70
       drafts:
         to: users.drafts
         priority: 80
-      subscriptions:
-        to: users.subscriptions.index
-        priority: 90
       settings:
         to: users.settings.index
         priority: 100
