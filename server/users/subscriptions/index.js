@@ -39,8 +39,15 @@ module.exports = function (N, apiPath) {
   // Fetch subscriptions
   //
   N.wire.before(apiPath, function fetch_subscriptions(env, callback) {
+    var list_visible = [
+      N.models.users.Subscription.types.WATCHING,
+      N.models.users.Subscription.types.TRACKING,
+      N.models.users.Subscription.types.MUTED
+    ];
+
     N.models.users.Subscription.find()
         .where('user_id').equals(env.user_info.user_id)
+        .where('type').in(list_visible)
         .sort('-_id')
         .lean(true)
         .exec(function (err, subscriptions) {

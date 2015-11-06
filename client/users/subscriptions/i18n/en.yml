@@ -1,5 +1,5 @@
 en-US:
   index:
     title: Subscriptions
-    delete_confirmation: Are you sure want to delete this subscription?
+    delete_confirmation: Are you sure you wish to cancel this subscription?
     no_subscriptions: No subscriptions
