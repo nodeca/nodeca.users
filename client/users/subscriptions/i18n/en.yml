@@ -2,3 +2,4 @@ en-US:
   index:
     title: Subscriptions
     delete_confirmation: Are you sure want to delete this subscription?
+    no_subscriptions: No subscriptions

@@ -23,15 +23,27 @@
   ul.nav.nav-tabs(role='tablist')
     - var i = 0;
     each tab in self.tabs
-      li(role='presentation' class=(i === 0) ? 'active' : '')
-        a(href=('#' + tab.block_name) aria-controls='forum-topics' role='tab' data-toggle='tab')=self.t('@users.subscriptions.' + tab.block_name)
+      li.user-subscriptions-tab(role='presentation' class=(i === 0) ? 'active' : '')
+        a(href=('#' + tab.block_name) aria-controls='forum-topics' role='tab' data-toggle='tab')
+          =self.t('@users.subscriptions.' + tab.block_name)
+          | 
+          span.user-subscriptions-tab__badge.badge(
+            data-count=tab.items.length
+            class='user-subscriptions-tab__badge-' + tab.block_name
+          )
       - i++;
 
   .tab-content
     - i = 0;
     each tab in self.tabs
-      .tab-pane(role='tabpanel' class=(i === 0) ? 'active' : '' id=tab.block_name)
+      .user-subscriptions-tab-pane.tab-pane(role='tabpanel'
+        class=(i === 0) ? 'active' : ''
+        data-count=tab.items.length
+        data-block-name=tab.block_name
+        id=tab.block_name
+      )
         ul.user-subscriptions-list
           each item in tab.items
             !=self.partial('@users.subscriptions.blocks.' + tab.block_name, { item: item, block_name: tab.block_name })
+        .user-subscriptions-tab-pane__empty=self.t('no_subscriptions')
       - i++;

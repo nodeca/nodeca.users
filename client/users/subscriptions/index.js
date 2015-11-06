@@ -6,6 +6,19 @@ var types = '$$ JSON.stringify(N.models.users.Subscription.types) $$';
 
 N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
+  // Update count badge and modifiers
+  //
+  function update_tabs() {
+    $('.user-subscriptions-tab-pane').each(function () {
+      var $tab_pane = $(this);
+      var count = $tab_pane.find('.user-subscriptions-list > li').length;
+
+      $('.user-subscriptions-tab__badge-' + $tab_pane.data('block-name')).attr('data-count', count);
+      $tab_pane.attr('data-count', count);
+    });
+  }
+
+
   /////////////////////////////////////////////////////////////////////////////
   // Delete subscription
   //
@@ -23,6 +36,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         .fadeTo('fast', 0)
         .slideUp('fast', function () {
           $item.remove();
+          update_tabs();
         });
 
       callback();

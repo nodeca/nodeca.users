@@ -36,3 +36,18 @@
   color inherit
   &:hover
     color linkColorHover
+
+.user-subscriptions-tab__badge
+  &:empty
+    display inline-block
+  &::after
+    content attr(data-count) ''
+  &[data-count='0']
+    display none
+
+.user-subscriptions-tab-pane__empty
+  display none
+
+.user-subscriptions-tab-pane[data-count='0']
+  .user-subscriptions-tab-pane__empty
+    display block
