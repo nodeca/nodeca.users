@@ -236,10 +236,10 @@ describe('Marker', function () {
         }
 
         Marker.info(uid, [
-          { categoryId: sid1, contentId: cid1, lastPosition: 1 },
-          { categoryId: sid1, contentId: cid2, lastPosition: 1 },
-          { categoryId: sid1, contentId: cid3, lastPosition: 1 },
-          { categoryId: sid2, contentId: cid4, lastPosition: 1 }
+          { categoryId: sid1, contentId: cid1, lastPostNumber: 1 },
+          { categoryId: sid1, contentId: cid2, lastPostNumber: 1 },
+          { categoryId: sid1, contentId: cid3, lastPostNumber: 1 },
+          { categoryId: sid2, contentId: cid4, lastPostNumber: 1 }
         ], function (err, res) {
           if (err) {
             done(err);
@@ -288,9 +288,9 @@ describe('Marker', function () {
         },
         function (next) {
           Marker.info(uid, [
-            { categoryId: sid, contentId: cid1, lastPosition: 11, lastPositionTs: now },
-            { categoryId: sid, contentId: cid2, lastPosition: 77, lastPositionTs: now },
-            { categoryId: sid, contentId: cid3, lastPosition: 77, lastPositionTs: now - expire - 1000 }
+            { categoryId: sid, contentId: cid1, lastPostNumber: 11, lastPostTs: now },
+            { categoryId: sid, contentId: cid2, lastPostNumber: 77, lastPostTs: now },
+            { categoryId: sid, contentId: cid3, lastPostNumber: 77, lastPostTs: now - expire - 1000 }
           ], function (err, res) {
             if (err) {
               next(err);

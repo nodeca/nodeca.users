@@ -42,20 +42,20 @@ module.exports = function (N, collectionName) {
       return;
     }
 
-    gcHandlers[type](userId, categoryId, currentCut, function (err, contentData) {
+    gcHandlers[type](userId, categoryId, currentCut, function (err, contentInfo) {
       if (err) {
         callback(err);
         return;
       }
 
-      if (!contentData.length) {
+      if (!contentInfo.length) {
         callback();
         return;
       }
 
-      contentData = _.sortBy(contentData, 'lastPositionTs');
+      contentInfo = _.sortBy(contentInfo, 'lastPostTs');
 
-      Marker.info(userId, contentData, function (err, marks) {
+      Marker.info(userId, contentInfo, function (err, marks) {
         if (err) {
           callback(err);
           return;
@@ -64,14 +64,14 @@ module.exports = function (N, collectionName) {
         var updatedCut = currentCut;
         var mark;
 
-        for (var i = 0; i < contentData.length; i++) {
-          mark = marks[contentData[i].contentId];
+        for (var i = 0; i < contentInfo.length; i++) {
+          mark = marks[contentInfo[i].contentId];
 
           if (mark.isNew || mark.next !== -1) {
             break;
           }
 
-          updatedCut = +contentData[i].lastPositionTs;
+          updatedCut = +contentInfo[i].lastPostTs;
         }
 
         if (updatedCut !== currentCut) {
@@ -92,13 +92,13 @@ module.exports = function (N, collectionName) {
   //   - userId (ObjectId)
   //   - categoryId (ObjectId)
   //   - currentCut (Number)
-  //   - callback (Function) - `function (err, contentData)`
+  //   - callback (Function) - `function (err, contentInfo)`
   //     - err
-  //     - contentData ([Object])
+  //     - contentInfo ([Object])
   //       - contentId (ObjectId)
   //       - categoryId (ObjectId)
-  //       - lastPosition (Number) - last post number in thread (post hid)
-  //       - lastPositionTs (Number)
+  //       - lastPostNumber (Number) - last post number in thread (post hid)
+  //       - lastPostTs (Number)
   //
   Marker.registerGc = function (type, handler) {
     gcHandlers[type] = handler;
@@ -388,25 +388,25 @@ module.exports = function (N, collectionName) {
   // Build content info
   //
   // - userId (ObjectId)
-  // - contentData ([Object])
+  // - contentInfo ([Object])
   //   - categoryId (ObjectId)
   //   - contentId (ObjectId)
-  //   - lastPosition (Number) - last post number in thread (post hid)
-  //   - lastPositionTs (Number)
+  //   - lastPostNumber (Number) - last post number in thread (post hid)
+  //   - lastPostTs (Number)
   // - callback (Function) - `function (err, result)`
   //   - result (Hash) - key is `contentId` value is object
   //     - isNew (Boolean) - is topic already opened by user (or older than 30 days)
   //     - next (Number) - hid of first unread post in topic or `-1` if not set
   //     - position (Number) - last read post position or `-1` if not set
   //
-  Marker.info = function (userId, contentData, callback) {
+  Marker.info = function (userId, contentInfo, callback) {
     var result = {};
 
-    contentData.forEach(function (item) {
+    contentInfo.forEach(function (item) {
       result[item.contentId] = { isNew: false, next: -1, position: -1 };
     });
 
-    if (!userId || String(userId) === '000000000000000000000000' || contentData.length === 0) {
+    if (!userId || String(userId) === '000000000000000000000000' || contentInfo.length === 0) {
       callback(null, result);
       return;
     }
@@ -416,7 +416,7 @@ module.exports = function (N, collectionName) {
     async.series([
       // Fetch cuts
       function (next) {
-        Marker.cuts(userId, _.pluck(contentData, 'categoryId'), function (err, res) {
+        Marker.cuts(userId, _.pluck(contentInfo, 'categoryId'), function (err, res) {
           if (err) {
             next(err);
             return;
@@ -425,7 +425,7 @@ module.exports = function (N, collectionName) {
           cuts = res;
 
           // Set `isNew` flag by cut
-          contentData.forEach(function (item) {
+          contentInfo.forEach(function (item) {
             if (item.contentId.getTimestamp() > cuts[item.categoryId]) {
               result[item.contentId].isNew = true;
             }
@@ -491,13 +491,13 @@ module.exports = function (N, collectionName) {
             return result;
           });
 
-          _.forEach(contentData, function (item) {
+          _.forEach(contentInfo, function (item) {
             max = (posInfo[contentIds.indexOf(String(item.contentId))] || {}).max || -1;
             result[item.contentId].position = (posInfo[contentIds.indexOf(String(item.contentId))] || {}).current || -1;
 
-            if (max === -1 || item.lastPositionTs < cuts[item.categoryId]) {
+            if (max === -1 || item.lastPostTs < cuts[item.categoryId]) {
               result[item.contentId].next = -1;
-            } else if (item.lastPosition > max) {
+            } else if (item.lastPostNumber > max) {
               result[item.contentId].next = +max + 1;
             }
           });
