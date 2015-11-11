@@ -30,9 +30,11 @@ module.exports = function (N, collectionName) {
   //
   // - userId (ObjectId)
   // - contentId (ObjectId)
+  // - categoryId (ObjectId)
+  // - type (String) - content type
   // - callback (Function) - `function (err)`
   //
-  Marker.mark = function (userId, contentId, callback) {
+  Marker.mark = function (userId, contentId, categoryId, type, callback) {
     if (!userId || String(userId) === '000000000000000000000000') {
       callback();
       return;
@@ -68,15 +70,31 @@ module.exports = function (N, collectionName) {
   //
   // - userId (ObjectId)
   // - categoryId (ObjectId)
+  // - ts (Number) - optional, cut off timestamp, `Date.now()` by default
   // - callback (Function) - `function (err)`
   //
-  Marker.markAll = function (userId, categoryId, callback) {
+  Marker.markAll = function (userId, categoryId, ts, callback) {
     if (!userId || String(userId) === '000000000000000000000000') {
       callback();
       return;
     }
 
+    if (!callback) {
+      callback = ts;
+      ts = null;
+    }
+
     var now = Date.now();
+
+    if (!ts) {
+      ts = now;
+    }
+
+    // If `ts` bigger than now plus one hour or more - stop here
+    if (ts > 1000 * 60 * 60 + Date.now()) {
+      callback();
+      return;
+    }
 
     N.redis.zadd('marker_cut_updates', now, userId + ':' + categoryId, function (err) {
       if (err) {
@@ -84,7 +102,7 @@ module.exports = function (N, collectionName) {
         return;
       }
 
-      N.redis.set('marker_cut:' + userId + ':' + categoryId, now, callback);
+      N.redis.set('marker_cut:' + userId + ':' + categoryId, ts, callback);
     });
   };
 
@@ -150,9 +168,11 @@ module.exports = function (N, collectionName) {
   // - contentId (ObjectId)
   // - position (Number) - post number in thread (post hid)
   // - max (Number) - last read post in thread
+  // - categoryId (ObjectId)
+  // - type (String) - content type
   // - callback (Function) - `function (err)`
   //
-  Marker.setPos = function (userId, contentId, position, max, callback) {
+  Marker.setPos = function (userId, contentId, position, max, categoryId, type, callback) {
     if (!userId || String(userId) === '000000000000000000000000') {
       callback();
       return;

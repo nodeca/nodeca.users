@@ -44,9 +44,10 @@ describe('Marker', function () {
 
     it('should mark', function (done) {
       var uid = new ObjectId();
+      var cat = new ObjectId();
       var cid = new ObjectId();
 
-      Marker.mark(uid, cid, function (err) {
+      Marker.mark(uid, cid, cat, 'test', function (err) {
         if (err) {
           done(err);
           return;
@@ -78,8 +79,9 @@ describe('Marker', function () {
     it('should skip old', function (done) {
       var uid = new ObjectId();
       var cid = randObjectIdByTimestamp(Date.now() - expire - 1000);
+      var cat = new ObjectId();
 
-      Marker.mark(uid, cid, function (err) {
+      Marker.mark(uid, cid, cat, 'test', function (err) {
         if (err) {
           done(err);
           return;
@@ -135,15 +137,16 @@ describe('Marker', function () {
   it('.setPos()', function (done) {
     var uid = new ObjectId();
     var cid = new ObjectId();
+    var cat = new ObjectId();
     var now = Date.now();
 
-    Marker.setPos(uid, cid, 6, 6, function (err) {
+    Marker.setPos(uid, cid, 6, 6, cat, 'test', function (err) {
       if (err) {
         done(err);
         return;
       }
 
-      Marker.setPos(uid, cid, 2, 1, function (err) {
+      Marker.setPos(uid, cid, 2, 1, cat, 'test', function (err) {
         if (err) {
           done(err);
           return;
@@ -177,6 +180,7 @@ describe('Marker', function () {
 
   it('.setPos() - limit position markers', function (done) {
     var uid = randObjectIdByTimestamp(Date.now());
+    var cat = new ObjectId();
     var query = redis.multi();
 
     for (var i = 0; i < 2000; i++) {
@@ -189,7 +193,7 @@ describe('Marker', function () {
         return;
       }
 
-      Marker.setPos(uid, 'qqq', 6, 6, function (err) {
+      Marker.setPos(uid, 'qqq', 6, 6, cat, 'test', function (err) {
         if (err) {
           done(err);
           return;
@@ -215,6 +219,7 @@ describe('Marker', function () {
     it('should set `isNew` flag correctly', function (done) {
       var uid = new ObjectId();
       var now = Date.now();
+      var cat = new ObjectId();
 
       var sid1 = randObjectIdByTimestamp(now);
       var sid2 = randObjectIdByTimestamp(now);
@@ -224,7 +229,7 @@ describe('Marker', function () {
       var cid3 = randObjectIdByTimestamp(now);
       var cid4 = randObjectIdByTimestamp(now);
 
-      Marker.mark(uid, cid3, function (err) {
+      Marker.mark(uid, cid3, cat, 'test', function (err) {
         if (err) {
           done(err);
           return;
@@ -255,6 +260,7 @@ describe('Marker', function () {
     it('should set correct position info', function (done) {
       var uid = new ObjectId();
       var now = Date.now();
+      var cat = new ObjectId();
 
       var sid = randObjectIdByTimestamp(now);
       var cid1 = randObjectIdByTimestamp(now);
@@ -263,22 +269,22 @@ describe('Marker', function () {
 
       async.series([
         function (next) {
-          Marker.setPos(uid, cid1, 11, 11, next);
+          Marker.setPos(uid, cid1, 11, 11, cat, 'test', next);
         },
         function (next) {
-          Marker.setPos(uid, cid1, 7, 7, next);
+          Marker.setPos(uid, cid1, 7, 7, cat, 'test', next);
         },
         function (next) {
-          Marker.setPos(uid, cid2, 3, 3, next);
+          Marker.setPos(uid, cid2, 3, 3, cat, 'test', next);
         },
         function (next) {
-          Marker.setPos(uid, cid2, 35, 35, next);
+          Marker.setPos(uid, cid2, 35, 35, cat, 'test', next);
         },
         function (next) {
-          Marker.setPos(uid, cid3, 3, 3, next);
+          Marker.setPos(uid, cid3, 3, 3, cat, 'test', next);
         },
         function (next) {
-          Marker.setPos(uid, cid3, 35, 35, next);
+          Marker.setPos(uid, cid3, 35, 35, cat, 'test', next);
         },
         function (next) {
           Marker.info(uid, [
