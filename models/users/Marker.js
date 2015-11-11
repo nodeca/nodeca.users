@@ -342,6 +342,17 @@ module.exports = function (N, collectionName) {
       return;
     }
 
+    if (!userId || String(userId) === '000000000000000000000000') {
+      var now = Date.now();
+      var result = categoriesIds.reduce(function (acc, id) {
+        acc[String(id)] = now;
+        return acc;
+      }, {});
+
+      callback(null, result);
+      return;
+    }
+
     N.settings.get('content_read_marks_expire', function (err, content_read_marks_expire) {
       if (err) {
         callback(err);
@@ -353,11 +364,6 @@ module.exports = function (N, collectionName) {
         acc[String(id)] = defaultCut;
         return acc;
       }, {});
-
-      if (!userId || String(userId) === '000000000000000000000000') {
-        callback(null, result);
-        return;
-      }
 
       var cutKeys = Object.keys(result).map(function (id) {
         return 'marker_cut:' + userId + ':' + id;
