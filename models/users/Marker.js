@@ -22,8 +22,87 @@ var async = require('async');
 
 module.exports = function (N, collectionName) {
 
+  var gcHandlers = {};
+
+
   function Marker() {
   }
+
+
+  // Recalculate category cut
+  //
+  // - type (String) - content type
+  // - userId (ObjectId)
+  // - categoryId (ObjectId)
+  // - currentCut (Number)
+  //
+  Marker.gc = function (type, userId, categoryId, currentCut, callback) {
+    if (!gcHandlers[type]) {
+      callback();
+      return;
+    }
+
+    gcHandlers[type](userId, categoryId, currentCut, function (err, contentData) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      if (!contentData.length) {
+        callback();
+        return;
+      }
+
+      contentData = _.sortBy(contentData, 'lastPositionTs');
+
+      Marker.info(userId, contentData, function (err, marks) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        var updatedCut = currentCut;
+        var mark;
+
+        for (var i = 0; i < contentData.length; i++) {
+          mark = marks[contentData[i].contentId];
+
+          if (mark.isNew || mark.next !== -1) {
+            break;
+          }
+
+          updatedCut = +contentData[i].lastPositionTs;
+        }
+
+        if (updatedCut !== currentCut) {
+          Marker.markAll(userId, categoryId, updatedCut, callback);
+          return;
+        }
+
+        callback();
+      });
+    });
+  };
+
+
+  // Add handler to load content data for `.gc()`
+  //
+  // - type (String) - content type
+  // - handler (Function) - `function (userId, categoryId, currentCut, callback)`
+  //   - userId (ObjectId)
+  //   - categoryId (ObjectId)
+  //   - currentCut (Number)
+  //   - callback (Function) - `function (err, contentData)`
+  //     - err
+  //     - contentData ([Object])
+  //       - contentId (ObjectId)
+  //       - categoryId (ObjectId)
+  //       - lastPosition (Number) - last post number in thread (post hid)
+  //       - lastPositionTs (Number)
+  //
+  Marker.registerGc = function (type, handler) {
+    gcHandlers[type] = handler;
+  };
 
 
   // Mark content as read
@@ -40,16 +119,14 @@ module.exports = function (N, collectionName) {
       return;
     }
 
-    N.settings.get('content_read_marks_expire', function (err, content_read_marks_expire) {
+    Marker.cuts(userId, [ categoryId ], function (err, res) {
       if (err) {
         callback(err);
         return;
       }
 
-      var lastTs = Date.now() - (content_read_marks_expire * 24 * 60 * 60 * 1000);
-
       // Don't mark old content
-      if (contentId.getTimestamp() < lastTs) {
+      if (contentId.getTimestamp() < res[categoryId]) {
         callback();
         return;
       }
@@ -60,7 +137,15 @@ module.exports = function (N, collectionName) {
           return;
         }
 
-        N.redis.zadd('marker_marks:' + userId, +contentId.getTimestamp(), contentId, callback);
+        N.redis.zadd('marker_marks:' + userId, +contentId.getTimestamp(), contentId, function (err) {
+          if (err) {
+            callback(err);
+            return;
+          }
+
+          // TODO: make GC less aggressive (postponed)
+          Marker.gc(type, userId, categoryId, res[categoryId], callback);
+        });
       });
     });
   };
@@ -187,6 +272,7 @@ module.exports = function (N, collectionName) {
       }
 
       var pos;
+      var maxUpdated = false;
 
       if (posJson) {
         try {
@@ -196,12 +282,13 @@ module.exports = function (N, collectionName) {
 
       pos = pos || { max: max, current: position, ts: +now };
 
-      if (pos.max < max) {
-        pos.max = max;
-      }
-
       pos.current = position;
       pos.ts = +now;
+
+      if (pos.max < max) {
+        pos.max = max;
+        maxUpdated = true;
+      }
 
       N.redis.zadd('marker_pos_updates', now, userId + ':' + contentId, function (err) {
         if (err) {
@@ -215,7 +302,27 @@ module.exports = function (N, collectionName) {
             return;
           }
 
-          limitPositionMarkers(userId, callback);
+          limitPositionMarkers(userId, function (err) {
+            if (err) {
+              callback(err);
+              return;
+            }
+
+            if (!maxUpdated) {
+              callback();
+              return;
+            }
+
+            Marker.cuts(userId, [ categoryId ], function (err, res) {
+              if (err) {
+                callback(err);
+                return;
+              }
+
+              // TODO: make GC less aggressive (postponed)
+              Marker.gc(type, userId, categoryId, res[categoryId], callback);
+            });
+          });
         });
       });
     });
