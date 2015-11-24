@@ -83,8 +83,23 @@ module.exports.run = function (N, args, callback) {
 
     // FIXME check toRemove and toAdd intersection
     async.series([
+      // check password and email
+      function validate_params(next) {
+        if (args.action === 'add' && !args.email) {
+          next('Email is required');
+          return;
+        }
+
+        if (args.action === 'add' && !args.pass) {
+          next('Password is required');
+          return;
+        }
+
+        next();
+      },
+
       // fetch usergroups
-      function (next) {
+      function fetch_usergroups(next) {
         var UserGroup = N.models.users.UserGroup;
 
         UserGroup.find().select('_id short_name').exec(function (err, docs) {
@@ -108,64 +123,109 @@ module.exports.run = function (N, args, callback) {
       },
 
       // find or create user
-      function (next) {
-        // FIXME test existing login and email
+      function find_user(next) {
         var User = N.models.users.User;
-        var authLink = new N.models.users.AuthLink();
-
-        if (args.action === 'add') {
-          // FIXME user validator for pass and email test
-          if (!args.pass || !args.email) {
-            next('Invalid password or email');
-            return;
-          }
-
-          user = new User({
-            nick: args.user,
-            joined_ts: new Date()
-          });
-
-          user.save(function (err) {
-            if (err) {
-              next(err);
-              return;
-            }
-
-            authLink.type = 'plain';
-            authLink.email = args.email;
-
-            authLink.setPass(args.pass, function (err) {
-              if (err) {
-                next(err);
-                return;
-              }
-
-              authLink.user_id = user._id;
-              authLink.ip = '127.0.0.1';
-              authLink.last_ip = '127.0.0.1';
-
-              authLink.save(next);
-            });
-          });
-
-          return;
-        }
 
         User.findOne({ nick: args.user }).exec(function (err, doc) {
           if (err) {
             next(err);
             return;
           }
-          if (!user) {
-            next('User not found, check name or use `add`');
+
+          if (args.action === 'add') {
+            if (doc) {
+              next('User with that name already exists');
+              return;
+            }
+
+            user = new User({
+              nick: args.user,
+              joined_ts: new Date()
+            });
+
+            next();
+            return;
           }
+
+          if (!doc) {
+            next('User not found, check name or use `add`');
+            return;
+          }
+
           user = doc;
           next();
         });
       },
 
-      // update groups
-      function (next) {
+      // set password
+      function set_password(next) {
+        if (!args.pass) {
+          next();
+          return;
+        }
+
+        // disable all other passwords
+        N.models.users.AuthLink.update(
+            { user_id: user._id, type: 'plain', exists: true },
+            { $set: { exists: false } },
+            { multi: true },
+            function (err) {
+
+          if (err) {
+            next(err);
+            return;
+          }
+
+          var authLink = new N.models.users.AuthLink();
+
+          authLink.type = 'plain';
+          authLink.email = args.email || user.email;
+
+          authLink.setPass(args.pass, function (err) {
+            if (err) {
+              next(err);
+              return;
+            }
+
+            authLink.user_id = user._id;
+            authLink.ip = '127.0.0.1';
+            authLink.last_ip = '127.0.0.1';
+
+            authLink.save(next);
+          });
+        });
+      },
+
+      // set email and check that it's unique
+      function set_email(next) {
+        if (!args.email) {
+          next();
+          return;
+        }
+
+        var User = N.models.users.User;
+
+        User.findOne({
+          _id: { $ne: user._id },
+          email: args.email
+        }).exec(function (err, doc) {
+          if (err) {
+            next(err);
+            return;
+          }
+
+          if (doc) {
+            next('User with that email already exists');
+            return;
+          }
+
+          user.email = args.email;
+          next();
+        });
+      },
+
+      // validate and update usergroups
+      function update_usergroups(next) {
         if (!_.isEmpty(toRemove) && !_.isEmpty(user.usergroups)) {
           user.usergroups = user.usergroups.filter(function (group) {
             return toRemove.indexOf(group.toString()) === -1;
@@ -185,6 +245,12 @@ module.exports.run = function (N, args, callback) {
             });
           }
         }
+
+        next();
+      },
+
+      // save user
+      function save_user(next) {
         user.save(next);
       }
     ], function (err) {
