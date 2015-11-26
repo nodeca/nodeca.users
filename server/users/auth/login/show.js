@@ -3,6 +3,7 @@
 
 'use strict';
 
+
 var _ = require('lodash');
 
 
@@ -37,6 +38,6 @@ module.exports = function (N, apiPath) {
       oauth[name] = provider.client;
     });
 
-    env.res.blocks.oauth = oauth;
+    _.set(env.res, 'blocks.oauth', oauth);
   });
 };

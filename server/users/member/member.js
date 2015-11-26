@@ -1,6 +1,8 @@
 'use strict';
 
+
 var _ = require('lodash');
+
 
 module.exports = function (N, apiPath) {
 
@@ -114,11 +116,8 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function stub(env) {
     // TODO
-
-    env.res.blocks = env.res.blocks || {};
-
     if (String(env.data.user._id) === env.user_info.user_id) {
-      env.res.blocks.notepad = {};
+      _.set(env.res, 'blocks.notepad', {});
     }
 
     env.res.blocks.bookmarks = {};

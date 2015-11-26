@@ -3,6 +3,9 @@
 'use strict';
 
 
+var _ = require('lodash');
+
+
 module.exports = function (N) {
 
   var MEDIA_LIMIT = 7;
@@ -30,9 +33,7 @@ module.exports = function (N) {
         }
 
         env.res.blocks = env.res.blocks || {};
-        env.res.blocks.medias = {
-          list: medias
-        };
+        _.set(env.res, 'blocks.medias', { list: medias });
 
         callback();
       });
@@ -44,7 +45,7 @@ module.exports = function (N) {
   N.wire.after('server:users.member', function fetch_photos_count(env, callback) {
     var mTypes = N.models.users.MediaInfo.types;
 
-    if (!env.res.blocks.medias) {
+    if (!_.get(env.res.blocks.medias)) {
       callback();
       return;
     }
