@@ -49,7 +49,7 @@ module.exports = function (N, apiPath) {
       env.session.user_id = token.user_id.toString();
 
       // fill redirect with default value
-      env.data.redirect_url = N.router.linkTo('users.profile_redirect');
+      env.data.redirect_url = N.router.linkTo('users.member', { user_hid: env.data.user.hid });
 
       // if no specific redirect requested - redirect to default
       if (!env.data.redirect_id) {
