@@ -51,7 +51,7 @@ var resizeConfigSchema = {
 var configSchema = {
   additionalProperties: false,
   properties: {
-    extentions:    {
+    extensions:    {
       type: 'array',
       uniqueItems: true,
       minItems: 1,
@@ -108,7 +108,7 @@ module.exports = _.memoize(function (uploadsConfig) {
   var typesOptions = {};
 
   // Combine all options by file type
-  _.forEach(config.extentions, function (ext) {
+  _.forEach(config.extensions, function (ext) {
     var mimeType = mimoza.getMimeType(ext);
 
     // Get real extension (like 'jpg' instead 'jpeg')

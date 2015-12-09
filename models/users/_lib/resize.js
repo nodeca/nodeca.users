@@ -5,6 +5,7 @@
 // - options
 //   - store - storage interface
 //   - ext - file extension
+//   - date - timestamp for generated objectid
 //   - maxSize - maximum file size if resized images
 //   - resize
 //     - orig
@@ -28,15 +29,54 @@
 //
 'use strict';
 
-var async    = require('async');
-var gm       = require('gm');
-var fstools  = require('fs-tools');
-var Mongoose = require('mongoose');
-var mimoza   = require('mimoza');
 var _        = require('lodash');
+var async    = require('async');
 var fs       = require('fs');
+var mimoza   = require('mimoza');
+var Mongoose = require('mongoose');
+var probe    = require('probe-image-size');
+var Stream   = require('stream');
+var sharp    = require('sharp');
 
 var File;
+
+// Limit amount of threads used for each image
+sharp.concurrency(1);
+
+
+// Read the file and return { buffer, width, height, length }
+// of the image inside.
+//
+function readImage(file, callback) {
+  callback = _.once(callback);
+
+  fs.readFile(file, function (err, data) {
+    if (err) {
+      callback(err);
+      return;
+    }
+
+    var streamBuffer = new Stream.Transform();
+
+    streamBuffer.push(data);
+    streamBuffer.end();
+
+    probe(streamBuffer, function (err, imgSz) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      callback(null, {
+        buffer: data,
+        length: data.length,
+        type:   imgSz.type,
+        width:  imgSz.width,
+        height: imgSz.height
+      });
+    });
+  });
+}
 
 
 // Create preview for image
@@ -54,109 +94,120 @@ var File;
 //
 // - callback - function (err, { path, type })
 //
-function createPreview(path, resizeConfig, imageType, callback) {
-  fs.stat(path, function (err, stats) {
+function createPreview(image, resizeConfig, imageType, callback) {
+  // Is image size smaller than 'skip_size' - skip resizing;
+  // this saves image as it was, including metadata like EXIF
+  //
+  if (resizeConfig.skip_size && image.length < resizeConfig.skip_size) {
+    callback(null, { image: image, type: imageType });
+    return;
+  }
+
+  var outType = resizeConfig.type || imageType;
+
+  var sharpInstance = sharp(image.buffer);
+
+  // Set quality only for jpeg image
+  if (outType === 'jpeg') {
+    sharpInstance.quality(resizeConfig.jpeg_quality).rotate();
+  }
+
+  // jpeg doesn't support alpha channel, so substitute it with white background
+  if (outType === 'jpeg') {
+    sharpInstance.background('white').flatten();
+  }
+
+  if (resizeConfig.unsharp) {
+    sharpInstance.sharpen();
+  }
+
+  // To scale image, we calculate new width and height,
+  // resize image by height, and crop by width
+  var scaledHeight, scaledWidth, aspectRatio;
+
+  if (resizeConfig.height && !resizeConfig.width) {
+    // If only height is defined, scale to fit height
+    // and crop by max_width
+    scaledHeight = resizeConfig.height;
+
+    var proportionalWidth = Math.floor(image.width * scaledHeight / image.height);
+
+    if (!resizeConfig.max_width || resizeConfig.max_width > proportionalWidth) {
+      scaledWidth = proportionalWidth;
+    } else {
+      scaledWidth = resizeConfig.max_width;
+    }
+  } else if (!resizeConfig.height && resizeConfig.width) {
+    // If only width is defined, scale to fit width
+    // and crop by max_height
+    scaledWidth = resizeConfig.width;
+
+    var proportionalHeight = Math.floor(image.height * scaledWidth / image.width);
+
+    if (!resizeConfig.max_height || resizeConfig.max_height > proportionalHeight) {
+      scaledHeight = proportionalHeight;
+    } else {
+      scaledHeight = resizeConfig.max_height;
+    }
+  } else if (resizeConfig.width && resizeConfig.height) {
+    // Both width and height are defined, so we scale the image to fit
+    // both width and height at the same time.
+    //
+    // As an example, 1000x200 image with max_width=170 and max_height=150
+    // would be scaled down to 170x34
+    //
+    aspectRatio = image.width / image.height;
+
+    scaledWidth = image.width;
+    scaledHeight = image.height;
+
+    if (resizeConfig.width) {
+      scaledWidth = Math.min(scaledWidth, resizeConfig.width);
+      scaledHeight = scaledWidth / aspectRatio;
+    }
+
+    if (resizeConfig.height) {
+      scaledHeight = Math.min(scaledHeight, resizeConfig.height);
+      scaledWidth = scaledHeight * aspectRatio;
+    }
+  } else if (resizeConfig.max_width && resizeConfig.max_height) {
+    // Neither width nor height are defined, so we scale to fit
+    // either max_width or max_height (not necessarily both)
+    //
+    // As an example, 1000x200 image with max_width=170 and max_height=150
+    // would be scaled down to 750x150, and then cropped to 170x150
+    //
+    scaledWidth = resizeConfig.max_width;
+    scaledHeight = resizeConfig.max_height;
+  }
+
+  sharpInstance.resize(Math.round(scaledWidth), Math.round(scaledHeight));
+  sharpInstance.withoutEnlargement().crop('center');
+
+  // TODO: save original image instead if no crop is required,
+  //       but still need to do something about exif
+
+  sharpInstance.toFormat(outType).toBuffer(function (err, buffer, info) {
     if (err) {
       callback(err);
       return;
     }
 
-    var outType = resizeConfig.type || imageType;
-
-    // To determine output image type, we must specify file extention
-    var tmpFilePath = fstools.tmpdir() + '.' + outType;
-
-    // If animation not allowed - take first frame of gif image
-    path = (imageType === 'gif' && resizeConfig.gif_animation === false) ? path + '[0]' : path;
-    var gmInstance = gm(path);
-
-    // Set quality only for jpeg image
-    if (outType === 'jpeg') {
-      gmInstance.quality(resizeConfig.jpeg_quality).autoOrient();
-    }
-
-    if (resizeConfig.unsharp) {
-      gmInstance.unsharp('0');
-    }
-
-    // Is image size smaller than 'skip_size' - skip resizing
-    if (resizeConfig.skip_size && stats.size < resizeConfig.skip_size) {
-
-      // Save file and return result
-      gmInstance.write(tmpFilePath, function (err) {
-        if (err) {
-          // Remove temporary file if error
-          fs.unlink(tmpFilePath, function () {
-            callback(err);
-          });
-          return;
-        }
-
-        callback(null, { path: tmpFilePath, type: outType });
-      });
-      return;
-    }
-
-    gmInstance.gravity('Center').size(function (err, imgSz) {
-      if (err) {
-        fs.unlink(tmpFilePath, function () {
-          callback(err);
-        });
-        return;
-      }
-
-      // To scale image we calculate new width and height, resize image by height and crop by width
-      var scaledHeight, scaledWidth;
-
-      if (resizeConfig.height && !resizeConfig.width) {
-        // If only height defined - scale to fit height,
-        // and crop by max_width
-        scaledHeight = resizeConfig.height;
-        var proportionalWidth = Math.floor(imgSz.width * scaledHeight / imgSz.height);
-        scaledWidth = (!resizeConfig.max_width || resizeConfig.max_width > proportionalWidth) ?
-          proportionalWidth :
-          resizeConfig.max_width;
-
-      } else if (!resizeConfig.height && resizeConfig.width) {
-        // If only width defined - scale to fit width,
-        // and crop by max_height
-        scaledWidth = resizeConfig.width;
-        var proportionalHeight = Math.floor(imgSz.height * scaledWidth / imgSz.width);
-        scaledHeight = (!resizeConfig.max_height || resizeConfig.max_height > proportionalHeight) ?
-          proportionalHeight :
-          resizeConfig.max_height;
-
-      } else {
-        // If determine both width and height
-        scaledWidth = resizeConfig.width;
-        scaledHeight = resizeConfig.height;
-      }
-
-      // Don't resize (only crop) image if height smaller than scaledHeight
-      if (imgSz.height > scaledHeight) {
-        gmInstance.resize(null, scaledHeight);
-      }
-
-      // TODO: save original image instead if no crop is required,
-      //       but still need to do something about exif
-
-      // Save file
-      gmInstance.crop(scaledWidth, scaledHeight).write(tmpFilePath, function (err) {
-        if (err) {
-          // Remove temporary file if error
-          fs.unlink(tmpFilePath, function () {
-            callback(err);
-          });
-          return;
-        }
-        callback(null, { path: tmpFilePath, type: outType });
-      });
+    callback(null, {
+      image: {
+        buffer: buffer,
+        length: info.size,
+        width:  info.width,
+        height: info.height,
+        type:   info.type
+      },
+      type: outType
     });
   });
 }
 
 
-// Save files to database
+// Save buffered images to database
 //
 // - previews - { orig: { path, type }, ... }
 // - maxSize - maximum size to save to database
@@ -164,25 +215,19 @@ function createPreview(path, resizeConfig, imageType, callback) {
 //
 // - callback - function (err, originalFileId)
 //
-function saveFiles(previews, maxSize, callback) {
+function saveImages(previews, options, callback) {
   async.each(Object.keys(previews), function (key, next) {
-
+    //
     // Check file size
-    fs.stat(previews[key].path, function (err, stats) {
-      if (err) {
-        next(err);
-        return;
-      }
+    //
+    var size = previews[key].image.length;
 
-      previews[key].fileSize = stats.size;
+    if (options.maxSize && size > options.maxSize) {
+      next(new Error('Can\'t save file: max size exceeded'));
+      return;
+    }
 
-      if (maxSize && stats.size > maxSize) {
-        next(new Error('Can\'t save file: max size exceeded'));
-        return;
-      }
-
-      next();
-    });
+    next();
   }, function (err) {
     if (err) {
       callback(err);
@@ -191,33 +236,32 @@ function saveFiles(previews, maxSize, callback) {
 
     // Create new ObjectId for orig file.
     // You can get file_id from put function, but all previews save async.
-    var origId = new Mongoose.Types.ObjectId();
-    async.each(
-      Object.keys(previews),
-      function (key, next) {
-        var data = previews[key];
+    var origId = new Mongoose.Types.ObjectId(options.date);
+    async.each(Object.keys(previews), function (key, next) {
+      var data = previews[key];
 
-        var params = { contentType: mimoza.getMimeType(data.type) };
+      var params = { contentType: mimoza.getMimeType(data.type) };
 
-        if (key === 'orig') {
-          params._id = origId;
-        } else {
-          params.filename = origId + '_' + key;
-        }
-
-        File.put(data.path, params, function (err) {
-          next(err);
-        });
-      },
-      function (err) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        callback(null, origId);
+      if (key === 'orig') {
+        params._id = origId;
+      } else {
+        params.filename = origId + '_' + key;
       }
-    );
+
+      var image = data.image;
+
+      File.put(image.buffer, params, function (err) {
+        next(err);
+      });
+    },
+    function (err) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      callback(null, origId);
+    });
   });
 }
 
@@ -226,69 +270,56 @@ module.exports = function (src, options, callback) {
   File = options.store;
 
   var previews = {};
-  async.eachSeries(Object.keys(options.resize), function (resizeConfigKey, next) {
-    // Create preview for each size
 
-    var resizeConfig = options.resize[resizeConfigKey];
-    // Next preview will be based on preview in 'from' property
-    // by default next preview generated from 'orig'
-    var from = (previews[resizeConfig.from || ''] || previews.orig || {});
-    var filePath = from.path || src;
-    createPreview(filePath, resizeConfig, from.type || options.ext, function (err, data) {
-      if (err) {
-        next(err);
-        return;
-      }
+  readImage(src, function (err, origImage) {
+    if (err) {
+      callback(err);
+      return;
+    }
 
-      previews[resizeConfigKey] = data;
+    async.eachSeries(Object.keys(options.resize), function (resizeConfigKey, next) {
+      // Create preview for each size
 
-      // Get real size after resize
-      gm(data.path).size(function (err, imgSz) {
+      var resizeConfig = options.resize[resizeConfigKey];
+
+      // Next preview will be based on preview in 'from' property
+      // by default next preview generated from 'orig'
+      var from = (previews[resizeConfig.from || ''] || previews.orig || {});
+      var image = from.image || origImage;
+
+      createPreview(image, resizeConfig, from.type || options.ext, function (err, newImage) {
         if (err) {
           next(err);
           return;
         }
 
-        previews[resizeConfigKey].size = { width: imgSz.width, height: imgSz.height };
+        previews[resizeConfigKey] = newImage;
         next();
       });
-    });
-  }, function (err) {
-    // Delete all tmp files
-    function deleteTmpPreviews(callback) {
-      async.each(
-        Object.keys(previews),
-        function (key, next) {
-          fs.unlink(previews[key].path, function () {
-            next();
-          });
-        },
-        function () {
-          callback();
-        }
-      );
-    }
-
-    if (err) {
-      deleteTmpPreviews(function () {
+    }, function (err) {
+      if (err) {
         callback(err);
-      });
-      return;
-    }
+        return;
+      }
 
-    // Save all previews
-    saveFiles(previews, options.maxSize, function (err, origId) {
-      deleteTmpPreviews(function () {
+      // Save all previews
+      saveImages(previews, options, function (err, origId) {
         if (err) {
           callback(err);
           return;
         }
 
-        var images = {};
-        _.forEach(previews, function (val, key) {
-          images[key] = val.size;
+        callback(null, {
+          id: origId,
+          size: previews.orig.image.length,
+          images: _.map(previews, function (preview) {
+            return {
+              width:  preview.image.width,
+              height: preview.image.height,
+              length: preview.image.length
+            };
+          })
         });
-        callback(null, { id: origId, size: previews.orig.fileSize, images: images });
       });
     });
   });

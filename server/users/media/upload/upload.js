@@ -197,7 +197,7 @@ module.exports = function (N, apiPath) {
 
       // Usually file size and type are checked on client side,
       // but we must check it on server side for security reasons
-      var allowedTypes = _.map(config.extentions, function (ext) {
+      var allowedTypes = _.map(config.extensions, function (ext) {
         return mimoza.getMimeType(ext);
       });
 

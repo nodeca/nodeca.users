@@ -1,6 +1,6 @@
 users:
   avatars:
-    extentions: [ jpg, jpeg ]
+    extensions: [ jpg, jpeg ]
     jpeg_quality: 85
 
     resize:

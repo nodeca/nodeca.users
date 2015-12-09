@@ -43,7 +43,7 @@ var requests;
 // Check file extension
 //
 function checkFile(data) {
-  var allowedFileExt = new RegExp('\.(' + settings.extentions.join('|') + ')$', 'i');
+  var allowedFileExt = new RegExp('\.(' + settings.extensions.join('|') + ')$', 'i');
   var message;
 
   if (!allowedFileExt.test(data.file.name)) {
