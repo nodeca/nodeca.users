@@ -45,6 +45,10 @@ module.exports = function (N, collectionName) {
   //
   Subscription.index({ user_id: 1, to: 1 });
 
+  // Used in tracker
+  //
+  Subscription.index({ user_id: 1, type: 1 });
+
   /////////////////////////////////////////////////////////////////////////////
 
 
