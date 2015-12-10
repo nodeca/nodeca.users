@@ -24,6 +24,12 @@ setting_schemas:
       type: number
       default: 2048
 
+    can_receive_email:
+      priority: 1070
+      category_key: perm_users
+      type: boolean
+      default: true
+
     can_access_acp:
       priority: 2000
       category_key: perm_admin

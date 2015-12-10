@@ -39,3 +39,5 @@ i18n:
           users_media_total_quota_mb: Total media quota (MB)
 
           users_media_single_quota_kb: Max upload file size (KB)
+
+          can_receive_email: Can receive email
