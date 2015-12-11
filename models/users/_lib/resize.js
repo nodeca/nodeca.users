@@ -181,6 +181,17 @@ function createPreview(image, resizeConfig, imageType, callback) {
     scaledHeight = resizeConfig.max_height;
   }
 
+  // Prevent scaled image to be larger than the original;
+  // this prevents "Invalid height (1 to 16383)" error
+  // caused by thin vertical images
+  //
+  if (scaledWidth > image.width || scaledHeight > image.height) {
+    var factor = Math.max(scaledWidth / image.width, scaledHeight / image.height);
+
+    scaledWidth /= factor;
+    scaledHeight /= factor;
+  }
+
   sharpInstance.resize(Math.round(scaledWidth), Math.round(scaledHeight));
   sharpInstance.withoutEnlargement().crop('center');
 
@@ -312,7 +323,7 @@ module.exports = function (src, options, callback) {
         callback(null, {
           id: origId,
           size: previews.orig.image.length,
-          images: _.map(previews, function (preview) {
+          images: _.mapValues(previews, function (preview) {
             return {
               width:  preview.image.width,
               height: preview.image.height,
