@@ -1,29 +1,28 @@
-.ucard-inner(id=self.popover_id)
-  - if (self.loading)
-    .progress: span= self.t('loading')
-  - else 
-    .ucard-head.cleafix #{self.name}
-    aside.ucard-sidebar
-      a.ucard-avatar(href='#')
-        img.av-l(alt=self.name)&attributes(self.avatar(self))
+#ucard-popover
+  .ucard-head.cleafix
+    a(href=self.link_to('users.member', { user_hid: self.hid }))= self.name
+  
+  aside.ucard-sidebar
+    a.ucard-avatar(href=self.link_to('users.member', { user_hid: self.hid }))
+      img.av-l(alt=self.name)&attributes(self.avatar(self))
 
-      a.btn.btn-default.btn-xs.btn-block= self.t('find_posts')  
-      a.btn.btn-default.btn-xs.btn-block= self.t('send_message')  
+    a.btn.btn-default.btn-xs.btn-block= self.t('find_posts')
+    a.btn.btn-default.btn-xs.btn-block= self.t('send_message')
 
-    .ucard-info
-      dl.dl-horizontal
+  .ucard-info
+    dl.dl-horizontal
 
-        dt Age
-        dd 32
+      dt Age
+      dd 32
 
-        dt City
-        dd Honolulu
+      dt City
+      dd Honolulu
 
-        dt Member since
-        dd #{self.date(self.joined_ts, 'relative')}
+      dt Member since
+      dd #{self.date(self.joined_ts, 'relative')}
 
-        dt Total posts
-        dd 678
+      dt Total posts
+      dd 678
 
-        dt Last active
-        dd Now
+      dt Last active
+      dd Now

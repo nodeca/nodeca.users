@@ -1,107 +1,83 @@
+// Show usercard by click profile link.
+//
 'use strict';
 
 
-var _ = require('lodash');
+N.wire.once('navigate.done', function init_usercard_click() {
+  var $body = $('body');
+  var $container = $('.layout__container');
+  var $fake_popover = $('<div id="ucard-popover"></div>').appendTo($body);
+  var POPOVER_WIDTH = $fake_popover.outerWidth(true);
+  var popover_shown = false;
 
+  $fake_popover.remove();
 
-var DELAY       = 500;  // Time in ms before showing an info card
-var TIMEOUT     = null; // Timeout ID used to interrupt previous timeout if any
-var POPOVER_IDX = 0;    // Popover counters used to generate unique IDs
+  // Add click handler to `._ucard-popover`.
+  //
+  $body.on('click', '._ucard-popover', function (event) {
+    var $link = $(this);
 
-
-// Returns user info card from cache.
-// Request from server if it's not yet cached or cache outdated.
-//
-function getUserInfo(id, callback) {
-  N.io.rpc(module.apiPath, { id: id }, { handleAllErrors: true })
-    .done(function (res) {
-      callback((res || {}).user);
-    })
-    // Suppress default errors
-    .fail(function () {
-      callback(null);
-    });
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
-
-
-$.fn.powerTip.smartPlacementLists.usercard = [
-  'nw-alt', 'sw-alt', 'ne-alt', 'se-alt', 'nw-alt'
-];
-
-
-// Show user unfo for selected dom element
-//
-function showUserInfo($el) {
-  var popover_id = 'usercard_popover_' + POPOVER_IDX++;
-
-  $el.data('powertip', N.runtime.render(module.apiPath, {
-    popover_id: popover_id,
-    loading: true
-  }));
-
-  // assign powertip handlers
-  $el.powerTip({
-    placement:          'usercard',
-    smartPlacement:     true,
-    mouseOnToPopup:     true,
-    popupId:            'ucard-popover',
-    offset:             15,
-    closeDelay:         500,
-    intentPollInterval: DELAY
-  });
-
-  // show popover
-  $.powerTip.showTip($el);
-
-  // fetch data
-  getUserInfo($el.data('user-id'), function (data) {
-    var html;
-
-    if (!data) {
-      // no user -- destroy powertip and set powertip data attribute
-      // to not reinitiate it next time
-      $el.powerTip('destroy').data('powertip', true);
+    // Skip for devices with small screens (navigate profile page).
+    if (POPOVER_WIDTH * 1.5 > $container.width()) {
       return;
     }
 
-    html = N.runtime.render(module.apiPath, _.assign(data, {
-      popover_id: popover_id
-    }));
+    // Prevent default navigator behaviour.
+    event.preventDefault();
 
-    // set powertip contents
-    $el.data('powertip', html);
+    N.io.rpc(module.apiPath, { id: $link.data('user-id') })
+      .done(function (res) {
+        var pos_left = $link.offset().left + $link.innerWidth();
+        var $card = $(N.runtime.render(module.apiPath, res.user));
 
-    // try to replace already shown "loading" stub
-    $('#' + popover_id).replaceWith(html);
+        if (pos_left + POPOVER_WIDTH > $container.width()) {
 
-    $.powerTip.resetPosition($el);
+          // If popover with offset get out container edge - show it under
+          // link near right container edge.
+          $card.css({
+            top: $link.offset().top + $link.outerHeight(),
+            right: ($(window).width() - $container.width()) / 2
+          });
+
+          $card.addClass('ucard-popover__m-bottom');
+        } else {
+
+          // Show at one line with link.
+          $card.css({
+            top: $link.offset().top,
+            left: pos_left
+          });
+        }
+
+        $card.appendTo($body).fadeIn('fast');
+
+        popover_shown = true;
+      });
   });
-}
-
-////////////////////////////////////////////////////////////////////////////////
 
 
-$(function () {
-  $('body').on('mouseenter.nodeca.data-api', '._ucard-popover', function () {
-    var $this = $(this),
-        id    = $this.data('user-id'),
-        card  = $this.data('powertip');
+  // Close popover by click outside
+  //
+  $body.on('click', function (e) {
 
-    clearTimeout(TIMEOUT);
+    // If shown
+    if (popover_shown) {
 
-    if (!id || card) {
-      return;
+      // If click inside popover
+      if (!$(e.target).closest('#ucard-popover').length) {
+        $('#ucard-popover').remove();
+        popover_shown = false;
+      }
     }
-
-    TIMEOUT = setTimeout(function () {
-      showUserInfo($this);
-    }, DELAY);
   });
 
-  $('body').on('mouseleave.nodeca.data-api', '._ucard-popover', function () {
-    clearTimeout(TIMEOUT);
+
+  // Close popover on page leave
+  //
+  N.wire.on('navigate.exit', function page_leave() {
+    if (popover_shown) {
+      $('#ucard-popover').remove();
+      popover_shown = false;
+    }
   });
 });
