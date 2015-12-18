@@ -3,11 +3,15 @@
 'use strict';
 
 
+var _ = require('lodash');
+
+
 N.wire.once('navigate.done', function init_usercard_click() {
   var $body = $('body');
   var $container = $('.layout__container');
   var $fake_popover = $('<div id="ucard-popover"></div>').appendTo($body);
   var POPOVER_WIDTH = $fake_popover.outerWidth(true);
+  var POPOVER_HEIGHT = $fake_popover.outerHeight(true);
   var popover_shown = false;
 
   $fake_popover.remove();
@@ -18,14 +22,24 @@ N.wire.once('navigate.done', function init_usercard_click() {
     var $link = $(this);
 
     // Skip for devices with small screens (navigate profile page).
-    if (POPOVER_WIDTH * 1.5 > $container.width()) {
+    if (POPOVER_WIDTH * 1.5 > $container.width() || POPOVER_HEIGHT * 2 > $(window).height()) {
+      return;
+    }
+
+    // Try parse href to get `user_hid` from member page link.
+    var user_hid = _.chain(N.router.matchAll($link.attr('href')))
+      .find(function (match) { return _.get(match, 'meta.methods.get') === 'users.member'; })
+      .get('params.user_hid')
+      .value();
+
+    if (!user_hid) {
       return;
     }
 
     // Prevent default navigator behaviour.
     event.preventDefault();
 
-    N.io.rpc(module.apiPath, { id: $link.data('user-id') })
+    N.io.rpc(module.apiPath, { user_hid: user_hid })
       .done(function (res) {
         var pos_left = $link.offset().left + $link.innerWidth();
         var $card = $(N.runtime.render(module.apiPath, res.user));
@@ -52,6 +66,9 @@ N.wire.once('navigate.done', function init_usercard_click() {
         $card.appendTo($body).fadeIn('fast');
 
         popover_shown = true;
+      })
+      .fail(N.io.NOT_FOUND, function () {
+        N.wire.emit('notify', { type: 'error', message: t('error') });
       });
   });
 

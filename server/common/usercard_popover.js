@@ -3,7 +3,7 @@
 'use strict';
 
 
-var user_in_fields = [
+var user_fields = [
   '_id',
   'hid',
   'joined_ts',
@@ -13,65 +13,64 @@ var user_in_fields = [
   'avatar_id'
 ];
 
+
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
-    id: { format: 'mongo', required: true }
+    user_hid: { type: 'integer', minimum: 1, required: true }
   });
 
 
-  // Fetch permission to see deleted users
+  // Fetch user
   //
-  N.wire.before(apiPath, function fetch_can_see_deleted_users(env, callback) {
+  N.wire.before(apiPath, function fetch_user(env, callback) {
+
+    // Fetch permission to see deleted users
     env.extras.settings.fetch('can_see_deleted_users', function (err, can_see_deleted_users) {
       if (err) {
         callback(err);
         return;
       }
 
-      env.data.settings = env.data.settings || {};
-      env.data.settings.can_see_deleted_users = can_see_deleted_users;
-      callback();
+      var params = { hid: env.params.user_hid };
+
+      if (!can_see_deleted_users) {
+        params.exists = true;
+      }
+
+      // Fetch user
+      N.models.users.User.findOne(params)
+          .select(user_fields.join(' '))
+          .lean(true)
+          .exec(function (err, res) {
+
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        if (!res) {
+          callback(N.io.NOT_FOUND);
+          return;
+        }
+
+        env.data.user = res;
+        callback();
+      });
     });
   });
 
 
-  // FIXME reject for guests
+  // Fill user
   //
-  // ##### params
-  //
-  // - `id`   User._id
-  //
-  N.wire.on(apiPath, function user_popover_info(env, callback) {
+  N.wire.on(apiPath, function fill_user(env) {
+    var user = env.data.user;
 
-    var query = N.models.users.User
-      .findOne({ _id: env.params.id })
-      .lean(true)
-      .select(user_in_fields.join(' '));
-
-    // Check 'can_see_deleted_users' permission
-    if (!env.data.settings.can_see_deleted_users) {
-      query.where({ exists: true });
+    // only registered users can see full name and avatar
+    if (!env.user_info.is_member) {
+      user.name = user.nick;
+      user.avatar_id = null;
     }
 
-    query.exec(function (err, user) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      if (!user) {
-        callback(N.io.NOT_FOUND);
-        return;
-      }
-
-      // sanitize user info for guests: show nick instead of user name
-      if (env.user_info.is_guest) {
-        user.name = user.nick;
-        user.avatar_id = null;
-      }
-
-      env.res.user = user;
-      callback();
-    });
+    env.res.user = user;
   });
 };
