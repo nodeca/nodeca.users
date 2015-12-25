@@ -95,32 +95,6 @@ function readImage(file, callback) {
 // - callback - function (err, { path, type })
 //
 function createPreview(image, resizeConfig, imageType, callback) {
-  // Is image size smaller than 'skip_size' - skip resizing;
-  // this saves image as it was, including metadata like EXIF
-  //
-  if (resizeConfig.skip_size && image.length < resizeConfig.skip_size) {
-    callback(null, { image: image, type: imageType });
-    return;
-  }
-
-  var outType = resizeConfig.type || imageType;
-
-  var sharpInstance = sharp(image.buffer);
-
-  // Set quality only for jpeg image
-  if (outType === 'jpeg') {
-    sharpInstance.quality(resizeConfig.jpeg_quality).rotate();
-  }
-
-  // jpeg doesn't support alpha channel, so substitute it with white background
-  if (outType === 'jpeg') {
-    sharpInstance.background('white').flatten();
-  }
-
-  if (resizeConfig.unsharp) {
-    sharpInstance.sharpen();
-  }
-
   // To scale image, we calculate new width and height,
   // resize image by height, and crop by width
   var scaledHeight, scaledWidth, aspectRatio;
@@ -181,6 +155,43 @@ function createPreview(image, resizeConfig, imageType, callback) {
     scaledHeight = resizeConfig.max_height;
   }
 
+  // If image size is smaller than 'skip_size', skip resizing;
+  // this saves image as is, including metadata like EXIF
+  //
+  if (resizeConfig.skip_size && image.length < resizeConfig.skip_size) {
+    callback(null, { image: image, type: imageType });
+    return;
+  }
+
+  // If image is smaller than needed already, save it as is
+  //
+  if (scaledWidth >= image.width && scaledHeight >= image.height) {
+    if (!resizeConfig.max_size || image.length < resizeConfig.max_size) {
+      callback(null, { image: image, type: imageType });
+      return;
+    }
+  }
+
+  var outType = resizeConfig.type || imageType;
+
+  var sharpInstance = sharp(image.buffer);
+
+  // Set quality only for jpeg image
+  if (outType === 'jpeg') {
+    sharpInstance.quality(resizeConfig.jpeg_quality).rotate();
+  }
+
+  // jpeg doesn't support alpha channel, so substitute it with white background
+  if (outType === 'jpeg') {
+    if (imageType === 'gif' || imageType === 'png') {
+      sharpInstance.background('white').flatten();
+    }
+  }
+
+  if (resizeConfig.unsharp) {
+    sharpInstance.sharpen();
+  }
+
   // Prevent scaled image to be larger than the original;
   // this prevents "Invalid height (1 to 16383)" error
   // caused by thin vertical images
@@ -194,9 +205,6 @@ function createPreview(image, resizeConfig, imageType, callback) {
 
   sharpInstance.resize(Math.round(scaledWidth), Math.round(scaledHeight));
   sharpInstance.withoutEnlargement().crop('center');
-
-  // TODO: save original image instead if no crop is required,
-  //       but still need to do something about exif
 
   sharpInstance.toFormat(outType).toBuffer(function (err, buffer, info) {
     if (err) {
