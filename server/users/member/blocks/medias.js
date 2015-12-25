@@ -45,7 +45,7 @@ module.exports = function (N) {
   N.wire.after('server:users.member', function fetch_photos_count(env, callback) {
     var mTypes = N.models.users.MediaInfo.types;
 
-    if (!_.get(env.res.blocks.medias)) {
+    if (!_.get(env.res, 'blocks.medias')) {
       callback();
       return;
     }
