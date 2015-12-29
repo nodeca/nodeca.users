@@ -85,7 +85,13 @@ module.exports = function (N, apiPath) {
   // Try to find auth data using `email_or_nick` as an email.
   //
   N.wire.on(apiPath, function find_authlink_by_email(env, callback) {
-    if (env.data.user && env.data.authLink) {
+    if (env.data.authLink) {
+      // user already verified by hooks, nothing left to do
+      callback();
+      return;
+    }
+
+    if (env.data.user && env.data.authLink_plain) {
       callback();
       return;
     }
@@ -123,8 +129,8 @@ module.exports = function (N, apiPath) {
           return;
         }
 
-        env.data.user     = user;
-        env.data.authLink = authLink;
+        env.data.user           = user;
+        env.data.authLink_plain = authLink;
 
         callback();
       });
@@ -135,7 +141,13 @@ module.exports = function (N, apiPath) {
   // Try to find auth data using `email_or_nick` as a nick.
   //
   N.wire.on(apiPath, function find_authlink_by_nick(env, callback) {
-    if (env.data.user && env.data.authLink) {
+    if (env.data.authLink) {
+      // user already verified by hooks, nothing left to do
+      callback();
+      return;
+    }
+
+    if (env.data.user && env.data.authLink_plain) {
       callback();
       return;
     }
@@ -166,10 +178,11 @@ module.exports = function (N, apiPath) {
 
         if (!authLink) {
           callback(); // There is no error - let next hooks do their job.
+          return;
         }
 
-        env.data.user     = user;
-        env.data.authLink = authLink;
+        env.data.user           = user;
+        env.data.authLink_plain = authLink;
 
         callback();
       });
@@ -177,11 +190,35 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Check that user & plain authlink are ok
+  // Try to login using plain authlink
   //
-  N.wire.on(apiPath, function check_fetched(env, callback) {
+  N.wire.on(apiPath, function verify_authlink(env, callback) {
+    if (!env.data.user || !env.data.authLink_plain) {
+      callback();
+      return;
+    }
 
-    if (!env.data.user || !env.data.authLink) {
+    env.data.authLink_plain.checkPass(env.params.pass, function (err, success) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      if (success) {
+        env.data.authLink = env.data.authLink_plain;
+      }
+
+      callback();
+    });
+  });
+
+
+  // Do login
+  //
+  N.wire.after(apiPath, function login_do(env, callback) {
+    // if env.data.authLink variable is set, it means this authlink
+    // has been verified, and password matches
+    if (!env.data.authLink) {
       callback({
         code:    N.io.CLIENT_ERROR,
         message: env.t('err_login_failed')
@@ -189,36 +226,12 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    callback();
-  });
+    // Set login redirect URL.
+    env.data.redirect_id = env.params.redirect_id;
 
-
-  // Do login
-  //
-  N.wire.on(apiPath, function login_do(env, callback) {
-
-    env.data.authLink.checkPass(env.params.pass, function (err, success) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      // password mismatch
-      if (!success) {
-        callback({
-          code:    N.io.CLIENT_ERROR,
-          message: env.t('err_login_failed')
-        });
-        return;
-      }
-
-      // Set login redirect URL.
-      env.data.redirect_id = env.params.redirect_id;
-
-      N.wire.emit('internal:users.login', env, function () {
-        env.res.redirect_url = env.data.redirect_url;
-        callback();
-      });
+    N.wire.emit('internal:users.login', env, function () {
+      env.res.redirect_url = env.data.redirect_url;
+      callback();
     });
   });
 };
