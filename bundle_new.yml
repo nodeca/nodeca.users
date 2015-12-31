@@ -1,0 +1,23 @@
+bundles:
+  frontend:
+    - users
+
+
+packages:
+  admin:
+    entries:
+      - client/admin
+      - server/admin
+
+  common:
+    entries:
+      - client/common
+      - server/common
+
+  users:
+    depends:
+      - common
+
+    entries:
+      - client/users
+      - server/users
