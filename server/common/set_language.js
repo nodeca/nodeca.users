@@ -21,7 +21,7 @@ module.exports = function (N, apiPath) {
 
     if (!_.contains(N.config.locales.enabled, env.params.locale)) {
       // User sent a non-existent or disabled locale - reply with the default.
-      locale = N.config.locales['default'];
+      locale = N.config.locales.enabled[0];
     }
 
     env.extras.setCookie('locale', locale, {
