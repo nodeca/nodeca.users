@@ -12,6 +12,7 @@ describe('User', function () {
     it('nickname must have at least 3 chars', function () {
       assert.equal(User.validateNick('ab'), false);
       assert.equal(User.validateNick('abc'), true);
+      assert.equal(User.validateNick('фыв'), true);
     });
 
     it('allow only letters, digits, dashes and underscores', function () {
@@ -32,6 +33,10 @@ describe('User', function () {
 
       assert.equal(User.validatePassword('12345678'), false);
       assert.equal(User.validatePassword('1234567h'), true);
+    });
+
+    it('password must allow international chars', function () {
+      assert.equal(User.validatePassword('фыва1234'), true);
     });
   });
 
