@@ -19,9 +19,9 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function set_language(env, callback) {
     var locale = env.params.locale;
 
-    if (!_.contains(N.config.locales.enabled, env.params.locale)) {
+    if (!_.contains(N.config.locales, env.params.locale)) {
       // User sent a non-existent or disabled locale - reply with the default.
-      locale = N.config.locales.enabled[0];
+      locale = N.config.locales[0];
     }
 
     env.extras.setCookie('locale', locale, {
