@@ -22,7 +22,7 @@
 'use strict';
 
 var _           = require('lodash');
-var mimoza      = require('mimoza');
+var mime        = require('mime-types');
 var validator   = require('is-my-json-valid');
 var util        = require('util');
 
@@ -109,10 +109,10 @@ module.exports = _.memoize(function (uploadsConfig) {
 
   // Combine all options by file type
   _.forEach(config.extensions, function (ext) {
-    var mimeType = mimoza.getMimeType(ext);
+    var mimeType = mime.lookup(ext);
 
     // Get real extension (like 'jpg' instead 'jpeg')
-    var realExtension = mimoza.getExtension(mimeType).replace('.', '');
+    var realExtension = mime.extension(mimeType);
 
     var configForExt = {
       max_size: config.max_size

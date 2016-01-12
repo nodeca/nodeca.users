@@ -9,7 +9,7 @@ var tmpDir      = require('os').tmpdir();
 var fs          = require('fs');
 var async       = require('async');
 var _           = require('lodash');
-var mimoza      = require('mimoza');
+var mime        = require('mime-types').lookup;
 var resizeParse = require('../../../_lib/resize_parse');
 
 
@@ -197,9 +197,7 @@ module.exports = function (N, apiPath) {
 
       // Usually file size and type are checked on client side,
       // but we must check it on server side for security reasons
-      var allowedTypes = _.map(config.extensions, function (ext) {
-        return mimoza.getMimeType(ext);
-      });
+      var allowedTypes = _.map(config.extensions, ext => mime(ext));
 
       if (allowedTypes.indexOf(fileInfo.type) === -1) {
         fail(new Error('Wrong file type on upload'));

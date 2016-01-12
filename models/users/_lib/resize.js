@@ -32,7 +32,7 @@
 var _        = require('lodash');
 var async    = require('async');
 var fs       = require('fs');
-var mimoza   = require('mimoza');
+var mime     = require('mime-types').lookup;
 var Mongoose = require('mongoose');
 var probe    = require('probe-image-size');
 var Stream   = require('stream');
@@ -259,7 +259,7 @@ function saveImages(previews, options, callback) {
     async.each(Object.keys(previews), function (key, next) {
       var data = previews[key];
 
-      var params = { contentType: mimoza.getMimeType(data.type) };
+      var params = { contentType: mime(data.type) };
 
       if (key === 'orig') {
         params._id = origId;
