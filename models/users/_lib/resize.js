@@ -35,7 +35,7 @@ var fs       = require('fs');
 var mime     = require('mime-types').lookup;
 var Mongoose = require('mongoose');
 var probe    = require('probe-image-size');
-var Stream   = require('stream');
+var stream   = require('readable-stream');
 var sharp    = require('sharp');
 
 var File;
@@ -56,7 +56,7 @@ function readImage(file, callback) {
       return;
     }
 
-    var streamBuffer = new Stream.Transform();
+    var streamBuffer = new stream.Transform();
 
     streamBuffer.push(data);
     streamBuffer.end();
