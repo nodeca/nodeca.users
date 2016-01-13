@@ -120,8 +120,8 @@ module.exports = function (N, apiPath) {
       _.set(env.res, 'blocks.notepad', {});
     }
 
-    env.res.blocks.bookmarks = {};
-    env.res.blocks.friends = {};
-    env.res.blocks.blog = {};
+    _.set(env, 'res.blocks.bookmarks', {});
+    _.set(env, 'res.blocks.friends', {});
+    _.set(env, 'res.blocks.blog', {});
   });
 };
