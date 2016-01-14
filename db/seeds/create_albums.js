@@ -4,7 +4,7 @@
 var async = require('async');
 var Charlatan = require('charlatan');
 var path = require('path');
-var walkSync = require('fs-tools').walkSync;
+var glob = require('glob').sync;
 var _ = require('lodash');
 var numCPUs = require('os').cpus().length;
 var statuses = require('../../server/users/_lib/statuses.js');
@@ -15,12 +15,12 @@ var MAX_ALBUM_PHOTOS = 5;
 var MIN_COMMENTS = 3;
 var MAX_COMMENTS = 15;
 
-var PHOTOS = [];
-walkSync(path.join(__dirname, 'fixtures', 'create_albums'), function (path, stat) {
-  if (stat.isFile()) {
-    PHOTOS.push(path);
-  }
-});
+let fixt_root = path.join(__dirname, 'fixtures', 'create_albums');
+
+var PHOTOS = glob('**/*.yml', {
+  cwd: fixt_root
+}).map(name => path.join(fixt_root, name));
+
 
 var models;
 
