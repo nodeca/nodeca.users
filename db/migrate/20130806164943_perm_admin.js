@@ -1,8 +1,9 @@
 'use strict';
 
-var async = require('async');
+var async   = require('async');
+var thenify = require('thenify');
 
-module.exports.up = function (N, cb) {
+module.exports.up = thenify(function (N, cb) {
   var models = N.models;
 
   var usergroupStore = N.settings.getStore('usergroup');
@@ -32,4 +33,4 @@ module.exports.up = function (N, cb) {
       usergroupStore.updateInherited(callback);
     }
   ], cb);
-};
+});

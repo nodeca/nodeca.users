@@ -1,9 +1,10 @@
 'use strict';
 
-var async = require('async');
-var prompt = require('prompt');
+var async   = require('async');
+var prompt  = require('prompt');
+var thenify = require('thenify');
 
-module.exports = function (N, cb) {
+module.exports = thenify(function (N, cb) {
   var models = N.models;
 
   var user     = new models.users.User();
@@ -78,4 +79,4 @@ module.exports = function (N, cb) {
       });
     }
   ], cb);
-};
+});

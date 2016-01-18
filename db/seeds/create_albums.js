@@ -5,6 +5,7 @@ var async = require('async');
 var Charlatan = require('charlatan');
 var path = require('path');
 var glob = require('glob').sync;
+var thenify = require('thenify');
 var _ = require('lodash');
 var numCPUs = require('os').cpus().length;
 var statuses = require('../../server/users/_lib/statuses.js');
@@ -17,7 +18,7 @@ var MAX_COMMENTS = 15;
 
 let fixt_root = path.join(__dirname, 'fixtures', 'create_albums');
 
-var PHOTOS = glob('**/*.yml', {
+var PHOTOS = glob('**', {
   cwd: fixt_root
 }).map(name => path.join(fixt_root, name));
 
@@ -204,11 +205,11 @@ function createComments(callback) {
 }
 
 
-module.exports = function (N, callback) {
+module.exports = thenify(function (N, callback) {
   models = N.models;
 
   async.series([
     createAlbums,
     createComments
   ], callback);
-};
+});
