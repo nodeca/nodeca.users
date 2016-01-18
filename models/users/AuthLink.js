@@ -7,9 +7,10 @@
 'use strict';
 
 
-var Mongoose = require('mongoose');
-var Schema   = Mongoose.Schema;
-var password = require('./_lib/password');
+const Mongoose = require('mongoose');
+const Schema   = Mongoose.Schema;
+const password = require('./_lib/password');
+const thenify = require('thenify');
 
 
 module.exports = function (N, collectionName) {
@@ -74,7 +75,7 @@ module.exports = function (N, collectionName) {
    *
    * Generate password hash and put in property
    **/
-  AuthLink.methods.setPass = function (pass, callback) {
+  AuthLink.methods.setPass = thenify.withCallback(function (pass, callback) {
     if (this.type !== 'plain') {
       callback(new Error('Can\'t set password for non plain provider'));
       return;
@@ -91,7 +92,7 @@ module.exports = function (N, collectionName) {
       self.meta.pass = hash;
       callback();
     });
-  };
+  });
 
 
   /**
@@ -100,13 +101,13 @@ module.exports = function (N, collectionName) {
    *
    * Compare word with stored password
    **/
-  AuthLink.methods.checkPass = function (pass, callback) {
+  AuthLink.methods.checkPass = thenify.withCallback(function (pass, callback) {
     if (this.type !== 'plain') {
       callback(new Error('Can\'t set password for non plain provider'));
       return;
     }
     password.check(pass, this.meta.pass, callback);
-  };
+  });
 
 
   //////////////////////////////////////////////////////////////////////////////

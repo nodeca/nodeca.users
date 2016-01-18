@@ -3,9 +3,10 @@
 'use strict';
 
 
-var Mongoose = require('mongoose');
-var Schema   = Mongoose.Schema;
-var async    = require('async');
+const Mongoose = require('mongoose');
+const Schema   = Mongoose.Schema;
+const async    = require('async');
+const thenify  = require('thenify');
 
 
 module.exports = function (N, collectionName) {
@@ -122,7 +123,7 @@ module.exports = function (N, collectionName) {
   // - albumId - album _id
   // - full - Boolean. true - recalculate count, false - just increment count. Default false
   //
-  Album.statics.updateInfo = function (albumId, full, callback) {
+  Album.statics.updateInfo = thenify.withCallback(function (albumId, full, callback) {
     if (!callback) {
       callback = full;
       full = false;
@@ -146,7 +147,7 @@ module.exports = function (N, collectionName) {
 
       callback();
     });
-  };
+  });
 
 
   N.wire.on('init:models', function emit_init_Album(__, callback) {

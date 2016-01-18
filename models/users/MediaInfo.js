@@ -3,13 +3,14 @@
 /* eslint no-bitwise: 0 */
 'use strict';
 
-var fs          = require('fs');
-var extname     = require('path').extname;
-var Mongoose    = require('mongoose');
-var Schema      = Mongoose.Schema;
-var resize      = require('./_lib/resize');
-var resizeParse = require('../../server/_lib/resize_parse');
-var util        = require('util');
+const fs          = require('fs');
+const extname     = require('path').extname;
+const Mongoose    = require('mongoose');
+const Schema      = Mongoose.Schema;
+const resize      = require('./_lib/resize');
+const resizeParse = require('../../server/_lib/resize_parse');
+const util        = require('util');
+const thenify     = require('thenify');
 
 module.exports = function (N, collectionName) {
 
@@ -195,7 +196,7 @@ module.exports = function (N, collectionName) {
   //
   // - callback(err, media)
   //
-  MediaInfo.statics.createFile = function (options, callback) {
+  MediaInfo.statics.createFile = thenify.withCallback(function (options, callback) {
     var media = new N.models.users.MediaInfo();
     media._id = new Mongoose.Types.ObjectId();
     media.user_id = options.user_id;
@@ -278,7 +279,7 @@ module.exports = function (N, collectionName) {
         });
       }
     );
-  };
+  });
 
 
   N.wire.on('init:models', function emit_init_MediaInfo(__, callback) {

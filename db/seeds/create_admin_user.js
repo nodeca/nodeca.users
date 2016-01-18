@@ -1,82 +1,55 @@
 'use strict';
 
-var async   = require('async');
-var prompt  = require('prompt');
-var thenify = require('thenify');
+const prompt  = require('prompt');
+const thenify = require('thenify');
+const co      = require('co');
 
-module.exports = thenify(function (N, cb) {
-  var models = N.models;
+module.exports = co.wrap(function* (N) {
 
-  var user     = new models.users.User();
-  var authLink     = new models.users.AuthLink();
+  let user     = new N.models.users.User();
+  let authLink = new N.models.users.AuthLink();
 
-  var login, password, email;
+  prompt.message   = '';
+  prompt.delimiter = '';
+  prompt.start();
 
-  async.series([
-    function (next) {
-      prompt.message = '';
-      prompt.delimiter = '';
-      prompt.start();
+  var schema = [
+    { name: 'login', description: 'Administrator login? (admin)' },
+    { name: 'password', description: 'Administrator password? (admin)', hidden: true }
+  ];
 
-      var schema = [
-        { name: 'login', description: 'Administrator login? (admin)' },
-        { name: 'password', description: 'Administrator password? (admin)', hidden: true }
-      ];
+  let result = yield thenify(prompt.get)(schema);
 
-      prompt.get(schema, function (err, result) {
-        if (err) {
-          next(err);
-          return;
-        }
+  let login = result.login || 'admin';
+  let password = result.password || 'admin';
+  let email = 'admin@example.com';
 
-        login = result.login || 'admin';
-        password = result.password || 'admin';
-        email = 'admin@example.com';
+  // create admin user
 
-        next();
-      });
-    },
+  let adminGroup = yield N.models.users.UserGroup.findOne({ short_name: 'administrators' });
 
-    // create admin user
-    function (next) {
-      // get administrators group Id
-      models.users.UserGroup.findOne({ short_name: 'administrators' })
-          .exec(function (err, group) {
-        if (err) {
-          next(err);
-          return;
-        }
-        user.hid = 1;
-        user.nick = login;
-        user.email = email;
-        user.joined_ts = new Date();
-        user.post_count = 1;
-        user.usergroups = [ group ];
+  user.hid = 1;
+  user.nick = login;
+  user.email = email;
+  user.joined_ts = new Date();
+  user.post_count = 1;
+  user.usergroups = [ adminGroup ];
 
-        user.first_name = 'Admin';
-        user.last_name = 'Adminovski';
+  user.first_name = 'Admin';
+  user.last_name = 'Adminovski';
 
-        user.save(next);
-      });
-    },
+  yield user.save();
 
-    // create auth link
-    function (next) {
+  // create auth link
 
-      authLink.type = 'plain';
-      authLink.email = email;
-      authLink.setPass(password, function (err) {
-        if (err) {
-          next(err);
-          return;
-        }
+  authLink.type = 'plain';
+  authLink.email = email;
 
-        authLink.user_id = user._id;
-        authLink.ip = '127.0.0.1';
-        authLink.last_ip = '127.0.0.1';
+  yield authLink.setPass(password);
 
-        authLink.save(next);
-      });
-    }
-  ], cb);
+  authLink.user_id = user._id;
+  authLink.ip = '127.0.0.1';
+  authLink.last_ip = '127.0.0.1';
+
+  yield authLink.save();
 });
