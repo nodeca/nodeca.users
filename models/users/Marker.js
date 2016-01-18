@@ -238,8 +238,7 @@ module.exports = function (N, collectionName) {
           .forEach(function (item) {
             query.hdel('marker_pos:' + userId, item.id);
             query.zrem('marker_pos_updates', userId + ':' + item.id);
-          })
-          .commit();
+          });
 
         query.exec(callback);
       });
@@ -416,7 +415,7 @@ module.exports = function (N, collectionName) {
     async.series([
       // Fetch cuts
       function (next) {
-        Marker.cuts(userId, _.pluck(contentInfo, 'categoryId'), function (err, res) {
+        Marker.cuts(userId, _.map(contentInfo, 'categoryId'), function (err, res) {
           if (err) {
             next(err);
             return;

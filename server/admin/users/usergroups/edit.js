@@ -44,7 +44,7 @@ module.exports = function (N, apiPath) {
         });
 
       res.current_group_id = currentGroup._id.toString();
-      res.groups_data      = _.invoke(groups, 'toJSON');
+      res.groups_data      = _.invokeMap(groups, 'toJSON');
       callback();
     });
   });

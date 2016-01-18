@@ -92,7 +92,7 @@ module.exports = function (N, apiPath) {
       files = _.toArray(files);
 
       function fail(err) {
-        async.each(_.pluck(files, 'path'), function (path, next) {
+        async.each(_.map(files, 'path'), function (path, next) {
           fs.unlink(path, next);
         }, function () {
           // Don't care unlink result, forward previous error

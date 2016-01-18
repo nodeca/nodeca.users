@@ -35,7 +35,7 @@ module.exports = function detectCircular(N, groupId, parentId, callback) {
         return String(g._id) === String(groupId);
       });
 
-      if (_.contains(descendants, groupId)) {
+      if (_.includes(descendants, groupId)) {
         return groupId;
       }
 

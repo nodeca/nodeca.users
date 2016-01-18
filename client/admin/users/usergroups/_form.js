@@ -152,7 +152,7 @@ function SettingCategory(form, name, settings) {
   this.localizedName = N.runtime.t('admin.core.category_names.' + name);
 
   this.settings = _.sortBy(settings, 'priority');
-  this.priority = _(settings).pluck('priority').reduce(function (a, b) { return a + b; });
+  this.priority = _(settings).map('priority').reduce(function (a, b) { return a + b; });
 }
 
 
@@ -218,7 +218,7 @@ function UserGroup(form, data) {
                         }, {});
 
   this.categories    = _(form.setting_schemas)
-                          .pluck('category_key')
+                          .map('category_key')
                           .unique()
                           .map(function (name) {
                             return new SettingCategory(
@@ -254,7 +254,7 @@ UserGroup.prototype.isDescendantOf = function isDescendantOf(group) {
 UserGroup.prototype.markClean = function markClean() {
   this.name.markClean();
   this.parentId.markClean();
-  _.invoke(this.settings, 'markClean');
+  _.invokeMap(this.settings, 'markClean');
 };
 
 // Returns data suitable for the server.

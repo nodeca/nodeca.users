@@ -55,7 +55,7 @@ module.exports = function (N, apiPath) {
   // Sort tracked items
   //
   N.wire.after(apiPath, function sort_items(env) {
-    env.data.items = _.sortByOrder(env.data.items, 'last_ts', 'desc');
+    env.data.items = _.orderBy(env.data.items, 'last_ts', 'desc');
   });
 
 

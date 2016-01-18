@@ -54,7 +54,7 @@ function Form(page_data) {
   }
 
   // Grouping settings by category and priority
-  _.uniq(_.pluck(page_data.setting_schemas, 'category_key')).forEach(function (category) {
+  _.uniq(_.map(page_data.setting_schemas, 'category_key')).forEach(function (category) {
 
     categoryName = N.runtime.t('users.setting_cat.' + category);
     categorySettings = [];
@@ -62,7 +62,7 @@ function Form(page_data) {
     _.forEach(
 
       // Get all settings in category
-      _.pick(page_data.setting_schemas, function (val) {
+      _.pickBy(page_data.setting_schemas, function (val) {
         return val.category_key === category;
       }),
 

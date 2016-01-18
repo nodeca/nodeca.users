@@ -100,7 +100,7 @@ function createAlbums(callback) {
             }
 
             if (users) {
-              user_ids = user_ids.concat(_.pluck(users, '_id'));
+              user_ids = user_ids.concat(_.map(users, '_id'));
             }
 
             next();
@@ -115,7 +115,7 @@ function createAlbums(callback) {
         if (err) { return next(err); }
 
         models.forum.Section.find()
-            .where('_id').in(_.pluck(sections, '_id'))
+            .where('_id').in(_.map(sections, '_id'))
             .select('moderators')
             .lean(true)
             .exec(function (err, data) {
@@ -125,7 +125,7 @@ function createAlbums(callback) {
             return;
           }
 
-          user_ids = user_ids.concat(_(data).pluck('moderators').flatten().value());
+          user_ids = user_ids.concat(_(data).map('moderators').flatten().value());
           next();
         });
       });
@@ -191,10 +191,10 @@ function createComments(callback) {
   ], function (err, results) {
     if (err) { return callback(err); }
 
-    var usersId = _.pluck(results[0], 'user_id');
+    var usersId = _.map(results[0], 'user_id');
     usersId = _.uniq(usersId);
 
-    var mediasId = _.pluck(results[0], 'media_id');
+    var mediasId = _.map(results[0], 'media_id');
 
     // Create comments for prepared media and user list
     async.eachLimit(mediasId, numCPUs, function (mediaId, next) {
