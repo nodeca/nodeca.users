@@ -1,36 +1,23 @@
 'use strict';
 
-var async   = require('async');
-var thenify = require('thenify');
 
-module.exports.up = thenify(function (N, cb) {
-  var models = N.models;
+const co = require('co');
 
-  var usergroupStore = N.settings.getStore('usergroup');
 
-  async.series([
-    // add usergroup settings for admin
-    function (callback) {
-      models.users.UserGroup.findOne({ short_name: 'administrators' })
-        .exec(function (err, group) {
+module.exports.up = co.wrap(function* (N) {
+  let usergroupStore = N.settings.getStore('usergroup');
 
-          if (err) {
-            callback(err);
-            return;
-          }
+  // add usergroup settings for admin
 
-          usergroupStore.set({
-            can_access_acp: { value: true },
-            can_see_hellbanned: { value: true },
-            can_see_deleted_users: { value: true },
-            can_see_ip: { value: true }
-          }, { usergroup_id: group._id }, callback);
-        });
-    },
+  let adminGroup = yield N.models.users.UserGroup.findOne({ short_name: 'administrators' });
 
-    // Recalculate store settings of all groups.
-    function (callback) {
-      usergroupStore.updateInherited(callback);
-    }
-  ], cb);
+  yield usergroupStore.set({
+    can_access_acp: { value: true },
+    can_see_hellbanned: { value: true },
+    can_see_deleted_users: { value: true },
+    can_see_ip: { value: true }
+  }, { usergroup_id: adminGroup._id });
+
+  // Recalculate store settings of all groups.
+  yield usergroupStore.updateInherited();
 });

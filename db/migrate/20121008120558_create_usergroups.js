@@ -1,18 +1,19 @@
 'use strict';
 
 
-var async   = require('async');
-var thenify = require('thenify');
+const co = require('co');
 
 
-exports.up = thenify(function (N, callback) {
-  // FIXME implement sets of real group items
-  async.eachSeries([ 'administrators', 'guests', 'members' ], function (name, next) {
-    var usergroup = new N.models.users.UserGroup({
+exports.up = co.wrap(function* (N) {
+  let names = [ 'administrators', 'guests', 'members' ];
+
+  for (let i = 0; i < names.length; i++) {
+    let name = names[i];
+    let usergroup = new N.models.users.UserGroup({
       short_name:   name,
       is_protected: true
     });
 
-    usergroup.save(next);
-  }, callback);
+    yield usergroup.save();
+  }
 });

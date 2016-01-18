@@ -1,9 +1,10 @@
 'use strict';
 
 
-var _        = require('lodash');
-var memoizee = require('memoizee');
-var async    = require('async');
+const _        = require('lodash');
+const thenify  = require('thenify');
+const memoizee = require('memoizee');
+const async    = require('async');
 
 
 module.exports = function (N) {
@@ -116,7 +117,7 @@ module.exports = function (N) {
 
   // Walk through all existent usergroups and recalculate their permissions
   //
-  UsergroupStore.updateInherited = function updateInherited(callback) {
+  UsergroupStore.updateInherited = thenify.withCallback(function updateInherited(callback) {
     var self = this;
 
     N.models.users.UserGroup
@@ -198,7 +199,7 @@ module.exports = function (N) {
         self.set(fetchSettings(group.id), { usergroup_id: group._id }, next);
       }, callback);
     });
-  };
+  });
 
   return UsergroupStore;
 };

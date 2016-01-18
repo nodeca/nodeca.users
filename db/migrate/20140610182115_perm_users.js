@@ -1,35 +1,23 @@
 'use strict';
 
-var async   = require('async');
-var thenify = require('thenify');
 
-module.exports.up = thenify(function (N, cb) {
-  var models = N.models;
+const co = require('co');
 
-  var usergroupStore = N.settings.getStore('usergroup');
 
-  async.series([
-    // add usergroup settings for administrators, members
-    function (callback) {
-      models.users.UserGroup.find({ short_name: { $in: [ 'administrators', 'members' ] } })
-        .exec(function (err, groups) {
+module.exports.up = co.wrap(function* (N) {
+  let usergroupStore = N.settings.getStore('usergroup');
 
-          if (err) {
-            callback(err);
-            return;
-          }
+  // add usergroup settings for administrators, members
+  let groups = yield N.models.users.UserGroup.find({ short_name: { $in: [ 'administrators', 'members' ] } });
 
-          async.each(groups, function (group, next) {
-            usergroupStore.set({
-              users_can_upload_media: { value: true }
-            }, { usergroup_id: group._id }, next);
-          }, callback);
-        });
-    },
+  for (let i = 0; i < groups.length; i++) {
+    let group = groups[i];
 
-    // Recalculate store settings of all groups.
-    function (callback) {
-      usergroupStore.updateInherited(callback);
-    }
-  ], cb);
+    yield usergroupStore.set({
+      users_can_upload_media: { value: true }
+    }, { usergroup_id: group._id });
+  }
+
+  // Recalculate store settings of all groups.
+  yield usergroupStore.updateInherited();
 });
