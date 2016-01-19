@@ -13,8 +13,6 @@ i18n:
           perm_users: Users
 
         setting_names:
-          general_ssl_force: SSL force
-
           general_login_expire_days: Login expire time (days)
           general_login_expire_days_help: Force user to relogin after this period. 0 - never expire.
 

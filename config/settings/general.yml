@@ -1,12 +1,5 @@
 setting_schemas:
   global:
-    general_ssl_force:
-      priority: 10
-      group_key: general
-      category_key: general_common
-      type: boolean
-      default: false
-
     general_login_expire_days:
       priority: 40
       group_key: general
