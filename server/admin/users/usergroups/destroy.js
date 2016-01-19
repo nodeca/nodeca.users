@@ -4,7 +4,7 @@
 
 
 module.exports = function (N, apiPath) {
-  var UserGroup = N.models.users.UserGroup,
+  let UserGroup = N.models.users.UserGroup,
       User      = N.models.users.User;
 
 
@@ -15,83 +15,56 @@ module.exports = function (N, apiPath) {
 
   // Search group & check protection
   //
-  N.wire.before(apiPath, function usergroup_search(env, callback) {
+  N.wire.before(apiPath, function* usergroup_search(env) {
 
-    UserGroup.findById(env.params._id).exec(function (err, group) {
+    let group = yield UserGroup.findById(env.params._id);
 
-      if (err) {
-        callback(err);
-        return;
-      }
+    if (!group) {
+      throw {
+        code: N.io.BAD_REQUEST,
+        message: env.t('error_not_exists')
+      };
+    }
 
-      if (!group) {
-        callback({
-          code: N.io.BAD_REQUEST,
-          message: env.t('error_not_exists')
-        });
-        return;
-      }
+    if (group.is_protected) {
+      throw {
+        code: N.io.BAD_REQUEST,
+        message: env.t('error_protected')
+      };
+    }
 
-      if (group.is_protected) {
-        callback({
-          code: N.io.BAD_REQUEST,
-          message: env.t('error_protected')
-        });
-        return;
-      }
-
-      env.data.userGroup = group;
-
-      callback();
-    });
+    env.data.userGroup = group;
   });
 
 
   // Check that no inherited groups exists
   //
-  N.wire.before(apiPath, function usergroup_check_childs(env, callback) {
+  N.wire.before(apiPath, function* usergroup_check_childs(env) {
 
-    UserGroup.findOne({ parent_group: env.data.userGroup._id })
-        .lean(true)
-        .exec(function (err, child) {
+    let child = yield UserGroup.findOne({ parent_group: env.data.userGroup._id }).lean(true);
 
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      if (child) {
-        callback({
-          code: N.io.BAD_REQUEST,
-          message: env.t('error_has_children', { name: child.short_name })
-        });
-        return;
-      }
-
-      callback();
-    });
+    if (child) {
+      throw {
+        code: N.io.BAD_REQUEST,
+        message: env.t('error_has_children', { name: child.short_name })
+      };
+    }
   });
 
 
-  N.wire.on(apiPath, function usergroup_delete(env, callback) {
-    var group = env.data.userGroup;
+  N.wire.on(apiPath, function* usergroup_delete(env) {
+    let group = env.data.userGroup;
 
     // Delete only if no users in group.
-    User.count({ usergroups: group._id }).exec(function (err, usersCount) {
-      if (err) {
-        callback(err);
-        return;
-      }
+    let usersCount = yield User.count({ usergroups: group._id });
 
-      if (usersCount !== 0) {
-        callback({
-          code: N.io.BAD_REQUEST,
-          message: env.t('error_not_empty')
-        });
-        return;
-      }
+    if (usersCount !== 0) {
+      throw {
+        code: N.io.BAD_REQUEST,
+        message: env.t('error_not_empty')
+      };
+    }
 
-      group.remove(callback);
-    });
+    yield group.remove();
   });
 };

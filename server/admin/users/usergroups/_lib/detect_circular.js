@@ -6,48 +6,37 @@
 'use strict';
 
 
-var _ = require('lodash');
+const _  = require('lodash');
+const co = require('co');
 
 
-module.exports = function detectCircular(N, groupId, parentId, callback) {
+module.exports = co.wrap(function* detectCircular(N, groupId, parentId) {
   if (!parentId) {
     // No parent - skip.
-    callback();
-    return;
+    return null;
   }
 
-  N.models.users.UserGroup
-      .find()
-      .select('_id parent_group')
-      .exec(function (err, groups) {
+  let groups = yield N.models.users.UserGroup.find().select('_id parent_group');
 
-    if (err) {
-      callback(err);
-      return;
+  let descendants = [ String(groupId) ];
+
+  // Returns `null` if no circular dependency found
+  // or group id of first detected circular dependency
+  function checkGroup(groupId) {
+    let group = _.find(groups, g => String(g._id) === String(groupId));
+
+    if (descendants.indexOf(groupId) >= 0) {
+      return groupId;
     }
 
-    var descendants = [ String(groupId) ];
+    descendants.push(groupId);
 
-    // Returns `null` if no circular dependency found
-    // or group id of first detected circular dependency
-    function checkGroup(groupId) {
-      var group = _.find(groups, function (g) {
-        return String(g._id) === String(groupId);
-      });
-
-      if (_.includes(descendants, groupId)) {
-        return groupId;
-      }
-
-      descendants.push(groupId);
-
-      if (group.parent_group) {
-        return checkGroup(group.parent_group.toString());
-      }
-
-      return null;
+    if (group.parent_group) {
+      return checkGroup(group.parent_group.toString());
     }
 
-    callback(null, checkGroup(String(parentId)));
-  });
-};
+    return null;
+  }
+
+  return checkGroup(String(parentId));
+});

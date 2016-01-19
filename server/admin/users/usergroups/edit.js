@@ -3,7 +3,7 @@
 'use strict';
 
 
-var _ = require('lodash');
+const _ = require('lodash');
 
 
 module.exports = function (N, apiPath) {
@@ -12,40 +12,24 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function usergroup_edit(env, callback) {
-    var res = env.res;
+  N.wire.on(apiPath, function* usergroup_edit(env) {
+    let res = env.res;
 
     // Fill Default settings and their configuration
     res.setting_schemas = N.config.setting_schemas.usergroup || {};
 
     // We always fetch all groups, to calculate inheritances on client
-    N.models.users.UserGroup
-        .find()
-        .sort('_id')
-        .exec(function (err, groups) {
+    let groups = yield N.models.users.UserGroup.find().sort('_id');
 
-      if (err) {
-        callback(err);
-        return;
-      }
+    let currentGroup = _.find(groups, g => String(g._id) === env.params._id);
 
-      var currentGroup = _.find(groups, function (g) {
-        return String(g._id) === env.params._id;
-      });
+    if (!currentGroup) {
+      throw N.io.NOT_FOUND;
+    }
 
-      if (!currentGroup) {
-        callback(N.io.NOT_FOUND);
-        return;
-      }
+    res.head.title = env.t('title', { name: currentGroup.short_name });
 
-      res.head.title =
-        env.t('title', {
-          name: currentGroup.short_name
-        });
-
-      res.current_group_id = currentGroup._id.toString();
-      res.groups_data      = _.invokeMap(groups, 'toJSON');
-      callback();
-    });
+    res.current_group_id = currentGroup._id.toString();
+    res.groups_data      = _.invokeMap(groups, 'toJSON');
   });
 };
