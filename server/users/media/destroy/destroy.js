@@ -13,70 +13,45 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.before(apiPath, function fetch_user_media(env, callback) {
-    N.models.users.MediaInfo
+  N.wire.before(apiPath, function* fetch_user_media(env) {
+    let media = yield N.models.users.MediaInfo
       .findOne({ media_id: env.params.media_id })
-      .lean(true)
-      .exec(function (err, media) {
-        if (err) {
-          callback(err);
-          return;
-        }
+      .lean(true);
 
-        if (!media) {
-          callback(N.io.NOT_FOUND);
-          return;
-        }
+    if (!media) {
+      throw N.io.NOT_FOUND;
+    }
 
-        // Check media owner
-        if (env.user_info.user_id !== String(media.user_id)) {
-          callback(N.io.FORBIDDEN);
-          return;
-        }
+    // Check media owner
+    if (env.user_info.user_id !== String(media.user_id)) {
+      throw N.io.FORBIDDEN;
+    }
 
-        env.data.media = media;
-        callback();
-      });
+    env.data.media = media;
   });
 
 
   // Check quota
   //
-  N.wire.before(apiPath, function check_quota(env, callback) {
+  N.wire.before(apiPath, function* check_quota(env) {
     // Check quota only on restore media
     if (!env.params.revert) {
-      callback();
       return;
     }
 
-    N.models.users.UserExtra
+    let extra = yield N.models.users.UserExtra
       .findOne({ user_id: env.user_info.user_id })
       .select('media_size')
-      .lean(true)
-      .exec(function (err, extra) {
-        if (err) {
-          callback(err);
-          return;
-        }
+      .lean(true);
 
-        env.extras.settings.fetch('users_media_total_quota_mb', function (err, users_media_total_quota_mb) {
+    let users_media_total_quota_mb = yield env.extras.settings.fetch('users_media_total_quota_mb');
 
-          if (err) {
-            callback(err);
-            return;
-          }
-
-          if (users_media_total_quota_mb * 1024 * 1024 < extra.media_size) {
-            callback({
-              code:    N.io.CLIENT_ERROR,
-              message: env.t('err_quota_exceeded', { quota_mb: users_media_total_quota_mb })
-            });
-            return;
-          }
-
-          callback();
-        });
-      });
+    if (users_media_total_quota_mb * 1024 * 1024 < extra.media_size) {
+      throw {
+        code: N.io.CLIENT_ERROR,
+        message: env.t('err_quota_exceeded', { quota_mb: users_media_total_quota_mb })
+      };
+    }
   });
 
 
@@ -89,15 +64,7 @@ module.exports = function (N, apiPath) {
 
   // Update album info
   //
-  N.wire.after(apiPath, function update_album(env, callback) {
-
-    N.models.users.Album.updateInfo(env.data.media.album_id, true, function (err) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      callback();
-    });
+  N.wire.after(apiPath, function* update_album(env) {
+    yield N.models.users.Album.updateInfo(env.data.media.album_id, true);
   });
 };
