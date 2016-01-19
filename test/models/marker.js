@@ -1,15 +1,15 @@
 'use strict';
 
 
-var assert    = require('assert');
-var _         = require('lodash');
-var async     = require('async');
-var ObjectId  = require('mongoose').Types.ObjectId;
+const assert    = require('assert');
+const _         = require('lodash');
+const ObjectId  = require('mongoose').Types.ObjectId;
+const co        = require('co');
+const Marker    = TEST.N.models.users.Marker;
+const redis     = TEST.N.redis;
 
 
-var Marker = TEST.N.models.users.Marker;
-var redis  = TEST.N.redis;
-var expire;
+let expire;
 
 
 function randObjectIdByTimestamp(ts) {
@@ -42,283 +42,165 @@ describe('Marker', function () {
 
   describe('.mark()', function () {
 
-    it('should mark', function (done) {
-      var uid = new ObjectId();
-      var cat = new ObjectId();
-      var cid = new ObjectId();
+    it('should mark', co.wrap(function* () {
+      let uid = new ObjectId();
+      let cat = new ObjectId();
+      let cid = new ObjectId();
 
-      Marker.mark(uid, cid, cat, 'test', function (err) {
-        if (err) {
-          done(err);
-          return;
-        }
+      yield Marker.mark(uid, cid, cat, 'test');
 
+      let res = yield redis.zscoreAsync('marker_marks:' + uid, cid);
 
-        redis.zscore('marker_marks:' + uid, cid, function (err, res) {
-          if (err) {
-            done(err);
-            return;
-          }
+      assert.strictEqual(+res, +cid.getTimestamp());
 
-          assert.strictEqual(+res, +cid.getTimestamp());
+      res = yield redis.sismemberAsync('marker_marks_items', uid);
 
-          redis.sismember('marker_marks_items', uid, function (err, res) {
-            if (err) {
-              done(err);
-              return;
-            }
-
-            assert.ok(res);
-            done();
-          });
-        });
-      });
-    });
+      assert.ok(res);
+    }));
 
 
-    it('should skip old', function (done) {
-      var uid = new ObjectId();
-      var cid = randObjectIdByTimestamp(Date.now() - expire - 1000);
-      var cat = new ObjectId();
+    it('should skip old', co.wrap(function* () {
+      let uid = new ObjectId();
+      let cid = randObjectIdByTimestamp(Date.now() - expire - 1000);
+      let cat = new ObjectId();
 
-      Marker.mark(uid, cid, cat, 'test', function (err) {
-        if (err) {
-          done(err);
-          return;
-        }
+      yield Marker.mark(uid, cid, cat, 'test');
 
-        redis.zscore('marker_marks:' + uid, cid, function (err, res) {
-          if (err) {
-            done(err);
-            return;
-          }
+      let res = yield redis.zscoreAsync('marker_marks:' + uid, cid);
 
-          assert.strictEqual(res, null);
-          done();
-        });
-      });
-    });
+      assert.strictEqual(res, null);
+    }));
   });
 
 
-  it('.markAll() should update cut', function (done) {
-    var uid = new ObjectId();
-    var sid = new ObjectId();
-    var now = Date.now();
+  it('.markAll() should update cut', co.wrap(function* () {
+    let uid = new ObjectId();
+    let sid = new ObjectId();
+    let now = Date.now();
 
-    Marker.markAll(uid, sid, function (err) {
-      if (err) {
-        done(err);
-        return;
-      }
+    yield Marker.markAll(uid, sid);
 
-      redis.get('marker_cut:' + uid + ':' + sid, function (err, res) {
-        if (err) {
-          done(err);
-          return;
-        }
+    let res = yield redis.getAsync('marker_cut:' + uid + ':' + sid);
 
-        assert.ok(now - 1000 <= res && res <= now + 1000);
+    assert.ok(now - 1000 <= res && res <= now + 1000);
 
-        redis.zscore('marker_cut_updates', uid + ':' + sid, function (err, res) {
-          if (err) {
-            done(err);
-            return;
-          }
+    res = yield redis.zscoreAsync('marker_cut_updates', uid + ':' + sid);
 
-          assert.ok(now - 1000 <= res && res <= now + 1000);
-          done();
-        });
-      });
-    });
-  });
+    assert.ok(now - 1000 <= res && res <= now + 1000);
+  }));
 
 
-  it('.setPos()', function (done) {
-    var uid = new ObjectId();
-    var cid = new ObjectId();
-    var cat = new ObjectId();
-    var now = Date.now();
+  it('.setPos()', co.wrap(function* () {
+    let uid = new ObjectId();
+    let cid = new ObjectId();
+    let cat = new ObjectId();
+    let now = Date.now();
 
-    Marker.setPos(uid, cid, 6, 6, cat, 'test', function (err) {
-      if (err) {
-        done(err);
-        return;
-      }
+    yield Marker.setPos(uid, cid, 6, 6, cat, 'test');
+    yield Marker.setPos(uid, cid, 2, 1, cat, 'test');
 
-      Marker.setPos(uid, cid, 2, 1, cat, 'test', function (err) {
-        if (err) {
-          done(err);
-          return;
-        }
+    let res = yield redis.zscoreAsync('marker_pos_updates', uid + ':' + cid);
 
-        redis.zscore('marker_pos_updates', uid + ':' + cid, function (err, res) {
-          if (err) {
-            done(err);
-            return;
-          }
+    assert.ok(now - 1000 <= res && res <= now + 1000);
 
-          assert.ok(now - 1000 <= res && res <= now + 1000);
+    let resJson = yield redis.hgetAsync('marker_pos:' + uid, cid);
 
-          redis.hget('marker_pos:' + uid, cid, function (err, resJson) {
-            if (err) {
-              done(err);
-              return;
-            }
+    res = JSON.parse(resJson);
 
-            var res = JSON.parse(resJson);
-
-            assert.equal(res.current, 2);
-            assert.equal(res.max, 6);
-            done();
-          });
-        });
-      });
-    });
-  });
+    assert.equal(res.current, 2);
+    assert.equal(res.max, 6);
+  }));
 
 
-  it('.setPos() - limit position markers', function (done) {
-    var uid = randObjectIdByTimestamp(Date.now());
-    var cat = new ObjectId();
-    var query = redis.multi();
+  it('.setPos() - limit position markers', co.wrap(function* () {
+    let uid = randObjectIdByTimestamp(Date.now());
+    let cat = new ObjectId();
+    let query = redis.multi();
 
-    for (var i = 0; i < 2000; i++) {
+    for (let i = 0; i < 2000; i++) {
       query.hset('marker_pos:' + uid, i, JSON.stringify({}));
     }
 
-    query.exec(function (err) {
-      if (err) {
-        done(err);
-        return;
-      }
+    yield query.execAsync();
 
-      Marker.setPos(uid, 'qqq', 6, 6, cat, 'test', function (err) {
-        if (err) {
-          done(err);
-          return;
-        }
+    yield Marker.setPos(uid, 'qqq', 6, 6, cat, 'test');
 
-        redis.hlen('marker_pos:' + uid, function (err, cnt) {
-          if (err) {
-            done(err);
-            return;
-          }
+    let cnt = yield redis.hlenAsync('marker_pos:' + uid);
 
-          assert.equal(cnt, 1000);
-
-          done();
-        });
-      });
-    });
-  });
+    assert.equal(cnt, 1000);
+  }));
 
 
   describe('.info()', function () {
 
-    it('should set `isNew` flag correctly', function (done) {
-      var uid = new ObjectId();
-      var now = Date.now();
-      var cat = new ObjectId();
+    it('should set `isNew` flag correctly', co.wrap(function* () {
+      let uid = new ObjectId();
+      let now = Date.now();
+      let cat = new ObjectId();
 
-      var sid1 = randObjectIdByTimestamp(now);
-      var sid2 = randObjectIdByTimestamp(now);
+      let sid1 = randObjectIdByTimestamp(now);
+      let sid2 = randObjectIdByTimestamp(now);
 
-      var cid1 = randObjectIdByTimestamp(now);
-      var cid2 = randObjectIdByTimestamp(now - expire - 1000);
-      var cid3 = randObjectIdByTimestamp(now);
-      var cid4 = randObjectIdByTimestamp(now);
+      let cid1 = randObjectIdByTimestamp(now);
+      let cid2 = randObjectIdByTimestamp(now - expire - 1000);
+      let cid3 = randObjectIdByTimestamp(now);
+      let cid4 = randObjectIdByTimestamp(now);
 
-      Marker.mark(uid, cid3, cat, 'test', function (err) {
-        if (err) {
-          done(err);
-          return;
-        }
+      yield Marker.mark(uid, cid3, cat, 'test');
 
-        Marker.info(uid, [
-          { categoryId: sid1, contentId: cid1, lastPostNumber: 1 },
-          { categoryId: sid1, contentId: cid2, lastPostNumber: 1 },
-          { categoryId: sid1, contentId: cid3, lastPostNumber: 1 },
-          { categoryId: sid2, contentId: cid4, lastPostNumber: 1 }
-        ], function (err, res) {
-          if (err) {
-            done(err);
-            return;
-          }
+      let res = yield Marker.info(uid, [
+        { categoryId: sid1, contentId: cid1, lastPostNumber: 1 },
+        { categoryId: sid1, contentId: cid2, lastPostNumber: 1 },
+        { categoryId: sid1, contentId: cid3, lastPostNumber: 1 },
+        { categoryId: sid2, contentId: cid4, lastPostNumber: 1 }
+      ]);
 
-          assert.ok(res[cid1].isNew);
-          assert.ok(!res[cid2].isNew);
-          assert.ok(!res[cid3].isNew);
-          assert.ok(res[cid4].isNew);
-
-          done();
-        });
-      });
-    });
+      assert.ok(res[cid1].isNew);
+      assert.ok(!res[cid2].isNew);
+      assert.ok(!res[cid3].isNew);
+      assert.ok(res[cid4].isNew);
+    }));
 
 
-    it('should set correct position info', function (done) {
-      var uid = new ObjectId();
-      var now = Date.now();
-      var cat = new ObjectId();
+    it('should set correct position info', co.wrap(function* () {
+      let uid = new ObjectId();
+      let now = Date.now();
+      let cat = new ObjectId();
 
       var sid = randObjectIdByTimestamp(now);
-      var cid1 = randObjectIdByTimestamp(now);
-      var cid2 = randObjectIdByTimestamp(now);
-      var cid3 = randObjectIdByTimestamp(now);
+      let cid1 = randObjectIdByTimestamp(now);
+      let cid2 = randObjectIdByTimestamp(now);
+      let cid3 = randObjectIdByTimestamp(now);
 
-      async.series([
-        function (next) {
-          Marker.setPos(uid, cid1, 11, 11, cat, 'test', next);
-        },
-        function (next) {
-          Marker.setPos(uid, cid1, 7, 7, cat, 'test', next);
-        },
-        function (next) {
-          Marker.setPos(uid, cid2, 3, 3, cat, 'test', next);
-        },
-        function (next) {
-          Marker.setPos(uid, cid2, 35, 35, cat, 'test', next);
-        },
-        function (next) {
-          Marker.setPos(uid, cid3, 3, 3, cat, 'test', next);
-        },
-        function (next) {
-          Marker.setPos(uid, cid3, 35, 35, cat, 'test', next);
-        },
-        function (next) {
-          Marker.info(uid, [
-            { categoryId: sid, contentId: cid1, lastPostNumber: 11, lastPostTs: now },
-            { categoryId: sid, contentId: cid2, lastPostNumber: 77, lastPostTs: now },
-            { categoryId: sid, contentId: cid3, lastPostNumber: 77, lastPostTs: now - expire - 1000 }
-          ], function (err, res) {
-            if (err) {
-              next(err);
-              return;
-            }
+      yield Marker.setPos(uid, cid1, 11, 11, cat, 'test');
+      yield Marker.setPos(uid, cid1, 7, 7, cat, 'test');
+      yield Marker.setPos(uid, cid2, 3, 3, cat, 'test');
+      yield Marker.setPos(uid, cid2, 35, 35, cat, 'test');
+      yield Marker.setPos(uid, cid3, 3, 3, cat, 'test');
+      yield Marker.setPos(uid, cid3, 35, 35, cat, 'test');
 
-            assert.equal(res[cid1].next, -1);
-            assert.equal(res[cid1].position, 7);
+      let res = yield Marker.info(uid, [
+        { categoryId: sid, contentId: cid1, lastPostNumber: 11, lastPostTs: now },
+        { categoryId: sid, contentId: cid2, lastPostNumber: 77, lastPostTs: now },
+        { categoryId: sid, contentId: cid3, lastPostNumber: 77, lastPostTs: now - expire - 1000 }
+      ]);
 
-            assert.equal(res[cid2].next, 36);
-            assert.equal(res[cid2].position, 35);
+      assert.equal(res[cid1].next, -1);
+      assert.equal(res[cid1].position, 7);
 
-            assert.equal(res[cid3].next, -1);
-            assert.equal(res[cid3].position, 35);
+      assert.equal(res[cid2].next, 36);
+      assert.equal(res[cid2].position, 35);
 
-            next();
-          });
-        }
-      ], done);
-    });
+      assert.equal(res[cid3].next, -1);
+      assert.equal(res[cid3].position, 35);
+    }));
   });
 
 
-  it('.cleanup()', function (done) {
-    var now = Date.now();
-    var uid = new ObjectId();
-
-    var query = redis.multi();
+  it('.cleanup()', co.wrap(function* () {
+    let now = Date.now();
+    let uid = new ObjectId();
+    let query = redis.multi();
 
     query.set('marker_cut:' + uid + ':abc', now);
     query.set('marker_cut:' + uid + ':bcd', now - expire - 1000);
@@ -334,57 +216,41 @@ describe('Marker', function () {
     query.zadd('marker_pos_updates', now, uid + ':fgh');
     query.zadd('marker_pos_updates', now - expire - 1000, uid + ':hgf');
 
-    query.exec(function (err) {
-      if (err) {
-        done(err);
-        return;
-      }
+    yield query.execAsync();
 
-      Marker.cleanup(function (err) {
-        if (err) {
-          done(err);
-          return;
-        }
+    yield Marker.cleanup();
 
-        setTimeout(function () {
-          redis.multi()
-              .get('marker_cut:' + uid + ':abc')
-              .get('marker_cut:' + uid + ':bcd')
-              .zscore('marker_cut_updates', uid + ':abc')
-              .zscore('marker_cut_updates', uid + ':bcd')
-
-              .zscore('marker_marks:' + uid, 'qwe')
-              .zscore('marker_marks:' + uid, 'ewq')
-
-              .hget('marker_pos:' + uid, 'fgh')
-              .hget('marker_pos:' + uid, 'hgf')
-              .zscore('marker_pos_updates', uid + ':fgh')
-              .zscore('marker_pos_updates', uid + ':hgf')
-
-              .exec(function (err, res) {
-
-            if (err) {
-              done(err);
-              return;
-            }
-
-            assert.notEqual(res[0], null);
-            assert.equal(res[1], null);
-            assert.notEqual(res[2], null);
-            assert.equal(res[3], null);
-
-            assert.notEqual(res[4], null);
-            assert.equal(res[5], null);
-
-            assert.notEqual(res[6], null);
-            assert.equal(res[7], null);
-            assert.notEqual(res[8], null);
-            assert.equal(res[9], null);
-
-            done();
-          });
-        }, 100);
-      });
+    yield new Promise((resolve) => {
+      setTimeout(resolve, 100);
     });
-  });
+
+    query = redis.multi()
+      .get('marker_cut:' + uid + ':abc')
+      .get('marker_cut:' + uid + ':bcd')
+      .zscore('marker_cut_updates', uid + ':abc')
+      .zscore('marker_cut_updates', uid + ':bcd')
+
+      .zscore('marker_marks:' + uid, 'qwe')
+      .zscore('marker_marks:' + uid, 'ewq')
+
+      .hget('marker_pos:' + uid, 'fgh')
+      .hget('marker_pos:' + uid, 'hgf')
+      .zscore('marker_pos_updates', uid + ':fgh')
+      .zscore('marker_pos_updates', uid + ':hgf');
+
+    let res = yield query.execAsync();
+
+    assert.notEqual(res[0], null);
+    assert.equal(res[1], null);
+    assert.notEqual(res[2], null);
+    assert.equal(res[3], null);
+
+    assert.notEqual(res[4], null);
+    assert.equal(res[5], null);
+
+    assert.notEqual(res[6], null);
+    assert.equal(res[7], null);
+    assert.notEqual(res[8], null);
+    assert.equal(res[9], null);
+  }));
 });
