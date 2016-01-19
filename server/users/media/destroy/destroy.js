@@ -82,8 +82,8 @@ module.exports = function (N, apiPath) {
 
   // Delete media by id
   //
-  N.wire.on(apiPath, function delete_media(env, callback) {
-    N.models.users.MediaInfo.markDeleted(env.data.media.media_id, env.params.revert, callback);
+  N.wire.on(apiPath, function* delete_media(env) {
+    yield N.models.users.MediaInfo.markDeleted(env.data.media.media_id, env.params.revert);
   });
 
 

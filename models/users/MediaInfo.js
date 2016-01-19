@@ -96,7 +96,7 @@ module.exports = function (N, collectionName) {
   // - revert - revert deleted media (default false)
   // - callback
   //
-  MediaInfo.statics.markDeleted = function (media_id, revert, callback) {
+  MediaInfo.statics.markDeleted = thenify.withCallback(function (media_id, revert, callback) {
     N.models.users.MediaInfo
       .findOneAndUpdate(
         {
@@ -124,7 +124,7 @@ module.exports = function (N, collectionName) {
           callback
         );
       });
-  };
+  });
 
 
   // Remove files with previews

@@ -4,9 +4,6 @@
 'use strict';
 
 
-var async = require('async');
-var numCPUs = require('os').cpus().length;
-
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
@@ -75,18 +72,14 @@ module.exports = function (N, apiPath) {
 
   // Delete album with all photos
   //
-  N.wire.on(apiPath, function delete_album(env, callback) {
-    async.eachLimit(env.data.album_media, numCPUs, function (media, next) {
-      process.nextTick(function () {
-        N.models.users.MediaInfo.markDeleted(media.media_id, false, next);
-      });
-    }, function (err) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      env.data.album.remove(callback);
-    });
+  N.wire.on(apiPath, function* delete_album(env) {
+    // TODO limit CPUs
+    /*async.eachLimit(env.data.album_media, numCPUs, function (media, next) {
+        process.nextTick(function () {
+          N.models.users.MediaInfo.markDeleted(media.media_id, false, next);
+        });
+      }, ...*/
+    yield env.data.album_media.map(media => N.models.users.MediaInfo.markDeleted(media.media_id, false));
+    yield env.data.album.remove();
   });
 };
