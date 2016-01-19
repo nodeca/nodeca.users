@@ -24,8 +24,13 @@ describe('ACP edit user group', function () {
       .do.open(() => TEST.N.router.linkTo('admin.users.usergroups.edit', { _id: adminGroup._id }))
       .do.click('#setting_can_see_deleted_users')
       .do.click('button.btn-primary[type="submit"]')
+      .do.wait('.alert-info')
       .do.reload()
       .test.value('#setting_can_see_deleted_users', '')
+      // Set setting back
+      .do.click('#setting_can_see_deleted_users')
+      .do.click('button.btn-primary[type="submit"]')
+      .do.wait('.alert-info')
       .run(done);
   });
 });
