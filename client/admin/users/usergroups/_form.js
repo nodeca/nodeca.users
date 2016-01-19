@@ -199,7 +199,7 @@ function UserGroup(form, data) {
   // See Setting and SettingCategory classes for details.
   //
   this.settings     = _(form.setting_schemas)
-                          .map(function (schema, name) {
+                          .map((schema, name) => {
                             var overriden = _.has(settings, name);
 
                             return new Setting(form, name, schema, {
@@ -208,7 +208,7 @@ function UserGroup(form, data) {
                               forced:    overriden ? settings[name].force : false,
                               value:     overriden ? settings[name].value : schema['default']
                             });
-                          }, this)
+                          })
                           .sortBy('priority')
                           .value();
 
@@ -219,14 +219,14 @@ function UserGroup(form, data) {
 
   this.categories    = _(form.setting_schemas)
                           .map('category_key')
-                          .unique()
-                          .map(function (name) {
+                          .uniq()
+                          .map((name) => {
                             return new SettingCategory(
                               form,
                               name,
                               _.filter(this.settings, { categoryKey: name })
                             );
-                          }, this)
+                          })
                           .sortBy('priority')
                           .value();
 
