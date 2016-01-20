@@ -12,6 +12,8 @@ var async       = require('async');
 var _           = require('lodash');
 var resizeParse = require('nodeca.users/server/_lib/resize_parse');
 var resize      = require('nodeca.users/models/users/_lib/resize');
+var thenify     = require('thenify');
+var unlink      = thenify(fs.unlink);
 
 
 module.exports = function (N, apiPath) {
@@ -129,35 +131,32 @@ module.exports = function (N, apiPath) {
 
   // Create image/binary (for images previews created automatically)
   //
-  N.wire.on(apiPath, function save_media(env, callback) {
-    var fileInfo = env.data.upload_file_info;
-    var ext = fileInfo.type.split('/').pop();
-    var typeConfig = config.types[ext];
+  N.wire.on(apiPath, function* save_media(env) {
+    let fileInfo = env.data.upload_file_info;
+    let ext = fileInfo.type.split('/').pop();
+    let typeConfig = config.types[ext];
 
-    if (!typeConfig) {
-      fs.unlink(fileInfo.path, function () {
-        callback(new Error('Wrong file type on avatar upload'));
+    try {
+      if (!typeConfig) {
+        throw new Error('Wrong file type on avatar upload');
+      }
+
+      let data = yield resize(fileInfo.path, {
+        store: N.models.core.File,
+        ext: ext,
+        maxSize: typeConfig.max_size,
+        resize: typeConfig.resize
       });
+
+      env.data.old_avatar = env.data.user.avatar_id;
+      env.res.avatar_id = data.id;
+      yield N.models.users.User.update(
+        { _id: env.data.user._id },
+        { $set: { avatar_id: data.id } }
+      );
+    } finally {
+      yield unlink(fileInfo.path);
     }
-
-    resize(fileInfo.path, {
-      store: N.models.core.File,
-      ext: ext,
-      maxSize: typeConfig.max_size,
-      resize: typeConfig.resize
-    }, function (err, data) {
-
-      fs.unlink(fileInfo.path, function () {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        env.data.old_avatar = env.data.user.avatar_id;
-        env.res.avatar_id = data.id;
-        N.models.users.User.update({ _id: env.data.user._id }, { avatar_id: data.id }, callback);
-      });
-    });
   });
 
 

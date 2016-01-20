@@ -11,6 +11,8 @@ var async       = require('async');
 var _           = require('lodash');
 var mime        = require('mime-types').lookup;
 var resizeParse = require('../../../_lib/resize_parse');
+var thenify     = require('thenify');
+var unlink      = thenify(fs.unlink);
 
 
 module.exports = function (N, apiPath) {
@@ -212,31 +214,26 @@ module.exports = function (N, apiPath) {
 
   // Create image/binary (for images previews created automatically)
   //
-  N.wire.on(apiPath, function save_media(env, callback) {
-    var fileInfo = env.data.upload_file_info;
+  N.wire.on(apiPath, function* save_media(env) {
+    let fileInfo = env.data.upload_file_info;
 
-    N.models.users.MediaInfo.createFile({
-      album_id: env.data.album._id,
-      user_id: env.user_info.user_id,
-      path: fileInfo.path,
-      name: fileInfo.name,
-      // In case of blob fileInfo.name will be 'blob'.
-      // Get extension from fileInfo.type.
-      ext: fileInfo.type.split('/').pop()
-    }, function (err, media) {
-      // Remove file anyway after upload to gridfs
-      fs.unlink(fileInfo.path, function () {
-
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        env.res.media = media;
-        env.data.media = media;
-        callback();
+    try {
+      let media = yield N.models.users.MediaInfo.createFile({
+        album_id: env.data.album._id,
+        user_id: env.user_info.user_id,
+        path: fileInfo.path,
+        name: fileInfo.name,
+        // In case of blob fileInfo.name will be 'blob'.
+        // Get extension from fileInfo.type.
+        ext: fileInfo.type.split('/').pop()
       });
-    });
+
+      env.res.media = media;
+      env.data.media = media;
+    } finally {
+      // Remove file anyway after upload to gridfs
+      yield unlink(fileInfo.path);
+    }
   });
 
 

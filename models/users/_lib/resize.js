@@ -29,54 +29,20 @@
 //
 'use strict';
 
-var _        = require('lodash');
-var async    = require('async');
-var fs       = require('fs');
-var mime     = require('mime-types').lookup;
-var Mongoose = require('mongoose');
-var probe    = require('probe-image-size');
-var stream   = require('readable-stream');
-var sharp    = require('sharp');
+const _        = require('lodash');
+const co       = require('co');
+const fs       = require('mz/fs');
+const mime     = require('mime-types').lookup;
+const Mongoose = require('mongoose');
+const stream   = require('readable-stream');
+const sharp    = require('sharp');
+const thenify  = require('thenify');
+const probe    = thenify(require('probe-image-size'));
 
-var File;
+let File;
 
 // Limit amount of threads used for each image
 sharp.concurrency(1);
-
-
-// Read the file and return { buffer, width, height, length }
-// of the image inside.
-//
-function readImage(file, callback) {
-  callback = _.once(callback);
-
-  fs.readFile(file, function (err, data) {
-    if (err) {
-      callback(err);
-      return;
-    }
-
-    var streamBuffer = new stream.Transform();
-
-    streamBuffer.push(data);
-    streamBuffer.end();
-
-    probe(streamBuffer, function (err, imgSz) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      callback(null, {
-        buffer: data,
-        length: data.length,
-        type:   imgSz.type,
-        width:  imgSz.width,
-        height: imgSz.height
-      });
-    });
-  });
-}
 
 
 // Create preview for image
@@ -94,17 +60,17 @@ function readImage(file, callback) {
 //
 // - callback - function (err, { path, type })
 //
-function createPreview(image, resizeConfig, imageType, callback) {
+const createPreview = co.wrap(function* (image, resizeConfig, imageType) {
   // To scale image, we calculate new width and height,
   // resize image by height, and crop by width
-  var scaledHeight, scaledWidth, aspectRatio;
+  let scaledHeight, scaledWidth;
 
   if (resizeConfig.height && !resizeConfig.width) {
     // If only height is defined, scale to fit height
     // and crop by max_width
     scaledHeight = resizeConfig.height;
 
-    var proportionalWidth = Math.floor(image.width * scaledHeight / image.height);
+    let proportionalWidth = Math.floor(image.width * scaledHeight / image.height);
 
     if (!resizeConfig.max_width || resizeConfig.max_width > proportionalWidth) {
       scaledWidth = proportionalWidth;
@@ -116,7 +82,7 @@ function createPreview(image, resizeConfig, imageType, callback) {
     // and crop by max_height
     scaledWidth = resizeConfig.width;
 
-    var proportionalHeight = Math.floor(image.height * scaledWidth / image.width);
+    let proportionalHeight = Math.floor(image.height * scaledWidth / image.width);
 
     if (!resizeConfig.max_height || resizeConfig.max_height > proportionalHeight) {
       scaledHeight = proportionalHeight;
@@ -130,7 +96,7 @@ function createPreview(image, resizeConfig, imageType, callback) {
     // As an example, 1000x200 image with max_width=170 and max_height=150
     // would be scaled down to 170x34
     //
-    aspectRatio = image.width / image.height;
+    let aspectRatio = image.width / image.height;
 
     scaledWidth = image.width;
     scaledHeight = image.height;
@@ -159,22 +125,20 @@ function createPreview(image, resizeConfig, imageType, callback) {
   // this saves image as is, including metadata like EXIF
   //
   if (resizeConfig.skip_size && image.length < resizeConfig.skip_size) {
-    callback(null, { image: image, type: imageType });
-    return;
+    return { image: image, type: imageType };
   }
 
   // If image is smaller than needed already, save it as is
   //
   if (scaledWidth >= image.width && scaledHeight >= image.height) {
     if (!resizeConfig.max_size || image.length < resizeConfig.max_size) {
-      callback(null, { image: image, type: imageType });
-      return;
+      return { image: image, type: imageType };
     }
   }
 
-  var outType = resizeConfig.type || imageType;
+  let outType = resizeConfig.type || imageType;
 
-  var sharpInstance = sharp(image.buffer);
+  let sharpInstance = sharp(image.buffer);
 
   // Set quality only for jpeg image
   if (outType === 'jpeg') {
@@ -197,7 +161,7 @@ function createPreview(image, resizeConfig, imageType, callback) {
   // caused by thin vertical images
   //
   if (scaledWidth > image.width || scaledHeight > image.height) {
-    var factor = Math.max(scaledWidth / image.width, scaledHeight / image.height);
+    let factor = Math.max(scaledWidth / image.width, scaledHeight / image.height);
 
     scaledWidth /= factor;
     scaledHeight /= factor;
@@ -206,24 +170,30 @@ function createPreview(image, resizeConfig, imageType, callback) {
   sharpInstance.resize(Math.round(scaledWidth), Math.round(scaledHeight));
   sharpInstance.withoutEnlargement().crop('center');
 
-  sharpInstance.toFormat(outType).toBuffer(function (err, buffer, info) {
-    if (err) {
-      callback(err);
-      return;
-    }
+  let res = yield new Promise((resolve, reject) => {
+    // using callback interface instead of promises here,
+    // because promises don't return `info` object
+    sharpInstance.toFormat(outType).toBuffer(function (err, buffer, info) {
+      if (err) {
+        reject(err);
+        return;
+      }
 
-    callback(null, {
-      image: {
-        buffer: buffer,
-        length: info.size,
-        width:  info.width,
-        height: info.height,
-        type:   info.type
-      },
-      type: outType
+      resolve({ buffer: buffer, info: info });
     });
   });
-}
+
+  return {
+    image: {
+      buffer: res.buffer,
+      length: res.info.size,
+      width:  res.info.width,
+      height: res.info.height,
+      type:   res.info.type
+    },
+    type: outType
+  };
+});
 
 
 // Save buffered images to database
@@ -234,112 +204,94 @@ function createPreview(image, resizeConfig, imageType, callback) {
 //
 // - callback - function (err, originalFileId)
 //
-function saveImages(previews, options, callback) {
-  async.each(Object.keys(previews), function (key, next) {
-    //
-    // Check file size
-    //
-    var size = previews[key].image.length;
+const saveImages = co.wrap(function* (previews, options) {
+  let keys = Object.keys(previews);
+
+  //
+  // Check file size
+  //
+  for (let i = 0; i < keys.length; i++) {
+    let size = previews[keys[i]].image.length;
 
     if (options.maxSize && size > options.maxSize) {
-      next(new Error('Can\'t save file: max size exceeded'));
-      return;
+      throw new Error('Can\'t save file: max size exceeded');
+    }
+  }
+
+  // Create new ObjectId for orig file.
+  // You can get file_id from put function, but all previews save async.
+  let origId = new Mongoose.Types.ObjectId(options.date);
+
+  for (let i = 0; i < keys.length; i++) {
+    let key = keys[i];
+    let data = previews[key];
+    let params = { contentType: mime(data.type) };
+
+    if (key === 'orig') {
+      params._id = origId;
+    } else {
+      params.filename = origId + '_' + key;
     }
 
-    next();
-  }, function (err) {
-    if (err) {
-      callback(err);
-      return;
-    }
+    yield File.put(data.image.buffer, params);
+  }
 
-    // Create new ObjectId for orig file.
-    // You can get file_id from put function, but all previews save async.
-    var origId = new Mongoose.Types.ObjectId(options.date);
-    async.each(Object.keys(previews), function (key, next) {
-      var data = previews[key];
-
-      var params = { contentType: mime(data.type) };
-
-      if (key === 'orig') {
-        params._id = origId;
-      } else {
-        params.filename = origId + '_' + key;
-      }
-
-      var image = data.image;
-
-      File.put(image.buffer, params, function (err) {
-        next(err);
-      });
-    },
-    function (err) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      callback(null, origId);
-    });
-  });
-}
+  return origId;
+});
 
 
-module.exports = function (src, options, callback) {
+module.exports = co.wrap(function* (src, options) {
   File = options.store;
 
-  var previews = {};
+  let previews = {};
 
-  readImage(src, function (err, origImage) {
-    if (err) {
-      callback(err);
-      return;
-    }
+  //
+  // Read image from file, determine its size
+  //
+  let data = yield fs.readFile(src);
+  let streamBuffer = new stream.Transform();
 
-    async.eachSeries(Object.keys(options.resize), function (resizeConfigKey, next) {
-      // Create preview for each size
+  streamBuffer.push(data);
+  streamBuffer.end();
 
-      var resizeConfig = options.resize[resizeConfigKey];
+  let imgSz = yield probe(streamBuffer);
+  let origImage = {
+    buffer: data,
+    length: data.length,
+    type:   imgSz.type,
+    width:  imgSz.width,
+    height: imgSz.height
+  };
 
-      // Next preview will be based on preview in 'from' property
-      // by default next preview generated from 'orig'
-      var from = (previews[resizeConfig.from || ''] || previews.orig || {});
-      var image = from.image || origImage;
+  let resizeConfigKeys = Object.keys(options.resize);
 
-      createPreview(image, resizeConfig, from.type || options.ext, function (err, newImage) {
-        if (err) {
-          next(err);
-          return;
-        }
+  for (let i = 0; i < resizeConfigKeys.length; i++) {
+    let resizeConfigKey = resizeConfigKeys[i];
 
-        previews[resizeConfigKey] = newImage;
-        next();
-      });
-    }, function (err) {
-      if (err) {
-        callback(err);
-        return;
-      }
+    // Create preview for each size
 
-      // Save all previews
-      saveImages(previews, options, function (err, origId) {
-        if (err) {
-          callback(err);
-          return;
-        }
+    let resizeConfig = options.resize[resizeConfigKey];
 
-        callback(null, {
-          id: origId,
-          size: previews.orig.image.length,
-          images: _.mapValues(previews, function (preview) {
-            return {
-              width:  preview.image.width,
-              height: preview.image.height,
-              length: preview.image.length
-            };
-          })
-        });
-      });
-    });
-  });
-};
+    // Next preview will be based on preview in 'from' property
+    // by default next preview generated from 'orig'
+    let from = (previews[resizeConfig.from || ''] || previews.orig || {});
+    let image = from.image || origImage;
+
+    let newImage = yield createPreview(image, resizeConfig, from.type || options.ext);
+
+    previews[resizeConfigKey] = newImage;
+  }
+
+  // Save all previews
+  let origId = yield saveImages(previews, options);
+
+  return {
+    id: origId,
+    size: previews.orig.image.length,
+    images: _.mapValues(previews, (preview) => ({
+      width:  preview.image.width,
+      height: preview.image.height,
+      length: preview.image.length
+    }))
+  };
+});

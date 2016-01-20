@@ -3,7 +3,8 @@
 /* eslint no-bitwise: 0 */
 'use strict';
 
-const fs          = require('fs');
+const fs          = require('mz/fs');
+const co          = require('co');
 const extname     = require('path').extname;
 const Mongoose    = require('mongoose');
 const Schema      = Mongoose.Schema;
@@ -139,50 +140,23 @@ module.exports = function (N, collectionName) {
   });
 
 
-  function saveFile(path, name, maxSize, callback) {
-    fs.stat(path, function (err, stats) {
-      if (err) {
-        callback(err);
-        return;
+  const saveFile = co.wrap(function* (path, name, maxSize) {
+    let stats = yield fs.stat(path);
+
+    if (stats.size > maxSize) {
+      return new Error("Can't save file: max size exceeded");
+    }
+
+    let storeOptions = {
+      metadata: {
+        origName: name
       }
+    };
 
-      if (stats.size > maxSize) {
-        callback(new Error('Can\'t save file: max size exceeded'));
-        return;
-      }
+    let info = yield N.models.core.File.put(path, storeOptions);
 
-      var storeOptions = {
-        metadata: {
-          origName: name
-        }
-      };
-
-      N.models.core.File.put(path, storeOptions, function (err, info) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        callback(null, { id: info._id, size: stats.size });
-      });
-    });
-  }
-
-
-  function updateMediaSize(media, callback) {
-    N.models.users.UserExtra.update(
-      { user_id: media.user_id },
-      { $inc: { media_size: media.file_size } },
-      function (err) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        callback(null, media);
-      }
-    );
-  }
+    return { id: info._id, size: stats.size };
+  });
 
 
   // Create media with original image with previews or binary file
@@ -196,13 +170,13 @@ module.exports = function (N, collectionName) {
   //
   // - callback(err, media)
   //
-  MediaInfo.statics.createFile = thenify.withCallback(function (options, callback) {
-    var media = new N.models.users.MediaInfo();
+  MediaInfo.statics.createFile = co.wrap(function* (options) {
+    let media = new N.models.users.MediaInfo();
     media._id = new Mongoose.Types.ObjectId();
     media.user_id = options.user_id;
     media.album_id = options.album_id;
 
-    var format;
+    let format;
     // Format (extension) taken from options.name, options.ext or options.path in same order
     if (options.ext) {
       format = options.ext;
@@ -212,73 +186,49 @@ module.exports = function (N, collectionName) {
 
     // Is config for this type exists
     if (!mediaConfig.types[format]) {
-      callback(new Error('Can\'t save file: \'' + format + '\' not supported'));
-      return;
+      throw new Error(`Can't save file: '${format}' not supported`);
     }
 
-    var typeConfig = mediaConfig.types[format];
-    var supportedImageFormats = [ 'bmp', 'gif', 'jpg', 'jpeg', 'png' ];
+    let typeConfig = mediaConfig.types[format];
+    let supportedImageFormats = [ 'bmp', 'gif', 'jpg', 'jpeg', 'png' ];
 
     // Just save if file is not an image
     if (supportedImageFormats.indexOf(format) === -1) {
 
       if (!options.name) {
-        callback(new Error('Can\'t save file: you must specify options.name for binary files'));
-        return;
+        throw new Error("Can't save file: you must specify options.name for binary files");
       }
 
-      saveFile(options.path, options.name, typeConfig.max_size || mediaConfig.max_size, function (err, data) {
-        if (err) {
-          callback(err);
-          return;
+      let data = yield saveFile(options.path, options.name, typeConfig.max_size || mediaConfig.max_size);
+
+      media.type = types.BINARY;
+      media.media_id = data.id;
+      media.file_size = data.size;
+      media.file_name = options.name;
+    } else {
+      let data = yield resize(
+        options.path,
+        {
+          store: N.models.core.File,
+          ext: format,
+          maxSize: typeConfig.max_size || mediaConfig.max_size,
+          resize: typeConfig.resize
         }
+      );
 
-        media.type = types.BINARY;
-        media.media_id = data.id;
-        media.file_size = data.size;
-        media.file_name = options.name;
-
-        media.save(function (err) {
-          if (err) {
-            callback(err);
-            return;
-          }
-
-          updateMediaSize(media, callback);
-        });
-      });
-      return;
+      media.type = types.IMAGE;
+      media.image_sizes = data.images;
+      media.media_id = data.id;
+      media.file_size = data.size;
     }
 
-    resize(
-      options.path,
-      {
-        store: N.models.core.File,
-        ext: format,
-        maxSize: typeConfig.max_size || mediaConfig.max_size,
-        resize: typeConfig.resize
-      },
-      function (err, data) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        media.type = types.IMAGE;
-        media.image_sizes = data.images;
-        media.media_id = data.id;
-        media.file_size = data.size;
-
-        media.save(function (err) {
-          if (err) {
-            callback(err);
-            return;
-          }
-
-          updateMediaSize(media, callback);
-        });
-      }
+    yield media.save();
+    yield N.models.users.UserExtra.update(
+      { user_id: media.user_id },
+      { $inc: { media_size: media.file_size } }
     );
+
+    return media;
   });
 
 
