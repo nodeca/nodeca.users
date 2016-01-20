@@ -4,8 +4,8 @@
 'use strict';
 
 
-var _         = require('lodash');
-var recaptcha = require('nodeca.core/lib/recaptcha');
+const _         = require('lodash');
+const recaptcha = require('nodeca.core/lib/recaptcha');
 
 
 module.exports = function (N, apiPath) {
@@ -84,154 +84,107 @@ module.exports = function (N, apiPath) {
 
   // Try to find auth data using `email_or_nick` as an email.
   //
-  N.wire.on(apiPath, function find_authlink_by_email(env, callback) {
+  N.wire.on(apiPath, function* find_authlink_by_email(env) {
     if (env.data.authLink) {
       // user already verified by hooks, nothing left to do
-      callback();
       return;
     }
 
     if (env.data.user && env.data.authLink_plain) {
-      callback();
       return;
     }
 
-    N.models.users.AuthLink
-        .findOne({
-          email: env.params.email_or_nick,
-          type: 'plain',
-          exists: true
-        })
-        .exec(function (err, authLink) {
+    let authLink = yield N.models.users.AuthLink
+                            .findOne({
+                              email: env.params.email_or_nick,
+                              type: 'plain',
+                              exists: true
+                            });
 
-      if (err) {
-        callback(err);
-        return;
-      }
+    if (!authLink) {
+      return;
+    }
 
-      if (!authLink) {
-        callback(); // There is no error - let next hooks do their job.
-        return;
-      }
+    let user = yield N.models.users.User
+                        .findOne({ _id: authLink.user_id })
+                        .lean(true);
 
-      N.models.users.User
-        .findOne({ _id: authLink.user_id })
-        .lean(true)
-        .exec(function (err, user) {
+    if (!user) {
+      // There is no error - let next hooks do their job.
+      return;
+    }
 
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        if (!user) {
-          callback(); // There is no error - let next hooks do their job.
-          return;
-        }
-
-        env.data.user           = user;
-        env.data.authLink_plain = authLink;
-
-        callback();
-      });
-    });
+    env.data.user = user;
+    env.data.authLink_plain = authLink;
   });
 
 
   // Try to find auth data using `email_or_nick` as a nick.
   //
-  N.wire.on(apiPath, function find_authlink_by_nick(env, callback) {
+  N.wire.on(apiPath, function* find_authlink_by_nick(env) {
     if (env.data.authLink) {
       // user already verified by hooks, nothing left to do
-      callback();
       return;
     }
 
     if (env.data.user && env.data.authLink_plain) {
-      callback();
       return;
     }
 
-    N.models.users.User
-        .findOne({ nick: env.params.email_or_nick })
-        .lean(true)
-        .exec(function (err, user) {
+    let user = yield N.models.users.User
+      .findOne({ nick: env.params.email_or_nick })
+      .lean(true);
 
-      if (err) {
-        callback(err);
-        return;
-      }
+    if (!user) {
+      // There is no error - let next hooks do their job.
+      return;
+    }
 
-      if (!user) {
-        callback(); // There is no error - let next hooks do their job.
-        return;
-      }
+    let authLink = yield N.models.users.AuthLink
+      .findOne({ user_id: user._id, type: 'plain', exists: true });
 
-      N.models.users.AuthLink
-          .findOne({ user_id: user._id, type: 'plain', exists: true })
-          .exec(function (err, authLink) {
+    if (!authLink) {
+      // There is no error - let next hooks do their job.
+      return;
+    }
 
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        if (!authLink) {
-          callback(); // There is no error - let next hooks do their job.
-          return;
-        }
-
-        env.data.user           = user;
-        env.data.authLink_plain = authLink;
-
-        callback();
-      });
-    });
+    env.data.user = user;
+    env.data.authLink_plain = authLink;
   });
 
 
   // Try to login using plain authlink
   //
-  N.wire.on(apiPath, function verify_authlink(env, callback) {
+  N.wire.on(apiPath, function* verify_authlink(env) {
     if (!env.data.user || !env.data.authLink_plain) {
-      callback();
       return;
     }
 
-    env.data.authLink_plain.checkPass(env.params.pass, function (err, success) {
-      if (err) {
-        callback(err);
-        return;
-      }
+    let success = yield env.data.authLink_plain.checkPass(env.params.pass);
 
-      if (success) {
-        env.data.authLink = env.data.authLink_plain;
-      }
-
-      callback();
-    });
+    if (success) {
+      env.data.authLink = env.data.authLink_plain;
+    }
   });
 
 
   // Do login
   //
-  N.wire.after(apiPath, function login_do(env, callback) {
+  N.wire.after(apiPath, function* login_do(env) {
     // if env.data.authLink variable is set, it means this authlink
     // has been verified, and password matches
     if (!env.data.authLink) {
-      callback({
+      throw {
         code:    N.io.CLIENT_ERROR,
         message: env.t('err_login_failed')
-      });
-      return;
+      };
     }
 
     // Set login redirect URL.
     env.data.redirect_id = env.params.redirect_id;
 
-    N.wire.emit('internal:users.login', env, function () {
-      env.res.redirect_url = env.data.redirect_url;
-      callback();
-    });
+    yield N.wire.emit('internal:users.login', env);
+
+    env.res.redirect_url = env.data.redirect_url;
   });
 };

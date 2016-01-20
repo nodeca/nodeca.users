@@ -1,10 +1,9 @@
 'use strict';
 
 
-var assert = require('assert');
-
-
-var User = TEST.N.models.users.User;
+const assert = require('assert');
+const co     = require('co');
+const User   = TEST.N.models.users.User;
 
 
 describe('User', function () {
@@ -41,20 +40,17 @@ describe('User', function () {
   });
 
   describe('Auth provider', function () {
-    it('"plain" provider set/check password', function (done) {
-      var authLink = new TEST.N.models.users.AuthLink();
+    it('"plain" provider set/check password', co.wrap(function* () {
+      let authLink = new TEST.N.models.users.AuthLink();
+      let pass = 'Qwerty123';
 
       authLink.type = 'plain';
 
-      var pass = 'Qwerty123';
-      authLink.setPass(pass, function (err) {
-        if (err) { return done(err); }
-        authLink.checkPass(pass, function (err, ok) {
-          if (err) { return done(err); }
-          assert.equal(ok, true);
-          done();
-        });
-      });
-    });
+      yield authLink.setPass(pass);
+
+      let ok = yield authLink.checkPass(pass);
+
+      assert.equal(ok, true);
+    }));
   });
 });

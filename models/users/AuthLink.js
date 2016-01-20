@@ -10,14 +10,13 @@
 const Mongoose = require('mongoose');
 const Schema   = Mongoose.Schema;
 const password = require('./_lib/password');
-const thenify = require('thenify');
 
 
 module.exports = function (N, collectionName) {
 
   // Provider sub-document schema
   //
-  var AuthLink = new Schema({
+  let AuthLink = new Schema({
 
     user_id:          Schema.Types.ObjectId,
 
@@ -75,24 +74,19 @@ module.exports = function (N, collectionName) {
    *
    * Generate password hash and put in property
    **/
-  AuthLink.methods.setPass = thenify.withCallback(function (pass, callback) {
+  AuthLink.methods.setPass = function (pass) {
     if (this.type !== 'plain') {
-      callback(new Error('Can\'t set password for non plain provider'));
-      return;
+      return Promise.reject(new Error('Can\'t set password for non plain provider'));
     }
-    var self = this;
-    password.hash(pass, function (err, hash) {
-      if (err) {
-        callback(err);
-        return;
+
+    return password.hash(pass).then((hash) => {
+      if (!this.meta) {
+        this.meta = {};
       }
-      if (!self.meta) {
-        self.meta = {};
-      }
-      self.meta.pass = hash;
-      callback();
+
+      this.meta.pass = hash;
     });
-  });
+  };
 
 
   /**
@@ -101,13 +95,13 @@ module.exports = function (N, collectionName) {
    *
    * Compare word with stored password
    **/
-  AuthLink.methods.checkPass = thenify.withCallback(function (pass, callback) {
+  AuthLink.methods.checkPass = function (pass) {
     if (this.type !== 'plain') {
-      callback(new Error('Can\'t set password for non plain provider'));
-      return;
+      return Promise.reject(new Error('Can\'t set password for non plain provider'));
     }
-    password.check(pass, this.meta.pass, callback);
-  });
+
+    return password.check(pass, this.meta.pass);
+  };
 
 
   //////////////////////////////////////////////////////////////////////////////
