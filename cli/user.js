@@ -1,12 +1,10 @@
 // Add new user or change password/groups of existing one via console.
-
-
+//
 'use strict';
 
 
-var _     = require('lodash');
-var async = require('async');
-
+const _     = require('lodash');
+const co    = require('co');
 
 
 module.exports.parserParameters = {
@@ -69,199 +67,123 @@ module.exports.commandLineArguments = [
 ];
 
 
-module.exports.run = function (N, args, callback) {
+module.exports.run = function (N, args) {
 
-  N.wire.emit('init:models', N, function (err) {
-    if (err) {
-      callback(err);
-      return;
+  return co(function* () {
+    yield N.wire.emit('init:models', N);
+
+    let user = null;
+    let toAdd = {};
+    let toRemove = [];
+
+
+    // check password and email
+    //
+    if (args.action === 'add' && !args.email) {
+      throw 'Email is required';
     }
 
-    var user     = null,
-        toAdd    = {},
-        toRemove = [];
+    if (args.action === 'add' && !args.pass) {
+      throw 'Password is required';
+    }
 
-    // FIXME check toRemove and toAdd intersection
-    async.series([
-      // check password and email
-      function validate_params(next) {
-        if (args.action === 'add' && !args.email) {
-          next('Email is required');
-          return;
-        }
 
-        if (args.action === 'add' && !args.pass) {
-          next('Password is required');
-          return;
-        }
+    // fetch usergroups
+    //
+    let UserGroup = N.models.users.UserGroup;
+    let docs = yield UserGroup.find().select('_id short_name');
 
-        next();
-      },
-
-      // fetch usergroups
-      function fetch_usergroups(next) {
-        var UserGroup = N.models.users.UserGroup;
-
-        UserGroup.find().select('_id short_name').exec(function (err, docs) {
-          if (err) {
-            next(err);
-            return;
-          }
-
-          docs.forEach(function (group) {
-            if (args.mark_to_remove.indexOf(group.short_name) !== -1) {
-              toRemove.push(group._id.toString());
-            }
-            if (args.mark_to_add.indexOf(group.short_name) !== -1) {
-              toAdd[group._id.toString()] = group;
-            }
-          });
-
-          // FIXME check all groups were found from both lists?
-          next();
-        });
-      },
-
-      // find or create user
-      function find_user(next) {
-        var User = N.models.users.User;
-
-        User.findOne({ nick: args.user }).exec(function (err, doc) {
-          if (err) {
-            next(err);
-            return;
-          }
-
-          if (args.action === 'add') {
-            if (doc) {
-              next('User with that name already exists');
-              return;
-            }
-
-            user = new User({
-              nick: args.user,
-              joined_ts: new Date()
-            });
-
-            next();
-            return;
-          }
-
-          if (!doc) {
-            next('User not found, check name or use `add`');
-            return;
-          }
-
-          user = doc;
-          next();
-        });
-      },
-
-      // set password
-      function set_password(next) {
-        if (!args.pass) {
-          next();
-          return;
-        }
-
-        // disable all other passwords
-        N.models.users.AuthLink.update(
-            { user_id: user._id, type: 'plain', exists: true },
-            { $set: { exists: false } },
-            { multi: true },
-            function (err) {
-
-          if (err) {
-            next(err);
-            return;
-          }
-
-          var authLink = new N.models.users.AuthLink();
-
-          authLink.type = 'plain';
-          authLink.email = args.email || user.email;
-
-          authLink.setPass(args.pass, function (err) {
-            if (err) {
-              next(err);
-              return;
-            }
-
-            authLink.user_id = user._id;
-            authLink.ip = '127.0.0.1';
-            authLink.last_ip = '127.0.0.1';
-
-            authLink.save(next);
-          });
-        });
-      },
-
-      // set email and check that it's unique
-      function set_email(next) {
-        if (!args.email) {
-          next();
-          return;
-        }
-
-        var User = N.models.users.User;
-
-        User.findOne({
-          _id: { $ne: user._id },
-          email: args.email
-        }).exec(function (err, doc) {
-          if (err) {
-            next(err);
-            return;
-          }
-
-          if (doc) {
-            next('User with that email already exists');
-            return;
-          }
-
-          user.email = args.email;
-          next();
-        });
-      },
-
-      // validate and update usergroups
-      function update_usergroups(next) {
-        if (!_.isEmpty(toRemove) && !_.isEmpty(user.usergroups)) {
-          user.usergroups = user.usergroups.filter(function (group) {
-            return toRemove.indexOf(group.toString()) === -1;
-          });
-        }
-        if (!_.isEmpty(toAdd)) {
-          // remove from toAdd list already assigned groups
-          user.usergroups.forEach(function (group) {
-            var group_id = group.toString();
-            if (toAdd[group_id]) {
-              toAdd = _.without(toAdd, group_id);
-            }
-          });
-          if (!_.isEmpty(toAdd)) {
-            _.values(toAdd).forEach(function (group) {
-              user.usergroups.push(group);
-            });
-          }
-        }
-
-        next();
-      },
-
-      // save user
-      function save_user(next) {
-        user.save(next);
+    docs.forEach(group => {
+      if (args.mark_to_remove.indexOf(group.short_name) !== -1) {
+        toRemove.push(group._id.toString());
       }
-    ], function (err) {
-      if (err) {
-        callback('User creation error: ' + String(err.message || err));
-        return;
+      if (args.mark_to_add.indexOf(group.short_name) !== -1) {
+        toAdd[group._id.toString()] = group;
       }
-
-      /*eslint-disable no-console*/
-      console.log('OK\n');
-      N.shutdown();
     });
+
+
+    // find or create user
+    //
+    let User = N.models.users.User;
+    let doc = yield User.findOne({ nick: args.user });
+
+    if (args.action === 'add') {
+      if (doc) {
+        throw 'User with that name already exists';
+      }
+
+      user = new User({
+        nick: args.user,
+        joined_ts: new Date()
+      });
+    } else {
+      if (!doc) {
+        throw 'User not found, check name or use `add`';
+      }
+
+      user = doc;
+    }
+
+    // set password
+    //
+    if (args.pass) {
+      // disable all other passwords
+      yield N.models.users.AuthLink.update(
+        { user_id: user._id, type: 'plain', exists: true },
+        { $set: { exists: false } },
+        { multi: true }
+      );
+
+      let authLink = new N.models.users.AuthLink();
+
+      authLink.type = 'plain';
+      authLink.email = args.email || user.email;
+
+      yield authLink.setPass(args.pass);
+
+      authLink.user_id = user._id;
+      authLink.ip = '127.0.0.1';
+      authLink.last_ip = '127.0.0.1';
+
+      yield authLink.save();
+    }
+
+
+    // set email and check that it's unique
+    //
+    if (args.email) {
+      doc = yield User.findOne({ _id: { $ne: user._id }, email: args.email });
+
+      if (doc) {
+        throw 'User with that email already exists';
+      }
+
+      user.email = args.email;
+    }
+
+
+    // validate and update usergroups
+    //
+    if (!_.isEmpty(toRemove) && !_.isEmpty(user.usergroups)) {
+      user.usergroups = user.usergroups.filter(group => toRemove.indexOf(group.toString()) === -1);
+    }
+    if (!_.isEmpty(toAdd)) {
+      // remove from toAdd list already assigned groups
+      user.usergroups.forEach(group => {
+        let group_id = group.toString();
+
+        if (toAdd[group_id]) {
+          toAdd = _.without(toAdd, group_id);
+        }
+      });
+      if (!_.isEmpty(toAdd)) {
+        _.values(toAdd).forEach(group => user.usergroups.push(group));
+      }
+    }
+
+    yield user.save();
+
+    N.shutdown();
   });
 };
