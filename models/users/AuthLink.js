@@ -7,6 +7,7 @@
 'use strict';
 
 
+const _        = require('lodash');
 const Mongoose = require('mongoose');
 const Schema   = Mongoose.Schema;
 const password = require('./_lib/password');
@@ -76,15 +77,11 @@ module.exports = function (N, collectionName) {
    **/
   AuthLink.methods.setPass = function (pass) {
     if (this.type !== 'plain') {
-      return Promise.reject(new Error('Can\'t set password for non plain provider'));
+      return Promise.reject(new Error("Can't set password for non plain provider"));
     }
 
     return password.hash(pass).then((hash) => {
-      if (!this.meta) {
-        this.meta = {};
-      }
-
-      this.meta.pass = hash;
+      _.set(this, 'meta.pass', hash);
     });
   };
 
@@ -97,10 +94,10 @@ module.exports = function (N, collectionName) {
    **/
   AuthLink.methods.checkPass = function (pass) {
     if (this.type !== 'plain') {
-      return Promise.reject(new Error('Can\'t set password for non plain provider'));
+      return Promise.reject(new Error("Can't set password for non plain provider"));
     }
 
-    return password.check(pass, this.meta.pass);
+    return password.check(pass, _.get(this, 'meta.pass'));
   };
 
 
