@@ -1,23 +1,22 @@
 // Upload media handler for uploading files via POST request
 //
-
 'use strict';
 
 
-var formidable  = require('formidable');
-var tmpDir      = require('os').tmpdir();
-var fs          = require('fs');
-var async       = require('async');
-var _           = require('lodash');
-var mime        = require('mime-types').lookup;
-var resizeParse = require('../../../_lib/resize_parse');
-var thenify     = require('thenify');
-var unlink      = thenify(fs.unlink);
+const formidable  = require('formidable');
+const tmpDir      = require('os').tmpdir();
+const fs          = require('fs');
+const async       = require('async');
+const _           = require('lodash');
+const mime        = require('mime-types').lookup;
+const resizeParse = require('../../../_lib/resize_parse');
+const thenify     = require('thenify');
+const unlink      = thenify(fs.unlink);
 
 
 module.exports = function (N, apiPath) {
 
-  var config = resizeParse(N.config.users.uploads);
+  const config = resizeParse(N.config.users.uploads);
 
   // CSRF comes in post data and checked separately
   N.validate(apiPath, {
@@ -27,134 +26,90 @@ module.exports = function (N, apiPath) {
 
   // Fetch album info (by album_id). Fetch default album if album_id not specified
   //
-  N.wire.before(apiPath, function fetch_album(env, callback) {
-
-    var queryParams = env.params.album_id ?
+  N.wire.before(apiPath, function* fetch_album(env) {
+    let queryParams = env.params.album_id ?
                       { _id: env.params.album_id, user_id: env.user_info.user_id } :
                       { user_id: env.user_info.user_id, 'default': true };
 
-    N.models.users.Album
-      .findOne(queryParams)
-      .lean(true)
-      .exec(function (err, album) {
-        if (err) {
-          callback(err);
-          return;
-        }
+    let album = yield N.models.users.Album
+                          .findOne(queryParams)
+                          .lean(true);
 
-        if (!album) {
-          callback({
-            code:    N.io.CLIENT_ERROR,
-            message: env.t('err_album_not_found')
-          });
-          return;
-        }
+    if (!album) {
+      throw {
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('err_album_not_found')
+      };
+    }
 
-        env.data.album = album;
-        callback();
-      });
+    env.data.album = album;
   });
 
 
   // Check permissions
   //
-  N.wire.before(apiPath, function check_permissions(env, callback) {
+  N.wire.before(apiPath, function* check_permissions(env) {
+    let users_can_upload_media = yield env.extras.settings.fetch('users_can_upload_media');
 
-    env.extras.settings.fetch('users_can_upload_media', function (err, users_can_upload_media) {
-
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      if (!users_can_upload_media) {
-        callback({
-          code:    N.io.CLIENT_ERROR,
-          message: env.t('err_permission')
-        });
-        return;
-      }
-
-      callback();
-    });
+    if (!users_can_upload_media) {
+      throw {
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('err_permission')
+      };
+    }
   });
 
 
   // Check file size early by header and terminate immediately for big uploads
   //
-  N.wire.before(apiPath, function check_file_size(env, callback) {
+  N.wire.before(apiPath, function* check_file_size(env) {
     // `Content-Length` = (files + wrappers) + (params + wrappers)
     //
     // When single big file sent, `Content-Length` ~ FileSize.
     // Difference is < 200 bytes.
-    var size = env.origin.req.headers['content-length'];
+    let size = env.origin.req.headers['content-length'];
 
     if (!size) {
-      callback(N.io.LENGTH_REQUIRED);
-      return;
+      throw N.io.LENGTH_REQUIRED;
     }
 
-    env.extras.settings.fetch('users_media_single_quota_kb', function (err, users_media_single_quota_kb) {
+    let users_media_single_quota_kb = yield env.extras.settings.fetch('users_media_single_quota_kb');
 
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      if (size > users_media_single_quota_kb * 1024) {
-        callback({
-          code:    N.io.CLIENT_ERROR,
-          message: env.t('err_file_size', { max_size_kb: users_media_single_quota_kb })
-        });
-        return;
-      }
-
-      callback();
-    });
+    if (size > users_media_single_quota_kb * 1024) {
+      throw {
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('err_file_size', { max_size_kb: users_media_single_quota_kb })
+      };
+    }
   });
 
 
   // Check quota
   //
-  N.wire.before(apiPath, function check_quota(env, callback) {
-    N.models.users.UserExtra
-      .findOne({ user_id: env.user_info.user_id })
-      .select('media_size')
-      .lean(true)
-      .exec(function (err, extra) {
-        if (err) {
-          callback(err);
-          return;
-        }
+  N.wire.before(apiPath, function* check_quota(env) {
+    let extra = yield N.models.users.UserExtra
+                          .findOne({ user_id: env.user_info.user_id })
+                          .select('media_size')
+                          .lean(true);
+    let users_media_total_quota_mb = yield env.extras.settings.fetch('users_media_total_quota_mb');
 
-        env.extras.settings.fetch('users_media_total_quota_mb', function (err, users_media_total_quota_mb) {
-
-          if (err) {
-            callback(err);
-            return;
-          }
-
-          if (users_media_total_quota_mb * 1024 * 1024 < extra.media_size) {
-            callback({
-              code:    N.io.CLIENT_ERROR,
-              message: env.t('err_quota_exceeded', { quota_mb: users_media_total_quota_mb })
-            });
-            return;
-          }
-
-          callback();
-        });
-      });
+    if (users_media_total_quota_mb * 1024 * 1024 < extra.media_size) {
+      throw {
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('err_quota_exceeded', { quota_mb: users_media_total_quota_mb })
+      };
+    }
   });
 
 
   // Fetch post body with files via formidable
   //
   N.wire.before(apiPath, function upload_media(env, callback) {
-    var form = new formidable.IncomingForm();
+    let form = new formidable.IncomingForm();
+
     form.uploadDir = tmpDir;
 
-    form.on('progress', function (bytesReceived, contentLength) {
+    form.on('progress', (bytesReceived, contentLength) => {
 
       // Terminate connection if `Content-Length` header is fake
       if (bytesReceived > contentLength) {
@@ -162,13 +117,13 @@ module.exports = function (N, apiPath) {
       }
     });
 
-    form.parse(env.origin.req, function (err, fields, files) {
+    form.parse(env.origin.req, (err, fields, files) => {
       files = _.toArray(files);
 
       function fail(err) {
-        async.each(_.map(files, 'path'), function (path, next) {
+        async.each(_.map(files, 'path'), (path, next) => {
           fs.unlink(path, next);
-        }, function () {
+        }, () => {
           // Don't care unlink result, forward previous error
           callback(err);
         });
@@ -239,35 +194,25 @@ module.exports = function (N, apiPath) {
 
   // Update album info
   //
-  N.wire.after(apiPath, function update_album_info(env, callback) {
-
-    N.models.users.Album.updateInfo(env.data.album._id, function (err) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      callback();
-    });
+  N.wire.after(apiPath, function* update_album_info(env) {
+    yield N.models.users.Album.updateInfo(env.data.album._id);
   });
 
 
   // Update cover for default album
   //
-  N.wire.after(apiPath, function update_default(env, callback) {
+  N.wire.after(apiPath, function* update_default(env) {
     if (!env.data.album.default) {
-      callback();
       return;
     }
 
-    var mTypes = N.models.users.MediaInfo.types;
-    var media = env.data.media;
+    let mTypes = N.models.users.MediaInfo.types;
+    let media = env.data.media;
 
     if (media.type !== mTypes.IMAGE) {
-      callback();
       return;
     }
 
-    N.models.users.Album.update({ _id: env.data.album._id }, { cover_id: media.media_id }, callback);
+    yield N.models.users.Album.update({ _id: env.data.album._id }, { cover_id: media.media_id });
   });
 };

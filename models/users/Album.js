@@ -5,8 +5,7 @@
 
 const Mongoose = require('mongoose');
 const Schema   = Mongoose.Schema;
-const async    = require('async');
-const thenify  = require('thenify');
+const co       = require('co');
 
 
 module.exports = function (N, collectionName) {
@@ -48,74 +47,45 @@ module.exports = function (N, collectionName) {
 
   // Update media count in album
   //
-  function updateCount(albumId, full, callback) {
-    var mTypes = N.models.users.MediaInfo.types;
+  let updateCount = co.wrap(function* (albumId, full) {
+    let mTypes = N.models.users.MediaInfo.types;
 
     if (!full) {
-      N.models.users.Album.update({ _id: albumId }, { $inc: { count: 1 } }, callback);
+      yield N.models.users.Album.update({ _id: albumId }, { $inc: { count: 1 } });
       return;
     }
 
-    N.models.users.MediaInfo.count({ album_id: albumId, type: { $in: mTypes.LIST_VISIBLE } }, function (err, result) {
-      if (err) {
-        callback(err);
-        return;
-      }
+    let result = yield N.models.users.MediaInfo.count({ album_id: albumId, type: { $in: mTypes.LIST_VISIBLE } });
 
-      N.models.users.Album.update({ _id: albumId }, { count: result }, callback);
-    });
-  }
+    yield N.models.users.Album.update({ _id: albumId }, { count: result });
+  });
 
 
   // Update album cover
   //
-  function updateCover(albumId, callback) {
-    var mTypes = N.models.users.MediaInfo.types;
+  let updateCover = co.wrap(function* (albumId) {
+    let mTypes = N.models.users.MediaInfo.types;
+    let album = yield N.models.users.Album.findOne({ _id: albumId }).lean(true);
+    let fileId = album.cover_id || '000000000000000000000000';
+    let cover = yield N.models.users.MediaInfo
+                          // album_id used to check if media moved to another album
+                          .findOne({ media_id: fileId, type: mTypes.IMAGE, album_id: album._id })
+                          .select('media_id')
+                          .lean(true);
 
-    // Fetch album
-    N.models.users.Album.findOne({ _id: albumId }).lean(true).exec(function (err, album) {
-      if (err) {
-        callback(err);
-        return;
-      }
+    // Do nothing if cover exists
+    if (cover) {
+      return;
+    }
 
-      // Check cover exists
+    let result = yield N.models.users.MediaInfo
+      .findOne({ album_id: album._id, type: mTypes.IMAGE })
+      .sort('-ts')
+      .lean(true);
 
-      // album.cover_id may be null. Set it to zero fill to avoid find medialinks.
-      var fileId = album.cover_id || '000000000000000000000000';
-      N.models.users.MediaInfo
-        // album_id used to check if media moved to another album
-        .findOne({ media_id: fileId, type: mTypes.IMAGE, album_id: album._id })
-        .select('media_id')
-        .lean(true)
-        .exec(function (err, cover) {
-          if (err) {
-            callback(err);
-            return;
-          }
-
-          // Do nothing if cover exists
-          if (cover) {
-            callback();
-            return;
-          }
-
-          // Update cover with latest available image
-          N.models.users.MediaInfo
-            .findOne({ album_id: album._id, type: mTypes.IMAGE })
-            .sort('-ts')
-            .lean(true)
-            .exec(function (err, result) {
-              if (err) {
-                callback(err);
-                return;
-              }
-
-              N.models.users.Album.update({ _id: albumId }, { cover_id: result ? result.media_id : null }, callback);
-            });
-        });
-    });
-  }
+    // Update cover with latest available image
+    yield N.models.users.Album.update({ _id: albumId }, { cover_id: result ? result.media_id : null });
+  });
 
 
   // Update album info (count, last_ts, cover)
@@ -123,31 +93,13 @@ module.exports = function (N, collectionName) {
   // - albumId - album _id
   // - full - Boolean. true - recalculate count, false - just increment count. Default false
   //
-  Album.statics.updateInfo = thenify.withCallback(function (albumId, full, callback) {
-    if (!callback) {
-      callback = full;
-      full = false;
-    }
-
-    async.parallel([
-      function (next) {
-        updateCount(albumId, full, next);
-      },
-      function (next) {
-        updateCover(albumId, next);
-      },
-      function (next) {
-        N.models.users.Album.update({ _id: albumId }, { last_ts: Date.now() }, next);
-      }
-    ], function (err) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      callback();
-    });
-  });
+  Album.statics.updateInfo = function (albumId, full) {
+    return Promise.all([
+      updateCount(albumId, full),
+      updateCover(albumId),
+      N.models.users.Album.update({ _id: albumId }, { last_ts: Date.now() })
+    ]);
+  };
 
 
   N.wire.on('init:models', function emit_init_Album(__, callback) {

@@ -1,6 +1,7 @@
 // Create video to album
-
+//
 'use strict';
+
 
 module.exports = function (N, apiPath) {
 
@@ -12,24 +13,16 @@ module.exports = function (N, apiPath) {
 
   // Fetch album info (by album_id)
   //
-  N.wire.before(apiPath, function fetch_album(env, callback) {
-    N.models.users.Album
-      .findOne({ _id: env.params.album_id })
-      .lean(true)
-      .exec(function (err, album) {
-        if (err) {
-          callback(err);
-          return;
-        }
+  N.wire.before(apiPath, function* fetch_album(env) {
+    let album = yield N.models.users.Album
+                          .findOne({ _id: env.params.album_id })
+                          .lean(true);
 
-        if (!album) {
-          callback(N.io.NOT_FOUND);
-          return;
-        }
+    if (!album) {
+      throw N.io.NOT_FOUND;
+    }
 
-        env.data.album = album;
-        callback();
-      });
+    env.data.album = album;
   });
 
 
@@ -45,7 +38,7 @@ module.exports = function (N, apiPath) {
   // Create media by media_url
   //
   N.wire.on(apiPath, function create_media(env, callback) {
-    var data = {};
+    let data = {};
 
     N.wire.emit('internal:users.album.init_embedza', data, function (err) {
       if (err) {
@@ -77,7 +70,7 @@ module.exports = function (N, apiPath) {
             return;
           }
 
-          var media = new N.models.users.MediaInfo();
+          let media = new N.models.users.MediaInfo();
 
           media.medialink_html = block.html;
           media.medialink_meta = { thumb: thumb.html };
@@ -99,15 +92,7 @@ module.exports = function (N, apiPath) {
 
   // Update album info
   //
-  N.wire.after(apiPath, function update_album_info(env, callback) {
-
-    N.models.users.Album.updateInfo(env.data.album._id, function (err) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      callback();
-    });
+  N.wire.after(apiPath, function* update_album_info(env) {
+    yield N.models.users.Album.updateInfo(env.data.album._id);
   });
 };
