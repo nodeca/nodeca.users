@@ -37,56 +37,58 @@ module.exports = function (N, apiPath) {
 
   // Create media by media_url
   //
-  N.wire.on(apiPath, function create_media(env, callback) {
+  N.wire.on(apiPath, function* create_media(env) {
     let data = {};
 
-    N.wire.emit('internal:users.album.init_embedza', data, function (err) {
-      if (err) {
-        callback(err);
-        return;
-      }
+    yield N.wire.emit('internal:users.album.create_embedza', data);
 
-      // Get thumb url
-      data.embedza.render(env.params.media_url, 'thumb_url', function (err, thumb) {
-        if (err) {
-          callback({ code: N.io.CLIENT_ERROR, message: env.t('err_cannot_parse') });
-          return;
-        }
 
-        if (!thumb) {
-          callback({ code: N.io.CLIENT_ERROR, message: env.t('err_invalid_url') });
-          return;
-        }
+    // Get thumb url
+    //
+    let thumb;
 
-        // Get video
-        data.embedza.render(env.params.media_url, 'block', function (err, block) {
-          if (err) {
-            callback({ code: N.io.CLIENT_ERROR, message: env.t('err_cannot_parse') });
-            return;
-          }
+    try {
+      thumb = yield data.embedza.render(env.params.media_url, 'thumb_url');
+    } catch (__) {
+      throw { code: N.io.CLIENT_ERROR, message: env.t('err_cannot_parse') };
+    }
 
-          if (!block) {
-            callback({ code: N.io.CLIENT_ERROR, message: env.t('err_invalid_url') });
-            return;
-          }
+    if (!thumb) {
+      throw { code: N.io.CLIENT_ERROR, message: env.t('err_invalid_url') };
+    }
 
-          let media = new N.models.users.MediaInfo();
 
-          media.medialink_html = block.html;
-          media.medialink_meta = { thumb: thumb.html };
-          media.user_id = env.data.album.user_id;
-          media.album_id = env.data.album._id;
-          media.type = N.models.users.MediaInfo.types.MEDIALINK;
+    // Get video
+    //
+    let block;
 
-          // In case of medialink, we have no file, but we should specify file_id for media page
-          media.media_id = media._id;
+    try {
+      block = yield data.embedza.render(env.params.media_url, 'block');
+    } catch (__) {
+      throw { code: N.io.CLIENT_ERROR, message: env.t('err_cannot_parse') };
+    }
 
-          env.res.media = media;
+    if (!block) {
+      throw { code: N.io.CLIENT_ERROR, message: env.t('err_invalid_url') };
+    }
 
-          media.save(callback);
-        });
-      });
-    });
+
+    // Create MediaInfo
+    //
+    let media = new N.models.users.MediaInfo();
+
+    media.medialink_html = block.html;
+    media.medialink_meta = { thumb: thumb.html };
+    media.user_id = env.data.album.user_id;
+    media.album_id = env.data.album._id;
+    media.type = N.models.users.MediaInfo.types.MEDIALINK;
+
+    // In case of medialink, we have no file, but we should specify file_id for media page
+    media.media_id = media._id;
+
+    env.res.media = media;
+
+    yield media.save();
   });
 
 

@@ -1,6 +1,5 @@
 // Shows album/all medias page
-
-
+//
 'use strict';
 
 
@@ -14,75 +13,58 @@ module.exports = function (N, apiPath) {
 
   // Fetch owner
   //
-  N.wire.before(apiPath, function fetch_user_by_hid(env, callback) {
-    N.wire.emit('internal:users.fetch_user_by_hid', env, callback);
+  N.wire.before(apiPath, function* fetch_user_by_hid(env) {
+    yield N.wire.emit('internal:users.fetch_user_by_hid', env);
   });
 
 
   // Fetch album info (by album_id)
   //
-  N.wire.before(apiPath, function fetch_album(env, callback) {
+  N.wire.before(apiPath, function* fetch_album(env) {
     if (!env.params.album_id) {
-      callback();
       return;
     }
 
-    N.models.users.Album
-      .findOne({ _id: env.params.album_id })
-      .lean(true)
-      .exec(function (err, album) {
-        if (err) {
-          callback(err);
-          return;
-        }
+    let album = yield N.models.users.Album
+                          .findOne({ _id: env.params.album_id })
+                          .lean(true);
+    if (!album) {
+      throw N.io.NOT_FOUND;
+    }
 
-        if (!album) {
-          callback(N.io.NOT_FOUND);
-          return;
-        }
-
-        album.title = album.title || env.t('default_name');
-        env.data.album = album;
-        callback();
-      });
+    album.title = album.title || env.t('default_name');
+    env.data.album = album;
   });
 
 
   // Fill available embed providers
   //
-  N.wire.before(apiPath, function fill_providers(env, callback) {
-    var data = {};
+  N.wire.before(apiPath, function* fill_providers(env) {
+    let data = {};
 
     env.res.medialink_providers = [];
 
-    N.wire.emit('internal:users.album.init_embedza', data, function (err) {
-      if (err) {
-        callback(err);
-        return;
+    yield N.wire.emit('internal:users.album.create_embedza', data);
+
+    data.embedza.forEach(domain => {
+      if (!domain.enabled) {
+        return; // continue
       }
 
-      data.embedza.forEach(function (domain) {
-        if (!domain.enabled) {
-          return; // continue
-        }
-
-        env.res.medialink_providers.push({
-          home: 'http://' + domain.id,
-          name: domain.id
-        });
+      env.res.medialink_providers.push({
+        home: 'http://' + domain.id,
+        name: domain.id
       });
-
-      callback();
     });
   });
 
 
   // Get medias list (subcall)
   //
-  N.wire.on(apiPath, function get_user_albums(env, callback) {
+  N.wire.on(apiPath, function* get_user_albums(env) {
     env.res.album = env.data.album;
 
-    N.wire.emit('server:users.album.list', env, callback);
+    yield N.wire.emit('server:users.album.list', env);
   });
 
 
