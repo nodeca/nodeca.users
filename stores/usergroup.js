@@ -2,9 +2,8 @@
 
 
 const _        = require('lodash');
-const thenify  = require('thenify');
+const co       = require('co');
 const memoizee = require('memoizee');
-const async    = require('async');
 
 
 module.exports = function (N) {
@@ -117,89 +116,81 @@ module.exports = function (N) {
 
   // Walk through all existent usergroups and recalculate their permissions
   //
-  UsergroupStore.updateInherited = thenify.withCallback(function updateInherited(callback) {
-    var self = this;
+  UsergroupStore.updateInherited = co.wrap(function* updateInherited() {
+    let self = this;
+    let groups = yield N.models.users.UserGroup.find().select('_id parent_group settings');
 
-    N.models.users.UserGroup
-        .find()
-        .select('_id parent_group settings')
-        .exec(function (err, groups) {
 
-      if (err) {
-        callback(err);
-        return;
-      }
+    // Get group from groups array by its id
+    //
+    function getGroupById(id) {
+      return groups.filter(
+        // Universal way for equal check on: Null, ObjectId, and String.
+        g => String(g._id) === String(id)
+      )[0];
+    }
 
-      // Get group from groups array by its id
-      //
-      function getGroupById(id) {
-        return groups.filter(function (g) {
-          // Universal way for equal check on: Null, ObjectId, and String.
-          return String(g._id) === String(id);
-        })[0];
-      }
 
-      // Find first own setting for group.
-      //
-      function findInheritedSetting(groupId, settingName) {
-        if (!groupId) {
-          return null;
-        }
-
-        var group = getGroupById(groupId);
-
-        // Setting exists, and it is not inherited from another section.
-        if (group &&
-            group.settings &&
-            group.settings[settingName] &&
-            group.settings[settingName].own) {
-          return group.settings[settingName];
-        }
-
-        // Recursively walk through ancestors sequence.
-        if (group.parent_group) {
-          return findInheritedSetting(group.parent_group, settingName);
-        }
-
+    // Find first own setting for group.
+    //
+    function findInheritedSetting(groupId, settingName) {
+      if (!groupId) {
         return null;
       }
 
-      // Get full settings list for specified group
-      // For inherited settings automatically extract values from parents
-      function fetchSettings(groupId) {
-        var group = getGroupById(groupId),
-            result = {};
+      let group = getGroupById(groupId);
 
-        self.keys.forEach(function (settingName) {
-          // Do not touch own settings. We only update inherited settings.
-          if (group.settings[settingName] &&
-              group.settings[settingName].own) {
-            return;
-          }
-
-          var setting = findInheritedSetting(group.parent_group, settingName);
-
-          if (setting) {
-            // Set/update inherited setting.
-            group.settings[settingName] = {
-              value: setting.value,
-              force: setting.force,
-              own:   false
-            };
-          } else {
-            // Drop deprecated inherited setting.
-            delete group.settings[settingName];
-          }
-        });
-
-        return result;
+      // Setting exists, and it is not inherited from another section.
+      if (group &&
+        group.settings &&
+        group.settings[settingName] &&
+        group.settings[settingName].own) {
+        return group.settings[settingName];
       }
 
-      async.each(groups, function (group, next) {
-        self.set(fetchSettings(group.id), { usergroup_id: group._id }, next);
-      }, callback);
-    });
+      // Recursively walk through ancestors sequence.
+      if (group.parent_group) {
+        return findInheritedSetting(group.parent_group, settingName);
+      }
+
+      return null;
+    }
+
+    // Get full settings list for specified group
+    // For inherited settings automatically extract values from parents
+    //
+    function fetchSettings(groupId) {
+      let group = getGroupById(groupId);
+      let result = {};
+
+      self.keys.forEach(settingName => {
+        // Do not touch own settings. We only update inherited settings.
+        if (group.settings[settingName] &&
+          group.settings[settingName].own) {
+          return;
+        }
+
+        let setting = findInheritedSetting(group.parent_group, settingName);
+
+        if (setting) {
+          // Set/update inherited setting.
+          group.settings[settingName] = {
+            value: setting.value,
+            force: setting.force,
+            own:   false
+          };
+        } else {
+          // Drop deprecated inherited setting.
+          delete group.settings[settingName];
+        }
+      });
+
+      return result;
+    }
+
+    yield groups.map(group => this.set(fetchSettings(group.id), { usergroup_id: group._id }));
   });
+
 
   return UsergroupStore;
 };
