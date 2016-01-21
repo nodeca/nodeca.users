@@ -11,7 +11,6 @@ const Schema      = Mongoose.Schema;
 const resize      = require('./_lib/resize');
 const resizeParse = require('../../server/_lib/resize_parse');
 const util        = require('util');
-const thenify     = require('thenify');
 
 module.exports = function (N, collectionName) {
 
@@ -97,34 +96,27 @@ module.exports = function (N, collectionName) {
   // - revert - revert deleted media (default false)
   // - callback
   //
-  MediaInfo.statics.markDeleted = thenify.withCallback(function (media_id, revert, callback) {
-    N.models.users.MediaInfo
-      .findOneAndUpdate(
-        {
-          media_id: media_id,
-          type: { $in: (revert ? types.LIST_DELETED : types.LIST_VISIBLE) }
-        },
-        { $bit: { type: { xor: types.MASK_DELETED } } }
-      )
-      .select('file_size user_id')
-      .lean(true)
-      .exec(function (err, media) {
-        if (err) {
-          callback(err);
-          return;
-        }
+  MediaInfo.statics.markDeleted = co.wrap(function* (media_id, revert) {
+    let media = yield N.models.users.MediaInfo
+                          .findOneAndUpdate(
+                            {
+                              media_id: media_id,
+                              type: { $in: (revert ? types.LIST_DELETED : types.LIST_VISIBLE) }
+                            },
+                            { $bit: { type: { xor: types.MASK_DELETED } } }
+                          )
+                          .select('file_size user_id')
+                          .lean(true);
 
-        if (!media) {
-          callback();
-          return;
-        }
 
-        N.models.users.UserExtra.update(
-          { user_id: media.user_id },
-          { $inc: { media_size: media.file_size * (revert ? 1 : -1) } },
-          callback
-        );
-      });
+    if (!media) {
+      return;
+    }
+
+    yield N.models.users.UserExtra.update(
+      { user_id: media.user_id },
+      { $inc: { media_size: media.file_size * (revert ? 1 : -1) } }
+    );
   });
 
 
