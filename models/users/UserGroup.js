@@ -9,6 +9,7 @@
 
 
 var Mongoose = require('mongoose');
+var thenify  = require('thenify');
 var Schema   = Mongoose.Schema;
 
 
@@ -41,7 +42,7 @@ module.exports = function (N, collectionName) {
   });
 
 
-  UserGroup.statics.findIdByName = function findIdByName(shortName, callback) {
+  UserGroup.statics.findIdByName = thenify.withCallback(function findIdByName(shortName, callback) {
     this.findOne({ short_name: shortName }, '_id', { lean: true }, function (err, group) {
       if (err) {
         callback(err);
@@ -55,7 +56,7 @@ module.exports = function (N, collectionName) {
 
       callback(null, group._id);
     });
-  };
+  });
 
 
   N.wire.on('init:models', function emit_init_UserGroup(__, callback) {
