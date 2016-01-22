@@ -24,7 +24,6 @@
 var _           = require('lodash');
 var mime        = require('mime-types');
 var validator   = require('is-my-json-valid');
-var util        = require('util');
 
 
 var resizeConfigSchema = {
@@ -99,7 +98,7 @@ module.exports = _.memoize(function (uploadsConfig) {
   // Check uploads options, throw an error if validation failed
   if (!validate(config)) {
     var errorMessages = validate.errors.map(function (error) {
-      return util.format("'%s' %s '%s'", error.field, error.message, error.value);
+      return `'${error.field}' ${error.message} '${error.value}'`;
     });
 
     throw new Error(errorMessages.join(', '));

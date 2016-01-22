@@ -10,7 +10,6 @@ const Mongoose    = require('mongoose');
 const Schema      = Mongoose.Schema;
 const resize      = require('./_lib/resize');
 const resizeParse = require('../../server/_lib/resize_parse');
-const util        = require('util');
 
 module.exports = function (N, collectionName) {
 
@@ -229,7 +228,7 @@ module.exports = function (N, collectionName) {
     try {
       mediaConfig = resizeParse(N.config.users.uploads);
     } catch (e) {
-      callback(util.format('Error in uploads config: %s.', e.message));
+      callback(`Error in uploads config: ${e.message}.`);
       return;
     }
 

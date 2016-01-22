@@ -5,7 +5,7 @@ var Mongoose      = require('mongoose');
 var Schema        = Mongoose.Schema;
 var xregexp       = require('xregexp').XRegExp;
 var configReader  = require('../../server/_lib/resize_parse');
-var util          = require('util');
+
 
 module.exports = function (N, collectionName) {
 
@@ -197,7 +197,7 @@ module.exports = function (N, collectionName) {
     try {
       configReader(N.config.users.avatars);
     } catch (e) {
-      callback(util.format('Error in avatars config: %s.', e.message));
+      callback(`Error in avatars config: ${e.message}.`);
       return;
     }
 
