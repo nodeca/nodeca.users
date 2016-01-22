@@ -41,9 +41,7 @@ module.exports = function (N, collectionName) {
       return;
     }
 
-    let contentInfo = yield new Promise((resolve, reject) => {
-      gcHandlers[type](userId, categoryId, currentCut, (err, res) => err ? reject(err) : resolve(res));
-    });
+    let contentInfo = yield gcHandlers[type](userId, categoryId, currentCut);
 
     if (!contentInfo.length) {
       return;
