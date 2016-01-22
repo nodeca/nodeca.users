@@ -3,19 +3,18 @@
  *
  *  Store usergroup settings
  **/
-
-
 'use strict';
 
 
-var Mongoose = require('mongoose');
-var thenify  = require('thenify');
-var Schema   = Mongoose.Schema;
+const Mongoose = require('mongoose');
+const thenify  = require('thenify');
+const Schema   = Mongoose.Schema;
+const memoizee = require('memoizee');
 
 
 module.exports = function (N, collectionName) {
 
-  var UserGroup = new Schema({
+  let UserGroup = new Schema({
     // User group name used in ACP and migrations.
     // Index not really needed, just protects from collisions.
     short_name   : { type: String, unique: true },
@@ -42,7 +41,7 @@ module.exports = function (N, collectionName) {
   });
 
 
-  UserGroup.statics.findIdByName = thenify.withCallback(function findIdByName(shortName, callback) {
+  UserGroup.statics.findIdByName = thenify.withCallback(memoizee(function findIdByName(shortName, callback) {
     this.findOne({ short_name: shortName }, '_id', { lean: true }, function (err, group) {
       if (err) {
         callback(err);
@@ -56,7 +55,10 @@ module.exports = function (N, collectionName) {
 
       callback(null, group._id);
     });
-  });
+  }, {
+    async: true,
+    maxAge: 60000
+  }));
 
 
   N.wire.on('init:models', function emit_init_UserGroup(__, callback) {
