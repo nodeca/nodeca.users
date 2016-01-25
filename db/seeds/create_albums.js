@@ -1,12 +1,15 @@
 // Create demo albums for 'admin' user and moderators in first forum section
+//
 'use strict';
 
+
+const Promise   = require('bluebird');
 const co        = require('co');
 const Charlatan = require('charlatan');
 const path      = require('path');
 const glob      = require('glob').sync;
 const _         = require('lodash');
-// const numCPUs   = require('os').cpus().length;
+const numCPUs   = require('os').cpus().length;
 const statuses  = require('../../server/users/_lib/statuses.js');
 
 const ALBUMS_COUNT     = 7;
@@ -101,14 +104,7 @@ let createAlbums = co.wrap(function* () {
   user_ids = _.uniq(user_ids.map(String));
 
   // Create albums for prepared user list
-
-  // TODO use all CPUs
-  /*async.eachLimit(user_ids, numCPUs, function (uid, next) {
-    createMultipleAlbums(uid, next);
-  }, callback);*/
-  for (let i = 0; i < user_ids.length; i++) {
-    yield createMultipleAlbums(user_ids[i]);
-  }
+  yield Promise.map(user_ids, uid => createMultipleAlbums(uid), numCPUs);
 });
 
 
@@ -151,10 +147,7 @@ let createComments = co.wrap(function* () {
   let mediasId = _.map(results, 'media_id');
 
   // Create comments for prepared media and user list
-  // TODO: use more CPUs
-  for (let i = 0; i < mediasId.length; i++) {
-    yield createMultipleComments(mediasId[i], usersId);
-  }
+  yield Promise.map(mediasId, mid => createMultipleComments(mid, usersId), numCPUs);
 });
 
 
