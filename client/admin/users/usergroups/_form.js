@@ -317,10 +317,9 @@ function Form(page_data) {
 
   // Select groups suitable for 'inherits' list.
   // Excludes current group and it's descendants.
-  this.otherGroups = this.groups.filter(function (group) {
-                                  return group.id !== this.currentGroup.id &&
-                                         !group.isDescendantOf(this.currentGroup);
-                                }, this);
+  this.otherGroups = this.groups.filter(group => {
+    return group.id !== this.currentGroup.id && !group.isDescendantOf(this.currentGroup);
+  });
 }
 
 // Sends 'create' request for `currentGroup`.

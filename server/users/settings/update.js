@@ -34,7 +34,7 @@ module.exports = function (N, apiPath) {
       switch (schema[key].type) {
 
         case 'dropdown':
-          if (!_.find(schema[key].values, 'value', value)) {
+          if (!_.find(schema[key].values, { value })) {
             valid = false;
           }
           break;

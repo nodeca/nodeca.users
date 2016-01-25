@@ -77,7 +77,7 @@ module.exports = function (N, apiPath) {
       acc.push(_.assign({
         block_name: block_name,
         priority: 10,
-        items: _.filter(env.data.subscriptions, 'to_type', tab_confog.to_type)
+        items: _.filter(env.data.subscriptions, { to_type: tab_confog.to_type })
       }, tab_confog));
 
       return acc;
