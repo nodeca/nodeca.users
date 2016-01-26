@@ -288,7 +288,7 @@ module.exports = co.wrap(function* (src, options) {
   return {
     id: origId,
     size: previews.orig.image.length,
-    images: _.mapValues(previews, (preview) => ({
+    images: _.mapValues(previews, preview => ({
       width:  preview.image.width,
       height: preview.image.height,
       length: preview.image.length

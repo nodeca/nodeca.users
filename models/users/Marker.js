@@ -237,7 +237,10 @@ module.exports = function (N, collectionName) {
     yield N.redis.hsetAsync('marker_pos:' + userId, contentId, JSON.stringify(pos));
 
     yield new Promise((resolve, reject) => {
-      limitPositionMarkers(userId, err => err ? reject(err) : resolve());
+      limitPositionMarkers(userId, err => {
+        if (err) reject(err);
+        else resolve();
+      });
     });
 
     if (!maxUpdated) {

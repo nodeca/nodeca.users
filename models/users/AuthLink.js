@@ -80,7 +80,7 @@ module.exports = function (N, collectionName) {
       return Promise.reject(new Error("Can't set password for non plain provider"));
     }
 
-    return password.hash(pass).then((hash) => {
+    return password.hash(pass).then(hash => {
       _.set(this, 'meta.pass', hash);
     });
   };

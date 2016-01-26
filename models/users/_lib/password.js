@@ -10,12 +10,10 @@ exports.hash = function generateHash(pass) {
   let salt = randomBytes(16);
 
   return pbkdf2(new Buffer(pass), salt, iterations, 32, 'sha256')
-    .then(key => {
-      return '$pbkdf2sha256' +
-             '$' + iterations +
-             '$' + salt.toString('base64') +
-             '$' + key.toString('base64');
-    });
+    .then(key =>  '$pbkdf2sha256' +
+                  '$' + iterations +
+                  '$' + salt.toString('base64') +
+                  '$' + key.toString('base64'));
 };
 
 

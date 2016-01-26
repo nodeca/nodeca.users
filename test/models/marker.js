@@ -214,7 +214,7 @@ describe('Marker', function () {
 
     yield Marker.cleanup();
 
-    yield new Promise((resolve) => {
+    yield new Promise(resolve => {
       setTimeout(resolve, 100);
     });
 

@@ -220,13 +220,11 @@ function UserGroup(form, data) {
   this.categories    = _(form.setting_schemas)
                           .map('category_key')
                           .uniq()
-                          .map((name) => {
-                            return new SettingCategory(
-                              form,
-                              name,
-                              _.filter(this.settings, { categoryKey: name })
-                            );
-                          })
+                          .map(name => new SettingCategory(
+                            form,
+                            name,
+                            _.filter(this.settings, { categoryKey: name })
+                          ))
                           .sortBy('priority')
                           .value();
 
@@ -317,9 +315,8 @@ function Form(page_data) {
 
   // Select groups suitable for 'inherits' list.
   // Excludes current group and it's descendants.
-  this.otherGroups = this.groups.filter(group => {
-    return group.id !== this.currentGroup.id && !group.isDescendantOf(this.currentGroup);
-  });
+  this.otherGroups = this.groups.filter(
+    group => group.id !== this.currentGroup.id && !group.isDescendantOf(this.currentGroup));
 }
 
 // Sends 'create' request for `currentGroup`.
