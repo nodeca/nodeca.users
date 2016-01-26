@@ -4,6 +4,7 @@
 const _        = require('lodash');
 const co       = require('co');
 const memoizee = require('memoizee');
+const thenify  = require('thenify');
 
 
 module.exports = function (N) {
@@ -33,7 +34,7 @@ module.exports = function (N) {
   // - usergroup_ids (Array)
   //
   var UsergroupStore = N.settings.createStore({
-    get: function (keys, params, options, callback) {
+    get: thenify.withCallback(function (keys, params, options, callback) {
       var self  = this,
           fetch = options.skipCache ? fetchUsrGrpSettings : fetchUsrGrpSettingsCached;
 
@@ -70,13 +71,13 @@ module.exports = function (N) {
 
         callback(null, results);
       });
-    },
+    }),
 
     // ##### Params
     //
     // - usergroup_id (String|ObjectId)
     //
-    set: function (settings, params, callback) {
+    set: thenify.withCallback(function (settings, params, callback) {
       if (!params.usergroup_id) {
         callback('usergroup_id param is required for saving settings into usergroup store');
         return;
@@ -111,7 +112,7 @@ module.exports = function (N) {
         group.markModified('settings');
         group.save(callback);
       });
-    }
+    })
   });
 
   // Walk through all existent usergroups and recalculate their permissions

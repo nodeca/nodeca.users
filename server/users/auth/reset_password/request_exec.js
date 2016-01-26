@@ -87,35 +87,24 @@ module.exports = function (N, apiPath) {
 
   // Create token & send email
   //
-  N.wire.on(apiPath, function create_reset_confirmation(env, callback) {
-    var authlink = env.data.authlink;
+  N.wire.on(apiPath, function* create_reset_confirmation(env) {
+    let authlink = env.data.authlink;
 
-    N.models.users.TokenResetPassword.create({
+    let token = yield N.models.users.TokenResetPassword.create({
       authlink_id: authlink._id,
       ip:          env.req.ip
-    }, function (err, token) {
+    });
 
-      if (err) {
-        callback(err);
-        return;
-      }
+    let general_project_name = yield N.settings.get('general_project_name');
 
-      N.settings.get('general_project_name', function (err, general_project_name) {
-        if (err) {
-          callback(err);
-          return;
-        }
+    let link = env.helpers.url_to('users.auth.reset_password.change_show', {
+      secret_key: token.secret_key
+    });
 
-        var link = env.helpers.url_to('users.auth.reset_password.change_show', {
-          secret_key: token.secret_key
-        });
-
-        N.mailer.send({
-          to:      authlink.email,
-          subject: env.t('email_subject', { project_name: general_project_name }),
-          text:    env.t('email_text',    { link: link })
-        }, callback);
-      });
+    yield N.mailer.send({
+      to:      authlink.email,
+      subject: env.t('email_subject', { project_name: general_project_name }),
+      text:    env.t('email_text',    { link: link })
     });
   });
 };

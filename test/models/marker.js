@@ -27,15 +27,9 @@ function randObjectIdByTimestamp(ts) {
 
 describe('Marker', function () {
 
-  before(function (callback) {
-    TEST.N.settings.get('content_read_marks_expire', function (err, content_read_marks_expire) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
+  before(function () {
+    return TEST.N.settings.get('content_read_marks_expire').then(content_read_marks_expire => {
       expire = content_read_marks_expire * 24 * 60 * 60 * 1000;
-      callback();
     });
   });
 

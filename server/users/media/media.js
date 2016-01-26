@@ -61,24 +61,17 @@ module.exports = function (N, apiPath) {
 
   // Prepare list of visible comments statuses depending on user permissions
   //
-  N.wire.before(apiPath, function define_visible_statuses(env, callback) {
+  N.wire.before(apiPath, function* define_visible_statuses(env) {
+    let settings = yield env.extras.settings.fetch([ 'can_see_hellbanned' ]);
 
-    env.extras.settings.fetch([ 'can_see_hellbanned' ], function (err, settings) {
+    env.data.statuses = [ commentStatuses.comment.VISIBLE ];
 
-      if (err) {
-        callback(err);
-        return;
-      }
+    let st = env.data.statuses;
 
-      env.data.statuses = [ commentStatuses.comment.VISIBLE ];
-      var st = env.data.statuses;
-
-      // if user can see HB post than can see HB content
-      if (settings.can_see_hellbanned || env.user_info.hb) {
-        st.push(commentStatuses.comment.HB);
-      }
-      callback();
-    });
+    // if user can see HB post than can see HB content
+    if (settings.can_see_hellbanned || env.user_info.hb) {
+      st.push(commentStatuses.comment.HB);
+    }
   });
 
 
@@ -156,23 +149,16 @@ module.exports = function (N, apiPath) {
   // Sanitize response info. We should not show hellbanned status to users
   // that cannot view hellbanned content.
   //
-  N.wire.after(apiPath, function sanitize_statuses(env, callback) {
+  N.wire.after(apiPath, function* sanitize_statuses(env) {
+    let settings = yield env.extras.settings.fetch([ 'can_see_hellbanned' ]);
 
-    env.extras.settings.fetch([ 'can_see_hellbanned' ], function (err, settings) {
-      if (err) {
-        callback(err);
-        return;
-      }
+    // Sanitize commets statuses
+    let comments = env.res.comments;
 
-      // Sanitize commets statuses
-      var comments = env.res.comments;
-      comments.forEach(function (comment) {
-        Comment.sanitize(comment, {
-          keep_statuses: settings.can_see_hellbanned
-        });
+    comments.forEach(comment => {
+      Comment.sanitize(comment, {
+        keep_statuses: settings.can_see_hellbanned
       });
-
-      callback();
     });
   });
 

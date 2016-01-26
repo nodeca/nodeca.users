@@ -22,41 +22,25 @@ module.exports = function (N, apiPath) {
 
   // Fetch user
   //
-  N.wire.before(apiPath, function fetch_user(env, callback) {
+  N.wire.before(apiPath, function* fetch_user(env) {
 
     // Fetch permission to see deleted users
-    env.extras.settings.fetch('can_see_deleted_users', function (err, can_see_deleted_users) {
-      if (err) {
-        callback(err);
-        return;
-      }
+    let can_see_deleted_users = yield env.extras.settings.fetch('can_see_deleted_users');
 
-      var params = { hid: env.params.user_hid };
+    let params = { hid: env.params.user_hid };
 
-      if (!can_see_deleted_users) {
-        params.exists = true;
-      }
+    if (!can_see_deleted_users) {
+      params.exists = true;
+    }
 
-      // Fetch user
-      N.models.users.User.findOne(params)
-          .select(user_fields.join(' '))
-          .lean(true)
-          .exec(function (err, res) {
+    // Fetch user
+    let res = yield N.models.users.User.findOne(params).select(user_fields.join(' ')).lean(true);
 
-        if (err) {
-          callback(err);
-          return;
-        }
+    if (!res) {
+      throw N.io.NOT_FOUND;
+    }
 
-        if (!res) {
-          callback(N.io.NOT_FOUND);
-          return;
-        }
-
-        env.data.user = res;
-        callback();
-      });
-    });
+    env.data.user = res;
   });
 
 

@@ -5,6 +5,7 @@
 'use strict';
 
 
+var co          = require('co');
 var _           = require('lodash');
 var validator   = require('is-my-json-valid');
 var recaptcha   = require('nodeca.core/lib/recaptcha.js');
@@ -172,32 +173,23 @@ module.exports = function (N, apiPath) {
 
   // Check if need email validation step or should create user directly
   //
-  N.wire.before(apiPath, function check_need_validation(env, callback) {
-    N.settings.get('validate_email', function (err, validate_email) {
+  N.wire.before(apiPath, function* check_need_validation(env) {
+    let validate_email = yield N.settings.get('validate_email');
 
-      if (err) {
-        callback(err);
-        return;
-      }
+    env.data.validate_email = validate_email;
 
-      env.data.validate_email = validate_email;
+    // If global setting disables validation - skip next checks.
+    if (!validate_email) {
+      return;
+    }
 
-      // If global setting disables validation - skip next checks.
-      if (!validate_email) {
-        callback();
-        return;
-      }
+    // If oauth login info exists, skip validation for trusted provider,
+    // when user's email === privider's email
+    let oainfo = (env.session.oauth || {}).info;
 
-      // If oauth login info exists, skip validation for trusted provider,
-      // when user's email === privider's email
-      var oainfo = (env.session.oauth || {}).info;
-
-      if (oainfo && N.config.oauth[oainfo.type].trusted && env.params.email === oainfo.email) {
-        env.data.validate_email = false;
-      }
-
-      callback();
-    });
+    if (oainfo && N.config.oauth[oainfo.type].trusted && env.params.email === oainfo.email) {
+      env.data.validate_email = false;
+    }
   });
 
 
@@ -206,74 +198,45 @@ module.exports = function (N, apiPath) {
 
   // Create user record and login
   //
-  function create_user(env, callback) {
-    N.wire.emit('internal:users.user_create', env, function (err) {
-      if (err) {
-        callback(err);
-        return;
-      }
+  let create_user = co.wrap(function* create_user(env) {
+    yield N.wire.emit('internal:users.user_create', env);
 
-      // authLink info is needed to create TokenLogin
-      //
-      // TODO: when we will have oauth registration, it should select link based on
-      //       env.data.oauth_info
-      //
-      N.models.users.AuthLink.findOne({ user_id: env.data.user._id }, function (err, authLink) {
-        if (err) {
-          callback(err);
-          return;
-        }
+    // authLink info is needed to create TokenLogin
+    //
+    // TODO: when we will have oauth registration, it should select link based on
+    //       env.data.oauth_info
+    //
+    env.data.authLink = yield N.models.users.AuthLink.findOne({ user_id: env.data.user._id });
 
-        env.data.authLink = authLink;
+    yield N.wire.emit('internal:users.login', env);
 
-        N.wire.emit('internal:users.login', env, function (err) {
-          if (err) {
-            callback(err);
-            return;
-          }
-
-          env.res.redirect_url = env.data.redirect_url;
-          callback();
-        });
-      });
-    });
-  }
+    env.res.redirect_url = env.data.redirect_url;
+  });
 
 
   // If the user have to confirm email, create token and send it by email.
   //
-  function send_activation(env, callback) {
-
-    N.models.users.TokenActivationEmail.create({
+  let send_activation = co.wrap(function* send_activation(env) {
+    let token = yield N.models.users.TokenActivationEmail.create({
       ip: env.req.ip,
       reg_info: env.data.reg_info,
       oauth_info: env.data.oauth_info
-    }, function (err, token) {
-
-      if (err) {
-        callback(err);
-      }
-
-      env.res.redirect_url = N.router.linkTo('users.auth.register.activate_show');
-
-      var link = env.helpers.url_to('users.auth.register.activate_exec', {
-        secret_key: token.secret_key
-      });
-
-      N.settings.get('general_project_name', function (err, general_project_name) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        N.mailer.send({
-          to:      env.data.reg_info.email,
-          subject: env.t('email_subject', { project_name: general_project_name }),
-          text:    env.t('email_text',    { link: link })
-        }, callback);
-      });
     });
-  }
+
+    env.res.redirect_url = N.router.linkTo('users.auth.register.activate_show');
+
+    let link = env.helpers.url_to('users.auth.register.activate_exec', {
+      secret_key: token.secret_key
+    });
+
+    let general_project_name = yield N.settings.get('general_project_name');
+
+    yield N.mailer.send({
+      to:      env.data.reg_info.email,
+      subject: env.t('email_subject', { project_name: general_project_name }),
+      text:    env.t('email_text',    { link: link })
+    });
+  });
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -281,7 +244,7 @@ module.exports = function (N, apiPath) {
   // If user need to activate email, create token and send activation email.
   // Else create user immediately.
   //
-  N.wire.on(apiPath, function finish_registration(env, callback) {
+  N.wire.on(apiPath, function* finish_registration(env) {
 
     env.data.reg_info = {
       nick: env.params.nick,
@@ -296,10 +259,10 @@ module.exports = function (N, apiPath) {
     env.session = _.omit(env.session, [ 'oauth' ]);
 
     if (env.data.validate_email) {
-      send_activation(env, callback);
+      yield send_activation(env);
       return;
     }
 
-    create_user(env, callback);
+    yield create_user(env);
   });
 };

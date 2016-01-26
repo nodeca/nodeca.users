@@ -2,27 +2,24 @@
 //
 'use strict';
 
-var _ = require('lodash');
+const _ = require('lodash');
 
 
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
-    settings: {
-      type: 'object',
-      required: true
-    }
+    settings: { type: 'object', required: true }
   });
 
 
   // Validate settings names and values
   //
-  N.wire.before(apiPath, function validate_settings(env, callback) {
-    var schema = N.config.setting_schemas.user || {};
-    var settings = env.params.settings;
-    var valid = true;
+  N.wire.before(apiPath, function validate_settings(env) {
+    let schema = N.config.setting_schemas.user || {};
+    let settings = env.params.settings;
+    let valid = true;
 
-    _.forEach(settings, function (value, key) {
+    _.forEach(settings, (value, key) => {
 
       if (!schema[key]) {
         valid = false;
@@ -66,10 +63,8 @@ module.exports = function (N, apiPath) {
       }
     });
 
-    if (valid) {
-      callback();
-    } else {
-      callback(N.io.FORBIDDEN);
+    if (!valid) {
+      return N.io.FORBIDDEN;
     }
   });
 
@@ -85,12 +80,12 @@ module.exports = function (N, apiPath) {
 
   // Save settings
   //
-  N.wire.on(apiPath, function save_settings(env, callback) {
-    var settings = _.reduce(env.params.settings, function (res, val, key) {
+  N.wire.on(apiPath, function* save_settings(env) {
+    let settings = _.reduce(env.params.settings, (res, val, key) => {
       res[key] = { value: val };
       return res;
     }, {});
 
-    N.settings.getStore('user').set(settings, { user_id: env.user_info.user_id }, callback);
+    yield N.settings.getStore('user').set(settings, { user_id: env.user_info.user_id });
   });
 };

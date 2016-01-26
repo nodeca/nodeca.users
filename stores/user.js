@@ -1,7 +1,8 @@
 'use strict';
 
 
-var _ = require('lodash');
+var _       = require('lodash');
+var thenify = require('thenify');
 
 
 module.exports = function (N) {
@@ -11,7 +12,7 @@ module.exports = function (N) {
   // - user_id (String|ObjectId)
   //
   var UserStore = N.settings.createStore({
-    get: function (keys, params, options, callback) {
+    get: thenify.withCallback(function (keys, params, options, callback) {
       var self = this;
 
       if (_.isEmpty(params.user_id)) {
@@ -43,13 +44,13 @@ module.exports = function (N) {
 
           callback(null, results);
         });
-    },
+    }),
 
     // ##### Params
     //
     // - user_id (String|ObjectId)
     //
-    set: function (settings, params, callback) {
+    set: thenify.withCallback(function (settings, params, callback) {
       if (!params.user_id) {
         callback('user_id param is required for saving settings into user store');
         return;
@@ -74,7 +75,7 @@ module.exports = function (N) {
 
           data.save(callback);
         });
-    }
+    })
   });
 
   return UserStore;
