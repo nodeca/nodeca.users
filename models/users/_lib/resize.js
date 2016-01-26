@@ -125,14 +125,14 @@ const createPreview = co.wrap(function* (image, resizeConfig, imageType) {
   // this saves image as is, including metadata like EXIF
   //
   if (resizeConfig.skip_size && image.length < resizeConfig.skip_size) {
-    return { image: image, type: imageType };
+    return { image, type: imageType };
   }
 
   // If image is smaller than needed already, save it as is
   //
   if (scaledWidth >= image.width && scaledHeight >= image.height) {
     if (!resizeConfig.max_size || image.length < resizeConfig.max_size) {
-      return { image: image, type: imageType };
+      return { image, type: imageType };
     }
   }
 
@@ -179,7 +179,7 @@ const createPreview = co.wrap(function* (image, resizeConfig, imageType) {
         return;
       }
 
-      resolve({ buffer: buffer, info: info });
+      resolve({ buffer, info });
     });
   });
 

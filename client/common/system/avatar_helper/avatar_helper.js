@@ -50,9 +50,7 @@ function avatar_helper(user_id, user, size_name) {
     src = identicon(user_id, avatarSizes[size_name ? size_name : 'orig']);
   }
 
-  return {
-    src: src
-  };
+  return { src };
 }
 
 

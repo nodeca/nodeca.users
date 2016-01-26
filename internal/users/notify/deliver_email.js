@@ -38,7 +38,7 @@ module.exports = function (N) {
       }
 
       var params = {
-        user_id: user_id,
+        user_id,
         usergroup_ids: users_info[user_id].usergroups
       };
 

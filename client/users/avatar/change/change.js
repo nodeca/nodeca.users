@@ -97,8 +97,8 @@ var previewHqUpdate = _.debounce(function () {
   // Resize to preview size
   pica.resizeBuffer({
     src: croppedImageData.data,
-    width: width,
-    height: height,
+    width,
+    height,
     toWidth: previewWidth,
     toHeight: previewHeight,
     quality: 3,
@@ -631,8 +631,8 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
 
     pica.resizeBuffer({
       src: croppedImageData.data,
-      width: width,
-      height: height,
+      width,
+      height,
       toWidth: avatarWidth,
       toHeight: avatarHeight,
       quality: 3,

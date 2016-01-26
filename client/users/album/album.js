@@ -23,7 +23,7 @@ N.wire.after('navigate.done:' + module.apiPath, function uploader_setup() {
 
     if (files.length > 0) {
       var params = {
-        files: files,
+        files,
         url: N.router.linkTo('users.media.upload', { album_id: pageParams.album_id }),
         config: 'users.uploader_config',
         uploaded: null

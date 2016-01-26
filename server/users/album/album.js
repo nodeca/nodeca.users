@@ -76,9 +76,9 @@ module.exports = function (N, apiPath) {
     env.res.head = env.res.head || {};
 
     if (env.data.album) {
-      env.res.head.title = env.t('title_album_with_user', { album: env.data.album.title, username: username });
+      env.res.head.title = env.t('title_album_with_user', { album: env.data.album.title, username });
     } else {
-      env.res.head.title = env.t('title_with_user', { username: username });
+      env.res.head.title = env.t('title_with_user', { username });
     }
   });
 

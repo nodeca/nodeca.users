@@ -214,7 +214,7 @@ function startUpload(data, callback) {
     dataType: 'json',
     processData: false,
     contentType: false,
-    xhr: function () {
+    xhr() {
       var xhr = $.ajaxSettings.xhr();
       var progress;
 

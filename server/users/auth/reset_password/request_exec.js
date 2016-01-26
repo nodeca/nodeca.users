@@ -104,7 +104,7 @@ module.exports = function (N, apiPath) {
     yield N.mailer.send({
       to:      authlink.email,
       subject: env.t('email_subject', { project_name: general_project_name }),
-      text:    env.t('email_text',    { link: link })
+      text:    env.t('email_text',    { link })
     });
   });
 };

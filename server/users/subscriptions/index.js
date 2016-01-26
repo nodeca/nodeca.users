@@ -75,7 +75,7 @@ module.exports = function (N, apiPath) {
   N.wire.after(apiPath, function fill_tabs(env) {
     var tabs = _.reduce((N.config.users || {}).subscriptions || {}, function (acc, tab_confog, block_name) {
       acc.push(_.assign({
-        block_name: block_name,
+        block_name,
         priority: 10,
         items: _.filter(env.data.subscriptions, { to_type: tab_confog.to_type })
       }, tab_confog));

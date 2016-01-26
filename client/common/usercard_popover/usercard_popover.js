@@ -39,7 +39,7 @@ N.wire.once('navigate.done', function init_usercard_click() {
     // Prevent default navigator behaviour.
     event.preventDefault();
 
-    N.io.rpc(module.apiPath, { user_hid: user_hid })
+    N.io.rpc(module.apiPath, { user_hid })
       .done(function (res) {
         var pos_left = $link.offset().left + $link.innerWidth();
         var $card = $(N.runtime.render(module.apiPath, res.user));

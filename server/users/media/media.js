@@ -228,7 +228,7 @@ module.exports = function (N, apiPath) {
     var username = env.user_info.is_member ? user.name : user.nick;
 
     env.res.head = env.res.head || {};
-    env.res.head.title = env.t('title', { album: env.data.album.title, username: username });
+    env.res.head.title = env.t('title', { album: env.data.album.title, username });
   });
 
 

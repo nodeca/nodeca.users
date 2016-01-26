@@ -96,7 +96,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
 
     if (files.length > 0) {
       var params = {
-        files: files,
+        files,
         url: N.router.linkTo('users.media.upload', { album_id: albumID }),
         config: 'users.uploader_config',
         uploaded: null

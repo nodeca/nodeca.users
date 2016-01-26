@@ -143,7 +143,7 @@ module.exports = function (N, apiPath) {
 
       let data = yield resize(fileInfo.path, {
         store: N.models.core.File,
-        ext: ext,
+        ext,
         maxSize: typeConfig.max_size,
         resize: typeConfig.resize
       });

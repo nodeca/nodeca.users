@@ -55,7 +55,7 @@ function Setting(form, name, schema, config) {
   // at the same time.
   //
   this.overriden = ko.computed({
-    read:  function () { return this._overriden() || !this.ownerGroup.parentGroup(); },
+    read() { return this._overriden() || !this.ownerGroup.parentGroup(); },
     write: this._overriden,
     owner: this
   }).extend({ dirty: false });
@@ -63,13 +63,13 @@ function Setting(form, name, schema, config) {
   this.inherited = ko.computed(function () { return !this.overriden(); }, this);
 
   this.forced = ko.computed({
-    read:  function () { return this.overriden() && this._forced(); },
+    read() { return this.overriden() && this._forced(); },
     write: this._forced,
     owner: this
   }).extend({ dirty: false });
 
   this.value = ko.computed({
-    read: function () {
+    read() {
       if (this.overriden()) {
         return this.valueType === 'number' ? Number(this._value()) : this._value();
 
@@ -79,7 +79,7 @@ function Setting(form, name, schema, config) {
 
       return this.defaultValue;
     },
-    write: function (newValue) {
+    write(newValue) {
       this.overriden(true);
       this._value(newValue);
     },
@@ -190,8 +190,8 @@ function UserGroup(form, data) {
   }, this);
 
   this.parentGroup = ko.computed({
-    read:  function () { return form.groupsById ? form.groupsById[this.parentId()] : null; },
-    write: function (group) { this.parentId(group ? group.id : null); },
+    read() { return form.groupsById ? form.groupsById[this.parentId()] : null; },
+    write(group) { this.parentId(group ? group.id : null); },
     owner: this
   });
 
@@ -204,7 +204,7 @@ function UserGroup(form, data) {
 
                             return new Setting(form, name, schema, {
                               group:     this,
-                              overriden: overriden,
+                              overriden,
                               forced:    overriden ? settings[name].force : false,
                               value:     overriden ? settings[name].value : schema['default']
                             });

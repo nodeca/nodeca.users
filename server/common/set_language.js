@@ -40,6 +40,6 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    N.models.users.User.update({ _id: env.user_info.user_id }, { locale: locale }, callback);
+    N.models.users.User.update({ _id: env.user_info.user_id }, { locale }, callback);
   });
 };

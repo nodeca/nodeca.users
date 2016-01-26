@@ -99,7 +99,7 @@ module.exports = function (N, collectionName) {
     let media = yield N.models.users.MediaInfo
                           .findOneAndUpdate(
                             {
-                              media_id: media_id,
+                              media_id,
                               type: { $in: (revert ? types.LIST_DELETED : types.LIST_VISIBLE) }
                             },
                             { $bit: { type: { xor: types.MASK_DELETED } } }
