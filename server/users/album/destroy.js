@@ -25,14 +25,10 @@ module.exports = function (N, apiPath) {
       .findOne({ _id: env.params.album_id })
       .lean(false); // Use as mongoose model
 
-    if (!album) {
-      throw N.io.NOT_FOUND;
-    }
+    if (!album) throw N.io.NOT_FOUND;
 
     // No one can edit default album
-    if (album.default) {
-      throw N.io.NOT_FOUND;
-    }
+    if (album.default) throw N.io.NOT_FOUND;
 
     env.data.album = album;
   });

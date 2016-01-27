@@ -91,32 +91,19 @@ function Setting(form, name, schema, config) {
   this.visible = ko.computed(function () {
     var filter = form.filter();
 
-    if (filter === 'overriden') {
-      return this.overriden();
-
-    } else if (filter === 'inherited') {
-      return this.inherited();
-
-    } else if (filter === 'forced') {
-      return this.forced();
-
-    }
+    if (filter === 'overriden')      return this.overriden();
+    else if (filter === 'inherited') return this.inherited();
+    else if (filter === 'forced')    return this.forced();
 
     return true;
   }, this);
 
   this.isDirty = ko.computed(function () {
-    if (this.overriden.isDirty()) {
-      return true;
-    }
+    if (this.overriden.isDirty()) return true;
 
     if (this.overriden()) {
-      if (this.value.isDirty()) {
-        return true;
-      }
-      if (this.forced.isDirty()) {
-        return true;
-      }
+      if (this.value.isDirty()) return true;
+      if (this.forced.isDirty()) return true;
     }
 
     return false;
@@ -265,9 +252,7 @@ UserGroup.prototype.getOutputData = function getOutputData() {
   };
 
   // Add `_id` property only when editing an existent group (not for new).
-  if (this.id) {
-    result._id = this.id;
-  }
+  if (this.id) result._id = this.id;
 
   this.settings.forEach(function (setting) {
     if (setting.overriden()) {
@@ -364,7 +349,7 @@ Form.prototype.submit = function submit() {
 
 module.exports = function (_N) {
   /*eslint-disable no-undef*/
-  if (!N) { N = _N; }
+  if (!N) N = _N;
 
   return Form;
 };

@@ -79,14 +79,8 @@ module.exports.run = function (N, args) {
 
     // check password and email
     //
-    if (args.action === 'add' && !args.email) {
-      throw 'Email is required';
-    }
-
-    if (args.action === 'add' && !args.pass) {
-      throw 'Password is required';
-    }
-
+    if (args.action === 'add' && !args.email) throw 'Email is required';
+    if (args.action === 'add' && !args.pass) throw 'Password is required';
 
     // fetch usergroups
     //
@@ -109,18 +103,14 @@ module.exports.run = function (N, args) {
     let doc = yield User.findOne({ nick: args.user });
 
     if (args.action === 'add') {
-      if (doc) {
-        throw 'User with that name already exists';
-      }
+      if (doc) throw 'User with that name already exists';
 
       user = new User({
         nick: args.user,
         joined_ts: new Date()
       });
     } else {
-      if (!doc) {
-        throw 'User not found, check name or use `add`';
-      }
+      if (!doc) throw 'User not found, check name or use `add`';
 
       user = doc;
     }
@@ -155,9 +145,7 @@ module.exports.run = function (N, args) {
     if (args.email) {
       doc = yield User.findOne({ _id: { $ne: user._id }, email: args.email });
 
-      if (doc) {
-        throw 'User with that email already exists';
-      }
+      if (doc) throw 'User with that email already exists';
 
       user.email = args.email;
     }
@@ -173,10 +161,9 @@ module.exports.run = function (N, args) {
       user.usergroups.forEach(group => {
         let group_id = group.toString();
 
-        if (toAdd[group_id]) {
-          toAdd = _.without(toAdd, group_id);
-        }
+        if (toAdd[group_id]) toAdd = _.without(toAdd, group_id);
       });
+
       if (!_.isEmpty(toAdd)) {
         _.values(toAdd).forEach(group => user.usergroups.push(group));
       }

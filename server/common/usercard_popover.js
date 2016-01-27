@@ -36,9 +36,7 @@ module.exports = function (N, apiPath) {
     // Fetch user
     let res = yield N.models.users.User.findOne(params).select(user_fields.join(' ')).lean(true);
 
-    if (!res) {
-      throw N.io.NOT_FOUND;
-    }
+    if (!res) throw N.io.NOT_FOUND;
 
     env.data.user = res;
   });

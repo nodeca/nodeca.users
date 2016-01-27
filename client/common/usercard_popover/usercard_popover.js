@@ -22,7 +22,8 @@ N.wire.once('navigate.done', function init_usercard_click() {
     var $link = $(this);
 
     // Skip for devices with small screens (navigate profile page).
-    if (POPOVER_WIDTH * 1.5 > $container.width() || POPOVER_HEIGHT * 2 > $(window).height()) {
+    if (POPOVER_WIDTH * 1.5 > $container.width() ||
+        POPOVER_HEIGHT * 2 > $(window).height()) {
       return;
     }
 
@@ -32,9 +33,7 @@ N.wire.once('navigate.done', function init_usercard_click() {
       .get('params.user_hid')
       .value();
 
-    if (!user_hid) {
-      return;
-    }
+    if (!user_hid) return;
 
     // Prevent default navigator behaviour.
     event.preventDefault();

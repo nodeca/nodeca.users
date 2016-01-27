@@ -85,14 +85,10 @@ module.exports = function (N, apiPath) {
   // Try to find auth data using `email_or_nick` as an email.
   //
   N.wire.on(apiPath, function* find_authlink_by_email(env) {
-    if (env.data.authLink) {
-      // user already verified by hooks, nothing left to do
-      return;
-    }
+    // user already verified by hooks, nothing left to do
+    if (env.data.authLink) return;
 
-    if (env.data.user && env.data.authLink_plain) {
-      return;
-    }
+    if (env.data.user && env.data.authLink_plain) return;
 
     let authLink = yield N.models.users.AuthLink
                             .findOne({
@@ -101,18 +97,14 @@ module.exports = function (N, apiPath) {
                               exists: true
                             });
 
-    if (!authLink) {
-      return;
-    }
+    if (!authLink) return;
 
     let user = yield N.models.users.User
                         .findOne({ _id: authLink.user_id })
                         .lean(true);
 
-    if (!user) {
-      // There is no error - let next hooks do their job.
-      return;
-    }
+    // There is no error - let next hooks do their job.
+    if (!user) return;
 
     env.data.user = user;
     env.data.authLink_plain = authLink;
@@ -122,31 +114,23 @@ module.exports = function (N, apiPath) {
   // Try to find auth data using `email_or_nick` as a nick.
   //
   N.wire.on(apiPath, function* find_authlink_by_nick(env) {
-    if (env.data.authLink) {
-      // user already verified by hooks, nothing left to do
-      return;
-    }
+    // user already verified by hooks, nothing left to do
+    if (env.data.authLink) return;
 
-    if (env.data.user && env.data.authLink_plain) {
-      return;
-    }
+    if (env.data.user && env.data.authLink_plain) return;
 
     let user = yield N.models.users.User
       .findOne({ nick: env.params.email_or_nick })
       .lean(true);
 
-    if (!user) {
-      // There is no error - let next hooks do their job.
-      return;
-    }
+    // There is no error - let next hooks do their job.
+    if (!user) return;
 
     let authLink = yield N.models.users.AuthLink
       .findOne({ user_id: user._id, type: 'plain', exists: true });
 
-    if (!authLink) {
-      // There is no error - let next hooks do their job.
-      return;
-    }
+    // There is no error - let next hooks do their job.
+    if (!authLink) return;
 
     env.data.user = user;
     env.data.authLink_plain = authLink;
@@ -156,9 +140,7 @@ module.exports = function (N, apiPath) {
   // Try to login using plain authlink
   //
   N.wire.on(apiPath, function* verify_authlink(env) {
-    if (!env.data.user || !env.data.authLink_plain) {
-      return;
-    }
+    if (!env.data.user || !env.data.authLink_plain) return;
 
     let success = yield env.data.authLink_plain.checkPass(env.params.pass);
 

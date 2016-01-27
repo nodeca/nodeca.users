@@ -16,9 +16,8 @@ module.exports = function (N, apiPath) {
   // Check if parent_group exists or is root.
   //
   N.wire.before(apiPath, function* check_usergroup_parent_ok(env) {
-    if (!env.params.parent_group) {
-      return; // This is a root group.
-    }
+    // This is a root group.
+    if (!env.params.parent_group) return;
 
     let count = yield UserGroup.count({ _id: env.params.parent_group });
 
@@ -61,9 +60,7 @@ module.exports = function (N, apiPath) {
     // Recalculate store settings of all groups.
     let store = N.settings.getStore('usergroup');
 
-    if (!store) {
-      throw 'Settings store `usergroup` is not registered.';
-    }
+    if (!store) throw 'Settings store `usergroup` is not registered.';
 
     yield store.set(env.params.settings, { usergroup_id: group._id });
 

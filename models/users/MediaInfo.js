@@ -108,9 +108,7 @@ module.exports = function (N, collectionName) {
                           .lean(true);
 
 
-    if (!media) {
-      return;
-    }
+    if (!media) return;
 
     yield N.models.users.UserExtra.update(
       { user_id: media.user_id },

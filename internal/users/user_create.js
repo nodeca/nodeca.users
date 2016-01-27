@@ -54,9 +54,7 @@ module.exports = function (N, apiPath) {
   // Create oauth provider record, if data filled
   //
   N.wire.after(apiPath, function* create_oauth_privider(env) {
-    if (!env.data.oauth_info) {
-      return;
-    }
+    if (!env.data.oauth_info) return;
 
     let user = env.data.user;
     let authLink = new N.models.users.AuthLink(env.data.oauth_info);

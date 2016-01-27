@@ -108,9 +108,7 @@ var previewHqUpdate = _.debounce(function () {
     transferable: true
   }, function (err) {
 
-    if (err) {
-      return;
-    }
+    if (err) return;
 
     // Check that no new resizes requested, until we processed
     // this one. If new request happened - just ignore old data.
@@ -359,9 +357,7 @@ function orientationApply(canvas, ctx, orientation) {
   var width = canvas.width;
   var height = canvas.height;
 
-  if (!orientation || orientation > 8) {
-    return;
-  }
+  if (!orientation || orientation > 8) return;
 
   if (orientation > 4) {
     canvas.width = height;
@@ -512,9 +508,7 @@ function initCropper() {
     })
     .on('mousemove.nd.avatar_change touchmove.nd.avatar_change', function (event) {
 
-      if (!action) {
-        return;
-      }
+      if (!action) return;
 
       // Detect mouse button up for case when `mouseup` event happens
       // out of browser window. Check current state directly. Skip this check
@@ -688,9 +682,7 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
   // Page exit
   //
   N.wire.on('navigate.exit', function page_exit() {
-    if (!$dialog) {
-      return;
-    }
+    if (!$dialog) return;
 
     clearInterval(sizeCheckInterval);
 
@@ -743,9 +735,7 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
   sizeCheckInterval = setInterval(function () {
     var newWidth = $dialog.width();
 
-    if (lastWidth === newWidth) {
-      return;
-    }
+    if (lastWidth === newWidth) return;
 
     lastWidth = newWidth;
 

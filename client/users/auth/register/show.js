@@ -55,9 +55,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
   view.nick.value.subscribe(_.debounce(function (text) {
     var self = this;
 
-    if (text.length < 1) {
-      return;
-    }
+    if (text.length < 1) return;
 
     N.io.rpc('users.auth.check_nick', { nick: text })
       .done(function (res) {

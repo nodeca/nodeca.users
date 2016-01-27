@@ -23,9 +23,7 @@ module.exports = function (N, apiPath) {
 
     let currentGroup = _.find(groups, g => String(g._id) === env.params._id);
 
-    if (!currentGroup) {
-      throw N.io.NOT_FOUND;
-    }
+    if (!currentGroup) throw N.io.NOT_FOUND;
 
     res.head.title = env.t('title', { name: currentGroup.short_name });
 

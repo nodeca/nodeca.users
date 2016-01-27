@@ -331,9 +331,7 @@ N.wire.before('users.uploader:add', function init_upload_dialog(data, callback) 
     })
     // Close dialog on click outside `.modal-content`
     .click(function (event) {
-      if (event.target !== event.currentTarget) {
-        return;
-      }
+      if (event.target !== event.currentTarget) return;
 
       confirmClose();
     })
@@ -430,9 +428,7 @@ N.wire.on('users.uploader:close', function close() {
 // Close dialog on sudden page exit (if user click back button in browser)
 //
 N.wire.on('navigate.exit', function teardown_page() {
-  if (!$uploadDialog) {
-    return;
-  }
+  if (!$uploadDialog) return;
 
   abort();
 });

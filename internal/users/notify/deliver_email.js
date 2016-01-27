@@ -33,9 +33,7 @@ module.exports = function (N) {
     //
     yield Object.keys(local_env.messages).map(user_id => {
       // If user have no email - skip
-      if (!emails[user_id]) {
-        return Promise.resolve();
-      }
+      if (!emails[user_id]) return Promise.resolve();
 
       var params = {
         user_id,
@@ -45,9 +43,7 @@ module.exports = function (N) {
       return N.settings.get('can_receive_email', params, {})
         .then(can_receive_email => {
           // If user group can't receive emails - skip
-          if (!can_receive_email) {
-            return null;
-          }
+          if (!can_receive_email) return null;
 
           var data = {
             to: emails[user_id],

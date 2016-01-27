@@ -59,9 +59,8 @@ module.exports = function (N, collectionName) {
   Comment.statics.sanitize = function sanitize(comment, options) {
     options = options || {};
 
-    if (comment.st !== statuses.comment.HB) {
-      return;
-    }
+    if (comment.st !== statuses.comment.HB) return;
+
     if (!options.keep_statuses) {
       comment.st = statuses.comment.VISIBLE;
     }

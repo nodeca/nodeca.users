@@ -137,9 +137,7 @@ module.exports = function (N, apiPath) {
     let typeConfig = config.types[ext];
 
     try {
-      if (!typeConfig) {
-        throw new Error('Wrong file type on avatar upload');
-      }
+      if (!typeConfig) throw new Error('Wrong file type on avatar upload');
 
       let data = yield resize(fileInfo.path, {
         store: N.models.core.File,
@@ -150,6 +148,7 @@ module.exports = function (N, apiPath) {
 
       env.data.old_avatar = env.data.user.avatar_id;
       env.res.avatar_id = data.id;
+
       yield N.models.users.User.update(
         { _id: env.data.user._id },
         { $set: { avatar_id: data.id } }

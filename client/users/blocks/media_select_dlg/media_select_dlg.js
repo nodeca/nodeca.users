@@ -271,9 +271,7 @@ N.wire.on('users.blocks.media_select_dlg', function show_media_select_dlg(data, 
     })
     // Close dialog on click outside `.modal-content`
     .click(function (event) {
-      if (event.target !== event.currentTarget) {
-        return;
-      }
+      if (event.target !== event.currentTarget) return;
 
       destroyDialog();
     })

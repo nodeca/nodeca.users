@@ -37,15 +37,11 @@ module.exports = function (N, collectionName) {
   // - currentCut (Number)
   //
   Marker.gc = co.wrap(function* (type, userId, categoryId, currentCut) {
-    if (!gcHandlers[type]) {
-      return;
-    }
+    if (!gcHandlers[type]) return;
 
     let contentInfo = yield gcHandlers[type](userId, categoryId, currentCut);
 
-    if (!contentInfo.length) {
-      return;
-    }
+    if (!contentInfo.length) return;
 
     contentInfo = _.sortBy(contentInfo, 'lastPostTs');
 
@@ -57,9 +53,7 @@ module.exports = function (N, collectionName) {
     for (let i = 0; i < contentInfo.length; i++) {
       mark = marks[contentInfo[i].contentId];
 
-      if (mark.isNew || mark.next !== -1) {
-        break;
-      }
+      if (mark.isNew || mark.next !== -1) break;
 
       updatedCut = +contentInfo[i].lastPostTs;
     }
@@ -105,9 +99,7 @@ module.exports = function (N, collectionName) {
     let res = yield Marker.cuts(userId, [ categoryId ]);
 
     // Don't mark old content
-    if (contentId.getTimestamp() < res[categoryId]) {
-      return;
-    }
+    if (contentId.getTimestamp() < res[categoryId]) return;
 
     yield [
       N.redis.saddAsync('marker_marks_items', userId),
@@ -135,9 +127,7 @@ module.exports = function (N, collectionName) {
     }
 
     // If `ts` bigger than now plus one hour or more - stop here
-    if (ts > 1000 * 60 * 60 + Date.now()) {
-      return;
-    }
+    if (ts > 1000 * 60 * 60 + Date.now()) return;
 
     yield N.redis.zaddAsync('marker_cut_updates', now, userId + ':' + categoryId);
     yield N.redis.setAsync('marker_cut:' + userId + ':' + categoryId, ts);
@@ -243,9 +233,7 @@ module.exports = function (N, collectionName) {
       });
     });
 
-    if (!maxUpdated) {
-      return;
-    }
+    if (!maxUpdated) return;
 
     let res = yield Marker.cuts(userId, [ categoryId ]);
 
@@ -404,9 +392,7 @@ module.exports = function (N, collectionName) {
     // Cleanup position markers
     //
     N.redis.zrangebyscore('marker_pos_updates', '-inf', lastTs, (err, items) => {
-      if (err) {
-        return;
-      }
+      if (err) return;
 
       let query = N.redis.multi();
 
@@ -424,9 +410,7 @@ module.exports = function (N, collectionName) {
     // Cleanup cut markers
     //
     N.redis.zrangebyscore('marker_cut_updates', '-inf', lastTs, (err, items) => {
-      if (err) {
-        return;
-      }
+      if (err) return;
 
       let query = N.redis.multi();
 
@@ -442,9 +426,7 @@ module.exports = function (N, collectionName) {
     // Cleanup read markers
     //
     N.redis.smembers('marker_marks_items', (err, items) => {
-      if (err) {
-        return;
-      }
+      if (err) return;
 
       let query = N.redis.multi();
 
@@ -454,9 +436,7 @@ module.exports = function (N, collectionName) {
       });
 
       query.exec((err, res) => {
-        if (err) {
-          return;
-        }
+        if (err) return;
 
         let query = N.redis.multi();
 

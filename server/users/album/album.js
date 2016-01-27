@@ -21,16 +21,13 @@ module.exports = function (N, apiPath) {
   // Fetch album info (by album_id)
   //
   N.wire.before(apiPath, function* fetch_album(env) {
-    if (!env.params.album_id) {
-      return;
-    }
+    if (!env.params.album_id) return;
 
     let album = yield N.models.users.Album
                           .findOne({ _id: env.params.album_id })
                           .lean(true);
-    if (!album) {
-      throw N.io.NOT_FOUND;
-    }
+
+    if (!album) throw N.io.NOT_FOUND;
 
     album.title = album.title || env.t('default_name');
     env.data.album = album;
@@ -47,9 +44,7 @@ module.exports = function (N, apiPath) {
     yield N.wire.emit('internal:users.album.create_embedza', data);
 
     data.embedza.forEach(domain => {
-      if (!domain.enabled) {
-        return; // continue
-      }
+      if (!domain.enabled) return;
 
       env.res.medialink_providers.push({
         home: 'http://' + domain.id,

@@ -74,9 +74,7 @@ module.exports = function (N, collectionName) {
                           .lean(true);
 
     // Do nothing if cover exists
-    if (cover) {
-      return;
-    }
+    if (cover) return;
 
     let result = yield N.models.users.MediaInfo
       .findOne({ album_id: album._id, type: mTypes.IMAGE })

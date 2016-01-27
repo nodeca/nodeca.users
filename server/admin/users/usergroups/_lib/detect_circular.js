@@ -11,10 +11,8 @@ const co = require('co');
 
 
 module.exports = co.wrap(function* detectCircular(N, groupId, parentId) {
-  if (!parentId) {
-    // No parent - skip.
-    return null;
-  }
+  // No parent - skip.
+  if (!parentId) return null;
 
   let groups = yield N.models.users.UserGroup.find().select('_id parent_group');
 

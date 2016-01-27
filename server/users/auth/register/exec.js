@@ -179,9 +179,7 @@ module.exports = function (N, apiPath) {
     env.data.validate_email = validate_email;
 
     // If global setting disables validation - skip next checks.
-    if (!validate_email) {
-      return;
-    }
+    if (!validate_email) return;
 
     // If oauth login info exists, skip validation for trusted provider,
     // when user's email === privider's email

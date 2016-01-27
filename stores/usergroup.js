@@ -135,9 +135,7 @@ module.exports = function (N) {
     // Find first own setting for group.
     //
     function findInheritedSetting(groupId, settingName) {
-      if (!groupId) {
-        return null;
-      }
+      if (!groupId) return null;
 
       let group = getGroupById(groupId);
 
