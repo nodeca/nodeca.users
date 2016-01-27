@@ -5,8 +5,8 @@
 
 
 // comment statuses
-var commentStatuses = require('../_lib/statuses.js');
-var fields = require('./_fields.js');
+const commentStatuses = require('../_lib/statuses.js');
+const fields = require('./_fields.js');
 
 
 module.exports = function (N, apiPath) {
@@ -18,44 +18,34 @@ module.exports = function (N, apiPath) {
 
 
   // shortcuts
-  var Comment = N.models.users.Comment;
+  let Comment = N.models.users.Comment;
 
 
   // Fetch owner by hid
   //
-  N.wire.before(apiPath, function fetch_user_by_hid(env, callback) {
-    N.wire.emit('internal:users.fetch_user_by_hid', env, callback);
+  N.wire.before(apiPath, function fetch_user_by_hid(env) {
+    return N.wire.emit('internal:users.fetch_user_by_hid', env);
   });
 
 
   // Fetch media
   //
-  N.wire.before(apiPath, function fetch_media(env, callback) {
-    var deletedTypes = N.models.users.MediaInfo.types.LIST_DELETED;
+  N.wire.before(apiPath, function* fetch_media(env) {
+    let deletedTypes = N.models.users.MediaInfo.types.LIST_DELETED;
+    let result = yield  N.models.users.MediaInfo
+                            .findOne({ media_id: env.params.media_id })
+                            .where({ user_id: env.data.user._id }) // Make sure that user is real owner
+                            .lean(true);
 
-    N.models.users.MediaInfo
-      .findOne({ media_id: env.params.media_id })
-      .where({ user_id: env.data.user._id }) // Make sure that user is real owner
-      .lean(true)
-      .exec(function (err, result) {
-        if (err) {
-          callback(err);
-          return;
-        }
+    if (!result) {
+      throw N.io.NOT_FOUND;
+    }
 
-        if (!result) {
-          callback(N.io.NOT_FOUND);
-          return;
-        }
+    if (deletedTypes.indexOf(result.type) !== -1 && env.user_info.user_id !== String(result.user_id)) {
+      throw N.io.NOT_FOUND;
+    }
 
-        if (deletedTypes.indexOf(result.type) !== -1 && env.user_info.user_id !== String(result.user_id)) {
-          callback(N.io.NOT_FOUND);
-          return;
-        }
-
-        env.data.media = result;
-        callback();
-      });
+    env.data.media = result;
   });
 
 
@@ -77,72 +67,53 @@ module.exports = function (N, apiPath) {
 
   // Fetch album
   //
-  N.wire.before(apiPath, function fetch_media(env, callback) {
-    N.models.users.Album
-      .findOne({ _id: env.data.media.album_id })
-      .where({ user_id: env.data.user._id }) // Make sure that user is real owner
-      .lean(true)
-      .exec(function (err, result) {
-        if (err) {
-          callback(err);
-          return;
-        }
-        // That should never happen
-        if (!result) {
-          callback(N.io.NOT_FOUND);
-          return;
-        }
+  N.wire.before(apiPath, function* fetch_media(env) {
+    let result = yield N.models.users.Album
+                          .findOne({ _id: env.data.media.album_id })
+                          .where({ user_id: env.data.user._id }) // Make sure that user is real owner
+                          .lean(true);
 
-        result.title = result.title || env.t('default_name');
-        env.data.album = result;
-        callback();
-      });
+    // That should never happen
+    if (!result) {
+      throw N.io.NOT_FOUND;
+    }
+
+    result.title = result.title || env.t('default_name');
+    env.data.album = result;
   });
 
 
   // Prepare comments and medias
   //
-  N.wire.on(apiPath, function prepare_comment(env, callback) {
+  N.wire.on(apiPath, function* prepare_comment(env) {
     env.res.media = env.data.media;
     env.res.user_hid = env.data.user.hid;
 
-    N.models.users.Comment
-      .find({ media_id: env.data.media.media_id }, fields.post_in.join(' '))
-      .where('st').in(env.data.statuses)
-      .lean(true)
-      .exec(function (err, result) {
-        if (err) {
-          callback(err);
-          return;
-        }
+    let result = yield N.models.users.Comment
+                          .find({ media_id: env.data.media.media_id }, fields.post_in.join(' '))
+                          .where('st').in(env.data.statuses)
+                          .lean(true);
 
-        if (!result) {
-          callback(N.io.NOT_FOUND);
-          return;
-        }
+    if (!result) {
+      throw N.io.NOT_FOUND;
+    }
 
-        env.data.comments = result;
-        callback();
-      });
+    env.data.comments = result;
   });
 
 
   // Add comments into response & collect user ids
   //
-  N.wire.after(apiPath, function build_comments_list_and_users(env, callback) {
-
+  N.wire.after(apiPath, function build_comments_list_and_users(env) {
     env.res.comments = env.data.comments;
-
     env.data.users = env.data.users || [];
 
     // collect users
-    env.data.comments.forEach(function (comment) {
+    env.data.comments.forEach(comment => {
       if (comment.user_id) {
         env.data.users.push(comment.user_id);
       }
     });
-
-    callback();
   });
 
 
@@ -165,67 +136,51 @@ module.exports = function (N, apiPath) {
 
   // Fill previous media _id
   //
-  N.wire.after(apiPath, function fill_previous(env, callback) {
-    var mTypes = N.models.users.MediaInfo.types;
-    var media = env.data.media;
+  N.wire.after(apiPath, function* fill_previous(env) {
+    let mTypes = N.models.users.MediaInfo.types;
+    let media = env.data.media;
+    let result = yield N.models.users.MediaInfo
+                          .findOne({
+                            album_id: media.album_id,
+                            type: { $in: mTypes.LIST_VISIBLE },
+                            media_id: { $gt: media.media_id }
+                          })
+                          .select('media_id')
+                          .sort('media_id')
+                          .lean(true);
 
-    N.models.users.MediaInfo
-      .findOne({
-        album_id: media.album_id,
-        type: { $in: mTypes.LIST_VISIBLE },
-        media_id: { $gt: media.media_id }
-      })
-      .select('media_id')
-      .sort('media_id')
-      .lean(true)
-      .exec(function (err, result) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        if (result) {
-          env.res.previous = result.media_id;
-        }
-        callback();
-      });
+    if (result) {
+      env.res.previous = result.media_id;
+    }
   });
 
 
   // Fill next media _id
   //
-  N.wire.after(apiPath, function fill_next(env, callback) {
-    var mTypes = N.models.users.MediaInfo.types;
-    var media = env.data.media;
+  N.wire.after(apiPath, function* fill_next(env) {
+    let mTypes = N.models.users.MediaInfo.types;
+    let media = env.data.media;
+    let result = yield N.models.users.MediaInfo
+                          .findOne({
+                            album_id: media.album_id,
+                            type: { $in: mTypes.LIST_VISIBLE },
+                            media_id: { $lt: media.media_id }
+                          })
+                          .select('media_id')
+                          .sort('-media_id')
+                          .lean(true);
 
-    N.models.users.MediaInfo
-      .findOne({
-        album_id: media.album_id,
-        type: { $in: mTypes.LIST_VISIBLE },
-        media_id: { $lt: media.media_id }
-      })
-      .select('media_id')
-      .sort('-media_id')
-      .lean(true)
-      .exec(function (err, result) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        if (result) {
-          env.res.next = result.media_id;
-        }
-        callback();
-      });
+    if (result) {
+      env.res.next = result.media_id;
+    }
   });
 
 
   // Fill head meta
   //
   N.wire.after(apiPath, function fill_head(env) {
-    var user = env.data.user;
-    var username = env.user_info.is_member ? user.name : user.nick;
+    let user = env.data.user;
+    let username = env.user_info.is_member ? user.name : user.nick;
 
     env.res.head = env.res.head || {};
     env.res.head.title = env.t('title', { album: env.data.album.title, username });
@@ -234,8 +189,8 @@ module.exports = function (N, apiPath) {
 
   // Fill breadcrumbs
   //
-  N.wire.after(apiPath, function fill_breadcrumbs(env) {
-    N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
+  N.wire.after(apiPath, function* fill_breadcrumbs(env) {
+    yield N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
 
     env.data.breadcrumbs.push({
       text   : env.data.album.title,

@@ -1,81 +1,63 @@
 'use strict';
 
 
-var _ = require('lodash');
+const _ = require('lodash');
 
 
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
-    user_hid: {
-      type: 'integer',
-      minimum: 1,
-      required: true
-    }
+    user_hid: { type: 'integer', minimum: 1, required: true }
   });
 
-  var blocks = _.map(
+  let blocks = _.map(
     N.config.users.member_page.blocks,
-    function (v, k) {
-      return _.assign({ name: k }, v);
-    }
+    (v, k) => _.assign({ name: k }, v)
   );
   blocks = _.sortBy(blocks, _.property('priority'));
 
-  var menu = _.map(
+  let menu = _.map(
     N.config.users.member_page.menu,
-    function (v, k) {
-      return _.assign({ name: k }, v);
-    }
+    (v, k) => _.assign({ name: k }, v)
   );
   menu = _.sortBy(menu, _.property('priority'));
 
 
   // Fetch member by 'user_hid'
   //
-  N.wire.before(apiPath, function fetch_user_by_hid(env, callback) {
-    N.wire.emit('internal:users.fetch_user_by_hid', env, callback);
+  N.wire.before(apiPath, function fetch_user_by_hid(env) {
+    return N.wire.emit('internal:users.fetch_user_by_hid', env);
   });
 
 
   // Update activity info with fresh data if available
   //
-  N.wire.before(apiPath, function fetch_activity_info(env, callback) {
+  N.wire.before(apiPath, function* fetch_activity_info(env) {
     if (String(env.data.user._id) === env.user_info.user_id) {
       // User is viewing its own profile. Since redis last_active_ts is not
       // yet updated, just show her the current redis time.
       //
-      N.redis.time(function (err, time) {
-        if (err) {
-          callback(err);
-          return;
-        }
+      let time = yield N.redis.timeAsync();
 
-        env.data.user.last_active_ts = new Date(Math.floor(time[0] * 1000 + time[1] / 1000));
-        callback();
-      });
-
+      env.data.user.last_active_ts = new Date(Math.floor(time[0] * 1000 + time[1] / 1000));
       return;
     }
 
-    N.redis.zscore('users:last_active', env.data.user._id, function (__, score) {
-      // Score not found, use `last_active_ts` from mongodb
-      if (!score) {
-        callback();
-        return;
-      }
+    let score = yield N.redis.zscoreAsync('users:last_active', env.data.user._id);
 
-      // Use fresh `last_active_ts` from redis
-      env.data.user.last_active_ts = new Date(parseInt(score, 10));
+    // Score not found, use `last_active_ts` from mongodb
+    if (!score) {
+      return;
+    }
 
-      callback();
-    });
+    // Use fresh `last_active_ts` from redis
+    env.data.user.last_active_ts = new Date(parseInt(score, 10));
   });
 
 
   // Fill response
   //
-  N.wire.on(apiPath, function fetch_user_by_hid(env, callback) {
+  N.wire.on(apiPath, function fetch_user_by_hid(env) {
     env.res.user = {};
     env.res.user._id = env.data.user._id;
     env.res.user.hid = env.data.user.hid;
@@ -88,22 +70,20 @@ module.exports = function (N, apiPath) {
 
     env.data.users = env.data.users || [];
     env.data.users.push(env.data.user._id);
-
-    callback();
   });
 
 
   // Fill head and breadcrumbs
   //
-  N.wire.after(apiPath, function fill_head_and_breadcrumbs(env) {
-    var user = env.data.user;
-    var name = env.user_info.is_member ? user.name : user.nick;
+  N.wire.after(apiPath, function* fill_head_and_breadcrumbs(env) {
+    let user = env.data.user;
+    let name = env.user_info.is_member ? user.name : user.nick;
 
     env.res.head = env.res.head || {};
     env.res.head.title = name;
 
 
-    N.wire.emit('internal:users.breadcrumbs.fill_user', env);
+    yield N.wire.emit('internal:users.breadcrumbs.fill_user', env);
 
     // Doesn't show avatar in breadcrumbs on member page
     env.data.breadcrumbs[0].show_avatar = false;

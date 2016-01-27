@@ -14,38 +14,28 @@ module.exports = function (N, apiPath) {
 
   // Fetch owner by hid
   //
-  N.wire.before(apiPath, function fetch_user_by_hid(env, callback) {
-    N.wire.emit('internal:users.fetch_user_by_hid', env, callback);
+  N.wire.before(apiPath, function fetch_user_by_hid(env) {
+    return N.wire.emit('internal:users.fetch_user_by_hid', env);
   });
 
 
   // Fetch album info
   //
-  N.wire.before(apiPath, function fetch_album(env, callback) {
-    N.models.users.Album
-      .findOne({ _id: env.params.album_id })
-      .lean(true)
-      .exec(function (err, album) {
-        if (err) {
-          callback(err);
-          return;
-        }
+  N.wire.before(apiPath, function* fetch_album(env) {
+    let album = yield N.models.users.Album.findOne({ _id: env.params.album_id }).lean(true);
 
-        if (!album) {
-          callback(N.io.NOT_FOUND);
-          return;
-        }
+    if (!album) {
+      throw N.io.NOT_FOUND;
+    }
 
-        env.data.album = album;
-        callback();
-      });
+    env.data.album = album;
   });
 
 
   // Check permissions
   //
   N.wire.before(apiPath, function check_permissions(env) {
-    var album = env.data.album;
+    let album = env.data.album;
 
     // Wrong member_hid parameter
     if (env.data.user._id.toString() !== album.user_id.toString()) {
@@ -73,11 +63,11 @@ module.exports = function (N, apiPath) {
 
   // Fill breadcrumbs
   //
-  N.wire.after(apiPath, function fill_breadcrumbs(env) {
-    var user = env.data.user;
-    var album = env.data.album;
+  N.wire.after(apiPath, function* fill_breadcrumbs(env) {
+    let user = env.data.user;
+    let album = env.data.album;
 
-    N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
+    yield N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
 
     env.data.breadcrumbs.push({
       text:   album.title,

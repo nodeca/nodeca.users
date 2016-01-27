@@ -66,7 +66,7 @@ module.exports = function (N, apiPath) {
   // Fill head meta
   //
   N.wire.after(apiPath, function fill_head(env) {
-    var username = env.user_info.is_member ? env.data.user.name : env.data.user.nick;
+    let username = env.user_info.is_member ? env.data.user.name : env.data.user.nick;
 
     env.res.head = env.res.head || {};
 
@@ -80,8 +80,8 @@ module.exports = function (N, apiPath) {
 
   // Fill breadcrumbs
   //
-  N.wire.after(apiPath, function fill_breadcrumbs(env) {
-    N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
+  N.wire.after(apiPath, function* fill_breadcrumbs(env) {
+    yield N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
 
     env.res.breadcrumbs = env.data.breadcrumbs;
   });

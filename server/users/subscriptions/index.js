@@ -3,7 +3,7 @@
 'use strict';
 
 
-var _ = require('lodash');
+const _ = require('lodash');
 
 
 module.exports = function (N, apiPath) {
@@ -22,58 +22,39 @@ module.exports = function (N, apiPath) {
 
   // Fetch user
   //
-  N.wire.before(apiPath, function fetch_user(env, callback) {
-    N.models.users.User.findOne({ _id: env.user_info.user_id }).exec(function (err, user) {
-
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      env.data.user = user;
-      callback();
-    });
+  N.wire.before(apiPath, function* fetch_user(env) {
+    env.data.user = yield N.models.users.User.findOne({ _id: env.user_info.user_id });
   });
 
 
   // Fetch subscriptions
   //
-  N.wire.before(apiPath, function fetch_subscriptions(env, callback) {
-    var list_visible = [
+  N.wire.before(apiPath, function* fetch_subscriptions(env) {
+    let list_visible = [
       N.models.users.Subscription.types.WATCHING,
       N.models.users.Subscription.types.TRACKING,
       N.models.users.Subscription.types.MUTED
     ];
 
-    N.models.users.Subscription.find()
-        .where('user_id').equals(env.user_info.user_id)
-        .where('type').in(list_visible)
-        .sort('-_id')
-        .lean(true)
-        .exec(function (err, subscriptions) {
-
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      env.data.subscriptions = subscriptions;
-      callback();
-    });
+    env.data.subscriptions = yield N.models.users.Subscription.find()
+                                      .where('user_id').equals(env.user_info.user_id)
+                                      .where('type').in(list_visible)
+                                      .sort('-_id')
+                                      .lean(true);
   });
 
 
   // Fetch subscribed items subcall
   //
-  N.wire.on(apiPath, function fetch_subscribed_items_subcall(env, callback) {
-    N.wire.emit('internal:users.subscriptions.fetch', env, callback);
+  N.wire.on(apiPath, function fetch_subscribed_items_subcall(env) {
+    return N.wire.emit('internal:users.subscriptions.fetch', env);
   });
 
 
   // Fill tabs
   //
   N.wire.after(apiPath, function fill_tabs(env) {
-    var tabs = _.reduce((N.config.users || {}).subscriptions || {}, function (acc, tab_confog, block_name) {
+    let tabs = _.reduce((N.config.users || {}).subscriptions || {}, (acc, tab_confog, block_name) => {
       acc.push(_.assign({
         block_name,
         priority: 10,
@@ -91,11 +72,11 @@ module.exports = function (N, apiPath) {
 
   // Fill head and breadcrumbs
   //
-  N.wire.after(apiPath, function fill_head_and_breadcrumbs(env) {
+  N.wire.after(apiPath, function* fill_head_and_breadcrumbs(env) {
     env.res.head = env.res.head || {};
     env.res.head.title = env.t('title');
 
-    N.wire.emit('internal:users.breadcrumbs.fill_user', env);
+    yield N.wire.emit('internal:users.breadcrumbs.fill_user', env);
 
     env.res.breadcrumbs = env.data.breadcrumbs;
   });

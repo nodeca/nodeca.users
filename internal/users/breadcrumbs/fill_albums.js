@@ -6,14 +6,15 @@ module.exports = function (N, apiPath) {
   // Fill user name
   //
   N.wire.on(apiPath, function fill_user_name(env) {
-    N.wire.emit('internal:users.breadcrumbs.fill_user', env);
+    return N.wire.emit('internal:users.breadcrumbs.fill_user', env);
   });
 
 
   // Fill albums title
   //
   N.wire.on(apiPath, function fill_albums_title(env) {
-    var user = env.data.user;
+    let user = env.data.user;
+
     env.data.breadcrumbs = env.data.breadcrumbs || [];
 
     env.data.breadcrumbs.push({
