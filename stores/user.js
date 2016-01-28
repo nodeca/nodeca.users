@@ -1,8 +1,7 @@
 'use strict';
 
 
-var _       = require('lodash');
-var thenify = require('thenify');
+const _ = require('lodash');
 
 
 module.exports = function (N) {
@@ -11,72 +10,50 @@ module.exports = function (N) {
   //
   // - user_id (String|ObjectId)
   //
-  var UserStore = N.settings.createStore({
-    get: thenify.withCallback(function (keys, params, options, callback) {
-      var self = this;
-
+  return N.settings.createStore({
+    get(keys, params) {
       if (_.isEmpty(params.user_id)) {
-        callback('user_id param required to getting settings from user store');
-        return;
+        return Promise.reject('user_id param required to getting settings from user store');
       }
 
-      N.models.users.UserSettings
-        .findOne({ user_id: params.user_id })
-        .lean(true)
-        .exec(function (err, data) {
-          var results = {};
+      return N.models.users.UserSettings.findOne({ user_id: params.user_id }).lean(true).then(data => {
+        var results = {};
 
-          if (err) {
-            callback(err);
-            return;
+        keys.forEach(key => {
+          if (data && data[key]) {
+            results[key] = data[key];
+          } else {
+            results[key] = {
+              value: this.getDefaultValue(key),
+              force: false // Default value SHOULD NOT be forced.
+            };
           }
-
-          keys.forEach(function (key) {
-            if (data && data[key]) {
-              results[key] = data[key];
-            } else {
-              results[key] = {
-                value: self.getDefaultValue(key),
-                force: false // Default value SHOULD NOT be forced.
-              };
-            }
-          });
-
-          callback(null, results);
         });
-    }),
+
+        return results;
+      });
+    },
 
     // ##### Params
     //
     // - user_id (String|ObjectId)
     //
-    set: thenify.withCallback(function (settings, params, callback) {
+    set(settings, params) {
       if (!params.user_id) {
-        callback('user_id param is required for saving settings into user store');
-        return;
+        return Promise.reject('user_id param is required for saving settings into user store');
       }
 
-      N.models.users.UserSettings
-        .findOne({ user_id: params.user_id })
-        .exec(function (err, data) {
+      return N.models.users.UserSettings.findOne({ user_id: params.user_id }).then(data => {
+        if (!data) {
+          data = new N.models.users.UserSettings({ user_id: params.user_id });
+        }
 
-          if (err) {
-            callback(err);
-            return;
-          }
-
-          if (!data) {
-            data = new N.models.users.UserSettings({ user_id: params.user_id });
-          }
-
-          _.forEach(settings, function (option, key) {
-            data.set(key, option);
-          });
-
-          data.save(callback);
+        _.forEach(settings, (option, key) => {
+          data.set(key, option);
         });
-    })
-  });
 
-  return UserStore;
+        return data.save();
+      });
+    }
+  });
 };

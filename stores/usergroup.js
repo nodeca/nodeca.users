@@ -21,45 +21,41 @@ module.exports = function (N) {
 
   // Memoized version of fetchUserGroups helper
   //
-  var fetchUsrGrpSettingsCached = memoizee(fetchUsrGrpSettings, {
+  let fetchUsrGrpSettingsCached = thenify(memoizee(fetchUsrGrpSettings, {
     // Memoizee options. Revalidate cache after each 60 sec.
     async:     true,
     maxAge:    60000,
     primitive: true
-  });
+  }));
+
+  let fetchUsrGrpSettingsAsync = thenify(fetchUsrGrpSettings);
 
 
   // ##### Params
   //
   // - usergroup_ids (Array)
   //
-  var UsergroupStore = N.settings.createStore({
-    get: thenify.withCallback(function (keys, params, options, callback) {
-      var self  = this,
-          fetch = options.skipCache ? fetchUsrGrpSettings : fetchUsrGrpSettingsCached;
+  let UsergroupStore = N.settings.createStore({
+    get(keys, params, options) {
+      let fetch = options.skipCache ? fetchUsrGrpSettingsAsync : fetchUsrGrpSettingsCached;
 
       if (!_.isArray(params.usergroup_ids) || _.isEmpty(params.usergroup_ids)) {
-        callback('usergroup_ids param required to be non-empty array for getting settings from usergroup store');
-        return;
+        return Promise.reject('usergroup_ids param required to be non-empty array ' +
+                              'for getting settings from usergroup store');
       }
 
-      fetch(params.usergroup_ids.sort(), function (err, groups) {
-        var results = {};
+      return fetch(params.usergroup_ids.sort()).then(groups => {
+        let results = {};
 
-        if (err) {
-          callback(err);
-          return;
-        }
+        keys.forEach(key => {
+          let values = [];
 
-        keys.forEach(function (key) {
-          var values = [];
-
-          groups.forEach(function (group) {
+          groups.forEach(group => {
             if (group.settings && group.settings[key]) {
               values.push(group.settings[key]);
             } else {
               values.push({
-                value: self.getDefaultValue(key),
+                value: this.getDefaultValue(key),
                 force: false // Default value SHOULD NOT be forced.
               });
             }
@@ -69,34 +65,25 @@ module.exports = function (N) {
           results[key] = N.settings.mergeValues(values);
         });
 
-        callback(null, results);
+        return results;
       });
-    }),
+    },
 
     // ##### Params
     //
     // - usergroup_id (String|ObjectId)
     //
-    set: thenify.withCallback(function (settings, params, callback) {
+    set(settings, params) {
       if (!params.usergroup_id) {
-        callback('usergroup_id param is required for saving settings into usergroup store');
-        return;
+        return Promise.reject('usergroup_id param is required for saving settings into usergroup store');
       }
 
-      N.models.users.UserGroup
-          .findOne({ _id: params.usergroup_id })
-          .exec(function (err, group) {
-
-        if (err) {
-          callback(err);
-          return;
-        }
-
+      return N.models.users.UserGroup.findOne({ _id: params.usergroup_id }).then(group => {
         // Make sure we have settings storages.
         group.settings = group.settings || {};
 
-        Object.keys(settings).forEach(function (key) {
-          var setting = settings[key];
+        Object.keys(settings).forEach(key => {
+          let setting = settings[key];
 
           if (setting === null) {
             delete group.settings[key];
@@ -110,9 +97,9 @@ module.exports = function (N) {
         });
 
         group.markModified('settings');
-        group.save(callback);
+        return group.save();
       });
-    })
+    }
   });
 
   // Walk through all existent usergroups and recalculate their permissions
