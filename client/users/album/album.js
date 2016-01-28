@@ -33,6 +33,7 @@ N.wire.after('navigate.done:' + module.apiPath, function uploader_setup() {
         $('#users-medias-list').prepend(
           $(N.runtime.render('users.album.list', { medias: params.uploaded, user_hid: pageParams.user_hid }))
         );
+        $('.user-album-root').removeClass('no-files');
       });
     }
   });
@@ -85,6 +86,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
             $('#users-medias-list').prepend(
               $(N.runtime.render('users.album.list', { medias: params.uploaded, user_hid: pageParams.user_hid }))
             );
+            $('.user-album-root').removeClass('no-files');
             callback();
           });
 
@@ -116,6 +118,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
       $('#users-medias-list').prepend(
         $(N.runtime.render('users.album.list', { medias: [ params.media ], user_hid: pageParams.user_hid }))
       );
+      $('.user-album-root').removeClass('no-files');
     });
   });
 });
