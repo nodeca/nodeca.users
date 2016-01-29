@@ -5,7 +5,8 @@
 module.exports = function (N, apiPath) {
 
   function createRedirect(redirectId) {
-    var loginParams = redirectId ? { redirect_id: redirectId } : {};
+    let loginParams = redirectId ? { redirect_id: redirectId } : {};
+
     return {
       code: N.io.REDIRECT,
       head: {
@@ -14,35 +15,26 @@ module.exports = function (N, apiPath) {
     };
   }
 
-  N.wire.on(apiPath, function force_login_guest(env, callback) {
-    if (env.user_info.is_member) {
-      callback();
-      return;
-    }
+  N.wire.on(apiPath, function* force_login_guest(env) {
+    if (env.user_info.is_member) return;
 
-    var backUrl = N.router.linkTo(env.method, env.params);
-    if (!backUrl) {
-      // Should never happens. Can't build url - just redirect to login page
-      callback(createRedirect());
-      return;
-    }
+    let backUrl = N.router.linkTo(env.method, env.params);
 
-    // There will be second redirect (from http to https), but we can't cut protocol
-    // because in dev environment we have different ports for http and https
+    // Should never happens. Can't build url - just redirect to login page
+    if (!backUrl) throw createRedirect();
 
-    var loginRedirect = new N.models.users.LoginRedirect();
+    // There can be a second redirect (from http to https), but we can't cut
+    // protocol because in dev environment we have different ports for http
+    // and https
+
+    let loginRedirect = new N.models.users.LoginRedirect();
 
     loginRedirect.url = backUrl;
     loginRedirect.ip  = env.req.ip;
 
-    loginRedirect.save(function (err, loginRedirect) {
-      if (err) {
-        callback(err);
-        return;
-      }
+    let res = yield loginRedirect.save();
 
-      // Redirect to login page with id of url (of target page)
-      callback(createRedirect(loginRedirect._id));
-    });
+    // Redirect to login page with id of url (of target page)
+    throw createRedirect(res._id);
   });
 };

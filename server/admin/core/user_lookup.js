@@ -17,7 +17,7 @@ module.exports = function (N, apiPath) {
     strict: { type: 'boolean', required: true }
   });
 
-  N.wire.on(apiPath, function moderator_find_user(env, callback) {
+  N.wire.on(apiPath, function* moderator_find_user(env) {
     var query = N.models.users.User.find();
 
     if (env.params.strict) {
@@ -26,18 +26,8 @@ module.exports = function (N, apiPath) {
       query.where('nick').regex(new RegExp('^' + escapeRegexp(env.params.nick), 'i'));
     }
 
-    query.limit(10)
-         .select('_id name nick')
-         .lean(true)
-         .exec(function (err, users) {
-
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      env.res = users;
-      callback();
-    });
+    env.res = yield query.limit(10)
+                         .select('_id name nick')
+                         .lean(true);
   });
 };

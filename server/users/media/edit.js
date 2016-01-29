@@ -14,53 +14,31 @@ module.exports = function (N, apiPath) {
 
   // Fetch media
   //
-  N.wire.on(apiPath, function fetch_media(env, callback) {
-    var mTypes = N.models.users.MediaInfo.types;
+  N.wire.on(apiPath, function* fetch_media(env) {
+    let mTypes = N.models.users.MediaInfo.types;
 
-    N.models.users.MediaInfo
-      .findOne({ media_id: env.params.media_id, type: { $in: mTypes.LIST_VISIBLE } })
-      .lean(true)
-      .exec(function (err, media) {
-        if (err) {
-          callback(err);
-          return;
-        }
+    let media = yield N.models.users.MediaInfo
+                          .findOne({ media_id: env.params.media_id, type: { $in: mTypes.LIST_VISIBLE } })
+                          .lean(true);
 
-        if (!media) {
-          callback(N.io.NOT_FOUND);
-          return;
-        }
+    if (!media) throw N.io.NOT_FOUND;
 
-        // Check media owner
-        if (env.user_info.user_id !== String(media.user_id)) {
-          callback(N.io.FORBIDDEN);
-          return;
-        }
+    // Check media owner
+    if (env.user_info.user_id !== String(media.user_id)) throw N.io.FORBIDDEN;
 
-        env.res.media = env.data.media = media;
-        callback();
-      });
+    env.res.media = env.data.media = media;
   });
 
 
   // Fetch albums list (_id and title) for album change dropdown
   //
-  N.wire.after(apiPath, function fetch_albums(env, callback) {
+  N.wire.after(apiPath, function* fetch_albums(env) {
     var media = env.data.media;
 
-    N.models.users.Album
-      .find({ user_id: media.user_id })
-      .sort('-default -last_ts')
-      .select('_id title')
-      .lean(true)
-      .exec(function (err, result) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        env.res.albums = result;
-        callback();
-      });
+    env.res.albums = yield N.models.users.Album
+                              .find({ user_id: media.user_id })
+                              .sort('-default -last_ts')
+                              .select('_id title')
+                              .lean(true);
   });
 };

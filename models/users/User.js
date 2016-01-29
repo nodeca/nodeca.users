@@ -187,16 +187,15 @@ module.exports = function (N, collectionName) {
   });
 
 
-  N.wire.on('init:models', function emit_init_User(__, callback) {
+  N.wire.on('init:models', function emit_init_User() {
     // Read config
     try {
       configReader(N.config.users.avatars);
     } catch (e) {
-      callback(`Error in avatars config: ${e.message}.`);
-      return;
+      throw `Error in avatars config: ${e.message}.`;
     }
 
-    N.wire.emit('init:models.' + collectionName, User, callback);
+    return N.wire.emit('init:models.' + collectionName, User);
   });
 
 

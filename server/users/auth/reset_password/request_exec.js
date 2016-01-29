@@ -58,30 +58,18 @@ module.exports = function (N, apiPath) {
 
   // Search auth record
   //
-  N.wire.before(apiPath, function fetch_auth_link(env, callback) {
+  N.wire.before(apiPath, function* fetch_auth_link(env) {
 
-    N.models.users.AuthLink
-        .findOne({ email: env.params.email, type: 'plain', exists: true })
-        .lean(true)
-        .exec(function (err, authlink) {
+    env.data.authlink = yield N.models.users.AuthLink
+                                  .findOne({ email: env.params.email, type: 'plain', exists: true })
+                                  .lean(true);
 
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      if (!authlink) {
-        callback({
-          code:    N.io.CLIENT_ERROR,
-          message: env.t('err_email_unknown')
-        });
-        return;
-      }
-
-      env.data.authlink = authlink;
-
-      callback();
-    });
+    if (!env.data.authlink) {
+      throw {
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('err_email_unknown')
+      };
+    }
   });
 
 

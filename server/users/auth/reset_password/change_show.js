@@ -12,26 +12,17 @@ module.exports = function (N, apiPath) {
 
   // Check token and show form
   //
-  N.wire.on(apiPath, function change_show(env, callback) {
+  N.wire.on(apiPath, function change_show(env) {
     env.res.head.title = env.t('title');
     env.res.secret_key = env.params.secret_key;
 
-    N.models.users.TokenResetPassword
-        .findOne({ secret_key: env.params.secret_key, ip: env.req.ip })
-        .lean(true)
-        .exec(function (err, token) {
+    let token = N.models.users.TokenResetPassword
+                    .findOne({ secret_key: env.params.secret_key, ip: env.req.ip })
+                    .lean(true);
 
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      //
-      // Don't delete token here, we need it for exec action
-      //
-
-      env.res.valid_token = !!token;
-      callback();
-    });
+    //
+    // Don't delete token here, we need it for exec action
+    //
+    env.res.valid_token = !!token;
   });
 };

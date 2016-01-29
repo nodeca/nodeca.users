@@ -100,8 +100,8 @@ module.exports = function (N, collectionName) {
   };
 
 
-  N.wire.on('init:models', function emit_init_Album(__, callback) {
-    N.wire.emit('init:models.' + collectionName, Album, callback);
+  N.wire.on('init:models', function emit_init_Album() {
+    return N.wire.emit('init:models.' + collectionName, Album);
   });
 
   N.wire.on('init:models.' + collectionName, function init_model_Album(schema) {

@@ -6,34 +6,22 @@
 //
 'use strict';
 
-var _ = require('lodash');
+const _ = require('lodash');
 
 module.exports = function (N, apiPath) {
 
-  N.wire.on(apiPath, function attachments_check_owner(env, callback) {
+  N.wire.on(apiPath, function* attachments_check_owner(env) {
 
-    var mediaIds = _.uniq(env.params.attach);
+    let mediaIds = _.uniq(env.params.attach);
 
     // Find media info by `media_id` (from params) and `user_id`
-    N.models.users.MediaInfo
-        .where('media_id').in(mediaIds)
-        .where('user_id').equals(env.user_info.user_id)
-        .select('media_id')
-        .lean(true)
-        .exec(function (err, result) {
+    let result = yield N.models.users.MediaInfo
+                          .where('media_id').in(mediaIds)
+                          .where('user_id').equals(env.user_info.user_id)
+                          .select('media_id')
+                          .lean(true);
 
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      // If any media ID not found in database
-      if (result.length !== mediaIds.length) {
-        callback('Invalid attachments passed');
-        return;
-      }
-
-      callback();
-    });
+    // If any media ID not found in database
+    if (result.length !== mediaIds.length) throw 'Invalid attachments passed';
   });
 };

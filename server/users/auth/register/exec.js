@@ -5,10 +5,10 @@
 'use strict';
 
 
-var co          = require('co');
-var _           = require('lodash');
-var validator   = require('is-my-json-valid');
-var recaptcha   = require('nodeca.core/lib/recaptcha.js');
+const co          = require('co');
+const _           = require('lodash');
+const validator   = require('is-my-json-valid');
+const recaptcha   = require('nodeca.core/lib/recaptcha.js');
 
 
 module.exports = function (N, apiPath) {
@@ -24,8 +24,8 @@ module.exports = function (N, apiPath) {
 
   // Kick off logged-in members
   //
-  N.wire.before(apiPath, function register_guest_only(env, callback) {
-    N.wire.emit('internal:users.redirect_not_guest', env, callback);
+  N.wire.before(apiPath, function register_guest_only(env) {
+    return N.wire.emit('internal:users.redirect_not_guest', env);
   });
 
 
@@ -37,7 +37,7 @@ module.exports = function (N, apiPath) {
 
 
   // Form input validator
-  var validate = validator({
+  const validate = validator({
     type: 'object',
     properties: {
       email: { format: 'email', required: true },
@@ -63,7 +63,7 @@ module.exports = function (N, apiPath) {
       });
 
       // terminate
-      return {
+      throw {
         code: N.io.CLIENT_ERROR,
         data: env.data.errors
       };
@@ -73,56 +73,38 @@ module.exports = function (N, apiPath) {
 
   // Check email uniqueness. User email and oauth provider email should be unique
   //
-  N.wire.before(apiPath, function check_email_uniqueness(env, callback) {
+  N.wire.before(apiPath, function* check_email_uniqueness(env) {
 
-    var emails = [ env.params.email ];
+    let emails = [ env.params.email ];
 
     // If we use oauth for registration, provider email should be unique too.
     if (env.session.oauth && env.session.oauth.info) {
       emails.push(env.session.oauth.info.email);
     }
 
-    N.models.users.AuthLink
-        .findOne({ exists: true })
-        .where('email').in(emails)
-        .select('_id')
-        .lean(true)
-        .exec(function (err, id) {
+    let id = yield N.models.users.AuthLink
+                      .findOne({ exists: true })
+                      .where('email').in(emails)
+                      .select('_id')
+                      .lean(true);
 
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      if (id) {
-        env.data.errors.email = env.t('err_busy_email');
-      }
-
-      callback();
-    });
+    if (id) {
+      env.data.errors.email = env.t('err_busy_email');
+    }
   });
 
 
   // Check nick uniqueness
   //
-  N.wire.before(apiPath, function check_nick_uniqueness(env, callback) {
-    N.models.users.User
-        .findOne({ nick: env.params.nick })
-        .select('_id')
-        .lean(true)
-        .exec(function (err, user) {
+  N.wire.before(apiPath, function* check_nick_uniqueness(env) {
+    let user = yield N.models.users.User
+                        .findOne({ nick: env.params.nick })
+                        .select('_id')
+                        .lean(true);
 
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      if (user) {
-        env.data.errors.nick = env.t('err_busy_nick');
-      }
-
-      callback();
-    });
+    if (user) {
+      env.data.errors.nick = env.t('err_busy_nick');
+    }
   });
 
 
@@ -162,12 +144,10 @@ module.exports = function (N, apiPath) {
 
   // If previos checks failed terminate with client error
   //
-  N.wire.before(apiPath, function check_errors(env, callback) {
+  N.wire.before(apiPath, function check_errors(env) {
     if (!_.isEmpty(env.data.errors)) {
-      callback({ code: N.io.CLIENT_ERROR, data: env.data.errors });
-      return;
+      throw { code: N.io.CLIENT_ERROR, data: env.data.errors };
     }
-    callback();
   });
 
 

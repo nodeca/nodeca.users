@@ -16,7 +16,7 @@ module.exports = function (N, apiPath) {
     locale: { type: 'string' }
   });
 
-  N.wire.on(apiPath, function set_language(env, callback) {
+  N.wire.on(apiPath, function* set_language(env) {
     var locale = env.params.locale;
 
     if (!_.includes(N.config.locales, env.params.locale)) {
@@ -35,11 +35,8 @@ module.exports = function (N, apiPath) {
 
     env.user_info.locale = locale;
 
-    if (!env.user_info.user_id) {
-      callback();
-      return;
-    }
+    if (!env.user_info.user_id) return;
 
-    N.models.users.User.update({ _id: env.user_info.user_id }, { locale }, callback);
+    yield N.models.users.User.update({ _id: env.user_info.user_id }, { locale });
   });
 };

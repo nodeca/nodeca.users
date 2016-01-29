@@ -23,8 +23,8 @@ module.exports = function (N, collectionName) {
   //////////////////////////////////////////////////////////////////////////////
 
 
-  N.wire.on('init:models', function emit_init_UserSettings(__, callback) {
-    N.wire.emit('init:models.' + collectionName, UserSettings, callback);
+  N.wire.on('init:models', function emit_init_UserSettings() {
+    return N.wire.emit('init:models.' + collectionName, UserSettings);
   });
 
 

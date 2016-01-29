@@ -24,8 +24,8 @@ module.exports = function (N, collectionName) {
   });
 
 
-  N.wire.on('init:models', function emit_init_LoginRedirect(__, callback) {
-    N.wire.emit('init:models.' + collectionName, LoginRedirect, callback);
+  N.wire.on('init:models', function emit_init_LoginRedirect() {
+    return N.wire.emit('init:models.' + collectionName, LoginRedirect);
   });
 
 

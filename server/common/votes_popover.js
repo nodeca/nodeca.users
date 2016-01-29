@@ -11,32 +11,21 @@ module.exports = function (N, apiPath) {
 
   // Fill votes and collect users
   //
-  N.wire.on(apiPath, function fill_votes(env, callback) {
-    N.models.users.Vote.find({ 'for': env.params.for, value: { $in: [ 1, -1 ] } })
-        .select('from value')
-        .lean(true)
-        .exec(function (err, votes) {
+  N.wire.on(apiPath, function* fill_votes(env) {
+    let votes = yield N.models.users.Vote
+                          .find({ 'for': env.params.for, value: { $in: [ 1, -1 ] } })
+                          .select('from value')
+                          .lean(true);
 
-      if (err) {
-        callback(err);
-        return;
-      }
+    env.data.users = env.data.users || [];
 
-      env.data.users = env.data.users || [];
+    env.res.votes = _.reduce(votes, (result, vote) => {
+      env.data.users.push(vote.from);
 
-      env.res.votes = _.reduce(votes, function (result, vote) {
-        env.data.users.push(vote.from);
+      if (vote.value === 1)  result.up.push(vote.from);
+      if (vote.value === -1) result.down.push(vote.from);
 
-        if (vote.value === 1) {
-          result.up.push(vote.from);
-        } else if (vote.value === -1) {
-          result.down.push(vote.from);
-        }
-
-        return result;
-      }, { up: [], down: [] });
-
-      callback();
-    });
+      return result;
+    }, { up: [], down: [] });
   });
 };

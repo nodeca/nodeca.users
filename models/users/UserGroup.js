@@ -61,8 +61,8 @@ module.exports = function (N, collectionName) {
   }));
 
 
-  N.wire.on('init:models', function emit_init_UserGroup(__, callback) {
-    N.wire.emit('init:models.' + collectionName, UserGroup, callback);
+  N.wire.on('init:models', function emit_init_UserGroup() {
+    return N.wire.emit('init:models.' + collectionName, UserGroup);
   });
 
 

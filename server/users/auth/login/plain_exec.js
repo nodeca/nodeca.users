@@ -23,8 +23,8 @@ module.exports = function (N, apiPath) {
 
   // Kick logged-in members
   //
-  N.wire.before(apiPath, function login_guest_only(env, callback) {
-    N.wire.emit('internal:users.redirect_not_guest', env, callback);
+  N.wire.before(apiPath, function login_guest_only(env) {
+    return N.wire.emit('internal:users.redirect_not_guest', env);
   });
 
 
@@ -33,7 +33,7 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function check_params(env) {
     if (_.isEmpty(env.params.email_or_nick) ||
         _.isEmpty(env.params.pass)) {
-      return {
+      throw {
         code:    N.io.CLIENT_ERROR,
         message: env.t('err_login_failed')
       };

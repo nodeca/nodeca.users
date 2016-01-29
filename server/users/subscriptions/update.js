@@ -26,32 +26,19 @@ module.exports = function (N, apiPath) {
   // Check auth
   //
   N.wire.before(apiPath, function check_auth(env) {
-    if (env.user_info.is_guest) {
-      return N.io.FORBIDDEN;
-    }
+    if (env.user_info.is_guest) throw N.io.FORBIDDEN;
   });
 
 
   // Update subscription
   //
-  N.wire.on(apiPath, function update_subscription(env, callback) {
-    N.models.users.Subscription.findOneAndUpdate({ type: env.params.type })
-        .where('_id').equals(env.params.subscription_id)
-        .where('user_id').equals(env.user_info.user_id)
-        .lean(true)
-        .exec(function (err, res) {
+  N.wire.on(apiPath, function* update_subscription(env) {
+    let res = yield N.models.users.Subscription
+                        .findOneAndUpdate({ type: env.params.type })
+                        .where('_id').equals(env.params.subscription_id)
+                        .where('user_id').equals(env.user_info.user_id)
+                        .lean(true);
 
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      if (!res) {
-        callback(N.io.NOT_FOUND);
-        return;
-      }
-
-      callback();
-    });
+    if (!res) throw N.io.NOT_FOUND;
   });
 };

@@ -41,8 +41,8 @@ module.exports = function (N, collectionName) {
   //////////////////////////////////////////////////////////////////////////////
 
 
-  N.wire.on('init:models', function emit_init_TokenActivationEmail(__, callback) {
-    N.wire.emit('init:models.' + collectionName, TokenActivationEmail, callback);
+  N.wire.on('init:models', function emit_init_TokenActivationEmail() {
+    return N.wire.emit('init:models.' + collectionName, TokenActivationEmail);
   });
 
 

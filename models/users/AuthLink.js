@@ -104,8 +104,8 @@ module.exports = function (N, collectionName) {
   //////////////////////////////////////////////////////////////////////////////
 
 
-  N.wire.on('init:models', function emit_init_AuthLink(__, callback) {
-    N.wire.emit('init:models.' + collectionName, AuthLink, callback);
+  N.wire.on('init:models', function emit_init_AuthLink() {
+    return N.wire.emit('init:models.' + collectionName, AuthLink);
   });
 
 

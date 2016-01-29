@@ -221,16 +221,15 @@ module.exports = function (N, collectionName) {
   });
 
 
-  N.wire.on('init:models', function emit_init_MediaInfo(__, callback) {
+  N.wire.on('init:models', function emit_init_MediaInfo() {
     // Read config
     try {
       mediaConfig = resizeParse(N.config.users.uploads);
     } catch (e) {
-      callback(`Error in uploads config: ${e.message}.`);
-      return;
+      throw `Error in uploads config: ${e.message}.`;
     }
 
-    N.wire.emit('init:models.' + collectionName, MediaInfo, callback);
+    return N.wire.emit('init:models.' + collectionName, MediaInfo);
   });
 
 

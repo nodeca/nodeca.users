@@ -18,37 +18,27 @@ module.exports = function (N, apiPath) {
 
   // Redirect guests to login page
   //
-  N.wire.before(apiPath, function check_user_auth(env, callback) {
-    N.wire.emit('internal:users.force_login_guest', env, callback);
+  N.wire.before(apiPath, function check_user_auth(env) {
+    return N.wire.emit('internal:users.force_login_guest', env);
   });
 
 
   // Fetch subscriptions for user
   //
-  N.wire.before(apiPath, function fetch_subscriptions(env, callback) {
-    N.models.users.Subscription.find()
-        .where('user_id').equals(env.user_info.user_id)
-        .where('type').in(N.models.users.Subscription.types.LIST_SUBSCRIBED)
-        .lean(true)
-        .exec(function (err, subscriptions) {
-
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      env.data.subscriptions = subscriptions;
-      callback();
-    });
+  N.wire.before(apiPath, function* fetch_subscriptions(env) {
+    env.data.subscriptions = yield N.models.users.Subscription
+                                      .find()
+                                      .where('user_id').equals(env.user_info.user_id)
+                                      .where('type').in(N.models.users.Subscription.types.LIST_SUBSCRIBED)
+                                      .lean(true);
   });
 
 
   // Fetch tracked items subcall
   //
-  N.wire.on(apiPath, function fetch_items_subcall(env, callback) {
+  N.wire.on(apiPath, function fetch_items_subcall(env) {
     env.data.items = [];
-
-    N.wire.emit('internal:users.tracker.fetch', env, callback);
+    return N.wire.emit('internal:users.tracker.fetch', env);
   });
 
 

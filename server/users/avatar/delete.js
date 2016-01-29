@@ -12,54 +12,37 @@ module.exports = function (N, apiPath) {
 
   // Check permissions
   //
-  N.wire.before(apiPath, function check_permissions(env, callback) {
-
+  N.wire.before(apiPath, function check_permissions(env) {
     // Check is current user owner of album
-    if (env.session.is_guest) {
-      callback(N.io.FORBIDDEN);
-      return;
-    }
-
-    callback();
+    if (env.session.is_guest) throw N.io.FORBIDDEN;
   });
 
 
   // Fetch user
   //
-  N.wire.before(apiPath, function fetch_user(env, callback) {
-    N.models.users.User.findOne({ _id: env.user_info.user_id }).lean(true).exec(function (err, user) {
-      if (err) {
-        callback(err);
-        return;
-      }
+  N.wire.before(apiPath, function* fetch_user(env) {
+    env.data.user = yield N.models.users.User
+                              .findOne({ _id: env.user_info.user_id })
+                              .lean(true);
 
-      if (!user) {
-        callback(N.io.NOT_FOUND);
-        return;
-      }
+    if (!env.data.user) throw N.io.NOT_FOUND;
 
-      env.data.user = user;
-      env.res.avatar_id = null;
-      callback();
-    });
+    env.res.avatar_id = null;
   });
 
 
   // Remove avatar
   //
-  N.wire.on(apiPath, function remove_avatar(env, callback) {
-    N.models.users.User.update({ _id: env.data.user._id }, { avatar_id: null }, callback);
+  N.wire.on(apiPath, function* remove_avatar(env) {
+    yield N.models.users.User.update({ _id: env.data.user._id }, { avatar_id: null });
   });
 
 
   // Remove avatar from file store
   //
-  N.wire.after(apiPath, function remove_avatar_file(env, callback) {
-    if (!env.data.user.avatar_id) {
-      callback();
-      return;
-    }
+  N.wire.after(apiPath, function* remove_avatar_file(env) {
+    if (!env.data.user.avatar_id) return;
 
-    N.models.core.File.remove(env.data.user.avatar_id, true, callback);
+    yield N.models.core.File.remove(env.data.user.avatar_id, true);
   });
 };

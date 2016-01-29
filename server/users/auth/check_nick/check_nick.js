@@ -9,34 +9,24 @@ module.exports = function (N, apiPath) {
     nick: { type: 'string', required: true, minLength: 1 }
   });
 
-  N.wire.on(apiPath, function check_nick_busy(env, callback) {
+  N.wire.on(apiPath, function* check_nick_busy(env) {
     env.res.error   = false;
     env.res.message = null;
 
     if (!N.models.users.User.validateNick(env.params.nick)) {
       env.res.error = true;
       env.res.message = env.t('message_invalid_nick');
-      callback();
       return;
     }
 
-    N.models.users.User
-        .findOne({ nick: env.params.nick })
-        .select('_id')
-        .lean(true)
-        .exec(function (err, user) {
+    let user = yield N.models.users.User
+                        .findOne({ nick: env.params.nick })
+                        .select('_id')
+                        .lean(true);
 
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      if (user) {
-        env.res.error   = true;
-        env.res.message = env.t('message_busy_nick');
-      }
-
-      callback();
-    });
+    if (user) {
+      env.res.error   = true;
+      env.res.message = env.t('message_busy_nick');
+    }
   });
 };

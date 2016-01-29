@@ -17,14 +17,14 @@ module.exports = function (N, apiPath) {
 
   // Fetch user
   //
-  N.wire.before(apiPath, function fetch_user_by_hid(env, callback) {
-    N.wire.emit('internal:users.fetch_user_by_hid', env, callback);
+  N.wire.before(apiPath, function fetch_user_by_hid(env) {
+    return N.wire.emit('internal:users.fetch_user_by_hid', env);
   });
 
 
   // Find and processes user media
   //
-  N.wire.on(apiPath, function get_user_medias(env, callback) {
+  N.wire.on(apiPath, function* get_user_medias(env) {
     var criteria = {
       type: { $in: N.models.users.MediaInfo.types.LIST_VISIBLE }
     };
@@ -41,30 +41,21 @@ module.exports = function (N, apiPath) {
       criteria.media_id = { $lte: env.params.from_media_id };
     }
 
-    N.models.users.MediaInfo
-        .find(criteria)
-        .lean(true)
-        .sort('-media_id')
-        // Select one extra item to check next page exists
-        .limit(MEDIAS_PER_PAGE + 1)
-        .exec(function (err, result) {
+    let result = yield N.models.users.MediaInfo
+                          .find(criteria)
+                          .lean(true)
+                          .sort('-media_id')
+                          // Select one extra item to check next page exists
+                          .limit(MEDIAS_PER_PAGE + 1);
 
-      if (err) {
-        callback(err);
-        return;
-      }
+    if (result.length === MEDIAS_PER_PAGE + 1) {
+      // Remove extra item from response and fill `next_media_id`
+      env.res.next_media_id = result.pop().media_id;
+    } else {
+      env.res.next_media_id = null;
+    }
 
-      if (result.length === MEDIAS_PER_PAGE + 1) {
-        // Remove extra item from response and fill `next_media_id`
-        env.res.next_media_id = result.pop().media_id;
-      } else {
-        env.res.next_media_id = null;
-      }
-
-      env.res.user_hid = env.data.user.hid;
-      env.res.medias = result;
-
-      callback();
-    });
+    env.res.user_hid = env.data.user.hid;
+    env.res.medias = result;
   });
 };

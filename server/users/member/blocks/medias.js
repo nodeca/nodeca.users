@@ -13,53 +13,33 @@ module.exports = function (N) {
 
   // Fetch last user medias
   //
-  N.wire.after('server:users.member', function fetch_last_photos(env, callback) {
-    var mTypes = N.models.users.MediaInfo.types;
+  N.wire.after('server:users.member', function* fetch_last_photos(env) {
+    let mTypes = N.models.users.MediaInfo.types;
 
-    N.models.users.MediaInfo
-      .find({ user_id: env.data.user._id, type: { $in: mTypes.LIST_VISIBLE } })
-      .lean(true)
-      .sort('-media_id')
-      .limit(MEDIA_LIMIT)
-      .exec(function (err, medias) {
-        if (err) {
-          callback(err);
-          return;
-        }
+    let medias = yield N.models.users.MediaInfo
+                          .find({ user_id: env.data.user._id, type: { $in: mTypes.LIST_VISIBLE } })
+                          .lean(true)
+                          .sort('-media_id')
+                          .limit(MEDIA_LIMIT);
 
-        if (medias.length === 0) {
-          callback();
-          return;
-        }
+    if (medias.length === 0) return;
 
-        env.res.blocks = env.res.blocks || {};
-        _.set(env.res, 'blocks.medias', { list: medias });
-
-        callback();
-      });
+    env.res.blocks = env.res.blocks || {};
+    _.set(env.res, 'blocks.medias', { list: medias });
   });
 
 
   // Fetch user medias count
   //
-  N.wire.after('server:users.member', function fetch_photos_count(env, callback) {
-    var mTypes = N.models.users.MediaInfo.types;
+  N.wire.after('server:users.member', function* fetch_photos_count(env) {
+    let mTypes = N.models.users.MediaInfo.types;
 
-    if (!_.get(env.res, 'blocks.medias')) {
-      callback();
-      return;
-    }
+    if (!_.get(env.res, 'blocks.medias')) return;
 
-    N.models.users.MediaInfo
-      .find({ user_id: env.data.user._id, type: { $in: mTypes.LIST_VISIBLE } })
-      .count(function (err, count) {
-        if (err) {
-          callback(err);
-          return;
-        }
+    let count = yield N.models.users.MediaInfo
+                          .find({ user_id: env.data.user._id, type: { $in: mTypes.LIST_VISIBLE } })
+                          .count();
 
-        env.res.blocks.medias.count = count;
-        callback();
-      });
+    env.res.blocks.medias.count = count;
   });
 };

@@ -10,7 +10,7 @@ module.exports = function (N, apiPath) {
     redirect_id: { type: 'string', minLength: 1 }
   });
 
-  N.wire.on(apiPath, function remember_action(env, callback) {
+  N.wire.on(apiPath, function remember_action(env) {
     env.session.oauth = {};
     env.session.oauth.action = env.params.action;
 
@@ -18,8 +18,6 @@ module.exports = function (N, apiPath) {
     if (env.params.action === 'login') {
       env.session.oauth.redirect_id = env.params.redirect_id;
     }
-
-    callback();
   });
 
 };

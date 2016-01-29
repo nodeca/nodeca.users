@@ -26,33 +26,19 @@ module.exports = function (N, apiPath) {
 
   // Check permissions
   //
-  N.wire.before(apiPath, function check_permissions(env, callback) {
-    if (env.session.is_guest) {
-      callback(N.io.FORBIDDEN);
-      return;
-    }
-
-    callback();
+  N.wire.before(apiPath, function check_permissions(env) {
+    if (env.session.is_guest) return N.io.FORBIDDEN;
   });
 
 
   // Fetch user
   //
-  N.wire.before(apiPath, function fetch_user(env, callback) {
-    N.models.users.User.findOne({ _id: env.user_info.user_id }).lean(true).exec(function (err, user) {
-      if (err) {
-        callback(err);
-        return;
-      }
+  N.wire.before(apiPath, function* fetch_user(env) {
+    env.data.user = yield N.models.users.User
+                              .findOne({ _id: env.user_info.user_id })
+                              .lean(true);
 
-      if (!user) {
-        callback(N.io.NOT_FOUND);
-        return;
-      }
-
-      env.data.user = user;
-      callback();
-    });
+    if (!env.data.user) throw N.io.NOT_FOUND;
   });
 
 
@@ -63,16 +49,13 @@ module.exports = function (N, apiPath) {
     //
     // When single big file sent, `Content-Length` ~ FileSize.
     // Difference is < 200 bytes.
-    var size = env.origin.req.headers['content-length'];
+    let size = env.origin.req.headers['content-length'];
 
-    if (!size) {
-      return N.io.LENGTH_REQUIRED;
-    }
+    if (!size) throw N.io.LENGTH_REQUIRED;
 
-    if (size > 1 * 1024 * 1024) { // Don't allow > 1 MB
-      // It should never happen, because avatar already resized on client side
-      return N.io.FORBIDDEN;
-    }
+    // Don't allow > 1 MB. That should never happen,
+    // because avatar already resized on client side
+    if (size > 1 * 1024 * 1024) throw N.io.FORBIDDEN;
   });
 
 
@@ -161,12 +144,9 @@ module.exports = function (N, apiPath) {
 
   // Remove old avatar
   //
-  N.wire.after(apiPath, function save_media(env, callback) {
-    if (!env.data.old_avatar) {
-      callback();
-      return;
-    }
+  N.wire.after(apiPath, function* save_media(env) {
+    if (!env.data.old_avatar) return;
 
-    N.models.core.File.remove(env.data.old_avatar, true, callback);
+    yield N.models.core.File.remove(env.data.old_avatar, true);
   });
 };

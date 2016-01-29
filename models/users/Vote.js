@@ -57,8 +57,8 @@ module.exports = function (N, collectionName) {
   Vote.statics.types = types;
 
 
-  N.wire.on('init:models', function emit_init_Vote(__, callback) {
-    N.wire.emit('init:models.' + collectionName, Vote, callback);
+  N.wire.on('init:models', function emit_init_Vote() {
+    return N.wire.emit('init:models.' + collectionName, Vote);
   });
 
 

@@ -16,8 +16,8 @@ module.exports = function (N, apiPath) {
 
   // Kick logged-in members
   //
-  N.wire.before(apiPath, function login_guest_only(env, callback) {
-    N.wire.emit('internal:users.redirect_not_guest', env, callback);
+  N.wire.before(apiPath, function login_guest_only(env) {
+    return N.wire.emit('internal:users.redirect_not_guest', env);
   });
 
 

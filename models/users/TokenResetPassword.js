@@ -37,8 +37,8 @@ module.exports = function (N, collectionName) {
   //////////////////////////////////////////////////////////////////////////////
 
 
-  N.wire.on('init:models', function emit_init_TokenResetPassword(__, callback) {
-    N.wire.emit('init:models.' + collectionName, TokenResetPassword, callback);
+  N.wire.on('init:models', function emit_init_TokenResetPassword() {
+    return N.wire.emit('init:models.' + collectionName, TokenResetPassword);
   });
 
 

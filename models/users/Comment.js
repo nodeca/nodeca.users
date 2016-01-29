@@ -41,8 +41,8 @@ module.exports = function (N, collectionName) {
   //////////////////////////////////////////////////////////////////////////////
 
 
-  N.wire.on('init:models', function emit_init_Comment(__, callback) {
-    N.wire.emit('init:models.' + collectionName, Comment, callback);
+  N.wire.on('init:models', function emit_init_Comment() {
+    return N.wire.emit('init:models.' + collectionName, Comment);
   });
 
 

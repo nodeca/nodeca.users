@@ -13,8 +13,8 @@ module.exports = function (N, apiPath) {
 
   // Kick logged-in members
   //
-  N.wire.before(apiPath, function register_guest_only(env, callback) {
-    N.wire.emit('internal:users.redirect_not_guest', env, callback);
+  N.wire.before(apiPath, function register_guest_only(env) {
+    return N.wire.emit('internal:users.redirect_not_guest', env);
   });
 
 
@@ -27,29 +27,17 @@ module.exports = function (N, apiPath) {
 
   // Check auth token
   //
-  N.wire.before(apiPath, function check_activation_token_and_user(env, callback) {
+  N.wire.before(apiPath, function* check_activation_token_and_user(env) {
 
-    N.models.users.TokenActivationEmail
-        .findOne({ secret_key: env.params.secret_key, ip: env.req.ip })
-        .lean(true) // because we use model's instance method 'isExpired'
-        .exec(function (err, token) {
+    env.data.token = yield N.models.users.TokenActivationEmail
+                              .findOne({ secret_key: env.params.secret_key, ip: env.req.ip })
+                              .lean(true); // because we use model's instance method 'isExpired'
 
-      if (err) {
-        callback(err);
-        return;
-      }
+    // No token found or it's expired. Show 'Invalid token' page.
+    if (!env.data.token) return;
 
-      // No token found or it's expired. Show 'Invalid token' page.
-      if (!token) {
-        callback();
-        return;
-      }
-
-      env.data.token = token;
-
-      // Token can be used only once.
-      N.models.users.TokenActivationEmail.remove({ secret_key: env.params.secret_key }, callback);
-    });
+    // Token can be used only once.
+    yield N.models.users.TokenActivationEmail.remove({ secret_key: env.params.secret_key });
   });
 
   //
@@ -60,47 +48,32 @@ module.exports = function (N, apiPath) {
 
   // Check nick uniqueness
   //
-  N.wire.before(apiPath, function check_nick_uniqueness(env, callback) {
+  N.wire.before(apiPath, function* check_nick_uniqueness(env) {
 
-    var token = env.data.token;
+    let token = env.data.token;
 
-    if (!token) {
-      callback();
-      return;
+    if (!token) return;
+
+    let id = yield N.models.users.User
+                      .findOne({ nick: token.reg_info.nick })
+                      .select('_id')
+                      .lean(true);
+
+    if (id) {
+      // Need to terminate chain without 500 error.
+      // If user exists - kill fetched token as invalid.
+      env.data.token = null;
     }
-
-    N.models.users.User
-        .findOne({ nick: token.reg_info.nick })
-        .select('_id')
-        .lean(true)
-        .exec(function (err, id) {
-
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      if (id) {
-        // Need to terminate chain without 500 error.
-        // If user exists - kill fetched token as invalid.
-        env.data.token = null;
-      }
-
-      callback();
-    });
   });
 
 
   // Check email uniqueness. User email and oauth provider email should be unique
   //
-  N.wire.before(apiPath, function check_email_uniqueness(env, callback) {
+  N.wire.before(apiPath, function* check_email_uniqueness(env) {
 
-    var token = env.data.token;
+    let token = env.data.token;
 
-    if (!token) {
-      callback();
-      return;
-    }
+    if (!token) return;
 
     var emails = [ token.reg_info.email ];
 
@@ -108,79 +81,50 @@ module.exports = function (N, apiPath) {
       emails.push(token.oauth_info.email);
     }
 
-    N.models.users.AuthLink
-        .findOne({ exists: true })
-        .where('email').in(emails)
-        .select('_id')
-        .lean(true)
-        .exec(function (err, id) {
+    let id = yield N.models.users.AuthLink
+                      .findOne({ exists: true })
+                      .where('email').in(emails)
+                      .select('_id')
+                      .lean(true);
 
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      if (id) {
-        // Need to terminate chain without 500 error.
-        // If email(s) occupied - kill fetched token as invalid.
-        env.data.token = null;
-      }
-
-      callback();
-    });
+    if (id) {
+      // Need to terminate chain without 500 error.
+      // If email(s) occupied - kill fetched token as invalid.
+      env.data.token = null;
+    }
   });
 
 
   // Create user record and login
   //
-  N.wire.on(apiPath, function create_user(env, callback) {
+  N.wire.on(apiPath, function* create_user(env) {
 
-    var token = env.data.token;
+    let token = env.data.token;
 
-    if (!token) {
-      callback();
-      return;
-    }
+    if (!token) return;
 
     env.data.reg_info = token.reg_info;
     env.data.oauth_info = token.oauth_info; // -> oauth_info
 
-    N.wire.emit('internal:users.user_create', env, function (err) {
-      if (err) {
-        callback(err);
-        return;
+    yield N.wire.emit('internal:users.user_create', env);
+
+    // authLink info is needed to create TokenLogin
+    //
+    // TODO: when we will have oauth registration, it should select link based on
+    //       env.data.oauth_info
+    //
+    env.data.authLink = yield N.models.users.AuthLink.findOne({ user_id: env.data.user._id });
+
+    yield N.wire.emit('internal:users.login', env);
+
+    // Use redirect instead of direct page rendering, because
+    // we need to reload client environment with the new user data
+    //
+    throw {
+      code: N.io.REDIRECT,
+      head: {
+        Location: N.router.linkTo('users.auth.register.activate_done')
       }
-
-      // authLink info is needed to create TokenLogin
-      //
-      // TODO: when we will have oauth registration, it should select link based on
-      //       env.data.oauth_info
-      //
-      N.models.users.AuthLink.findOne({ user_id: env.data.user._id }, function (err, authLink) {
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        env.data.authLink = authLink;
-
-        N.wire.emit('internal:users.login', env, function (err) {
-          if (err) {
-            callback(err);
-            return;
-          }
-
-          // Use redirect instead of direct page rendering, because
-          // we need to reload client environment with the new user data
-          //
-          callback({
-            code: N.io.REDIRECT,
-            head: {
-              Location: N.router.linkTo('users.auth.register.activate_done')
-            }
-          });
-        });
-      });
-    });
+    };
   });
 };

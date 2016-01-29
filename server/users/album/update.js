@@ -16,65 +16,37 @@ module.exports = function (N, apiPath) {
 
   // Fetch album info
   //
-  N.wire.before(apiPath, function fetch_album(env, callback) {
-    N.models.users.Album
-      .findOne({ _id: env.params.album_id })
-      .lean(true)
-      .exec(function (err, album) {
-        if (err) {
-          callback(err);
-          return;
-        }
+  N.wire.before(apiPath, function* fetch_album(env) {
+    env.data.album = yield N.models.users.Album
+                              .findOne({ _id: env.params.album_id })
+                              .lean(true);
 
-        if (!album) {
-          callback(N.io.NOT_FOUND);
-          return;
-        }
+    if (!env.data.album) throw N.io.NOT_FOUND;
 
-        // No one can edit default album
-        if (album.default) {
-          callback(N.io.NOT_FOUND);
-        }
-
-        env.data.album = album;
-        callback();
-      });
+    // No one can edit default album
+    if (env.data.album.default)  throw N.io.NOT_FOUND;
   });
 
 
   // Fetch cover
   //
-  N.wire.before(apiPath, function fetch_cover(env, callback) {
+  N.wire.before(apiPath, function* fetch_cover(env) {
     var mTypes = N.models.users.MediaInfo.types;
 
     // Skip if cover_id isn't set
-    if (!env.params.cover_id) {
-      callback();
-      return;
-    }
+    if (!env.params.cover_id) return;
 
-    N.models.users.MediaInfo
-        .findOne({
-          media_id: env.params.cover_id,
-          type: mTypes.IMAGE,
-          album_id: env.data.album._id
-        })
-        .lean(true)
-        .exec(function (err, cover) {
+    let cover = yield N.models.users.MediaInfo
+                          .findOne({
+                            media_id: env.params.cover_id,
+                            type: mTypes.IMAGE,
+                            album_id: env.data.album._id
+                          })
+                          .lean(true);
 
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      // On invalid cover just leave existing intact.
-      // That's more simple than process errors for very rare case.
-      if (cover) {
-        env.data.cover = cover;
-      }
-
-      callback();
-    });
+    // On invalid cover just leave existing intact.
+    // That's more simple than process errors for very rare case.
+    if (cover) env.data.cover = cover;
   });
 
 
@@ -83,15 +55,13 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function check_permissions(env) {
     var album = env.data.album;
 
-    if (env.user_info.user_id !== String(album.user_id)) {
-      return N.io.FORBIDDEN;
-    }
+    if (env.user_info.user_id !== String(album.user_id)) throw N.io.FORBIDDEN;
   });
 
 
   // Update album info
   //
-  N.wire.on(apiPath, function update_album(env, callback) {
+  N.wire.on(apiPath, function* update_album(env) {
     var cover = env.data.cover;
     var album = env.data.album;
 
@@ -104,6 +74,6 @@ module.exports = function (N, apiPath) {
       data.cover_id = cover.media_id;
     }
 
-    N.models.users.Album.update({ _id: album._id }, data, callback);
+    yield N.models.users.Album.update({ _id: album._id }, data);
   });
 };

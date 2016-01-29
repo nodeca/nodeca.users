@@ -21,32 +21,20 @@ module.exports = function (N, apiPath) {
 
   // Fetch user by hid
   //
-  N.wire.on(apiPath, function fetch_user_by_hid(env, callback) {
+  N.wire.on(apiPath, function* fetch_user_by_hid(env) {
     // This method can be called multiple times (from page & subcalls).
     // Check if data already loaded.
-    if (env.data.user) { return callback(); }
+    if (env.data.user) return;
 
-    var query = User.findOne({ hid: env.params.user_hid }).lean(true);
+    let query = User.findOne({ hid: env.params.user_hid }).lean(true);
 
     // Check 'can_see_deleted_users' permission
     if (!env.data.settings.can_see_deleted_users) {
       query.where({ exists: true });
     }
 
-    query.exec(function (err, user) {
-      if (err) {
-        callback(err);
-        return;
-      }
+    env.data.user = yield query.exec();
 
-      if (!user) {
-        callback(N.io.NOT_FOUND);
-        return;
-      }
-
-      env.data.user = user;
-
-      callback();
-    });
+    if (!env.data.user) throw N.io.NOT_FOUND;
   });
 };

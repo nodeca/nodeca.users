@@ -62,8 +62,8 @@ module.exports = function (N, collectionName) {
   Subscription.statics.to_types = {};
 
 
-  N.wire.on('init:models', function emit_init_Subscription(__, callback) {
-    N.wire.emit('init:models.' + collectionName, Subscription, callback);
+  N.wire.on('init:models', function emit_init_Subscription() {
+    return N.wire.emit('init:models.' + collectionName, Subscription);
   });
 
 

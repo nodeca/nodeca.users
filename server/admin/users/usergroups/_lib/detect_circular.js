@@ -1,5 +1,5 @@
 // Checks if inheritance list of the given group is not circular.
-// Returns (via a callback) null on ok, or ObjectID of the group where circularity found.
+// Resolves with null on ok, or ObjectID of the group where circularity found.
 //
 
 
