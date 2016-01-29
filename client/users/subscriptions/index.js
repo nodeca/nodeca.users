@@ -29,7 +29,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   N.wire.on('users.subscriptions:delete', function delete_subscription(data, callback) {
     var subscription = data.$this.data('subscription');
 
-    N.io.rpc('users.subscriptions.destroy', { subscription_id: subscription._id }).done(function () {
+    N.io.rpc('users.subscriptions.destroy', { subscription_id: subscription._id }).then(function () {
       var $item = data.$this.closest('.user-subscriptions-item');
 
       $item
@@ -57,7 +57,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
       N.io.rpc('users.subscriptions.update', {
         subscription_id: subscription._id,
         type: params.subscription
-      }).done(function () {
+      }).then(function () {
         data.$this.removeClass('icon-track-watching icon-track-tracking icon-track-normal icon-track-muted');
 
         subscription.type = params.subscription;

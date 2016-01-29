@@ -36,11 +36,11 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   N.wire.on('users.auth.reset_password.change_exec', function change_password(data) {
 
     N.io.rpc('users.auth.reset_password.change_exec', data.fields)
-      .done(function () {
+      .then(function () {
         // Reload the page in order to apply auto login.
         window.location = N.router.linkTo('users.auth.reset_password.change_done_show');
       })
-      .fail(function (err) {
+      .catch(function (err) {
         view.status(err.bad_password ? 'has-error' : null);
       });
   });

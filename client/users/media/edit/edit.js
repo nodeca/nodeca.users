@@ -14,7 +14,7 @@ var data;
 N.wire.before('users.media.edit', function load_media_info(options, callback) {
   params = options;
 
-  N.io.rpc('users.media.edit', params).done(function (mediaInfo) {
+  N.io.rpc('users.media.edit', params).then(function (mediaInfo) {
     data = mediaInfo;
     callback();
   });
@@ -45,7 +45,7 @@ N.wire.on('users.media.edit', function show_media_edit_dlg(options, callback) {
 //
 N.wire.on('users.media.edit:submit', function submit_media_edit_dlg(data) {
   N.io.rpc('users.media.update', { media_id: params.media_id, album_id: data.fields.album_id })
-    .done(function () {
+    .then(function () {
       $dialog.modal('hide');
 
       doneCallback();

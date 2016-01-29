@@ -155,7 +155,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         album_id: pageParams.album_id,
         from_media_id: nextMediaID
       }
-    ).done(function (mediaList) {
+    ).then(function (mediaList) {
       $('#users-medias-list').append($(N.runtime.render('users.album.list', mediaList)));
       nextMediaID = mediaList.next_media_id;
 

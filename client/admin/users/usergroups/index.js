@@ -11,7 +11,7 @@ N.wire.before('admin.users.usergroups.destroy', function confirm_delete_usergrou
 
 
 N.wire.on('admin.users.usergroups.destroy', function delete_usergroup(data) {
-  N.io.rpc('admin.users.usergroups.destroy', { _id: data.$this.data('usergroupId') }).done(function () {
+  N.io.rpc('admin.users.usergroups.destroy', { _id: data.$this.data('usergroupId') }).then(function () {
     data.$this.parents('tr').remove();
   });
 });

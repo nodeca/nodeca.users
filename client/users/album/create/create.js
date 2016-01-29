@@ -25,7 +25,7 @@ N.wire.once('users.album.create', function init_event_handlers() {
     }
 
     N.io.rpc('users.album.create', { title })
-      .done(function (res) {
+      .then(function (res) {
         album = res.album;
         $dialog.modal('hide');
       });

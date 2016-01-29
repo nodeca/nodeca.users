@@ -95,7 +95,7 @@ Form.prototype.submit = function submit() {
     data.settings[setting.settingName] = setting.value();
   });
 
-  N.io.rpc('users.settings.update', data).done(function () {
+  N.io.rpc('users.settings.update', data).then(function () {
     N.wire.emit('notify', {
       type: 'info',
       message: t('saved')

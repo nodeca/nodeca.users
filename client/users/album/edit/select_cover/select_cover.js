@@ -38,7 +38,7 @@ N.wire.after('users.album.edit.select_cover', function load_photos(data, callbac
   onCoverSelected = callback;
   dialogData = data;
 
-  N.io.rpc('users.album.select_cover.index', { album_id: data.album_id }).done(function (res) {
+  N.io.rpc('users.album.select_cover.index', { album_id: data.album_id }).then(function (res) {
     var $list = $(N.runtime.render('users.album.edit.select_cover.media_list', {
       medias: res.medias,
       user_hid: data.user_hid

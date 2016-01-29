@@ -39,7 +39,7 @@ N.wire.once('navigate.done', function init_usercard_click() {
     event.preventDefault();
 
     N.io.rpc(module.apiPath, { user_hid })
-      .done(function (res) {
+      .then(function (res) {
         var pos_left = $link.offset().left + $link.innerWidth();
         var $card = $(N.runtime.render(module.apiPath, res.user));
 
@@ -66,7 +66,11 @@ N.wire.once('navigate.done', function init_usercard_click() {
 
         popover_shown = true;
       })
-      .fail(N.io.NOT_FOUND, function () {
+      .catch(err => {
+        if (err.code !== N.io.NOT_FOUND) {
+          throw err;
+        }
+
         N.wire.emit('notify', { type: 'error', message: t('error') });
       });
   });

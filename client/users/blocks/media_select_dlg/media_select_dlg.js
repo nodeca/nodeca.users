@@ -29,7 +29,7 @@ function loadDialogContent(selectedAlbumID) {
     params.album_id = selectedAlbumID;
   }
 
-  N.io.rpc('users.media_select.index', params).done(function (res) {
+  N.io.rpc('users.media_select.index', params).then(function (res) {
     // Add virtual item (all photos) to albums list
     res.albums.unshift({ title: t('all') });
 
@@ -173,7 +173,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
       params.album_id = albumID;
     }
 
-    N.io.rpc('users.media_select.index', params).done(function (req) {
+    N.io.rpc('users.media_select.index', params).then(function (req) {
 
       var $medias = $(N.runtime.render('users.blocks.media_select_dlg.media_list', {
         medias: req.medias,

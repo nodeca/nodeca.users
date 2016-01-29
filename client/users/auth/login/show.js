@@ -62,7 +62,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
     }
 
     N.io.rpc('users.auth.login.plain_exec', loginParams)
-      .done(function (res) {
+      .then(function (res) {
 
         // Notify other browser tabs about
         N.live.emit('local.users.auth');
@@ -81,15 +81,15 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
         // Check that previous page can be loaded, because it can return redirect or forbid access
         N.io.rpc(previousPageParams.apiPath, previousPageParams.params, { handleAllErrors: true })
-          .done(function () {
+          .then(function () {
             // Navigate to previous page
             window.location = N.router.linkTo(previousPageParams.apiPath, previousPageParams.params);
           })
-          .fail(function () {
+          .catch(function () {
             window.location = res.redirect_url;
           });
       })
-      .fail(function (err) {
+      .catch(function (err) {
         // Force captcha on every attempt.
         N.wire.emit('common.blocks.recaptcha.update');
 

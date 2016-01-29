@@ -86,7 +86,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   // Click to delete avatar button
   //
   N.wire.on('users.member:delete_avatar', function delete_avatar(__, callback) {
-    N.io.rpc('users.avatar.delete').done(function (/* result */) {
+    N.io.rpc('users.avatar.delete').then(function (/* result */) {
 
       var $img = $('.member-avatar__image');
       $img.attr('src', identicon(N.runtime.user_id, avatarWidth));

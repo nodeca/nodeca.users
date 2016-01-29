@@ -22,7 +22,7 @@ N.wire.on(module.apiPath, function set_language_init(data, callback) {
     return;
   }
 
-  N.io.rpc(module.apiPath, { locale }).done(function () {
+  N.io.rpc(module.apiPath, { locale }).then(function () {
 
     // Reload the page in order to apply new locale.
     window.location.reload();

@@ -23,7 +23,7 @@ var init = _.once(function () {
       params.redirect_id = pageParams.redirect_id;
     }
 
-    N.io.rpc(path, params).done(function save_action() {
+    N.io.rpc(path, params).then(function save_action() {
 
       // Redirect to oauth provider
       window.location = url;

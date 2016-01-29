@@ -664,12 +664,12 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
       processData: false,
       contentType: false
     })
-      .done(function (result) {
+      .then(function (result) {
         data.avatar_id = result.avatar_id;
         $dialog.modal('hide');
         onUploaded();
       })
-      .fail(function () {
+      .catch(function () {
         $dialog.modal('hide');
         N.wire.emit('notify', t('err_upload_failed'));
       })

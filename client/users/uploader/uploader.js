@@ -229,11 +229,11 @@ function startUpload(data, callback) {
       return xhr;
     }
   })
-  .done(function (res) {
+  .then(function (res) {
     uploadedFiles.push(res.media);
     $progressInfo.find('.progress-bar').addClass('progress-bar-success');
   })
-  .fail(function (jqXHR, textStatus, errorThrown) {
+  .catch(function (jqXHR, textStatus, errorThrown) {
     // Don't show error if user terminate file upload
     if (errorThrown === 'abort') {
       return;
@@ -306,7 +306,7 @@ function confirmClose() {
 // Load configuration from server
 //
 N.wire.before('users.uploader:add', function load_config(data, callback) {
-  N.io.rpc(data.config).done(function (uploaderSettings) {
+  N.io.rpc(data.config).then(function (uploaderSettings) {
     settings = uploaderSettings;
     callback();
   });

@@ -42,7 +42,7 @@ N.wire.on('users.album.add_medialink', function show_add_medialink_dlg(data, cal
 //
 N.wire.on('users.album.add_medialink:submit', function submit_add_medialink_dlg(form) {
   N.io.rpc('users.media.add_medialink', { album_id: params.album_id, media_url: form.fields.media_url })
-    .done(function (res) {
+    .then(function (res) {
       $dialog.modal('hide');
 
       params.media = res.media;

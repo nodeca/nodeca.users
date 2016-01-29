@@ -309,7 +309,7 @@ function Form(page_data) {
 Form.prototype.create = function create() {
   var self = this;
 
-  N.io.rpc('admin.users.usergroups.create', this.currentGroup.getOutputData()).done(function () {
+  N.io.rpc('admin.users.usergroups.create', this.currentGroup.getOutputData()).then(function () {
     self.currentGroup.markClean();
 
     N.wire.emit('notify', {
@@ -326,7 +326,7 @@ Form.prototype.create = function create() {
 Form.prototype.update = function update() {
   var self = this;
 
-  N.io.rpc('admin.users.usergroups.update', this.currentGroup.getOutputData()).done(function () {
+  N.io.rpc('admin.users.usergroups.update', this.currentGroup.getOutputData()).then(function () {
     self.currentGroup.markClean();
 
     N.wire.emit('notify', {

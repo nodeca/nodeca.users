@@ -58,7 +58,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
     if (text.length < 1) return;
 
     N.io.rpc('users.auth.check_nick', { nick: text })
-      .done(function (res) {
+      .then(function (res) {
         self.css(res.error ? 'has-error' : '');
         self.message(res.message);
       });
@@ -89,11 +89,11 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   N.wire.on('users.auth.register.exec', function register(form) {
 
     N.io.rpc('users.auth.register.exec', form.fields)
-      .done(function (res) {
+      .then(function (res) {
         // Full page reload, because environment changed
         window.location = res.redirect_url;
       })
-      .fail(function (err) {
+      .catch(function (err) {
         // Update classes and messages on all input fields.
         _.forEach(view, function (field, name) {
           field.css(_.has(err.data, name) ? 'has-error' : '');
