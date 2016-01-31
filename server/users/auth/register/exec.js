@@ -110,35 +110,22 @@ module.exports = function (N, apiPath) {
 
   // Check recaptcha
   //
-  N.wire.before(apiPath, function validate_recaptcha(env, callback) {
-    if (!N.config.options.recaptcha) {
-      callback();
-      return;
-    }
+  N.wire.before(apiPath, function* validate_recaptcha(env) {
+    if (!N.config.options.recaptcha) return;
 
-    if (!_.isEmpty(env.data.errors)) {
-      // Skip if some other fields are incorrect in order to not change
-      // captcha words and not annoy the user by forcing him to retype.
-      callback();
-      return;
-    }
+    // Skip if some other fields are incorrect in order to not change
+    // captcha words and not annoy the user by forcing him to retype.
+    if (!_.isEmpty(env.data.errors)) return;
 
-    var privateKey = N.config.options.recaptcha.private_key,
+    let privateKey = N.config.options.recaptcha.private_key,
         clientIp   = env.req.ip,
         response   = env.params['g-recaptcha-response'];
 
-    recaptcha.verify(privateKey, clientIp, response, function (err, valid) {
-      if (err) {
-        callback(new Error('Captcha service error'));
-        return;
-      }
+    let valid = yield recaptcha.verify(privateKey, clientIp, response);
 
-      if (!valid) {
-        env.data.errors.recaptcha_response_field = env.t('err_wrong_captcha');
-      }
-
-      callback();
-    });
+    if (!valid) {
+      env.data.errors.recaptcha_response_field = env.t('err_wrong_captcha');
+    }
   });
 
 

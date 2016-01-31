@@ -22,37 +22,23 @@ module.exports = function (N, apiPath) {
 
   // check captcha
   //
-  N.wire.before(apiPath, function verify_captcha(env, callback) {
-    if (!N.config.options.recaptcha) {
-      callback();
-      return;
-    }
+  N.wire.before(apiPath, function* verify_captcha(env) {
+    if (!N.config.options.recaptcha) return;
 
-    var privateKey = N.config.options.recaptcha.private_key,
+    let privateKey = N.config.options.recaptcha.private_key,
         clientIp   = env.req.ip,
         response   = env.params['g-recaptcha-response'];
 
-    if (!N.config.options.recaptcha) {
-      callback();
-      return;
+    if (!N.config.options.recaptcha) return;
+
+    let valid = yield recaptcha.verify(privateKey, clientIp, response);
+
+    if (!valid) {
+      throw {
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('err_captcha_wrong')
+      };
     }
-
-    recaptcha.verify(privateKey, clientIp, response, function (err, valid) {
-      if (err) {
-        callback(new Error('Captcha service error'));
-        return;
-      }
-
-      if (!valid) {
-        callback({
-          code:    N.io.CLIENT_ERROR,
-          message: env.t('err_captcha_wrong')
-        });
-        return;
-      }
-
-      callback();
-    });
   });
 
 

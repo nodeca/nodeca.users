@@ -45,40 +45,28 @@ module.exports = function (N, apiPath) {
   // That can cause too hight CPU use in bcrypt.
   // Do soft limit - ask user to enter captcha to make sure he is not a bot.
   //
-  N.wire.before(apiPath, function check_total_rate_limit(env, callback) {
-    if (!N.config.options.recaptcha) {
-      callback();
-      return;
-    }
+  N.wire.before(apiPath, function* check_total_rate_limit(env) {
+    if (!N.config.options.recaptcha) return;
 
-    var privateKey = N.config.options.recaptcha.private_key,
+    let privateKey = N.config.options.recaptcha.private_key,
         clientIp   = env.req.ip,
         response   = env.params['g-recaptcha-response'];
 
     if (!response) {
-      callback({
+      throw {
         code:    N.io.CLIENT_ERROR,
         message: env.t('err_captcha_wrong')
-      });
-      return;
+      };
     }
 
-    recaptcha.verify(privateKey, clientIp, response, function (err, valid) {
-      if (err) {
-        callback(new Error('Captcha service error'));
-        return;
-      }
+    let valid = yield recaptcha.verify(privateKey, clientIp, response);
 
-      if (!valid) {
-        callback({
-          code:    N.io.CLIENT_ERROR,
-          message: env.t('err_captcha_wrong')
-        });
-        return;
-      }
-
-      callback();
-    });
+    if (!valid) {
+      throw {
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('err_captcha_wrong')
+      };
+    }
   });
 
 
