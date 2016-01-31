@@ -10,76 +10,56 @@
 // - redirect_id (optional)
 // - authLink
 //
-
-
 'use strict';
 
 
 module.exports = function (N, apiPath) {
 
-  var LoginRedirect = N.models.users.LoginRedirect;
-
-  N.wire.on(apiPath, function user_internal_login(env, callback) {
+  N.wire.on(apiPath, function* user_internal_login(env) {
 
     // delete old session (don't wait until complete)
     if (env.session_id) {
       N.redis.del('sess:' + env.session_id);
     }
 
-    var token = new N.models.users.TokenLogin({
+    let token = new N.models.users.TokenLogin({
       user_id:     env.data.user._id,
       ip:          env.req.ip,
       authlink_id: env.data.authLink._id
     });
 
-    token.save(function (err) {
-      if (err) {
-        callback(err);
-        return;
-      }
+    yield token.save();
 
-      env.session_id      = token.session_id;
+    env.session_id      = token.session_id;
 
-      // Attach user id to the existing session, while preserving existing
-      // session data.
-      //
-      // So if something is saved for a guest, it'll still be available when
-      // he logs in.
-      //
-      env.session.user_id = token.user_id.toString();
+    // Attach user id to the existing session, while preserving existing
+    // session data.
+    //
+    // So if something is saved for a guest, it'll still be available when
+    // he logs in.
+    //
+    env.session.user_id = token.user_id.toString();
 
-      // fill redirect with default value
-      env.data.redirect_url = N.router.linkTo('users.member', { user_hid: env.data.user.hid });
+    // fill redirect with default value
+    env.data.redirect_url = N.router.linkTo('users.member', { user_hid: env.data.user.hid });
 
-      // if no specific redirect requested - redirect to default
-      if (!env.data.redirect_id) {
-        callback();
-        return;
-      }
+    // if no specific redirect requested - redirect to default
+    if (!env.data.redirect_id) return;
 
-      // Try to find active redirect bound to this ip
-      LoginRedirect.findOne({ _id: env.data.redirect_id, used: false, ip: env.req.ip })
-          .lean(true)
-          .exec(function (err, link) {
+    // Try to find active redirect bound to this ip
+    let link = yield N.models.users.LoginRedirect
+                        .findOne({ _id: env.data.redirect_id, used: false, ip: env.req.ip })
+                        .lean(true);
 
-        if (err) {
-          callback(err);
-          return;
-        }
+    // If redirect requested, but not found - redirect to default.
+    if (!link) return;
 
-        // If redirect requested, but not found - redirect to default.
-        if (!link) {
-          callback();
-          return;
-        }
+    // update redirect url
+    env.data.redirect_url = link.url;
 
-        // update redirect url
-        env.data.redirect_url = link.url;
-
-        // mark redirect as used
-        LoginRedirect.update({ _id: link._id }, { $set: { used: true } }, callback);
-      });
-    });
+    // mark redirect as used
+    yield N.models.users.LoginRedirect
+              .update({ _id: link._id }, { $set: { used: true } });
   });
 
 
