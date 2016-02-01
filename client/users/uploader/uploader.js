@@ -4,47 +4,45 @@
 //
 // Add files (from drop event)
 //
-// var params = {
+// let params = {
 //   files: event.dataTransfer.files,
 //   url: '/url/to/upload/method',
 //   config: 'users.uploader_config',
 //   uploaded: null
 // };
 //
-// N.wire.emit('users.uploader:add', params, function () {
-//   params.uploaded.forEach(...);
-// });
+// N.wire.emit('users.uploader:add', params).then(uploaded => uploaded.forEach(/*...*/));
 //
 // params:
-// - files      - required
-// - url        - required
-// - config     - required, name of server method that returns config for uploader
-// - uploaded   - null, will be filled after upload - array of uploaded media
 //
-
+// - files    - required
+// - url      - required
+// - config   - required, name of server method that returns config for uploader
+// - uploaded - null, will be filled after upload - array of uploaded media
+//
 'use strict';
 
 
-var async    = require('async');
-var readExif = require('nodeca.users/lib/exif');
-var pica     = require('pica');
+const async    = require('async');
+const readExif = require('nodeca.users/lib/exif');
+const pica     = require('pica');
 
 
-var settings;
-var $uploadDialog;
+let settings;
+let $uploadDialog;
 // Needed to terminate pending queue on abort
-var aborted;
+let aborted;
 // Needed to check is confirmation dialog visible
-var closeConfirmation;
-var uploadedFiles;
-var requests;
+let closeConfirmation;
+let uploadedFiles;
+let requests;
 
 
 // Check file extension
 //
 function checkFile(data) {
-  var allowedFileExt = new RegExp('\.(' + settings.extensions.join('|') + ')$', 'i');
-  var message;
+  let allowedFileExt = new RegExp('\.(' + settings.extensions.join('|') + ')$', 'i');
+  let message;
 
   if (!allowedFileExt.test(data.file.name)) {
     message = t('err_invalid_ext', { file_name: data.file.name });
@@ -57,9 +55,9 @@ function checkFile(data) {
 // Resize image if needed
 //
 function resizeImage(data, callback) {
-  var slice = data.file.slice || data.file.webkitSlice || data.file.mozSlice;
-  var ext = data.file.name.split('.').pop();
-  var typeConfig = settings.types[ext] || {};
+  let slice = data.file.slice || data.file.webkitSlice || data.file.mozSlice;
+  let ext = data.file.name.split('.').pop();
+  let typeConfig = settings.types[ext] || {};
 
   // Check if file can be resized before upload
   if ([ 'bmp', 'jpg', 'jpeg', 'png' ].indexOf(ext) === -1 || !typeConfig.resize || !typeConfig.resize.orig) {
@@ -67,7 +65,7 @@ function resizeImage(data, callback) {
     return;
   }
 
-  var resizeConfig = typeConfig.resize.orig;
+  let resizeConfig = typeConfig.resize.orig;
 
   // If image size smaller than 'skip_size' - skip resizing
   if (data.file.size < resizeConfig.skip_size) {
@@ -75,9 +73,9 @@ function resizeImage(data, callback) {
     return;
   }
 
-  var $progressStatus = $('#' + data.uploaderFileId).find('.uploader-progress__status');
-  var jpegHeader;
-  var img = new Image();
+  let $progressStatus = $('#' + data.uploaderFileId).find('.uploader-progress__status');
+  let jpegHeader;
+  let img = new Image();
 
   $progressStatus
     .text(t('progress.compressing'))
@@ -85,14 +83,14 @@ function resizeImage(data, callback) {
 
   img.onload = function () {
     // To scale image we calculate new width and height, resize image by height and crop by width
-    var scaledHeight, scaledWidth;
+    let scaledHeight, scaledWidth;
 
     if (resizeConfig.height && !resizeConfig.width) {
       // If only height defined - scale to fit height,
       // and crop by max_width
       scaledHeight = resizeConfig.height;
 
-      var proportionalWidth = Math.floor(img.width * scaledHeight / img.height);
+      let proportionalWidth = Math.floor(img.width * scaledHeight / img.height);
 
       scaledWidth = (!resizeConfig.max_width || resizeConfig.max_width > proportionalWidth) ?
                     proportionalWidth :
@@ -103,7 +101,7 @@ function resizeImage(data, callback) {
       // and crop by max_height
       scaledWidth = resizeConfig.width;
 
-      var proportionalHeight = Math.floor(img.height * scaledWidth / img.width);
+      let proportionalHeight = Math.floor(img.height * scaledWidth / img.width);
 
       scaledHeight = (!resizeConfig.max_height || resizeConfig.max_height > proportionalHeight) ?
                      proportionalHeight :
@@ -116,13 +114,13 @@ function resizeImage(data, callback) {
     }
 
     /*eslint-disable no-undefined*/
-    var quality = (ext === 'jpeg' || ext === 'jpg') ? resizeConfig.jpeg_quality : undefined;
+    let quality = (ext === 'jpeg' || ext === 'jpg') ? resizeConfig.jpeg_quality : undefined;
 
-    var width = Math.min(img.height * scaledWidth / scaledHeight, img.width);
-    var cropX = (width - img.width) / 2;
+    let width = Math.min(img.height * scaledWidth / scaledHeight, img.width);
+    let cropX = (width - img.width) / 2;
 
-    var source = document.createElement('canvas');
-    var dest = document.createElement('canvas');
+    let source = document.createElement('canvas');
+    let dest = document.createElement('canvas');
 
     source.width = width;
     source.height = img.height;
@@ -135,7 +133,7 @@ function resizeImage(data, callback) {
     pica.resizeCanvas(source, dest, { alpha: true }, function () {
 
       dest.toBlob(function (blob) {
-        var jpegBlob, jpegBody;
+        let jpegBlob, jpegBody;
 
 
         if (jpegHeader) {
@@ -144,7 +142,7 @@ function resizeImage(data, callback) {
           jpegBlob = new Blob([ jpegHeader, jpegBody ], { type: data.file.type });
         }
 
-        var name = data.file.name;
+        let name = data.file.name;
 
         data.file = jpegBlob || blob;
         data.file.name = name;
@@ -155,10 +153,10 @@ function resizeImage(data, callback) {
     });
   };
 
-  var reader = new FileReader();
+  let reader = new FileReader();
 
   reader.onloadend = function (e) {
-    var exifData = readExif(new Uint8Array(e.target.result));
+    let exifData = readExif(new Uint8Array(e.target.result));
 
     if (exifData) {
       jpegHeader = exifData.header;
@@ -167,17 +165,17 @@ function resizeImage(data, callback) {
     img.src = window.URL.createObjectURL(data.file);
   };
 
-  var maxMetadataSize = Math.min(data.file.size, 256 * 1024);
+  let maxMetadataSize = Math.min(data.file.size, 256 * 1024);
 
   reader.readAsArrayBuffer(slice.call(data.file, 0, maxMetadataSize));
 }
 
 
 function checkFileSize(data) {
-  var ext = data.file.name.split('.').pop();
-  var typeConfig = settings.types[ext] || {};
-  var maxSize = typeConfig.max_size || settings.max_size;
-  var message;
+  let ext = data.file.name.split('.').pop();
+  let typeConfig = settings.types[ext] || {};
+  let maxSize = typeConfig.max_size || settings.max_size;
+  let message;
 
   if (data.file.size > maxSize) {
     message = t('err_max_size', {
@@ -200,14 +198,14 @@ function startUpload(data, callback) {
     return;
   }
 
-  var formData = new FormData();
+  let formData = new FormData();
 
   formData.append('file', data.file);
   formData.append('csrf', N.runtime.token_csrf);
 
-  var $progressInfo = $('#' + data.uploaderFileId);
+  let $progressInfo = $('#' + data.uploaderFileId);
 
-  var jqXhr = $.ajax({
+  let jqXhr = $.ajax({
     url: data.url,
     type: 'POST',
     data: formData,
@@ -215,8 +213,8 @@ function startUpload(data, callback) {
     processData: false,
     contentType: false,
     xhr() {
-      var xhr = $.ajaxSettings.xhr();
-      var progress;
+      let xhr = $.ajaxSettings.xhr();
+      let progress;
 
       if (xhr.upload) {
         xhr.upload.addEventListener('progress', function (e) {
@@ -229,11 +227,11 @@ function startUpload(data, callback) {
       return xhr;
     }
   })
-  .then(function (res) {
+  .done(res => {
     uploadedFiles.push(res.media);
     $progressInfo.find('.progress-bar').addClass('progress-bar-success');
   })
-  .catch(function (jqXHR, textStatus, errorThrown) {
+  .fail((jqXHR, textStatus, errorThrown) => {
     // Don't show error if user terminate file upload
     if (errorThrown === 'abort') {
       return;
@@ -267,30 +265,32 @@ function abort() {
 function confirmClose() {
   // Check `closeConfirmation` to avoid appear several confirmation dialogs
   if (closeConfirmation) {
-    return;
+    return Promise.resolve();
   }
 
   closeConfirmation = true;
 
   // Hide current dialog and show confirm dialog
-  $uploadDialog.on('hidden.bs.modal', function () {
-    N.wire.emit('common.blocks.confirm', { message: t('abort_confirm'), errorOnCancel: true }, function (err) {
-      closeConfirmation = false;
-
-      // If abort confirmed
-      if (!err) {
-        abort();
-        return;
-      }
-
-      // Return uploading dialog back if not finished yet
-      if ($uploadDialog) {
-        $uploadDialog
-          .off('hidden.bs.modal')
-          .modal('show');
-      }
-    });
-  }).modal('hide');
+  return new Promise((resolve, reject) => {
+    $uploadDialog.on('hidden.bs.modal', () => {
+      N.wire.emit('common.blocks.confirm', t('abort_confirm'))
+        .then(() => {
+          closeConfirmation = false;
+          // If abort confirmed
+          abort();
+          resolve();
+        })
+        .catch(err => {
+          // Return uploading dialog back if not finished yet
+          if ($uploadDialog) {
+            $uploadDialog
+              .off('hidden.bs.modal')
+              .modal('show');
+          }
+          reject(err);
+        });
+    }).modal('hide');
+  });
 }
 
 
@@ -305,17 +305,16 @@ function confirmClose() {
 
 // Load configuration from server
 //
-N.wire.before('users.uploader:add', function load_config(data, callback) {
-  N.io.rpc(data.config).then(function (uploaderSettings) {
+N.wire.before(module.apiPath + ':add', function load_config(data) {
+  return N.io.rpc(data.config).then(function (uploaderSettings) {
     settings = uploaderSettings;
-    callback();
   });
 });
 
 
 // Init upload dialog
 //
-N.wire.before('users.uploader:add', function init_upload_dialog(data, callback) {
+N.wire.before(module.apiPath + ':add', function init_upload_dialog() {
   closeConfirmation = false;
   aborted = false;
   uploadedFiles = [];
@@ -324,29 +323,31 @@ N.wire.before('users.uploader:add', function init_upload_dialog(data, callback) 
   $uploadDialog = $(N.runtime.render('users.uploader'));
   $('body').append($uploadDialog);
 
-  $uploadDialog
-    .on('shown.bs.modal', function () {
-      $uploadDialog.off('shown.bs.modal');
-      callback();
-    })
-    // Close dialog on click outside `.modal-content`
-    .click(function (event) {
-      if (event.target !== event.currentTarget) return;
+  return new Promise(resolve => {
+    $uploadDialog
+      .on('shown.bs.modal', function () {
+        $uploadDialog.off('shown.bs.modal');
+        resolve();
+      })
+      // Close dialog on click outside `.modal-content`
+      .click(function (event) {
+        if (event.target !== event.currentTarget) return;
 
-      confirmClose();
-    })
-    .modal('show');
+        confirmClose();
+      })
+      .modal('show');
+  });
 });
 
 
 // Resize files if needed, upload files
 //
-N.wire.on('users.uploader:add', function add_files(data, callback) {
-  var uploadInfo = [];
+N.wire.on(module.apiPath + ':add', function add_files(data) {
+  let uploadInfo = [];
 
   // Create unique id. Add initial progress info to dialog
-  for (var i = 0; i < data.files.length; i++) {
-    var info = {
+  for (let i = 0; i < data.files.length; i++) {
+    let info = {
       url: data.url,
       file: data.files[i],
       // create unique file id
@@ -364,55 +365,51 @@ N.wire.on('users.uploader:add', function add_files(data, callback) {
     )).appendTo('#uploader-files');
   }
 
-  async.eachLimit(
-    uploadInfo,
-    4, // max parallel files upload
-    function (data, callback) {
-      // Check if user termintae upload
-      if (aborted) {
-        callback(new Error('aborted'));
-        return;
+  return new Promise(resolve => {
+    async.eachLimit(
+      uploadInfo,
+      4, // max parallel files upload
+      (data, cb) => {
+        // Check if user termintae upload
+        if (aborted) {
+          cb(new Error('aborted'));
+          return;
+        }
+
+        async.series([
+          next => next(checkFile(data)),
+          next => async.nextTick(() => resizeImage(data, next)),
+          next => next(checkFileSize(data)),
+          async.apply(startUpload, data)
+        ], () => {
+          cb();
+        });
+      },
+      () => {
+        data.uploaded = uploadedFiles.sort((a, b) => new Date(b.ts) - new Date(a.ts));
+
+        uploadedFiles = null;
+        requests = null;
+
+        // Uploader dialog already hidden by confirmation dialog
+        if (aborted || closeConfirmation) {
+          $uploadDialog.remove();
+          $uploadDialog = null;
+
+          resolve();
+          return;
+        }
+
+        // Uploader dialog still visible, hide before remove
+        $uploadDialog.on('hidden.bs.modal', function () {
+          $uploadDialog.remove();
+          $uploadDialog = null;
+
+          resolve();
+        }).modal('hide');
       }
-
-      async.series([
-        function (next) { next(checkFile(data)); },
-        function (next) {
-          async.nextTick(function () {
-            resizeImage(data, next);
-          });
-        },
-        function (next) { next(checkFileSize(data)); },
-        async.apply(startUpload, data)
-      ], function () {
-        callback();
-      });
-    },
-    function () {
-      data.uploaded = uploadedFiles.sort(function (a, b) {
-        return new Date(b.ts) - new Date(a.ts);
-      });
-
-      uploadedFiles = null;
-      requests = null;
-
-      // Uploader dialog already hidden by confirmation dialog
-      if (aborted || closeConfirmation) {
-        $uploadDialog.remove();
-        $uploadDialog = null;
-
-        callback();
-        return;
-      }
-
-      // Uploader dialog still visible, hide before remove
-      $uploadDialog.on('hidden.bs.modal', function () {
-        $uploadDialog.remove();
-        $uploadDialog = null;
-
-        callback();
-      }).modal('hide');
-    }
-  );
+    );
+  });
 });
 
 
@@ -420,8 +417,8 @@ N.wire.on('users.uploader:add', function add_files(data, callback) {
 
 // Close dialog handler
 //
-N.wire.on('users.uploader:close', function close() {
-  confirmClose();
+N.wire.on(module.apiPath + ':close', function close() {
+  return confirmClose();
 });
 
 

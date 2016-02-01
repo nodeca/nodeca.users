@@ -1,7 +1,7 @@
 'use strict';
 
 
-var types = '$$ JSON.stringify(N.models.users.Subscription.types) $$';
+const types = '$$ JSON.stringify(N.models.users.Subscription.types) $$';
 
 
 N.wire.once('navigate.done:' + module.apiPath, function page_once() {
@@ -22,15 +22,15 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   /////////////////////////////////////////////////////////////////////////////
   // Delete subscription
   //
-  N.wire.before('users.subscriptions:delete', function delete_subscription_confirm(data, callback) {
-    N.wire.emit('common.blocks.confirm', t('delete_confirmation'), callback);
+  N.wire.before(module.apiPath + ':delete', function delete_subscription_confirm() {
+    return N.wire.emit('common.blocks.confirm', t('delete_confirmation'));
   });
 
-  N.wire.on('users.subscriptions:delete', function delete_subscription(data, callback) {
-    var subscription = data.$this.data('subscription');
+  N.wire.on(module.apiPath + ':delete', function delete_subscription(data) {
+    let subscription = data.$this.data('subscription');
 
-    N.io.rpc('users.subscriptions.destroy', { subscription_id: subscription._id }).then(function () {
-      var $item = data.$this.closest('.user-subscriptions-item');
+    return N.io.rpc('users.subscriptions.destroy', { subscription_id: subscription._id }).then(function () {
+      let $item = data.$this.closest('.user-subscriptions-item');
 
       $item
         .fadeTo('fast', 0)
@@ -38,8 +38,6 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
           $item.remove();
           update_tabs();
         });
-
-      callback();
     });
   });
 
@@ -47,17 +45,18 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   /////////////////////////////////////////////////////////////////////////////
   // Update subscription
   //
-  N.wire.on('users.subscriptions:update', function update_subscription(data, callback) {
-    var subscription = data.$this.data('subscription');
-    var block_name = data.$this.data('block-name');
+  N.wire.on(module.apiPath + ':update', function update_subscription(data) {
+    let subscription = data.$this.data('subscription');
+    let block_name = data.$this.data('block-name');
+    let params = { subscription: subscription.type };
 
-    var params = { subscription: subscription.type };
-
-    N.wire.emit('users.subscriptions.blocks.' + block_name + '.update_dlg', params, function () {
-      N.io.rpc('users.subscriptions.update', {
+    return Promise.resolve()
+      .then(() => N.wire.emit('users.subscriptions.blocks.' + block_name + '.update_dlg', params))
+      .then(() => N.io.rpc('users.subscriptions.update', {
         subscription_id: subscription._id,
         type: params.subscription
-      }).then(function () {
+      }))
+      .then(() => {
         data.$this.removeClass('icon-track-watching icon-track-tracking icon-track-normal icon-track-muted');
 
         subscription.type = params.subscription;
@@ -86,9 +85,6 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
             data.$this.addClass('icon-track-muted');
             break;
         }
-
-        callback();
       });
-    });
   });
 });
