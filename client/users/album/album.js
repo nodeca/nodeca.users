@@ -1,6 +1,7 @@
 'use strict';
 
-var pageParams;
+
+let pageParams;
 
 
 N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
@@ -12,17 +13,17 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
 // Uploader
 //
 
-var $dropZone;
+let $dropZone;
 
 
 N.wire.after('navigate.done:' + module.apiPath, function uploader_setup() {
   $dropZone = $('.user-album-upload');
 
   $('.user-album-upload__files').on('change', function () {
-    var files = $(this).get(0).files;
+    let files = $(this).get(0).files;
 
     if (files.length > 0) {
-      var params = {
+      let params = {
         files,
         url: N.router.linkTo('users.media.upload', { album_id: pageParams.album_id }),
         config: 'users.uploader_config',
@@ -49,8 +50,8 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
   // Handles the event when user drag file to drag drop zone
   //
-  N.wire.on('users.album:dd_area', function user_album_dd(data, callback) {
-    var x0, y0, x1, y1, ex, ey;
+  N.wire.on(module.apiPath + ':dd_area', function user_album_dd(data, callback) {
+    let x0, y0, x1, y1, ex, ey;
 
     switch (data.event.type) {
       case 'dragenter':
@@ -107,19 +108,22 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
 N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
-  N.wire.on('users.album:add_medialink', function add_medialink(data) {
-    var params = {
+  N.wire.on(module.apiPath + ':add_medialink', function add_medialink(data) {
+    let params = {
       album_id: pageParams.album_id,
       providers: data.$this.data('providers'),
-      media: null
+      media_url: null
     };
 
-    N.wire.emit('users.album.add_medialink', params, function () {
-      $('#users-medias-list').prepend(
-        $(N.runtime.render('users.album.list', { medias: [ params.media ], user_hid: pageParams.user_hid }))
-      );
-      $('.user-album-root').removeClass('no-files');
-    });
+    return Promise.resolve()
+      .then(() => N.wire.emit('users.album.add_medialink', params))
+      .then(() => N.io.rpc('users.media.add_medialink', { album_id: params.album_id, media_url: params.media_url }))
+      .then(() => {
+        $('#users-medias-list').prepend(
+          $(N.runtime.render('users.album.list', { medias: [ params.media ], user_hid: pageParams.user_hid }))
+        );
+        $('.user-album-root').removeClass('no-files');
+      });
   });
 });
 
@@ -128,7 +132,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 // Lazy load photos on scroll down
 //
 
-var nextMediaID;
+let nextMediaID;
 
 
 N.wire.after('navigate.done:' + module.apiPath, function append_setup() {
@@ -142,24 +146,18 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   //
   // If callback not executed, no new event happen
   //
-  N.wire.on('users.album:append_more_medias', function append_more_medias(__, callback) {
+  N.wire.on(module.apiPath + ':append_more_medias', function append_more_medias() {
     if (!nextMediaID) {
-      callback();
       return;
     }
 
-    N.io.rpc(
-      'users.album.list',
-      {
-        user_hid: pageParams.user_hid,
-        album_id: pageParams.album_id,
-        from_media_id: nextMediaID
-      }
-    ).then(function (mediaList) {
+    return N.io.rpc('users.album.list', {
+      user_hid: pageParams.user_hid,
+      album_id: pageParams.album_id,
+      from_media_id: nextMediaID
+    }).then(function (mediaList) {
       $('#users-medias-list').append($(N.runtime.render('users.album.list', mediaList)));
       nextMediaID = mediaList.next_media_id;
-
-      callback();
     });
   });
 });

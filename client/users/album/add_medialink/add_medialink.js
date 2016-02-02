@@ -1,53 +1,54 @@
 // Popup dialog to create album
 //
 // params
+//
 // - album_id
 // - providers - array of objects
 //   - home - home page address
 //   - name - displayable name
-// - media - null. Will be filled after add. Added media object (media_id, type, file_name, ts)
+// - media_url - null. Will be filled after add
 //
-
 'use strict';
 
-var $dialog;
-var params;
-var doneCallback;
+
+let $dialog;
+let params;
+let result;
 
 
 // Init dialog on event
 //
-N.wire.on('users.album.add_medialink', function show_add_medialink_dlg(data, callback) {
+N.wire.on(module.apiPath, function show_add_medialink_dlg(data) {
   params = data;
-  doneCallback = callback;
   $dialog = $(N.runtime.render('users.album.add_medialink', { providers: params.providers }));
 
   $('body').append($dialog);
 
-  // When dialog closes - remove it from body
-  $dialog
-    .on('hidden.bs.modal', function () {
-      $dialog.remove();
-      $dialog = null;
-      doneCallback = null;
-    })
-    .on('shown.bs.modal', function () {
-      $dialog.find('#add-medialink__url').focus();
-    })
-    .modal('show');
+  return new Promise((resolve, reject) => {
+    $dialog
+      .on('hidden.bs.modal', function () {
+        // When dialog closes - remove it from body
+        $dialog.remove();
+        $dialog = null;
+
+        if (result) resolve(result);
+        else reject('CANCELED');
+
+        result = null;
+      })
+      .on('shown.bs.modal', function () {
+        $dialog.find('#add-medialink__url').focus();
+      })
+      .modal('show');
+  });
 });
 
 
 // Listen submit button
 //
-N.wire.on('users.album.add_medialink:submit', function submit_add_medialink_dlg(form) {
-  N.io.rpc('users.media.add_medialink', { album_id: params.album_id, media_url: form.fields.media_url })
-    .then(function (res) {
-      $dialog.modal('hide');
-
-      params.media = res.media;
-      doneCallback();
-    });
+N.wire.on(module.apiPath + ':submit', function submit_add_medialink_dlg(form) {
+  result = params.media_url = form.fields.media_url;
+  $dialog.modal('hide');
 });
 
 

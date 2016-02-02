@@ -2,58 +2,56 @@
 //
 // Example:
 //
-// var data = { user_hid: 1, album_id: '53b56152d798153c8e94816e', cover_id: null };
-// N.wire.emit('users.album.edit.select_cover', , function () {
-//   // data.cover_id is new cover file id
-// });
+//   let data = { user_hid: 1, album_id: '53b56152d798153c8e94816e', cover_id: null };
+//   N.wire.emit('users.album.edit.select_cover')
+//     .then(() => { /* use data.cover_id here */ });
 //
-
 'use strict';
 
-var $dialog;
-var onCoverSelected;
-var dialogData;
+
+let $dialog;
+let params;
+let result;
+
 
 // Init dialog on event
 //
-N.wire.on('users.album.edit.select_cover', function show_select_cover() {
+N.wire.on(module.apiPath, function show_select_cover(data) {
+  params = data;
   $dialog = $(N.runtime.render('users.album.edit.select_cover'));
   $('body').append($dialog);
 
-  // When dialog closes - remove it from body
-  $dialog.on('hidden.bs.modal', function () {
-    $dialog.remove();
-    $dialog = null;
-    onCoverSelected = null;
-    dialogData = null;
-  });
-
-  $dialog.modal('show');
-});
-
-
-// Load album photos
-//
-N.wire.after('users.album.edit.select_cover', function load_photos(data, callback) {
-  onCoverSelected = callback;
-  dialogData = data;
-
-  N.io.rpc('users.album.select_cover.index', { album_id: data.album_id }).then(function (res) {
-    var $list = $(N.runtime.render('users.album.edit.select_cover.media_list', {
+  return N.io.rpc('users.album.select_cover.index', { album_id: data.album_id }).then(res => {
+    let $list = $(N.runtime.render('users.album.edit.select_cover.media_list', {
       medias: res.medias,
-      user_hid: data.user_hid
+      user_hid: params.user_hid
     }));
 
-    $('#select_cover__photos').html($list);
+    $dialog.find('.modal-body').html($list);
+
+    return new Promise((resolve, reject) => {
+      $dialog
+        .on('hidden.bs.modal', function () {
+          // When dialog closes - remove it from body
+          $dialog.remove();
+          $dialog = null;
+          params = null;
+
+          if (result) resolve(result);
+          else reject('CANCELED');
+
+          result = null;
+        })
+        .modal('show');
+    });
   });
 });
 
 
 // Click to cover
 //
-N.wire.on('users.album.edit.select_cover:select', function select_cover(data) {
-  dialogData.cover_id = data.$this.data('media_id');
-  onCoverSelected();
+N.wire.on(module.apiPath + ':select', function select_cover(data) {
+  params.cover_id = result = data.$this.data('media_id');
   $dialog.modal('hide');
 });
 

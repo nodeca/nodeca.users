@@ -1,8 +1,10 @@
 'use strict';
 
-var _ = require('lodash');
 
-var pageParams;
+const _ = require('lodash');
+
+
+let pageParams;
 
 
 N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
@@ -12,9 +14,9 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
 
 N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
-  function updateAlbumList(albumId, callback) {
-    N.io.rpc('users.albums_root.list', pageParams).then(function (albumsList) {
-      var $listContainer = $('.user-albumlist');
+  function updateAlbumList(albumId) {
+    return N.io.rpc('users.albums_root.list', pageParams).then(albumsList => {
+      let $listContainer = $('.user-albumlist');
 
       if (albumId) {
         albumsList.albums = _.filter(albumsList.albums, { _id: albumId });
@@ -25,32 +27,26 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
       } else {
         $listContainer.html($(N.runtime.render('users.albums_root.list', albumsList)));
       }
-
-      callback();
     });
   }
 
 
   // Create album button handler
   //
-  N.wire.on('users.albums_root.create_album', function update_list(__, callback) {
-    var params = { album: null };
+  N.wire.on('users.albums_root.create_album', function update_list() {
+    let params = {};
 
-    N.wire.emit('users.album.create', params, function () {
-      if (params.album) {
-        updateAlbumList(null, callback);
-        return;
-      }
-
-      callback();
-    });
+    return Promise.resolve()
+      .then(() => N.wire.emit('users.album.create', params))
+      .then(() => N.io.rpc('users.album.create', { title: params.title }))
+      .then(() => updateAlbumList());
   });
 
 
   // Handles the event when user drag file to album
   //
-  N.wire.on('users.albums_root.list:dragdrop', function albums_root_dd(data, callback) {
-    var $dropZone, x0, y0, x1, y1, ex, ey, id;
+  N.wire.on('users.albums_root.list:dragdrop', function albums_root_dd(data) {
+    let $dropZone, x0, y0, x1, y1, ex, ey, id;
 
     switch (data.event.type) {
       case 'dragenter':
@@ -82,20 +78,15 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         id = $dropZone.data('albumId');
 
         if (data.event.dataTransfer && data.event.dataTransfer.files && data.event.dataTransfer.files.length) {
-          N.wire.emit('users.uploader:add', {
+          return N.wire.emit('users.uploader:add', {
             files: data.event.dataTransfer.files,
             url: N.router.linkTo('users.media.upload', { album_id: id }),
             config: 'users.uploader_config'
-          }, function () {
-            updateAlbumList(id, callback);
-          });
-          return;
+          }).then(() => updateAlbumList(id));
         }
 
         break;
       default:
     }
-
-    callback();
   });
 });

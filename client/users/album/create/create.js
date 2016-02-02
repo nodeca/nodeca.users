@@ -1,22 +1,22 @@
 // Popup dialog to create album
 //
 // - params
-//   - album - output. `null` if canceled
-// - callback
+//   - title - out
 //
 'use strict';
 
 
-var $dialog;
-var album;
+let $dialog;
+let params;
+let result;
 
 
-N.wire.once('users.album.create', function init_event_handlers() {
+N.wire.once(module.apiPath, function init_event_handlers() {
 
   // Listen submit button
   //
-  N.wire.on('users.album.create:submit', function submit_album_create_dlg(form) {
-    var title = form.fields.album_name;
+  N.wire.on(module.apiPath + ':submit', function submit_album_create_dlg(form) {
+    let title = form.fields.album_name;
 
     // Don't allow empty name for albums
     if (!title || !$.trim(title)) {
@@ -24,11 +24,8 @@ N.wire.once('users.album.create', function init_event_handlers() {
       return;
     }
 
-    N.io.rpc('users.album.create', { title })
-      .then(function (res) {
-        album = res.album;
-        $dialog.modal('hide');
-      });
+    params.title = result = title;
+    $dialog.modal('hide');
   });
 
 
@@ -44,26 +41,29 @@ N.wire.once('users.album.create', function init_event_handlers() {
 
 // Init dialog on event
 //
-N.wire.on('users.album.create', function show_album_create_dlg(params, callback) {
+N.wire.on(module.apiPath, function show_album_create_dlg(data) {
+  params = data;
   $dialog = $(N.runtime.render('users.album.create'));
-  params.album = null;
 
   $('body').append($dialog);
 
-  // When dialog closes - remove it from body
-  $dialog.on('hidden.bs.modal', function () {
-    params.album = album;
-    callback();
+  return new Promise((resolve, reject) => {
+    $dialog
+      .on('hidden.bs.modal', () => {
+        // When dialog closes - remove it from body
+        $dialog.remove();
+        $dialog = null;
+        params = null;
 
-    $dialog.remove();
-    $dialog = null;
-    album = null;
+        if (result) resolve(result);
+        else reject('CANCELED');
+
+        result = null;
+      })
+      .on('shown.bs.modal', () => {
+        $dialog.find('#album_name_dlg_input').focus();
+        N.wire.emit('users.album.create:shown');
+      })
+      .modal('show');
   });
-
-  $dialog
-    .on('shown.bs.modal', function () {
-      $dialog.find('#album_name_dlg_input').focus();
-      N.wire.emit('users.album.create:shown');
-    })
-    .modal('show');
 });
