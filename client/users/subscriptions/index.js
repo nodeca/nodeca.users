@@ -9,9 +9,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   // Update count badge and modifiers
   //
   function update_tabs() {
-    $('.user-subscriptions-tab-pane').each(function () {
-      var $tab_pane = $(this);
-      var count = $tab_pane.find('.user-subscriptions-list > li').length;
+    $('.user-subscriptions-tab-pane').each(() => {
+      let $tab_pane = $(this);
+      let count = $tab_pane.find('.user-subscriptions-list > li').length;
 
       $('.user-subscriptions-tab__badge-' + $tab_pane.data('block-name')).attr('data-count', count);
       $tab_pane.attr('data-count', count);
@@ -22,7 +22,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   /////////////////////////////////////////////////////////////////////////////
   // Delete subscription
   //
-  N.wire.before(module.apiPath + ':delete', function delete_subscription_confirm() {
+  N.wire.before('users.subscriptions:delete', function delete_subscription_confirm() {
     return N.wire.emit('common.blocks.confirm', t('delete_confirmation'));
   });
 
@@ -45,7 +45,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   /////////////////////////////////////////////////////////////////////////////
   // Update subscription
   //
-  N.wire.on(module.apiPath + ':update', function update_subscription(data) {
+  N.wire.on('users.subscriptions:update', function update_subscription(data) {
     let subscription = data.$this.data('subscription');
     let block_name = data.$this.data('block-name');
     let params = { subscription: subscription.type };
