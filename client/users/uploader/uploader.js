@@ -23,9 +23,9 @@
 'use strict';
 
 
-const async    = require('async');
-const readExif = require('nodeca.users/lib/exif');
-const pica     = require('pica');
+const readExif    = require('nodeca.users/lib/exif');
+const pica        = require('pica');
+const PromisePool = require('es6-promise-pool');
 
 
 let settings;
@@ -54,120 +54,125 @@ function checkFile(data) {
 
 // Resize image if needed
 //
-function resizeImage(data, callback) {
-  let slice = data.file.slice || data.file.webkitSlice || data.file.mozSlice;
-  let ext = data.file.name.split('.').pop();
-  let typeConfig = settings.types[ext] || {};
+function resizeImage(data) {
+  return new Promise(resolve => {
+    // Next tick
+    setTimeout(() => {
+      let slice = data.file.slice || data.file.webkitSlice || data.file.mozSlice;
+      let ext = data.file.name.split('.').pop();
+      let typeConfig = settings.types[ext] || {};
 
-  // Check if file can be resized before upload
-  if ([ 'bmp', 'jpg', 'jpeg', 'png' ].indexOf(ext) === -1 || !typeConfig.resize || !typeConfig.resize.orig) {
-    callback(); // Skip resize
-    return;
-  }
+      // Check if file can be resized before upload
+      if ([ 'bmp', 'jpg', 'jpeg', 'png' ].indexOf(ext) === -1 || !typeConfig.resize || !typeConfig.resize.orig) {
+        resolve(); // Skip resize
+        return;
+      }
 
-  let resizeConfig = typeConfig.resize.orig;
+      let resizeConfig = typeConfig.resize.orig;
 
-  // If image size smaller than 'skip_size' - skip resizing
-  if (data.file.size < resizeConfig.skip_size) {
-    callback();
-    return;
-  }
+      // If image size smaller than 'skip_size' - skip resizing
+      if (data.file.size < resizeConfig.skip_size) {
+        resolve();
+        return;
+      }
 
-  let $progressStatus = $('#' + data.uploaderFileId).find('.uploader-progress__status');
-  let jpegHeader;
-  let img = new Image();
+      let $progressStatus = $('#' + data.uploaderFileId).find('.uploader-progress__status');
+      let jpegHeader;
+      let img = new Image();
 
-  $progressStatus
-    .text(t('progress.compressing'))
-    .show(0);
+      $progressStatus
+        .text(t('progress.compressing'))
+        .show(0);
 
-  img.onload = function () {
-    // To scale image we calculate new width and height, resize image by height and crop by width
-    let scaledHeight, scaledWidth;
+      img.onload = function () {
+        // To scale image we calculate new width and height, resize image by height and crop by width
+        let scaledHeight, scaledWidth;
 
-    if (resizeConfig.height && !resizeConfig.width) {
-      // If only height defined - scale to fit height,
-      // and crop by max_width
-      scaledHeight = resizeConfig.height;
+        if (resizeConfig.height && !resizeConfig.width) {
+          // If only height defined - scale to fit height,
+          // and crop by max_width
+          scaledHeight = resizeConfig.height;
 
-      let proportionalWidth = Math.floor(img.width * scaledHeight / img.height);
+          let proportionalWidth = Math.floor(img.width * scaledHeight / img.height);
 
-      scaledWidth = (!resizeConfig.max_width || resizeConfig.max_width > proportionalWidth) ?
-                    proportionalWidth :
-                    resizeConfig.max_width;
+          scaledWidth = (!resizeConfig.max_width || resizeConfig.max_width > proportionalWidth) ?
+                        proportionalWidth :
+                        resizeConfig.max_width;
 
-    } else if (!resizeConfig.height && resizeConfig.width) {
-      // If only width defined - scale to fit width,
-      // and crop by max_height
-      scaledWidth = resizeConfig.width;
+        } else if (!resizeConfig.height && resizeConfig.width) {
+          // If only width defined - scale to fit width,
+          // and crop by max_height
+          scaledWidth = resizeConfig.width;
 
-      let proportionalHeight = Math.floor(img.height * scaledWidth / img.width);
+          let proportionalHeight = Math.floor(img.height * scaledWidth / img.width);
 
-      scaledHeight = (!resizeConfig.max_height || resizeConfig.max_height > proportionalHeight) ?
-                     proportionalHeight :
-                     resizeConfig.max_height;
+          scaledHeight = (!resizeConfig.max_height || resizeConfig.max_height > proportionalHeight) ?
+                         proportionalHeight :
+                         resizeConfig.max_height;
 
-    } else {
-      // If determine both width and height
-      scaledWidth = resizeConfig.width;
-      scaledHeight = resizeConfig.height;
-    }
-
-    /*eslint-disable no-undefined*/
-    let quality = (ext === 'jpeg' || ext === 'jpg') ? resizeConfig.jpeg_quality : undefined;
-
-    let width = Math.min(img.height * scaledWidth / scaledHeight, img.width);
-    let cropX = (width - img.width) / 2;
-
-    let source = document.createElement('canvas');
-    let dest = document.createElement('canvas');
-
-    source.width = width;
-    source.height = img.height;
-
-    dest.width = scaledWidth;
-    dest.height = scaledHeight;
-
-    source.getContext('2d').drawImage(img, cropX, 0, width, img.height);
-
-    pica.resizeCanvas(source, dest, { alpha: true }, function () {
-
-      dest.toBlob(function (blob) {
-        let jpegBlob, jpegBody;
-
-
-        if (jpegHeader) {
-          jpegBody = slice.call(blob, 20);
-
-          jpegBlob = new Blob([ jpegHeader, jpegBody ], { type: data.file.type });
+        } else {
+          // If determine both width and height
+          scaledWidth = resizeConfig.width;
+          scaledHeight = resizeConfig.height;
         }
 
-        let name = data.file.name;
+        /*eslint-disable no-undefined*/
+        let quality = (ext === 'jpeg' || ext === 'jpg') ? resizeConfig.jpeg_quality : undefined;
 
-        data.file = jpegBlob || blob;
-        data.file.name = name;
+        let width = Math.min(img.height * scaledWidth / scaledHeight, img.width);
+        let cropX = (width - img.width) / 2;
 
-        $progressStatus.hide(0);
-        callback();
-      }, data.file.type, quality);
-    });
-  };
+        let source = document.createElement('canvas');
+        let dest = document.createElement('canvas');
 
-  let reader = new FileReader();
+        source.width = width;
+        source.height = img.height;
 
-  reader.onloadend = function (e) {
-    let exifData = readExif(new Uint8Array(e.target.result));
+        dest.width = scaledWidth;
+        dest.height = scaledHeight;
 
-    if (exifData) {
-      jpegHeader = exifData.header;
-    }
+        source.getContext('2d').drawImage(img, cropX, 0, width, img.height);
 
-    img.src = window.URL.createObjectURL(data.file);
-  };
+        pica.resizeCanvas(source, dest, { alpha: true }, function () {
 
-  let maxMetadataSize = Math.min(data.file.size, 256 * 1024);
+          dest.toBlob(function (blob) {
+            let jpegBlob, jpegBody;
 
-  reader.readAsArrayBuffer(slice.call(data.file, 0, maxMetadataSize));
+
+            if (jpegHeader) {
+              jpegBody = slice.call(blob, 20);
+
+              jpegBlob = new Blob([ jpegHeader, jpegBody ], { type: data.file.type });
+            }
+
+            let name = data.file.name;
+
+            data.file = jpegBlob || blob;
+            data.file.name = name;
+
+            $progressStatus.hide(0);
+            resolve();
+          }, data.file.type, quality);
+        });
+      };
+
+      let reader = new FileReader();
+
+      reader.onloadend = function (e) {
+        let exifData = readExif(new Uint8Array(e.target.result));
+
+        if (exifData) {
+          jpegHeader = exifData.header;
+        }
+
+        img.src = window.URL.createObjectURL(data.file);
+      };
+
+      let maxMetadataSize = Math.min(data.file.size, 256 * 1024);
+
+      reader.readAsArrayBuffer(slice.call(data.file, 0, maxMetadataSize));
+    }, 0);
+  });
 }
 
 
@@ -184,19 +189,18 @@ function checkFileSize(data) {
     });
     N.wire.emit('notify', message);
 
-    return new Error(message);
+    return Promise.reject(new Error(message));
   }
+
+  return Promise.resolve();
 }
 
 
 // Start uploading
 //
-function startUpload(data, callback) {
+function startUpload(data) {
   // If 'resizeImage' finished after user closed dialog
-  if (aborted) {
-    callback(new Error('aborted'));
-    return;
-  }
+  if (aborted) return Promise.reject(new Error('aborted'));
 
   let formData = new FormData();
 
@@ -226,30 +230,31 @@ function startUpload(data, callback) {
       }
       return xhr;
     }
-  })
-  .done(res => {
-    uploadedFiles.push(res.media);
-    $progressInfo.find('.progress-bar').addClass('progress-bar-success');
-  })
-  .fail((jqXHR, textStatus, errorThrown) => {
-    // Don't show error if user terminate file upload
-    if (errorThrown === 'abort') {
-      return;
-    }
-
-    $progressInfo.find('.uploader-progress__name').addClass('text-danger');
-    $progressInfo.find('.progress-bar').addClass('progress-bar-danger');
-
-    // Client error
-    if (jqXHR.status === N.io.CLIENT_ERROR) {
-      N.wire.emit('notify', jqXHR.responseText);
-    } else {
-      N.wire.emit('notify', t('err_upload', { file_name: data.file.name }));
-    }
-  })
-  .always(callback);
+  });
 
   requests.push(jqXhr);
+
+  return Promise.resolve(jqXhr)
+    .then(res => {
+      uploadedFiles.push(res.media);
+      $progressInfo.find('.progress-bar').addClass('progress-bar-success');
+    })
+    .catch(err => {
+      // Don't show error if user terminate file upload
+      if (err.statusText === 'abort') {
+        return;
+      }
+
+      $progressInfo.find('.uploader-progress__name').addClass('text-danger');
+      $progressInfo.find('.progress-bar').addClass('progress-bar-danger');
+
+      // Client error
+      if (err.status === N.io.CLIENT_ERROR) {
+        N.wire.emit('notify', err.statusText);
+      } else {
+        N.wire.emit('notify', t('err_upload', { file_name: data.file.name }));
+      }
+    });
 }
 
 function abort() {
@@ -365,51 +370,54 @@ N.wire.on(module.apiPath + ':add', function add_files(data) {
     )).appendTo('#uploader-files');
   }
 
-  return new Promise(resolve => {
-    async.eachLimit(
-      uploadInfo,
-      4, // max parallel files upload
-      (data, cb) => {
-        // Check if user termintae upload
-        if (aborted) {
-          cb(new Error('aborted'));
-          return;
-        }
+  function finish() {
+    data.uploaded = uploadedFiles.sort((a, b) => new Date(b.ts) - new Date(a.ts));
 
-        async.series([
-          next => next(checkFile(data)),
-          next => async.nextTick(() => resizeImage(data, next)),
-          next => next(checkFileSize(data)),
-          async.apply(startUpload, data)
-        ], () => {
-          cb();
-        });
-      },
-      () => {
-        data.uploaded = uploadedFiles.sort((a, b) => new Date(b.ts) - new Date(a.ts));
+    uploadedFiles = null;
+    requests = null;
 
-        uploadedFiles = null;
-        requests = null;
+    return new Promise(resolve => {
+      // Uploader dialog already hidden by confirmation dialog
+      if (aborted || closeConfirmation) {
+        $uploadDialog.remove();
+        $uploadDialog = null;
 
-        // Uploader dialog already hidden by confirmation dialog
-        if (aborted || closeConfirmation) {
-          $uploadDialog.remove();
-          $uploadDialog = null;
-
-          resolve();
-          return;
-        }
-
-        // Uploader dialog still visible, hide before remove
-        $uploadDialog.on('hidden.bs.modal', function () {
-          $uploadDialog.remove();
-          $uploadDialog = null;
-
-          resolve();
-        }).modal('hide');
+        resolve();
+        return;
       }
-    );
-  });
+
+      // Uploader dialog still visible, hide before remove
+      $uploadDialog.on('hidden.bs.modal', function () {
+        $uploadDialog.remove();
+        $uploadDialog = null;
+
+        resolve();
+      }).modal('hide');
+    });
+  }
+
+  function uploadIterator() {
+    if (uploadInfo.length === 0) return null;
+
+    // Check if user termintae upload
+    if (aborted) return Promise.reject(new Error('aborted'));
+
+    let data = uploadInfo.shift();
+    let err = checkFile(data);
+
+    if (err) return Promise.reject(err);
+
+    return Promise.resolve()
+      .then(() => resizeImage(data))
+      .then(() => checkFileSize(data))
+      .then(() => startUpload(data));
+  }
+
+  // 4 max parallel files upload
+  return new PromisePool(uploadIterator, 4).start()
+    // Skip errors
+    .catch(() => {})
+    .then(() => finish());
 });
 
 
