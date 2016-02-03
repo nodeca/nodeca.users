@@ -1,15 +1,13 @@
 // Logic of the usergroup editor interface. It's used by "new" and "edit" pages.
 //
-
-
 'use strict';
 
 
-var _  = require('lodash');
-var ko = require('knockout');
+const _  = require('lodash');
+const ko = require('knockout');
 
 
-var N;
+let N;
 
 
 // Single setting of a usergroup.
@@ -37,7 +35,7 @@ function Setting(form, name, schema, config) {
 
   // Setting model of `ownerGroup` from which the current setting should inherit
   // the value when it isn't overriden.
-  this.parentSetting = ko.computed(function () {
+  this.parentSetting = ko.computed(() => {
     if (this.ownerGroup && this.ownerGroup.parentGroup()) {
       return this.ownerGroup.parentGroup().settingsByName[this.name];
     }
@@ -60,7 +58,7 @@ function Setting(form, name, schema, config) {
     owner: this
   }).extend({ dirty: false });
 
-  this.inherited = ko.computed(function () { return !this.overriden(); }, this);
+  this.inherited = ko.computed(() => !this.overriden());
 
   this.forced = ko.computed({
     read() { return this.overriden() && this._forced(); },
@@ -88,7 +86,7 @@ function Setting(form, name, schema, config) {
 
   // Helpers.
   //
-  this.visible = ko.computed(function () {
+  this.visible = ko.computed(() => {
     var filter = form.filter();
 
     if (filter === 'overriden')      return this.overriden();
@@ -98,7 +96,7 @@ function Setting(form, name, schema, config) {
     return true;
   }, this);
 
-  this.isDirty = ko.computed(function () {
+  this.isDirty = ko.computed(() => {
     if (this.overriden.isDirty()) return true;
 
     if (this.overriden()) {
@@ -139,7 +137,7 @@ function SettingCategory(form, name, settings) {
   this.localizedName = N.runtime.t('admin.core.category_names.' + name);
 
   this.settings = _.sortBy(settings, 'priority');
-  this.priority = _(settings).map('priority').reduce(function (a, b) { return a + b; });
+  this.priority = _(settings).map('priority').reduce((a, b) => a + b);
 }
 
 
@@ -153,7 +151,7 @@ function SettingCategory(form, name, settings) {
 function UserGroup(form, data) {
   data = data || {};
 
-  var settings = data.settings || {};
+  let settings = data.settings || {};
 
   // Read-only slots.
   //
@@ -167,14 +165,12 @@ function UserGroup(form, data) {
 
   // Computed values.
   //
-  this.localizedName = ko.computed(function () {
-    return (
-      (this.name() && N.runtime.t.exists('admin.users.usergroup_names.' + this.name())) ?
-        N.runtime.t('admin.users.usergroup_names.' + this.name())
-      :
-        null
-    );
-  }, this);
+  this.localizedName = ko.computed(() => {
+    if (this.name() && N.runtime.t.exists('admin.users.usergroup_names.' + this.name())) {
+      return N.runtime.t('admin.users.usergroup_names.' + this.name());
+    }
+    return null;
+  });
 
   this.parentGroup = ko.computed({
     read() { return form.groupsById ? form.groupsById[this.parentId()] : null; },
@@ -187,7 +183,7 @@ function UserGroup(form, data) {
   //
   this.settings     = _(form.setting_schemas)
                           .map((schema, name) => {
-                            var overriden = _.has(settings, name);
+                            let overriden = _.has(settings, name);
 
                             return new Setting(form, name, schema, {
                               group:     this,
@@ -245,7 +241,7 @@ UserGroup.prototype.markClean = function markClean() {
 // Returns data suitable for the server.
 //
 UserGroup.prototype.getOutputData = function getOutputData() {
-  var result = {
+  let result = {
     short_name:   this.name(),
     parent_group: this.parentId(),
     settings: {}
@@ -307,43 +303,40 @@ function Form(page_data) {
 // Sends 'create' request for `currentGroup`.
 //
 Form.prototype.create = function create() {
-  var self = this;
-
-  N.io.rpc('admin.users.usergroups.create', this.currentGroup.getOutputData()).then(function () {
-    self.currentGroup.markClean();
-
-    N.wire.emit('notify', {
-      type: 'info',
-      message: N.runtime.t('admin.users.usergroups.form.created')
-    });
-
-    N.wire.emit('navigate.to', { apiPath: 'admin.users.usergroups.index' });
-  });
+  Promise.resolve()
+    .then(() => N.io.rpc('admin.users.usergroups.create', this.currentGroup.getOutputData()))
+    .then(() => {
+      this.currentGroup.markClean();
+      return N.wire.emit('notify', {
+        type: 'info',
+        message: N.runtime.t('admin.users.usergroups.form.created')
+      });
+    })
+    .then(() => N.wire.emit('navigate.to', { apiPath: 'admin.users.usergroups.index' }))
+    .catch(err => N.wire.emit('error', err));
 };
 
 // Sends 'update' request for `currentGroup`.
 //
 Form.prototype.update = function update() {
-  var self = this;
+  Promise.resolve()
+    .then(() => N.io.rpc('admin.users.usergroups.update', this.currentGroup.getOutputData()))
+    .then(() => {
+      this.currentGroup.markClean();
 
-  N.io.rpc('admin.users.usergroups.update', this.currentGroup.getOutputData()).then(function () {
-    self.currentGroup.markClean();
-
-    N.wire.emit('notify', {
-      type: 'info',
-      message: N.runtime.t('admin.users.usergroups.form.updated')
-    });
-  });
+      return N.wire.emit('notify', {
+        type: 'info',
+        message: N.runtime.t('admin.users.usergroups.form.updated')
+      });
+    })
+    .catch(err => N.wire.emit('error', err));
 };
 
 // Sends save request to the server.
 //
 Form.prototype.submit = function submit() {
-  if (this.isNewGroup) {
-    this.create();
-  } else {
-    this.update();
-  }
+  if (this.isNewGroup) this.create();
+  else this.update();
 };
 
 

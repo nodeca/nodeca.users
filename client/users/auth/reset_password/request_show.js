@@ -1,13 +1,12 @@
 // Request password change page logic
 //
-
 'use strict';
 
 
-var ko = require('knockout');
+const ko = require('knockout');
 
 
-var view = null;
+let view = null;
 
 
 // Page enter
@@ -25,7 +24,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
 
   ko.applyBindings(view, $('#content')[0]);
 
-  N.wire.emit('common.blocks.recaptcha.create');
+  return N.wire.emit('common.blocks.recaptcha.create');
 });
 
 
@@ -45,11 +44,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   //
   N.wire.on('users.auth.reset_password.request_exec', function request_reset(form) {
 
-    N.io.rpc('users.auth.reset_password.request_exec', form.fields)
-      .then(function () {
-        N.wire.emit('navigate.to', { apiPath: 'users.auth.reset_password.request_done_show' });
-      })
-      .catch(function (err) {
+    return N.io.rpc('users.auth.reset_password.request_exec', form.fields)
+      .then(() => N.wire.emit('navigate.to', { apiPath: 'users.auth.reset_password.request_done_show' }))
+      .catch(err => {
         N.wire.emit('common.blocks.recaptcha.update');
         view.message(err.message);
       });

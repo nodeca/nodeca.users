@@ -1,8 +1,8 @@
 'use strict';
 
 
-var ko   = require('knockout');
-var Form = require('./_form')(N);
+const ko   = require('knockout');
+const Form = require('./_form')(N);
 
 
 N.wire.on('navigate.done:' + module.apiPath, function edit_usergoup_init() {

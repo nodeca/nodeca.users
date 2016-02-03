@@ -1,16 +1,16 @@
 // Registration page form logic
-
+//
 'use strict';
 
 
-var _           = require('lodash');
-var ko          = require('knockout');
+const _  = require('lodash');
+const ko = require('knockout');
 
 
-var CHECK_NICK_DELAY = 1000;
+const CHECK_NICK_DELAY = 1000;
 
 
-var view = null;
+let view = null;
 
 
 // View model for editable fields of the form: email, pass and nick.
@@ -21,7 +21,7 @@ function Control(defaultHelp) {
   this.css     = ko.observable('');
   this.message = ko.observable(null);
   this.value   = ko.observable('');
-  this.help    = ko.computed(function () { return this.message() || this.defaultHelp; }, this);
+  this.help    = ko.computed(() => this.message() || this.defaultHelp);
 }
 
 
@@ -46,21 +46,19 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
   }
 
   // Reset nick CSS class and message on every change.
-  view.nick.value.subscribe(function () {
+  view.nick.value.subscribe(() => {
     this.css('');
     this.message(null);
   }, view.nick);
 
   // Setup automatic nick validation on input.
-  view.nick.value.subscribe(_.debounce(function (text) {
-    var self = this;
-
+  view.nick.value.subscribe(_.debounce(text => {
     if (text.length < 1) return;
 
     N.io.rpc('users.auth.check_nick', { nick: text })
-      .then(function (res) {
-        self.css(res.error ? 'has-error' : '');
-        self.message(res.message);
+      .then(res => {
+        this.css(res.error ? 'has-error' : '');
+        this.message(res.message);
       });
   }, CHECK_NICK_DELAY), view.nick);
 
@@ -88,14 +86,14 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   //
   N.wire.on('users.auth.register.exec', function register(form) {
 
-    N.io.rpc('users.auth.register.exec', form.fields)
-      .then(function (res) {
+    return N.io.rpc('users.auth.register.exec', form.fields)
+      .then(res => {
         // Full page reload, because environment changed
         window.location = res.redirect_url;
       })
-      .catch(function (err) {
+      .catch(err => {
         // Update classes and messages on all input fields.
-        _.forEach(view, function (field, name) {
+        _.forEach(view, (field, name) => {
           field.css(_.has(err.data, name) ? 'has-error' : '');
           field.message(err.data[name]);
         });

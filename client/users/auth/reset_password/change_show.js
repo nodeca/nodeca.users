@@ -1,14 +1,12 @@
 // Enter new password page logic
 //
-
-
 'use strict';
 
 
-var ko = require('knockout');
+const ko = require('knockout');
 
 
-var view = null;
+let view = null;
 
 
 // Page enter
@@ -35,12 +33,12 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   //
   N.wire.on('users.auth.reset_password.change_exec', function change_password(data) {
 
-    N.io.rpc('users.auth.reset_password.change_exec', data.fields)
-      .then(function () {
+    return N.io.rpc('users.auth.reset_password.change_exec', data.fields)
+      .then(() => {
         // Reload the page in order to apply auto login.
         window.location = N.router.linkTo('users.auth.reset_password.change_done_show');
       })
-      .catch(function (err) {
+      .catch(err => {
         view.status(err.bad_password ? 'has-error' : null);
       });
   });

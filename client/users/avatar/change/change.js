@@ -669,7 +669,7 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
         $dialog.modal('hide');
         onUploaded();
       })
-      .catch(function () {
+      .fail(function () {
         $dialog.modal('hide');
         N.wire.emit('notify', t('err_upload_failed'));
       })

@@ -1,15 +1,15 @@
 // Login page logic
-
+//
 'use strict';
 
 
-var ko      = require('knockout');
+const ko = require('knockout');
 
 
 // Knockout view model of the page.
-var view = null;
-var redirectId;
-var previousPageParams = null;
+let view = null;
+let redirectId;
+let previousPageParams = null;
 
 
 // Global listener to save previous page params
@@ -36,7 +36,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
 
   ko.applyBindings(view, $('#content')[0]);
 
-  N.wire.emit('common.blocks.recaptcha.create');
+  return N.wire.emit('common.blocks.recaptcha.create');
 });
 
 
@@ -55,13 +55,13 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   // Form submit
   //
   N.wire.on('users.auth.login.plain_exec', function login(form) {
-    var loginParams = form.fields;
+    let loginParams = form.fields;
 
     if (redirectId) {
       loginParams.redirect_id = redirectId;
     }
 
-    N.io.rpc('users.auth.login.plain_exec', loginParams)
+    return N.io.rpc('users.auth.login.plain_exec', loginParams)
       .then(function (res) {
 
         // Notify other browser tabs about
@@ -81,15 +81,15 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
         // Check that previous page can be loaded, because it can return redirect or forbid access
         N.io.rpc(previousPageParams.apiPath, previousPageParams.params, { handleAllErrors: true })
-          .then(function () {
+          .then(() => {
             // Navigate to previous page
             window.location = N.router.linkTo(previousPageParams.apiPath, previousPageParams.params);
           })
-          .catch(function () {
+          .catch(() => {
             window.location = res.redirect_url;
           });
       })
-      .catch(function (err) {
+      .catch(err => {
         // Force captcha on every attempt.
         N.wire.emit('common.blocks.recaptcha.update');
 
