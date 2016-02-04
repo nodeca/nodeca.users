@@ -3,7 +3,8 @@
 'use strict';
 
 
-var user_info = require('nodeca.users/lib/user_info');
+const user_info = require('nodeca.users/lib/user_info');
+const render    = require('nodeca.core/lib/system/render/common');
 
 
 module.exports = function (N) {
@@ -35,7 +36,7 @@ module.exports = function (N) {
       // If user have no email - skip
       if (!emails[user_id]) return Promise.resolve();
 
-      var params = {
+      let params = {
         user_id,
         usergroup_ids: users_info[user_id].usergroups
       };
@@ -45,10 +46,16 @@ module.exports = function (N) {
           // If user group can't receive emails - skip
           if (!can_receive_email) return null;
 
-          var data = {
+          let locale = users_info[user_id].locale || N.config.locales[0];
+          let helpers = {};
+
+          helpers.t = (phrase, params) => N.i18n.t(locale, phrase, params);
+          helpers.t.exists = phrase => N.i18n.hasPhrase(locale, phrase);
+
+          let data = {
             to: emails[user_id],
             subject: local_env.messages[user_id].subject,
-            html: local_env.messages[user_id].text
+            html: render(N, 'users.notify.deliver.email', local_env.messages[user_id], helpers)
           };
 
           return N.mailer.send(data)

@@ -21,3 +21,4 @@ packages:
     entries:
       - client/users
       - server/users
+      - internal/users

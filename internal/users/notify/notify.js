@@ -10,13 +10,13 @@
 'use strict';
 
 
-var _ = require('lodash');
+const _ = require('lodash');
 
 
 module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function* notification_add(params) {
-    var taskData = _.assign({}, params, { to: Array.isArray(params.to) ? params.to : [ params.to ] });
-    var worker = N.queue.worker('notify');
+    let taskData = _.assign({}, params, { to: Array.isArray(params.to) ? params.to : [ params.to ] });
+    let worker = N.queue.worker('notify');
 
     // Cancel previous task if exists (reset delay for send)
     yield worker.cancel(worker.taskID(taskData));
