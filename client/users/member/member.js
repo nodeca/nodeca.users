@@ -4,7 +4,7 @@
 
 
 const _           = require('lodash');
-const Bag         = require('bag.js');
+const Bag         = require('bagjs');
 const identicon   = require('nodeca.users/lib/identicon');
 const avatarWidth = '$$ JSON.stringify(N.config.users.avatars.resize.orig.width) $$';
 
