@@ -171,6 +171,6 @@ module.exports.run = function (N, args) {
 
     yield user.save();
 
-    N.shutdown();
+    N.wire.emit('terminate', 0);
   });
 };
