@@ -55,7 +55,7 @@ module.exports = function (N) {
           let data = {
             to: emails[user_id],
             subject: local_env.messages[user_id].subject,
-            html: render(N, 'users.notify.deliver.email', local_env.messages[user_id], helpers)
+            html: render(N, 'users.notify.deliver_email', local_env.messages[user_id], helpers)
           };
 
           return N.mailer.send(data)
