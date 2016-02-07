@@ -190,7 +190,7 @@ module.exports = function (N, apiPath) {
 
     env.res.redirect_url = N.router.linkTo('users.auth.register.activate_show');
 
-    let link = env.helpers.url_to('users.auth.register.activate_exec', {
+    let link = env.helpers.link_to('users.auth.register.activate_exec', {
       secret_key: token.secret_key
     });
 

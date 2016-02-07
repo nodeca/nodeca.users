@@ -71,7 +71,7 @@ module.exports = function (N, apiPath) {
 
     let general_project_name = yield N.settings.get('general_project_name');
 
-    let link = env.helpers.url_to('users.auth.reset_password.change_show', {
+    let link = env.helpers.link_to('users.auth.reset_password.change_show', {
       secret_key: token.secret_key
     });
 
