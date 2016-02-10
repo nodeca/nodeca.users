@@ -275,7 +275,7 @@ module.exports = function (N, collectionName) {
     let res = yield N.redis.mgetAsync(cutKeys);
 
     Object.keys(result).forEach((id, i) => {
-      result[id] = res[i] || defaultCut;
+      result[id] = +res[i] || defaultCut;
     });
 
     return result;
