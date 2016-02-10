@@ -576,6 +576,7 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
       case 'dragenter':
         $dropZone.addClass('active');
         break;
+
       case 'dragleave':
         // 'dragleave' occurs when user move cursor over child HTML element
         // track this situation and don't remove 'active' class
@@ -591,13 +592,15 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
           $dropZone.removeClass('active');
         }
         break;
+
       case 'drop':
         $dropZone.removeClass('active');
 
-        if (data.event.dataTransfer && data.event.dataTransfer.files && data.event.dataTransfer.files.length) {
-          loadImage(data.event.dataTransfer.files[0]);
+        if (data.files && data.files.length) {
+          loadImage(data.files[0]);
         }
         break;
+
       default:
     }
   });

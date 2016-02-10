@@ -52,8 +52,8 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
       case 'dragenter':
         $dropZone = data.$this.closest('.user-albumlist__item');
         $dropZone.addClass('active');
-
         break;
+
       case 'dragleave':
         // 'dragleave' occurs when user move cursor over child HTML element
         // track this situation and don't remove 'active' class
@@ -69,23 +69,23 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         if (ex > x1 || ex < x0 || ey > y1 || ey < y0) {
           $dropZone.removeClass('active');
         }
-
         break;
+
       case 'drop':
         $dropZone = data.$this.closest('.user-albumlist__item');
         $dropZone.removeClass('active');
 
         id = $dropZone.data('albumId');
 
-        if (data.event.dataTransfer && data.event.dataTransfer.files && data.event.dataTransfer.files.length) {
+        if (data.files && data.files.length) {
           return N.wire.emit('users.uploader:add', {
-            files: data.event.dataTransfer.files,
+            files: data.files,
             url: N.router.linkTo('users.media.upload', { album_id: id }),
             config: 'users.uploader_config'
           }).then(() => updateAlbumList(id));
         }
-
         break;
+
       default:
     }
   });

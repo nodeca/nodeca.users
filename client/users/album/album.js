@@ -30,12 +30,14 @@ N.wire.after('navigate.done:' + module.apiPath, function uploader_setup() {
         uploaded: null
       };
 
-      N.wire.emit('users.uploader:add', params, function () {
-        $('#users-medias-list').prepend(
-          $(N.runtime.render('users.album.list', { medias: params.uploaded, user_hid: pageParams.user_hid }))
-        );
-        $('.user-album-root').removeClass('no-files');
-      });
+      N.wire.emit('users.uploader:add', params)
+        .then(() => {
+          $('#users-medias-list').prepend(
+            $(N.runtime.render('users.album.list', { medias: params.uploaded, user_hid: pageParams.user_hid }))
+          );
+          $('.user-album-root').removeClass('no-files');
+        })
+        .catch(err => N.wire.emit('error', err));
     }
   });
 });
@@ -50,13 +52,14 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
   // Handles the event when user drag file to drag drop zone
   //
-  N.wire.on(module.apiPath + ':dd_area', function user_album_dd(data, callback) {
+  N.wire.on(module.apiPath + ':dd_area', function user_album_dd(data) {
     let x0, y0, x1, y1, ex, ey;
 
     switch (data.event.type) {
       case 'dragenter':
         $dropZone.addClass('active');
         break;
+
       case 'dragleave':
         // 'dragleave' occurs when user move cursor over child HTML element
         // track this situation and don't remove 'active' class
@@ -72,32 +75,30 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
           $dropZone.removeClass('active');
         }
         break;
+
       case 'drop':
         $dropZone.removeClass('active');
 
-        if (data.event.dataTransfer && data.event.dataTransfer.files && data.event.dataTransfer.files.length) {
-          var params = {
-            files: data.event.dataTransfer.files,
+        if (data.files && data.files.length) {
+          let params = {
+            files: data.files,
             url: N.router.linkTo('users.media.upload', { album_id: pageParams.album_id }),
             config: 'users.uploader_config',
             uploaded: null
           };
 
-          N.wire.emit('users.uploader:add', params, function () {
-            $('#users-medias-list').prepend(
-              $(N.runtime.render('users.album.list', { medias: params.uploaded, user_hid: pageParams.user_hid }))
-            );
-            $('.user-album-root').removeClass('no-files');
-            callback();
-          });
-
-          return;
+          return N.wire.emit('users.uploader:add', params)
+            .then(() => {
+              $('#users-medias-list').prepend(
+                $(N.runtime.render('users.album.list', { medias: params.uploaded, user_hid: pageParams.user_hid }))
+              );
+              $('.user-album-root').removeClass('no-files');
+            });
         }
         break;
+
       default:
     }
-
-    callback();
   });
 });
 
