@@ -11,7 +11,7 @@ const avatarWidth = '$$ JSON.stringify(N.config.users.avatars.resize.orig.width)
 
 // Store/restore blocks collapse state
 //
-N.wire.on('navigate.done:' + module.apiPath, function store_blocks_state(data, callback) {
+N.wire.on('navigate.done:' + module.apiPath, function store_blocks_state(data) {
   let key = [
     'blocks_collapsed',
     N.runtime.user_hid,
@@ -40,19 +40,19 @@ N.wire.on('navigate.done:' + module.apiPath, function store_blocks_state(data, c
     });
 
   // Restore previous state
-  bag.get(key, (__, data) => {
-    collapsedBlocks = data || [];
+  return bag.get(key)
+    .then(data => {
+      collapsedBlocks = data || [];
 
-    collapsedBlocks.forEach(function (blockID) {
-      $('#' + blockID)
-        .removeClass('in')
-        .parent()
-        .find('.member-block__header-collapser')
-        .addClass('collapsed');
-    });
-
-    callback();
-  });
+      collapsedBlocks.forEach(function (blockID) {
+        $('#' + blockID)
+          .removeClass('in')
+          .parent()
+          .find('.member-block__header-collapser')
+          .addClass('collapsed');
+      });
+    })
+    .catch(() => {}); // Suppress storage errors
 });
 
 
