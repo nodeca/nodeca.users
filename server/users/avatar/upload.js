@@ -1,24 +1,19 @@
 // Upload avatar handler for uploading avatars via POST request
 //
-
-
 'use strict';
 
 
-var formidable  = require('formidable');
-var tmpDir      = require('os').tmpdir();
-var fs          = require('fs');
-var async       = require('async');
-var _           = require('lodash');
-var resizeParse = require('nodeca.users/server/_lib/resize_parse');
-var resize      = require('nodeca.users/models/users/_lib/resize');
-var thenify     = require('thenify');
-var unlink      = thenify(fs.unlink);
+const formidable  = require('formidable');
+const tmpDir      = require('os').tmpdir();
+const _           = require('lodash');
+const resizeParse = require('nodeca.users/server/_lib/resize_parse');
+const resize      = require('nodeca.users/models/users/_lib/resize');
+const unlink      = require('mz/fs').unlink;
 
 
 module.exports = function (N, apiPath) {
 
-  var config = resizeParse(N.config.users.avatars);
+  const config = resizeParse(N.config.users.avatars);
 
   // CSRF comes in post data and checked separately
   N.validate(apiPath, {});
@@ -62,10 +57,11 @@ module.exports = function (N, apiPath) {
   // Fetch post body with files via formidable
   //
   N.wire.before(apiPath, function upload_media(env, callback) {
-    var form = new formidable.IncomingForm();
+    let form = new formidable.IncomingForm();
+
     form.uploadDir = tmpDir;
 
-    form.on('progress', function (bytesReceived, contentLength) {
+    form.on('progress', (bytesReceived, contentLength) => {
 
       // Terminate connection if `Content-Length` header is fake
       if (bytesReceived > contentLength) {
@@ -73,16 +69,13 @@ module.exports = function (N, apiPath) {
       }
     });
 
-    form.parse(env.origin.req, function (err, fields, files) {
+    form.parse(env.origin.req, (err, fields, files) => {
       files = _.toArray(files);
 
       function fail(err) {
-        async.each(_.map(files, 'path'), function (path, next) {
-          fs.unlink(path, next);
-        }, function () {
-          // Don't care unlink result, forward previous error
-          callback(err);
-        });
+        // Don't care unlink result, forward previous error
+        files.forEach(f => unlink(f.path).catch(() => {}));
+        callback(err);
       }
 
       // In this callback also will be 'aborted' error

@@ -5,13 +5,10 @@
 
 const formidable  = require('formidable');
 const tmpDir      = require('os').tmpdir();
-const fs          = require('fs');
-const async       = require('async');
 const _           = require('lodash');
 const mime        = require('mime-types').lookup;
 const resizeParse = require('../../../_lib/resize_parse');
-const thenify     = require('thenify');
-const unlink      = thenify(fs.unlink);
+const unlink      = require('mz/fs').unlink;
 
 
 module.exports = function (N, apiPath) {
@@ -121,12 +118,9 @@ module.exports = function (N, apiPath) {
       files = _.toArray(files);
 
       function fail(err) {
-        async.each(_.map(files, 'path'), (path, next) => {
-          fs.unlink(path, next);
-        }, () => {
-          // Don't care unlink result, forward previous error
-          callback(err);
-        });
+        // Don't care unlink result, forward previous error
+        files.forEach(f => unlink(f.path).catch(() => {}));
+        callback(err);
       }
 
       // In this callback also will be 'aborted' error
@@ -150,11 +144,11 @@ module.exports = function (N, apiPath) {
         return;
       }
 
-      var fileInfo = files[0];
+      let fileInfo = files[0];
 
       // Usually file size and type are checked on client side,
       // but we must check it on server side for security reasons
-      var allowedTypes = _.map(config.extensions, ext => mime(ext));
+      let allowedTypes = _.map(config.extensions, ext => mime(ext));
 
       if (allowedTypes.indexOf(fileInfo.type) === -1) {
         fail(new Error('Wrong file type on upload'));
