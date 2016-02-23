@@ -39,3 +39,5 @@ i18n:
           users_media_single_quota_kb: Max upload file size (KB)
 
           can_receive_email: Can receive email
+
+          can_report_abuse: Can report abuses

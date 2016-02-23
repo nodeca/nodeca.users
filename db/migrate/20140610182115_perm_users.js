@@ -14,7 +14,8 @@ module.exports.up = co.wrap(function* (N) {
     let group = groups[i];
 
     yield usergroupStore.set({
-      users_can_upload_media: { value: true }
+      users_can_upload_media: { value: true },
+      can_report_abuse:       { value: true }
     }, { usergroup_id: group._id });
   }
 
