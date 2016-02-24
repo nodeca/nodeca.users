@@ -3,7 +3,7 @@
 
 var Mongoose      = require('mongoose');
 var Schema        = Mongoose.Schema;
-var xregexp       = require('xregexp').XRegExp;
+var xregexp       = require('xregexp');
 var configReader  = require('../../server/_lib/resize_parse');
 
 
