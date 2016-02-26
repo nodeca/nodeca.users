@@ -559,13 +559,6 @@ function initCropper() {
 //
 N.wire.once('users.avatar.change', function init_event_handlers() {
 
-  // Show system dialog file selection
-  //
-  N.wire.on('users.avatar.change:select_file', function select_file() {
-    $('.avatar-change__upload').click();
-  });
-
-
   // Handles the event when user drag file to drag drop zone
   //
   N.wire.on('users.avatar.change:dd_area', function change_avatar_dd(data) {
@@ -746,7 +739,7 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
     cropperUpdate();
   }, 500);
 
-  $('.avatar-change__upload').on('change', function () {
+  $('#avatar-change__upload').on('change', function () {
     var files = $(this)[0].files;
     if (files.length > 0) {
       loadImage(files[0]);

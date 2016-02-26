@@ -19,7 +19,7 @@ let $dropZone;
 N.wire.after('navigate.done:' + module.apiPath, function uploader_setup() {
   $dropZone = $('.user-album-upload');
 
-  $('.user-album-upload__files').on('change', function () {
+  $('#user-album-upload__files').on('change', function () {
     let files = $(this).get(0).files;
 
     if (files.length > 0) {
@@ -44,11 +44,6 @@ N.wire.after('navigate.done:' + module.apiPath, function uploader_setup() {
 
 
 N.wire.once('navigate.done:' + module.apiPath, function page_once() {
-
-  N.wire.on('users.album:select_files', function select_files() {
-    $('.user-album-upload__files').click();
-  });
-
 
   // Handles the event when user drag file to drag drop zone
   //

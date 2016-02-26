@@ -10,14 +10,15 @@
       .modal-body
         .avatar-change(data-on-dragdrop='users.avatar.change:dd_area')
           //- Hidden
-          input.avatar-change__upload(
+          input#avatar-change__upload(
             name='files[]'
             type='file'
             style='position: absolute; left: -2000px'
           )
 
+          //- Should 'click' file input in context of current action
           .avatar-change__info(
-            data-on-click='users.avatar.change:select_file'
+            onClick='document.getElementById("avatar-change__upload").click()'
           )= self.t('drag_to_upload')
 
           canvas.avatar-change__canvas
@@ -29,7 +30,7 @@
       .modal-footer
         button.btn.btn-link.pull-left(
           type='button'
-          data-on-click='users.avatar.change:select_file'
+          onClick='document.getElementById("avatar-change__upload").click()'
         )= self.t('select')
 
         button.btn.btn-default(

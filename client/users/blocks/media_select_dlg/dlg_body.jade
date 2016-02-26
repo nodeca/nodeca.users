@@ -3,19 +3,20 @@ select.media-select-dlg__albums.form-control(data-on-change='users.blocks.media_
     option(
       value=album._id || ''
       selected=album._id === self.selected_album_id
-    )=album.default ? self.t('default_name') : album.title
+    )= album.default ? self.t('default_name') : album.title
 
 .media-select-dlg__actions
   button.btn.btn-default(
     data-on-click='users.blocks.media_select_dlg:create_album'
   )= self.t('create_album')
   | 
+  //- Should 'click' file input in context of current action
   button.btn.btn-default(
-    data-on-click='users.blocks.media_select_dlg:select_files'
+    onClick='document.getElementById("media-select-dlg__files").click()'
   )= self.t('upload_here')
 
   //- Hidden element to call file selection dialog
-  input.media-select-dlg__files(
+  input#media-select-dlg__files(
     name='files[]'
     type='file'
     style='position: absolute; left: -2000px'

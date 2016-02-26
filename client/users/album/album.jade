@@ -20,8 +20,9 @@
   if own_page && self.album
     .user-album-upload.panel.panel-default(data-on-dragdrop='users.album:dd_area')
       .pull-right
+        //- Should 'click' file input in context of current action
         button.btn.btn-default(
-          data-on-click='users.album:select_files'
+          onClick='document.getElementById("user-album-upload__files").click()'
         )= self.t('select_files')
 
         button.btn.btn-default(
@@ -30,7 +31,7 @@
         )= self.t('add_medialink')
 
         //- Hidden
-        input.user-album-upload__files(
+        input#user-album-upload__files(
           name='files[]'
           type='file'
           style='position: absolute; left: -2000px'

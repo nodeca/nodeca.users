@@ -82,13 +82,6 @@ function destroyDialog(callback) {
 //
 N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
 
-  // Upload files button handler
-  //
-  N.wire.on('users.blocks.media_select_dlg:select_files', function select_files() {
-    $dialog.find('.media-select-dlg__files').click();
-  });
-
-
   // Upload selected files
   //
   N.wire.on('users.blocks.media_select_dlg:upload', function upload_files(data) {
