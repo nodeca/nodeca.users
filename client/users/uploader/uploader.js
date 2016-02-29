@@ -250,7 +250,7 @@ function startUpload(data) {
 
       // Client error
       if (err.status === N.io.CLIENT_ERROR) {
-        N.wire.emit('notify', err.statusText);
+        N.wire.emit('notify', err.responseText);
       } else {
         N.wire.emit('notify', t('err_upload', { file_name: data.file.name }));
       }

@@ -151,7 +151,10 @@ module.exports = function (N, apiPath) {
       let allowedTypes = _.map(config.extensions, ext => mime(ext));
 
       if (allowedTypes.indexOf(fileInfo.type) === -1) {
-        fail(new Error('Wrong file type on upload'));
+        fail({
+          code: N.io.CLIENT_ERROR,
+          message: env.t('err_invalid_ext', { file_name: fileInfo.name })
+        });
         return;
       }
 
