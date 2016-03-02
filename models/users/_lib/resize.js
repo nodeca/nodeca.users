@@ -29,15 +29,19 @@
 //
 'use strict';
 
-const _        = require('lodash');
-const co       = require('co');
-const fs       = require('mz/fs');
-const mime     = require('mime-types').lookup;
-const Mongoose = require('mongoose');
-const stream   = require('readable-stream');
-const sharp    = require('sharp');
-const thenify  = require('thenify');
-const probe    = thenify(require('probe-image-size'));
+const _           = require('lodash');
+const co          = require('co');
+const from2       = require('from2');
+const fs          = require('mz/fs');
+const mime        = require('mime-types').lookup;
+const Mongoose    = require('mongoose');
+const pump        = require('pump');
+const stream      = require('readable-stream');
+const sharp       = require('sharp');
+const thenify     = require('thenify');
+const through2    = require('through2');
+const filter_jpeg = require('./filter_jpeg');
+const probe       = thenify(require('probe-image-size'));
 
 let File;
 
@@ -173,7 +177,7 @@ const createPreview = co.wrap(function* (image, resizeConfig, imageType) {
   let res = yield new Promise((resolve, reject) => {
     // using callback interface instead of promises here,
     // because promises don't return `info` object
-    sharpInstance.toFormat(outType).toBuffer(function (err, buffer, info) {
+    sharpInstance.toFormat(outType).withMetadata().toBuffer(function (err, buffer, info) {
       if (err) {
         reject(err);
         return;
@@ -233,7 +237,27 @@ const saveImages = co.wrap(function* (previews, options) {
       params.filename = origId + '_' + key;
     }
 
-    yield File.put(data.image.buffer, params);
+    let filter = (data.image.buffer[0] === 0xFF && data.image.buffer[1] === 0xD8) ?
+                 filter_jpeg({
+                   filter:     true,
+                   removeICC:  key === 'sm' ? true : null,
+                   removeExif: key === 'sm' ? true : null,
+                   comment:    key === 'sm' ? null : options.comment
+                 }) :
+                 through2();
+
+    /* eslint-disable no-loop-func */
+    yield new Promise((resolve, reject) => {
+      pump(
+        from2([ data.image.buffer ]),
+        filter,
+        File.createWriteStream(params),
+        err => {
+          if (err) reject(err);
+          else resolve();
+        }
+      );
+    });
   }
 
   return origId;

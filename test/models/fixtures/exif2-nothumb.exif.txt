@@ -1,0 +1,9 @@
+; thumbnail (IFD1) removed
+
+45 78 69 66 00 00 ; Exif signature
+; = 0x00
+4D 4D 00 2A ; TIFF signature
+00 00 00 08 ; next IFD
+; = 0x08
+00 00 ; IFD0
+00 00 00 00 ; next IFD

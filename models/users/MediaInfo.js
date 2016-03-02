@@ -195,13 +195,27 @@ module.exports = function (N, collectionName) {
       media.file_size = data.size;
       media.file_name = options.name;
     } else {
+      let comment;
+
+      if (options.user_id) {
+        let user = yield N.models.users.User.findById(options.user_id);
+        let date = new Date().toISOString().slice(0, 10);
+
+        if (user) {
+          let profile = N.router.linkTo('users.member', { user_hid: user.hid });
+
+          comment = `Uploaded by ${user.nick}, ${profile}, ${date}`;
+        }
+      }
+
       let data = yield resize(
         options.path,
         {
-          store: N.models.core.File,
-          ext: format,
+          store:   N.models.core.File,
+          ext:     format,
           maxSize: typeConfig.max_size || mediaConfig.max_size,
-          resize: typeConfig.resize
+          resize:  typeConfig.resize,
+          comment
         }
       );
 

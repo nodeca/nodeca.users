@@ -1,0 +1,13 @@
+; thumbnail and large entries removed
+
+45 78 69 66 00 00 ; Exif signature
+; = 0x00
+49 49 2A 00 ; TIFF signature
+08 00 00 00 ; next IFD
+; = 0x08
+01 00 ; IFD0
+69 87 04 00 01 00 00 00 1A 00 00 00 ; entry 1 - ExifOffset
+00 00 00 00 ; next IFD
+; = 0x1A
+00 00 ; SubIFD
+00 00 00 00
