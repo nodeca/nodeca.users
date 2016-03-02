@@ -3,6 +3,7 @@
 'use strict';
 
 
+const path        = require('path');
 const formidable  = require('formidable');
 const tmpDir      = require('os').tmpdir();
 const _           = require('lodash');
@@ -151,11 +152,20 @@ module.exports = function (N, apiPath) {
       let allowedTypes = _.map(config.extensions, ext => mime(ext));
 
       if (allowedTypes.indexOf(fileInfo.type) === -1) {
-        fail({
-          code: N.io.CLIENT_ERROR,
-          message: env.t('err_invalid_ext', { file_name: fileInfo.name })
-        });
-        return;
+        // Fallback attempt: FF can send strange mime,
+        // `application/x-zip-compressed` instead of `application/zip`
+        // Try to fix it.
+        let mimeByExt = mime(path.extname(fileInfo.name).slice(1));
+
+        if (allowedTypes.indexOf(mimeByExt) === -1) {
+          fail({
+            code: N.io.CLIENT_ERROR,
+            message: env.t('err_invalid_ext', { file_name: fileInfo.name })
+          });
+          return;
+        }
+
+        fileInfo.type = mimeByExt;
       }
 
       env.data.upload_file_info = fileInfo;
