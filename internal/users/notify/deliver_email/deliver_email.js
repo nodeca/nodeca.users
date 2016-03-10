@@ -15,14 +15,13 @@ module.exports = function (N) {
 
     // Fetch users emails
     //
-    let res = yield N.models.users.AuthLink
-                        .find()
-                        .where('user_id').in(Object.keys(local_env.messages))
-                        .where('type').equals('plain')
-                        .lean(true);
+    let users_email = yield N.models.users.User.find()
+                                .where('_id').in(Object.keys(local_env.messages))
+                                .select('_id email')
+                                .lean(true);
 
-    let emails = res.reduce((acc, link) => {
-      acc[link.user_id] = link.email;
+    let emails = users_email.reduce((acc, user) => {
+      acc[user._id] = user.email;
       return acc;
     }, {});
 
