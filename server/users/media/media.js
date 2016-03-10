@@ -151,6 +151,13 @@ module.exports = function (N, apiPath) {
 
     if (result) {
       env.res.previous = result.media_id;
+
+      env.res.head = env.res.head || {};
+
+      env.res.head.prev = N.router.linkTo('users.media', {
+        user_hid: env.data.user.hid,
+        media_id: result.media_id
+      });
     }
   });
 
@@ -172,6 +179,13 @@ module.exports = function (N, apiPath) {
 
     if (result) {
       env.res.next = result.media_id;
+
+      env.res.head = env.res.head || {};
+
+      env.res.head.next = N.router.linkTo('users.media', {
+        user_hid: env.data.user.hid,
+        media_id: result.media_id
+      });
     }
   });
 
