@@ -3,11 +3,21 @@
 'use strict';
 
 
+// When requested to display a media file in an album post, we add
+// a fixed amount of media before and after it.
+//
+// This is needed to avoid triggering autoload code just after page load
+//
+const LOAD_MEDIA_BEFORE_COUNT = 20;
+const LOAD_MEDIA_AFTER_COUNT  = 40;
+
+
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
     user_hid: { type: 'integer', minimum: 1, required: true },
-    album_id: { format: 'mongo' }
+    album_id: { format: 'mongo' },
+    media_id: { format: 'mongo' }
   });
 
 
@@ -58,6 +68,9 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, function* get_user_albums(env) {
     env.res.album = env.data.album;
+
+    env.params.before = LOAD_MEDIA_BEFORE_COUNT;
+    env.params.after  = LOAD_MEDIA_AFTER_COUNT;
 
     yield N.wire.emit('server:users.album.list', env);
   });

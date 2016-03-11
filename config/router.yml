@@ -22,16 +22,20 @@ router:
           type: 'integer'
 
     users.album:
-      "/member{user_hid}/album/{album_id}":
+      "/member{user_hid}/album/{album_id}(/{media_id})":
         user_hid:
           match: /\d+/
           type: 'integer'
         album_id:
           match: /[0-9a-f]{24}/
-      "/member{user_hid}/albums/all":
+        media_id:
+          match: /[0-9a-f]{24}/
+      "/member{user_hid}/albums/all(/{media_id})":
         user_hid:
           match: /\d+/
           type: 'integer'
+        media_id:
+          match: /[0-9a-f]{24}/
 
     users.album.edit:
       "/member{user_hid}/album/{album_id}/edit":

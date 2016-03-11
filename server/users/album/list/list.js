@@ -3,7 +3,11 @@
 
 'use strict';
 
-var MEDIAS_PER_PAGE = 30;
+const _ = require('lodash');
+
+
+// Max media files to fetch before and after
+const LIMIT = 100;
 
 
 module.exports = function (N, apiPath) {
@@ -11,7 +15,9 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     user_hid: { type: 'integer', minimum: 1, required: true },
     album_id: { format: 'mongo' },
-    from_media_id: { format: 'mongo' }
+    media_id: { format: 'mongo' },
+    before:   { type: 'integer', minimum: 0, maximum: LIMIT, required: true },
+    after:    { type: 'integer', minimum: 0, maximum: LIMIT, required: true }
   });
 
 
@@ -36,26 +42,40 @@ module.exports = function (N, apiPath) {
       criteria.user_id = env.data.user._id;
     }
 
-    // Get photos from `from_media_id`
-    if (env.params.from_media_id) {
-      criteria.media_id = { $lte: env.params.from_media_id };
+    let result;
+
+    env.res.media = [];
+
+    if (env.params.before && env.params.media_id) {
+      let query = _.assign({ media_id: { $gt: env.params.media_id } }, criteria);
+
+      result = yield N.models.users.MediaInfo.find(query)
+                                             .lean(true)
+                                             .sort('media_id')
+                                             .limit(env.params.before);
+
+      env.res.media = env.res.media.concat(result.reverse());
     }
 
-    let result = yield N.models.users.MediaInfo
-                          .find(criteria)
-                          .lean(true)
-                          .sort('-media_id')
-                          // Select one extra item to check next page exists
-                          .limit(MEDIAS_PER_PAGE + 1);
+    if (env.params.after) {
+      let query;
 
-    if (result.length === MEDIAS_PER_PAGE + 1) {
-      // Remove extra item from response and fill `next_media_id`
-      env.res.next_media_id = result.pop().media_id;
-    } else {
-      env.res.next_media_id = null;
+      if (env.params.media_id) {
+        query = _.assign({
+          media_id: env.params.before ? { $lte: env.params.media_id } : { $lt: env.params.media_id }
+        }, criteria);
+      } else {
+        query = criteria;
+      }
+
+      result = yield N.models.users.MediaInfo.find(query)
+                                             .lean(true)
+                                             .sort('-media_id')
+                                             .limit(env.params.after);
+
+      env.res.media = env.res.media.concat(result);
     }
 
     env.res.user_hid = env.data.user.hid;
-    env.res.medias = result;
   });
 };
