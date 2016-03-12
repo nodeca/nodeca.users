@@ -25,7 +25,6 @@
 
 const readExif    = require('nodeca.users/lib/exif');
 const pica        = require('pica');
-const PromisePool = require('es6-promise-pool');
 
 
 let settings;
@@ -396,13 +395,12 @@ N.wire.on(module.apiPath + ':add', function add_files(data) {
     });
   }
 
-  function uploadIterator() {
+  function uploadFile(data) {
     if (uploadInfo.length === 0) return null;
 
     // Check if user termintae upload
     if (aborted) return Promise.reject(new Error('aborted'));
 
-    let data = uploadInfo.shift();
     let err = checkFile(data);
 
     if (err) return Promise.reject(err);
@@ -413,11 +411,14 @@ N.wire.on(module.apiPath + ':add', function add_files(data) {
       .then(() => startUpload(data));
   }
 
-  // 4 max parallel files upload
-  return new PromisePool(uploadIterator, 4).start()
-    // Skip errors
-    .catch(() => {})
-    .then(() => finish());
+  var res = Promise.resolve();
+
+  // Build sequence (pica is already multithreaded)
+  uploadInfo.forEach(data => {
+    res = res.then(() => uploadFile(data).catch(() => {})); // ignore errors
+  });
+
+  return res.then(() => finish());
 });
 
 
