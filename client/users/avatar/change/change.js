@@ -6,28 +6,28 @@
 'use strict';
 
 
-var _        = require('lodash');
-var pica     = require('pica');
+const _        = require('lodash');
+const pica     = require('pica');
 
-var readExif = require('nodeca.users/lib/exif');
+const readExif = require('nodeca.users/lib/exif');
 
 
 // Avatar upload finish callback
-var onUploaded;
+let onUploaded;
 
 // Original image & it's sizes (sizes are calculated after orientation update)
-var image, imageWidth, imageHeight;
+let image, imageWidth, imageHeight;
 
 // Avatar size config
-var avatarWidth = '$$ N.config.users.avatars.resize.orig.width $$';
-var avatarHeight = '$$ N.config.users.avatars.resize.orig.height $$';
+const avatarWidth = '$$ N.config.users.avatars.resize.orig.width $$';
+const avatarHeight = '$$ N.config.users.avatars.resize.orig.height $$';
 
-var previewWidth = '$$ N.config.users.avatars.resize.md.width $$';
-var previewHeight = '$$ N.config.users.avatars.resize.md.height $$';
+const previewWidth = '$$ N.config.users.avatars.resize.md.width $$';
+const previewHeight = '$$ N.config.users.avatars.resize.md.height $$';
 
 // Cropped image box. Absolute coordinates,
 // relative to not scaled original image (drawn in css-scaled canvas)
-var cropperTop,
+let cropperTop,
     cropperRight,
     cropperBottom,
     cropperLeft,
@@ -40,19 +40,19 @@ var cropperTop,
     viewRatio;    // viewport (canvas) scale (canvas max-width limited with css)
 
 // Dialog data (data.avatar_id will be filled after upload)
-var data;
+let data;
 
 // Dialog elements
-var $dialog, cropper, canvas, canvasPreview, canvasPreviewCtx;
+let $dialog, cropper, canvas, canvasPreview, canvasPreviewCtx;
 
 // Timer to detect zoom and dialog size change
-var sizeCheckInterval;
+let sizeCheckInterval;
 
 
 ///////////////////////////////////////////////////////////////////////////////
 // Redraw cropper frame
 
-var redrawCropperStarted = false;
+let redrawCropperStarted = false;
 
 function _cropperUpdate() {
   cropper.style.top = (cropperTop * viewRatio + viewOffsetY) + 'px';
@@ -63,7 +63,7 @@ function _cropperUpdate() {
   redrawCropperStarted = false;
 }
 
-var cropperUpdate = _.debounce(function () {
+var cropperUpdate = _.debounce(() => {
   if (!redrawCropperStarted) {
     redrawCropperStarted = true;
     window.requestAnimationFrame(_cropperUpdate);
@@ -74,48 +74,35 @@ var cropperUpdate = _.debounce(function () {
 ///////////////////////////////////////////////////////////////////////////////
 // Redraw preview canvas
 
-var redrawPreviewStarted = false;
+let redrawPreviewStarted = false;
 
-// Redraw lock. Incremented on each new request, to discard previous results
-var redrawHqLastId = 0;
+// Used to discard previous result if HW resize called multiple times
+let redrawTaskId = 0;
 
 // Built high quality avatar preview. This is slow, do
 // it only after user stopped cropper change
-var previewHqUpdate = _.debounce(function () {
-  var redrawId = redrawHqLastId;
+let previewHqUpdate = _.debounce(() => {
+  let width = cropperRight - cropperLeft;
+  let height = cropperBottom - cropperTop;
 
-  var width = cropperRight - cropperLeft;
-  var height = cropperBottom - cropperTop;
+  // Create offscreen cropped canvas
+  let canvasCropped = document.createElement('canvas');
 
-  var ctx = canvas.getContext('2d');
+  canvasCropped.width  = width;
+  canvasCropped.height = height;
 
-  // Get ImageData object contains cropped image
-  var croppedImageData = ctx.getImageData(cropperLeft, cropperTop, width, height);
+  let ctxCropped = canvasCropped.getContext('2d');
 
-  var previewImageData = canvasPreviewCtx.createImageData(previewWidth, previewHeight);
+  ctxCropped.drawImage(canvas,
+    cropperLeft, cropperTop, width, height,
+    0, 0, width, height);
 
   // Resize to preview size
-  pica.resizeBuffer({
-    src: croppedImageData.data,
-    width,
-    height,
-    toWidth: previewWidth,
-    toHeight: previewHeight,
-    quality: 3,
-    dest: previewImageData.data,
-    unsharpThreshold: 10,
-    __unsharpAmount: 60,
-    transferable: true
-  }, function (err) {
-
-    if (err) return;
-
-    // Check that no new resizes requested, until we processed
-    // this one. If new request happened - just ignore old data.
-    if (redrawId === redrawHqLastId) {
-      canvasPreviewCtx.putImageData(previewImageData, 0, 0);
-    }
-  });
+  redrawTaskId = pica.resizeCanvas(canvasCropped, canvasPreview, {
+    unsharpAmount: 80,
+    unsharpRadius: 0.6,
+    unsharpThreshold: 2
+  }, () => {});
 
 }, 500);
 
@@ -135,14 +122,14 @@ function _previewUpdate() {
 
   // Check is web worker available in browser
   if (pica.WW) {
-    redrawHqLastId++;
+    pica.terminate(redrawTaskId);
     previewHqUpdate();
   }
 
   redrawPreviewStarted = false;
 }
 
-var previewUpdate = _.debounce(function () {
+let previewUpdate = _.debounce(() => {
   if (!redrawPreviewStarted) {
     redrawPreviewStarted = true;
     window.requestAnimationFrame(_previewUpdate);
@@ -162,10 +149,10 @@ function clamp(number, min, max) {
 // Calculate new cropper coords on `move`
 //
 function cropperDrag(cropperClickOffsetX, cropperClickOffsetY, mouseX, mouseY) {
-  var left, top;
+  let left, top;
 
-  var width = cropperRight - cropperLeft;
-  var height = cropperBottom - cropperTop;
+  let width = cropperRight - cropperLeft;
+  let height = cropperBottom - cropperTop;
 
   left = mouseX - cropperClickOffsetX;
   top = mouseY - cropperClickOffsetY;
@@ -180,11 +167,11 @@ function cropperDrag(cropperClickOffsetX, cropperClickOffsetY, mouseX, mouseY) {
 // Calculate new cropper coords on `resize`
 //
 function cropperResize(mouseX, mouseY, dir) {
-  var ratio = avatarWidth / avatarHeight;
+  let ratio = avatarWidth / avatarHeight;
 
-  var left, top, right, bottom;
-  var refX, refY;
-  var maxLeft, maxRight, maxTop, maxBottom, minLeft, minRight, minTop, minBottom, widthHalf, heightHalf;
+  let left, top, right, bottom;
+  let refX, refY;
+  let maxLeft, maxRight, maxTop, maxBottom, minLeft, minRight, minTop, minBottom, widthHalf, heightHalf;
 
   switch (dir) {
     case 's':
@@ -354,8 +341,8 @@ function cropperResize(mouseX, mouseY, dir) {
 // on context and swap canvas width/height if needed
 //
 function orientationApply(canvas, ctx, orientation) {
-  var width = canvas.width;
-  var height = canvas.height;
+  let width = canvas.width;
+  let height = canvas.height;
 
   if (!orientation || orientation > 8) return;
 
@@ -436,11 +423,9 @@ function loadImage(file) {
 
   image = new Image();
 
-  image.onerror = function () {
-    N.wire.emit('notify', t('err_image_invalid'));
-  };
+  image.onerror = () => { N.wire.emit('notify', t('err_image_invalid')); };
 
-  image.onload = function () {
+  image.onload =  () => {
 
     if (image.width < avatarWidth || image.height < avatarHeight) {
       N.wire.emit('notify', t('err_invalid_size', { w: avatarWidth, h: avatarHeight }));
@@ -472,12 +457,12 @@ function loadImage(file) {
     previewUpdate();
   };
 
-  var slice = file.slice || file.webkitSlice || file.mozSlice;
-  var maxMetadataSize = Math.min(file.size, 256 * 1024);
-  var reader = new FileReader();
+  let slice = file.slice || file.webkitSlice || file.mozSlice;
+  let maxMetadataSize = Math.min(file.size, 256 * 1024);
+  let reader = new FileReader();
 
-  reader.onloadend = function (e) {
-    var exifData = readExif(new Uint8Array(e.target.result));
+  reader.onloadend = e => {
+    let exifData = readExif(new Uint8Array(e.target.result));
 
     if (exifData && exifData.orientation) {
       orientation = exifData.orientation;
@@ -496,17 +481,17 @@ function loadImage(file) {
 // - track if mouse goes out of window
 //
 function initCropper() {
-  var cropperClickOffsetX, cropperClickOffsetY, action;
-  var $body = $('body');
+  let cropperClickOffsetX, cropperClickOffsetY, action;
+  let $body = $('body');
 
   // Use `body` selector for listen mouse events outside of dialog
   $body
-    .on('mouseup.nd.avatar_change touchend.nd.avatar_change', function () {
+    .on('mouseup.nd.avatar_change touchend.nd.avatar_change', () => {
       $dialog.removeClass('avatar-dialog__m-cursor-' + action);
       $dialog.removeClass('avatar-dialog__m-crop-active');
       action = null;
     })
-    .on('mousemove.nd.avatar_change touchmove.nd.avatar_change', function (event) {
+    .on('mousemove.nd.avatar_change touchmove.nd.avatar_change', event => {
 
       if (!action) return;
 
@@ -521,10 +506,10 @@ function initCropper() {
         return;
       }
 
-      var canvasRect = canvas.getBoundingClientRect();
-      var point = event.originalEvent.touches ? event.originalEvent.touches[0] : event;
-      var mouseX = (point.pageX - canvasRect.left) / viewRatio;
-      var mouseY = (point.pageY - canvasRect.top) / viewRatio;
+      let canvasRect = canvas.getBoundingClientRect();
+      let point = event.originalEvent.touches ? event.originalEvent.touches[0] : event;
+      let mouseX = (point.pageX - canvasRect.left) / viewRatio;
+      let mouseY = (point.pageY - canvasRect.top) / viewRatio;
 
       if (action !== 'move') {
         cropperResize(mouseX, mouseY, action);
@@ -536,11 +521,11 @@ function initCropper() {
       previewUpdate();
     });
 
-  $(cropper).on('mousedown touchstart', function (event) {
-    var $target = $(event.target);
-    var point = event.originalEvent.touches ? event.originalEvent.touches[0] : event;
+  $(cropper).on('mousedown touchstart', event => {
+    let $target = $(event.target);
+    let point = event.originalEvent.touches ? event.originalEvent.touches[0] : event;
 
-    var canvasRect = canvas.getBoundingClientRect();
+    let canvasRect = canvas.getBoundingClientRect();
     cropperClickOffsetX = (point.pageX - canvasRect.left) / viewRatio - cropperLeft;
     cropperClickOffsetY = (point.pageY - canvasRect.top) / viewRatio - cropperTop;
 
@@ -562,8 +547,8 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
   // Handles the event when user drag file to drag drop zone
   //
   N.wire.on('users.avatar.change:dd_area', function change_avatar_dd(data) {
-    var x0, y0, x1, y1, ex, ey;
-    var $dropZone = $('.avatar-change');
+    let x0, y0, x1, y1, ex, ey;
+    let $dropZone = $('.avatar-change');
 
     switch (data.event.type) {
       case 'dragenter':
@@ -602,40 +587,43 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
   ///////////////////////////////////////////////////////////////////////////////
   // Save selected avatar
 
-  var formData;
+  let formData;
 
   N.wire.on('users.avatar.change:apply', function change_avatar_resize(__, callback) {
 
-    var ctx = canvas.getContext('2d');
     var width = cropperRight - cropperLeft;
     var height = cropperBottom - cropperTop;
-    var croppedImageData = ctx.getImageData(cropperLeft, cropperTop, width, height);
 
+    // Create offscreen cropped canvas
+    let canvasCropped = document.createElement('canvas');
+
+    canvasCropped.width  = width;
+    canvasCropped.height = height;
+
+    let ctxCropped = canvasCropped.getContext('2d');
+
+    ctxCropped.drawImage(canvas,
+      cropperLeft, cropperTop, width, height,
+      0, 0, width, height);
+
+
+    // Create "final" avatar canvas
     var avatarCanvas = document.createElement('canvas');
-    var avatarCanvasCtx = avatarCanvas.getContext('2d');
 
     avatarCanvas.width = avatarWidth;
     avatarCanvas.height = avatarHeight;
 
-    var avatarImageData = avatarCanvasCtx.createImageData(avatarWidth, avatarHeight);
 
-    pica.resizeBuffer({
-      src: croppedImageData.data,
-      width,
-      height,
-      toWidth: avatarWidth,
-      toHeight: avatarHeight,
-      quality: 3,
-      dest: avatarImageData.data,
-      transferable: true
-    }, function (err) {
+    pica.resizeCanvas(canvasCropped, avatarCanvas, {
+      unsharpAmount: 80,
+      unsharpRadius: 0.6,
+      unsharpThreshold: 2
+    }, err => {
 
       if (err) {
         N.wire.emit('notify', t('err_image_invalid'));
         return;
       }
-
-      avatarCanvasCtx.putImageData(avatarImageData, 0, 0);
 
       avatarCanvas.toBlob(function (blob) {
 
@@ -660,18 +648,16 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
       processData: false,
       contentType: false
     })
-      .then(function (result) {
+      .then(result => {
         data.avatar_id = result.avatar_id;
         $dialog.modal('hide');
         onUploaded();
       })
-      .fail(function () {
+      .fail(() => {
         $dialog.modal('hide');
         N.wire.emit('notify', t('err_upload_failed'));
       })
-      .always(function () {
-        formData = null;
-      });
+      .always(() => { formData = null; });
   });
 
 
@@ -725,11 +711,11 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
 
   initCropper();
 
-  var lastWidth = $dialog.width();
+  let lastWidth = $dialog.width();
 
   // We can't use `resize` event here because zoom level also change width, but doesn't fire `resize`
-  sizeCheckInterval = setInterval(function () {
-    var newWidth = $dialog.width();
+  sizeCheckInterval = setInterval(() => {
+    let newWidth = $dialog.width();
 
     if (lastWidth === newWidth) return;
 
@@ -740,10 +726,8 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
   }, 500);
 
   $('#avatar-change__upload').on('change', function () {
-    var files = $(this)[0].files;
-    if (files.length > 0) {
-      loadImage(files[0]);
-    }
+    let files = $(this)[0].files;
+    if (files.length > 0) loadImage(files[0]);
   });
 
   // Update cropper on dialog open.
