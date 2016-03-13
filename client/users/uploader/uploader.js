@@ -121,6 +121,8 @@ function resizeImage(data) {
         let width = Math.min(img.height * scaledWidth / scaledHeight, img.width);
         let cropX = (width - img.width) / 2;
 
+        let alpha = ext === 'png';
+
         let source = document.createElement('canvas');
         let dest = document.createElement('canvas');
 
@@ -132,7 +134,7 @@ function resizeImage(data) {
 
         source.getContext('2d').drawImage(img, cropX, 0, width, img.height);
 
-        pica.resizeCanvas(source, dest, { alpha: true }, function () {
+        pica.resizeCanvas(source, dest, { alpha }, function () {
 
           dest.toBlob(function (blob) {
             let jpegBlob, jpegBody;
