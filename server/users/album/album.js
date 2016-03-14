@@ -89,10 +89,17 @@ module.exports = function (N, apiPath) {
       env.res.head.title = env.t('title_with_user', { username });
     }
 
-    if (env.params.media_id) {
-      env.res.head.robots = env.params.album_id ?
-                            'noindex,follow' :
-                            'noindex,nofollow';
+    // all photos, 1st page    - noindex, nofollow
+    // all photos, other pages - noindex, nofollow
+    // album, 1st page         - index,   follow
+    // album, other pages      - noindex, follow
+    //
+    let index  = env.params.album_id && !env.params.media_id;
+    let follow = env.params.album_id;
+
+    if (!index || !follow) {
+      env.res.head.robots = (index  ? 'index'  : 'noindex') + ',' +
+                            (follow ? 'follow' : 'nofollow');
     }
   });
 

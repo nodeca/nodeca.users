@@ -228,12 +228,22 @@ N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
       media_id: currentIdx >= 0 ? $(media[currentIdx]).data('media-id') : undefined
     });
 
-    $('meta[name="robots"]').remove();
+    // all photos, 1st page    - noindex, nofollow
+    // all photos, other pages - noindex, nofollow
+    // album, 1st page         - index,   follow
+    // album, other pages      - noindex, follow
+    //
+    let index  = mediaState.album_id && currentIdx < 0;
+    let follow = mediaState.album_id;
+    let tag    = $('meta[name="robots"]');
 
-    if (currentIdx >= 0) {
-      $('head').append($('<meta name="robots" content="' +
-                         (mediaState.album_id ? 'noindex,follow' : 'noindex,nofollow') +
-                         '">'));
+    if (index && follow) {
+      tag.remove();
+    } else {
+      if (!tag.length) $('head').append(tag = $('<meta name="robots">'));
+
+      tag.attr('content', (index  ? 'index'  : 'noindex') + ',' +
+                          (follow ? 'follow' : 'nofollow'));
     }
 
     N.wire.emit('navigate.replace', { href, state })
