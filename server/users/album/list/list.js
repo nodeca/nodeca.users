@@ -52,7 +52,19 @@ module.exports = function (N, apiPath) {
       result = yield N.models.users.MediaInfo.find(query)
                                              .lean(true)
                                              .sort('media_id')
-                                             .limit(env.params.before);
+                                             .limit(env.params.before + 1);
+
+      if (result.length > env.params.before) {
+        let prev_media = result.shift();
+
+        env.res.prev_media = prev_media.media_id;
+        env.res.head = env.res.head || {};
+        env.res.head.prev = N.router.linkTo('users.album', {
+          user_hid: env.data.user.hid,
+          album_id: env.params.album_id,
+          media_id: env.res.prev_media
+        });
+      }
 
       env.res.media = env.res.media.concat(result.reverse());
     }
@@ -71,7 +83,19 @@ module.exports = function (N, apiPath) {
       result = yield N.models.users.MediaInfo.find(query)
                                              .lean(true)
                                              .sort('-media_id')
-                                             .limit(env.params.after);
+                                             .limit(env.params.after + 1);
+
+      if (result.length > env.params.after) {
+        let next_media = result.pop();
+
+        env.res.next_media = next_media.media_id;
+        env.res.head = env.res.head || {};
+        env.res.head.next = N.router.linkTo('users.album', {
+          user_hid: env.data.user.hid,
+          album_id: env.params.album_id,
+          media_id: env.res.next_media
+        });
+      }
 
       env.res.media = env.res.media.concat(result);
     }

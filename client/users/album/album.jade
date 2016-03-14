@@ -41,8 +41,17 @@
       .user-album-upload__text
         = self.t('drag_to_upload')
 
-  - self.add_raw_data('next_media_id', self.next_media_id)
+  - self.add_raw_data('prev_media', self.prev_media)
+  - self.add_raw_data('next_media', self.next_media)
   ul#users-media-list.user-medialist.thumb-grid.thumb-grid__m-responsive
     != self.partial('@users.album.list')
+
+  nav.user-album-root__page-links
+    .pager
+      - var link = self.link_to(self.apiPath, { user_hid: self.user_hid, album_id: self.album && self.album._id, media_id: self.prev_media });
+      li: a(href=link)= self.t('prev_page')
+
+      - var link = self.link_to(self.apiPath, { user_hid: self.user_hid, album_id: self.album && self.album._id, media_id: self.next_media });
+      li: a(href=link)= self.t('next_page')
 
   p.user-album-root__no-files= self.t('no_files')

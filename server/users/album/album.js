@@ -88,6 +88,12 @@ module.exports = function (N, apiPath) {
     } else {
       env.res.head.title = env.t('title_with_user', { username });
     }
+
+    if (env.params.media_id) {
+      env.res.head.robots = env.params.album_id ?
+                            'noindex,follow' :
+                            'noindex,nofollow';
+    }
   });
 
 

@@ -8,7 +8,6 @@ const _ = require('lodash');
 //
 // - user_hid:           user hid
 // - album_hid:          album hid
-// - current_offset:     offset of the current medium (first in the viewport)
 // - reached_start:      true if no more pages exist above first loaded one
 // - reached_end:        true if no more pages exist below last loaded one
 // - prev_loading_start: time when current xhr request for the previous page is started
@@ -31,11 +30,9 @@ const TOP_OFFSET = 50;
 N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
   mediaState.user_hid           = data.params.user_hid;
   mediaState.album_id           = data.params.album_id;
-  mediaState.current_offset     = -1;
 
-  // TODO: check on server whether we have more media or not
-  mediaState.reached_start      = data.params.media_id ? false : true;
-  mediaState.reached_end        = false;
+  mediaState.reached_start      = !N.runtime.page_data.prev_media;
+  mediaState.reached_end        = !N.runtime.page_data.next_media;
 
   mediaState.prev_loading_start = 0;
   mediaState.next_loading_start = 0;
@@ -62,7 +59,16 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
     }
   }
 
-  $window.scrollTop(0);
+
+  // If we're on the first page, scroll to the top;
+  // otherwise, scroll to the first topic on that page
+  //
+  if (!mediaState.reached_start && $('#users-media-list').length) {
+    $window.scrollTop($('#users-media-list').offset().top - navbarHeight);
+
+  } else {
+    $window.scrollTop(0);
+  }
 });
 
 
@@ -190,7 +196,6 @@ N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
   locationScrollHandler = _.debounce(function update_location_on_scroll() {
     let media          = document.getElementById('users-media-list').getElementsByClassName('thumb'),
         mediaThreshold = $window.scrollTop() + navbarHeight + TOP_OFFSET,
-        offset         = 0,
         currentIdx;
 
     // Get offset of the first media in the viewport
@@ -209,8 +214,6 @@ N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
     let href = null;
     let state = null;
 
-    offset = currentIdx + mediaState.first_offset;
-
     if (currentIdx >= 0 && media.length) {
       state = {
         media:  $(media[currentIdx]).data('media-id'),
@@ -218,23 +221,19 @@ N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
       };
     }
 
-    // save current offset, and only update url if offset is different,
-    // it protects url like /f1/topic23/page4 from being overwritten instantly
-    if (mediaState.current_offset !== offset) {
-      /* eslint-disable no-undefined */
-      href = N.router.linkTo('users.album', {
-        user_hid: mediaState.user_hid,
-        album_id: mediaState.album_id,
-        media_id: currentIdx >= 0 ? $(media[currentIdx]).data('media-id') : undefined
-      });
+    /* eslint-disable no-undefined */
+    href = N.router.linkTo('users.album', {
+      user_hid: mediaState.user_hid,
+      album_id: mediaState.album_id,
+      media_id: currentIdx >= 0 ? $(media[currentIdx]).data('media-id') : undefined
+    });
 
-      if (mediaState.current_offset <= 0 && offset > 0) {
-        $('head').append($('<meta name="robots" content="noindex,follow">'));
-      } else if (mediaState.current_offset > 0 && offset <= 0) {
-        $('meta[name="robots"]').remove();
-      }
+    $('meta[name="robots"]').remove();
 
-      mediaState.current_offset = offset;
+    if (currentIdx >= 0) {
+      $('head').append($('<meta name="robots" content="' +
+                         (mediaState.album_id ? 'noindex,follow' : 'noindex,nofollow') +
+                         '">'));
     }
 
     N.wire.emit('navigate.replace', { href, state })
@@ -293,7 +292,20 @@ N.wire.on('navigate.done:' + module.apiPath, function prefetcher_init() {
 
     mediaState.prev_loading_start = now;
 
+    let media = document.getElementById('users-media-list').getElementsByClassName('thumb');
+    let first_offset = media[0].offsetTop;
+    let i;
+
+    for (i = 1; i < media.length; i++) {
+      if (media[i].offsetTop !== first_offset) break;
+    }
+
+    let columns    = i;
     let load_count = mediaState.album_id ? LOAD_MEDIA_ALBUM : LOAD_MEDIA_ALL;
+
+    // Make sure we will have filled lines after load (if possible)
+    //
+    load_count -= (load_count + media.length) % columns;
 
     N.io.rpc('users.album.list', {
       user_hid: mediaState.user_hid,
@@ -309,7 +321,7 @@ N.wire.on('navigate.done:' + module.apiPath, function prefetcher_init() {
 
       if (!res.media) return;
 
-      if (res.media.length !== load_count) {
+      if (!res.prev_media) {
         mediaState.reached_start = true;
       }
 
@@ -354,7 +366,20 @@ N.wire.on('navigate.done:' + module.apiPath, function prefetcher_init() {
 
     mediaState.next_loading_start = now;
 
+    let media = document.getElementById('users-media-list').getElementsByClassName('thumb');
+    let first_offset = media[0].offsetTop;
+    let i;
+
+    for (i = 1; i < media.length; i++) {
+      if (media[i].offsetTop !== first_offset) break;
+    }
+
+    let columns    = i;
     let load_count = mediaState.album_id ? LOAD_MEDIA_ALBUM : LOAD_MEDIA_ALL;
+
+    // Make sure we will have filled lines after load (if possible)
+    //
+    load_count -= (load_count + media.length) % columns;
 
     N.io.rpc('users.album.list', {
       user_hid: mediaState.user_hid,
@@ -373,7 +398,7 @@ N.wire.on('navigate.done:' + module.apiPath, function prefetcher_init() {
 
       if (!res.media) return;
 
-      if (res.media.length !== load_count) {
+      if (!res.next_media) {
         mediaState.reached_end = true;
       }
 
