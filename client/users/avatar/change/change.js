@@ -106,34 +106,26 @@ let previewHqUpdate = _.debounce(() => {
 
 }, 500);
 
-// Build real-time preview on cropper change. Fast, but low quality (pixelated)
-function _previewUpdate() {
-  canvasPreviewCtx.drawImage(
-    canvas,
-    cropperLeft,
-    cropperTop,
-    cropperRight - cropperLeft,
-    cropperBottom - cropperTop,
-    0,
-    0,
-    previewWidth,
-    previewHeight
-  );
-
-  // Check is web worker available in browser
-  if (pica.WW) {
-    pica.terminate(redrawTaskId);
-    previewHqUpdate();
-  }
-
-  redrawPreviewStarted = false;
-}
 
 let previewUpdate = _.debounce(() => {
-  if (!redrawPreviewStarted) {
-    redrawPreviewStarted = true;
-    window.requestAnimationFrame(_previewUpdate);
-  }
+  if (redrawPreviewStarted) return;
+
+  redrawPreviewStarted = true;
+
+  window.requestAnimationFrame(() => {
+    // Build quick but rude preview first
+    canvasPreviewCtx.drawImage(canvas,
+      cropperLeft, cropperTop, cropperRight - cropperLeft, cropperBottom - cropperTop,
+      0, 0, previewWidth, previewHeight);
+
+    // Check is web worker available in browser
+    if (pica.WW) {
+      pica.terminate(redrawTaskId);
+      previewHqUpdate();
+    }
+
+    redrawPreviewStarted = false;
+  });
 }, 20, { maxWait: 40 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -340,15 +332,15 @@ function cropperResize(mouseX, mouseY, dir) {
 // Apply JPEG orientation to canvas. Define flip/rotate transformation
 // on context and swap canvas width/height if needed
 //
-function orientationApply(canvas, ctx, orientation) {
+function orientationApply(ctx, orientation) {
   let width = canvas.width;
   let height = canvas.height;
 
   if (!orientation || orientation > 8) return;
 
   if (orientation > 4) {
-    canvas.width = height;
-    canvas.height = width;
+    ctx.canvas.width = height;
+    ctx.canvas.height = width;
   }
 
   switch (orientation) {
@@ -435,7 +427,7 @@ function loadImage(file) {
     canvas.width  = image.width;
     canvas.height = image.height;
 
-    orientationApply(canvas, ctx, orientation);
+    orientationApply(ctx, orientation);
 
     imageWidth = canvas.width;
     imageHeight = canvas.height;
