@@ -2,43 +2,37 @@
 
 
 const assert      = require('assert');
-const from2       = require('from2');
 const fs          = require('fs');
 const glob        = require('glob').sync;
 const path        = require('path');
-const pump        = require('pump');
 const filter_jpeg = require('nodeca.users/models/users/_lib/filter_jpeg');
 
 
-function toBuffer(stream, callback) {
-  let data = [];
-
-  stream.on('data',  d => data.push(d));
-  stream.on('end',   () => callback(null, Buffer.concat(data)));
-  stream.on('error', callback);
-}
-
-
-describe('filter_jpeg', function () {
+function addTestBlock(TypedArray) {
   let fixtures = {};
   let cwd = path.join(__dirname, 'fixtures');
 
   glob('*.jpeg.txt', { cwd })
     .filter(name => !/^[._]|\\[._]|\/[_.]/.test(name))
     .forEach(name => {
-      let hex = fs.readFileSync(path.join(cwd, name), 'utf8');
-      let buf = new Buffer(hex.replace(/;.*/mg, '').replace(/\s*/g, ''), 'hex');
+      let hex = fs.readFileSync(path.join(cwd, name), 'utf8').replace(/;.*/mg, '');
+      let buf = new Buffer(hex.match(/[0-9a-f]{2}/gi).map(i => parseInt(i, 16)));
 
       fixtures[name.replace(/\.jpeg\.txt$/, '')] = buf;
     });
 
   function addTest(args, source, equals, callback) {
-    toBuffer(pump(from2([ source ]), filter_jpeg(args)), (err, buffer) => {
-      if (err) throw err;
+    let filter = filter_jpeg(args);
+
+    filter.onEnd = function () {
+      let buffer = new TypedArray(Buffer.concat(filter.output));
 
       assert.deepEqual(buffer, equals);
       callback();
-    });
+    };
+
+    filter.push(source);
+    filter.end();
   }
 
   it('should leave file as is if no options', function (callback) {
@@ -49,7 +43,7 @@ describe('filter_jpeg', function () {
   });
 
   it('should add a comment', function (callback) {
-    addTest({ comment: 'hello world' },
+    addTest({ comment: 'hèllo wõrld！ 😼' },
             fixtures['jpeg1-orig'],
             fixtures['jpeg1-comment'],
             callback);
@@ -63,17 +57,41 @@ describe('filter_jpeg', function () {
   });
 
   it('should produce the same result if file is split', function (callback) {
-    let arr = [];
+    let filter = filter_jpeg();
 
-    for (let i = 0; i < fixtures['jpeg1-padded'].length; i++) {
-      arr.push(new Buffer([ fixtures['jpeg1-padded'][i] ]));
-    }
-
-    toBuffer(pump(from2(arr), filter_jpeg()), (err, buffer) => {
-      if (err) throw err;
+    filter.onEnd = function () {
+      let buffer = new TypedArray(Buffer.concat(filter.output.map(Buffer)));
 
       assert.deepEqual(buffer, fixtures['jpeg1-orig']);
       callback();
-    });
+    };
+
+    for (let i = 0; i < fixtures['jpeg1-padded'].length; i++) {
+      filter.push(new TypedArray([ fixtures['jpeg1-padded'][i] ]));
+    }
+
+    filter.end();
   });
+
+  it('should fail on error', function (callback) {
+    let filter = filter_jpeg();
+
+    filter.onError = function (err) {
+      assert.equal(err.message, 'unexpected byte at segment start: 0x44 (offset 0x02)');
+      callback();
+    };
+
+    filter.push(new TypedArray([ 0xFF, 0xD8, 0x44 ]));
+    filter.end();
+  });
+}
+
+
+describe('filter_jpeg (Buffer)', function () {
+  addTestBlock(Buffer);
+});
+
+
+describe('filter_jpeg (Uint8Array)', function () {
+  addTestBlock(Uint8Array);
 });

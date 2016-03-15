@@ -49,6 +49,26 @@ let File;
 sharp.concurrency(1);
 
 
+// Stream2 interface for jpeg_stream
+//
+function filter_jpeg_stream(options) {
+  let filter = filter_jpeg(options);
+
+  let stream = through2(function write(chunk, __, callback) {
+    filter.push(chunk);
+    callback();
+  }, function flush(callback) {
+    filter.end();
+    callback();
+  });
+
+  filter.onData = data => { stream.push(data); };
+  filter.onEnd  = ()   => { stream.push(null); };
+
+  return stream;
+}
+
+
 // Create preview for image
 //
 // - path - Image file path.
@@ -238,7 +258,7 @@ const saveImages = co.wrap(function* (previews, options) {
     }
 
     let filter = (data.image.buffer[0] === 0xFF && data.image.buffer[1] === 0xD8) ?
-                 filter_jpeg({
+                 filter_jpeg_stream({
                    filter:     true,
                    removeICC:  key === 'sm' ? true : null,
                    removeExif: key === 'sm' ? true : null,

@@ -1,9 +1,11 @@
-; 'hello world' comment added
+; comment added
 
 FF D8 ; SOI
 
-FF FE 00 0E ; COM
- 68 65 6C 6C 6F 20 77 6F 72 6C 64 00
+FF FE 00 18 ; COM
+; H     è  l  l  o  _  w     õ     r  l  d    ！
+ 68 C3 A8 6C 6C 6F 20 77 C3 B5 72 6C 64 EF BC 81
+ 20 F0 9F 98 BC 00
 
 FF DB 00 43 ; DQT
  00 2F 20 23 29 23 1D 2F 29 26 29 35 32 2F 38 47

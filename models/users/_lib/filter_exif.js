@@ -11,15 +11,11 @@ function error(message, code) {
 }
 
 
+/* eslint-disable no-bitwise */
 function Exif(data) {
   this.data = data;
 
-  this.output = {
-    buf: new Buffer(data.length),
-    length: 0
-  };
-
-  let sig = data.toString('binary', 0, 4);
+  let sig = String.fromCharCode.apply(null, data.subarray(0, 4));
 
   if (sig !== 'II\x2A\0' && sig !== 'MM\0\x2A') {
     throw error('invalid TIFF signature', 'EBADDATA');
@@ -33,8 +29,8 @@ Exif.prototype.readUInt16 = function (buffer, offset) {
   if (offset + 2 > buffer.length) throw error('unexpected EOF', 'EBADDATA');
 
   return this.big_endian ?
-         buffer.readUInt16BE(offset) :
-         buffer.readUInt16LE(offset);
+         buffer[offset] * 0x100 + buffer[offset + 1] :
+         buffer[offset] + buffer[offset + 1] * 0x100;
 };
 
 
@@ -42,8 +38,8 @@ Exif.prototype.readUInt32 = function (buffer, offset) {
   if (offset + 4 > buffer.length) throw error('unexpected EOF', 'EBADDATA');
 
   return this.big_endian ?
-         buffer.readUInt32BE(offset) :
-         buffer.readUInt32LE(offset);
+         buffer[offset] * 0x1000000 + buffer[offset + 1] * 0x10000 + buffer[offset + 2] * 0x100 + buffer[offset + 3] :
+         buffer[offset] + buffer[offset + 1] * 0x100 + buffer[offset + 2] * 0x10000 + buffer[offset + 3] * 0x1000000;
 };
 
 
@@ -52,9 +48,13 @@ Exif.prototype.writeUInt16 = function (buffer, data, offset) {
   // and we wrongly allocate a smaller buffer than necessary
   if (offset + 2 > buffer.length) throw error('TIFF data is too large', 'EBADDATA');
 
-  return this.big_endian ?
-         buffer.writeUInt16BE(data, offset) :
-         buffer.writeUInt16LE(data, offset);
+  if (this.big_endian) {
+    buffer[offset]     = (data >>> 8) & 0xFF;
+    buffer[offset + 1] = data & 0xFF;
+  } else {
+    buffer[offset]     = data & 0xFF;
+    buffer[offset + 1] = (data >>> 8) & 0xFF;
+  }
 };
 
 
@@ -63,17 +63,33 @@ Exif.prototype.writeUInt32 = function (buffer, data, offset) {
   // and we wrongly allocate a smaller buffer than necessary
   if (offset + 4 > buffer.length) throw error('TIFF data is too large', 'EBADDATA');
 
-  return this.big_endian ?
-         buffer.writeUInt32BE(data, offset) :
-         buffer.writeUInt32LE(data, offset);
+  if (this.big_endian) {
+    buffer[offset]     = (data >>> 24) & 0xFF;
+    buffer[offset + 1] = (data >>> 16) & 0xFF;
+    buffer[offset + 2] = (data >>> 8) & 0xFF;
+    buffer[offset + 3] = data & 0xFF;
+  } else {
+    buffer[offset]     = data & 0xFF;
+    buffer[offset + 1] = (data >>> 8) & 0xFF;
+    buffer[offset + 2] = (data >>> 16) & 0xFF;
+    buffer[offset + 3] = (data >>> 24) & 0xFF;
+  }
 };
 
 
-Exif.prototype.filter = function (maxSize) {
+Exif.prototype.filter = function (maxSize, out) {
+  this.output = {
+    buf: out,
+    length: 0
+  };
+
   let offset = 0;
 
   // copy signature (it's already checked on init)
-  this.data.copy(this.output.buf, 0, 0, 4);
+  this.output.buf[0] = this.data[0];
+  this.output.buf[1] = this.data[1];
+  this.output.buf[2] = this.data[2];
+  this.output.buf[3] = this.data[3];
   this.output.length += 4;
 
   this.writeUInt32(this.output.buf, 8, this.output.length);
@@ -106,7 +122,7 @@ Exif.prototype.filter = function (maxSize) {
     throw error('TIFF data is too large', 'EBADDATA');
   }
 
-  return this.output.buf.slice(0, this.output.length);
+  return this.output.length;
 };
 
 
@@ -150,13 +166,13 @@ Exif.prototype.readIFDEntry = function (offset) {
   let length = unit_length * count;
 
   if (length <= 4) {
-    value = this.data.slice(offset + 8, offset + 12);
+    value = this.data.subarray(offset + 8, offset + 12);
 
     if (value.length < 4) throw error('unexpected EOF', 'EBADDATA');
   } else {
     let offv = this.readUInt32(this.data, offset + 8);
 
-    value = this.data.slice(offv, offv + length);
+    value = this.data.subarray(offv, offv + length);
 
     if (value.length < length) throw error('unexpected EOF', 'EBADDATA');
   }
@@ -193,7 +209,11 @@ Exif.prototype.processIFDSection = function (offset, limit) {
     this.writeUInt32(this.output.buf, entry.count, this.output.length + 4);
 
     if (entry.value.length <= 4) {
-      entry.value.copy(this.output.buf, this.output.length + 8);
+      if (entry.value.length + this.output.length + 8 > this.output.buf.length) {
+        throw error('TIFF data is too large', 'EBADDATA');
+      }
+
+      this.output.buf.set(entry.value, this.output.length + 8);
     }
 
     this.output.length += 12;
@@ -206,7 +226,11 @@ Exif.prototype.processIFDSection = function (offset, limit) {
     if (entry.value.length > 4) {
       this.writeUInt32(this.output.buf, this.output.length, written_ifb_offset + i * 12 + 8);
 
-      entry.value.copy(this.output.buf, this.output.length);
+      if (entry.value.length + this.output.length > this.output.buf.length) {
+        throw error('TIFF data is too large', 'EBADDATA');
+      }
+
+      this.output.buf.set(entry.value, this.output.length);
 
       this.output.length += entry.value.length;
 
@@ -226,13 +250,27 @@ Exif.prototype.processIFDSection = function (offset, limit) {
 
 
 module.exports = function filter_exif(data, options) {
-  if (data.toString('binary', 0, 6) !== 'Exif\0\0') {
+  if (String.fromCharCode.apply(null, data.subarray(0, 6)) !== 'Exif\0\0') {
     throw error('invalid Exif signature', 'ENOTEXIF');
   }
 
-  let exif    = new Exif(data.slice(6));
+  // Create buffer of the same length as input.
+  //
+  // This is good enough for most of the cases, but will throw
+  // if exif is packed (referencing the same data multiple times)
+  //
+  let output  = new data.constructor(data.length);
+  let exif    = new Exif(data.subarray(6));
   let maxSize = options && options.exifMaxEntrySize ? options.exifMaxEntrySize : Infinity;
-  let output  = exif.filter(maxSize);
 
-  return Buffer.concat([ new Buffer('Exif\0\0', 'binary'), output ]);
+  'Exif\0\0'.split('').forEach((c, pos) => {
+    output[pos] = c.charCodeAt(0);
+  });
+
+  // Write filtered exif into output at position 6,
+  // it's built around the fact that subarray copy is shallow
+  //
+  let length = exif.filter(maxSize, output.subarray(6));
+
+  return output.subarray(0, length + 6);
 };

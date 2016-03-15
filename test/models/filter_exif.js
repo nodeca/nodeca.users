@@ -8,15 +8,15 @@ const path        = require('path');
 const filter_exif = require('nodeca.users/models/users/_lib/filter_exif');
 
 
-describe('filter_exif', function () {
+function addTestBlock(Buffer) {
   let fixtures = {};
   let cwd = path.join(__dirname, 'fixtures');
 
   glob('*.exif.txt', { cwd })
     .filter(name => !/^[._]|\\[._]|\/[_.]/.test(name))
     .forEach(name => {
-      let hex = fs.readFileSync(path.join(cwd, name), 'utf8');
-      let buf = new Buffer(hex.replace(/;.*/mg, '').replace(/\s*/g, ''), 'hex');
+      let hex = fs.readFileSync(path.join(cwd, name), 'utf8').replace(/;.*/mg, '');
+      let buf = new Buffer(hex.match(/[0-9a-f]{2}/gi).map(i => parseInt(i, 16)));
 
       fixtures[name.replace(/\.exif\.txt$/, '')] = buf;
     });
@@ -55,4 +55,14 @@ describe('filter_exif', function () {
       }
     }
   });
+}
+
+
+describe('filter_exif (Buffer)', function () {
+  addTestBlock(Buffer);
+});
+
+
+describe('filter_exif (Uint8Array)', function () {
+  addTestBlock(Uint8Array);
 });
