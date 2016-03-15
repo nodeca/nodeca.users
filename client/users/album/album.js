@@ -177,9 +177,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
     return Promise.resolve()
       .then(() => N.wire.emit('users.album.add_medialink', params))
       .then(() => N.io.rpc('users.media.add_medialink', { album_id: params.album_id, media_url: params.media_url }))
-      .then(() => {
+      .then(res => {
         $('#users-media-list').prepend(
-          $(N.runtime.render('users.album.list', { media: [ params.media ], user_hid: mediaState.user_hid }))
+          $(N.runtime.render('users.album.list', { media: [ res.media ], user_hid: mediaState.user_hid }))
         );
         $('.user-album-root').removeClass('no-files');
       });
