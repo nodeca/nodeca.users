@@ -1,0 +1,13 @@
+en-US:
+  title: Add infraction
+  custom: Custom
+  type: Type
+  reason: Reason (optional)
+  reason_help: Write reason of default is not enough
+  points: Points
+  expire: Expire (days)
+  points_none: None
+  expire_never: Never
+  other: Other
+  ok: OK
+  cancel: Cancel

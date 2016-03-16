@@ -1,0 +1,29 @@
+users:
+  infractions:
+
+    types:
+      overquoting:
+        points: 1
+        expire_days: 30
+        priority: 10
+      offtopic:
+        points: 2
+        expire_days: 30
+        priority: 20
+      bad_title:
+        points: 3
+        expire_days: 30
+        priority: 30
+      personal_conversation:
+        points: 3
+        expire_days: 30
+        priority: 40
+      bad_section:
+        points: 3
+        expire_days: 30
+        priority: 50
+      multiple_accounts:
+        points: 1000
+        expire_days: -1
+        priority: 1060
+        category_key: profile

@@ -24,6 +24,12 @@ setting_schemas:
       type: number
       default: 2048
 
+    can_receive_infractions:
+      priority: 200
+      category_key: perm_users
+      type: boolean
+      default: true
+
     can_receive_email:
       priority: 1070
       category_key: perm_users
@@ -57,5 +63,11 @@ setting_schemas:
     can_see_ip:
       priority: 2030
       category_key: perm_admin
+      type: boolean
+      default: false
+
+    users_mod_can_add_infractions:
+      priority: 10000
+      category_key: perm_users_moderate
       type: boolean
       default: false

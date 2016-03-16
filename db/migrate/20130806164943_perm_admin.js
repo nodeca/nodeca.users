@@ -15,7 +15,9 @@ module.exports.up = co.wrap(function* (N) {
     can_access_acp: { value: true },
     can_see_hellbanned: { value: true },
     can_see_deleted_users: { value: true },
-    can_see_ip: { value: true }
+    can_see_ip: { value: true },
+    can_receive_infractions: { value: false },
+    users_mod_can_add_infractions: { value: true }
   }, { usergroup_id: adminGroup._id });
 
   // Recalculate store settings of all groups.

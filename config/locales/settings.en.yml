@@ -11,6 +11,7 @@ i18n:
           register_common: Common
           perm_admin: Administration
           perm_users: Users
+          perm_users_moderate: Users moderation
 
         setting_names:
           general_login_expire_days: Login expire time (days)
@@ -32,6 +33,8 @@ i18n:
 
           can_see_ip: Show IP
 
+          can_receive_infractions: Can recieve infractions
+
           users_can_upload_media: Can upload media
 
           users_media_total_quota_mb: Total media quota (MB)
@@ -41,3 +44,5 @@ i18n:
           can_receive_email: Can receive email
 
           can_report_abuse: Can report abuses
+
+          users_mod_can_add_infractions: Can add profile infractions

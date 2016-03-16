@@ -1,0 +1,46 @@
+.modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
+  .modal-dialog
+    .modal-content
+      form(data-on-submit=self.apiPath + ':submit')
+        .modal-header
+          button.close(type='button' tabindex='-1' data-dismiss='modal') &times;
+          h4.modal-title=self.t('title')
+        .modal-body
+          .form-group.add-infraction-type
+            label=self.t('type')
+            select.form-control(name='type' tabindex='1' data-on-change=self.apiPath + ':select_type')
+              option()
+              option(value='custom')=self.t('custom')
+              each category in self.categories
+                if category.name
+                  optgroup(label=self.t('@users.infractions.category_names.' + category.name))
+                each type in category.types
+                  option(value=type.name)=self.t('@users.infractions.types.' + type.name) + ' (' + type.points + ')'
+
+          .form-group.add-infraction-reason
+            label=self.t('reason')
+            input.add-infraction-reason__input.form-control(type='text' tabindex='2' name='reason' placeholder=self.t('reason_help'))
+
+          .form-group.add-infraction-points
+            label=self.t('points')
+            .row
+              .col-xs-8
+                input.add-infraction-points__input.form-control(type='number' tabindex='3' name='points' data-on-change=self.apiPath + ':change_points')
+              .col-xs-4
+                .checkbox: label
+                  input.add-infraction-points__checkbox(type='checkbox' tabindex='4' data-on-change=self.apiPath + ':set_points_none')
+                  =self.t('points_none')
+
+          .form-group.add-infraction-expire
+            label=self.t('expire')
+            .row
+              .col-xs-6
+                input.add-infraction-expire__input.form-control(type='number' tabindex='5' name='expire' data-on-change=self.apiPath + ':change_expire')
+              .col-xs-6
+                .checkbox: label
+                  input.add-infraction-expire__checkbox(type='checkbox' tabindex='6' data-on-change=self.apiPath + ':set_expire_never')
+                  =self.t('expire_never')
+
+        .modal-footer
+          button.btn.btn-default(type='button' tabindex='7' data-dismiss='modal')=self.t('cancel')
+          button.btn.btn-danger(type='submit' tabindex='8')=self.t('ok')
