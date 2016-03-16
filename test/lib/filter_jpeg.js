@@ -2,10 +2,11 @@
 
 
 const assert      = require('assert');
+const async       = require('async');
 const fs          = require('fs');
 const glob        = require('glob').sync;
 const path        = require('path');
-const filter_jpeg = require('nodeca.users/models/users/_lib/filter_jpeg');
+const filter_jpeg = require('nodeca.users/lib/filter_jpeg');
 
 
 function addTestBlock(TypedArray) {
@@ -16,7 +17,7 @@ function addTestBlock(TypedArray) {
     .filter(name => !/^[._]|\\[._]|\/[_.]/.test(name))
     .forEach(name => {
       let hex = fs.readFileSync(path.join(cwd, name), 'utf8').replace(/;.*/mg, '');
-      let buf = new Buffer(hex.match(/[0-9a-f]{2}/gi).map(i => parseInt(i, 16)));
+      let buf = new TypedArray(hex.match(/[0-9a-f]{2}/gi).map(i => parseInt(i, 16)));
 
       fixtures[name.replace(/\.jpeg\.txt$/, '')] = buf;
     });
@@ -25,7 +26,7 @@ function addTestBlock(TypedArray) {
     let filter = filter_jpeg(args);
 
     filter.onEnd = function () {
-      let buffer = new TypedArray(Buffer.concat(filter.output));
+      let buffer = new TypedArray(Buffer.concat(filter.output.map(Buffer)));
 
       assert.deepEqual(buffer, equals);
       callback();
@@ -73,16 +74,36 @@ function addTestBlock(TypedArray) {
     filter.end();
   });
 
-  it('should fail on error', function (callback) {
-    let filter = filter_jpeg();
+  it('removeImage should strip everything', function (callback) {
+    addTest({ removeImage: true },
+            fixtures['jpeg1-comment'],
+            new TypedArray('FF FE 00 18 68 C3 A8 6C 6C 6F 20 77 C3 B5 72 6C 64 EF BC 81 20 F0 9F 98 BC 00'
+              .match(/[0-9a-f]{2}/gi).map(i => parseInt(i, 16))),
+            callback);
 
-    filter.onError = function (err) {
-      assert.equal(err.message, 'unexpected byte at segment start: 0x44 (offset 0x02)');
-      callback();
+  });
+
+  it('should fail on errors', function (callback) {
+    let errors = {
+      '':            'unexpected end of file (offset 0x00)',
+      FF:            'unexpected end of file (offset 0x01)',
+      'FF 00':       'unknown file format',
+      'FF D8 44':    'unexpected byte at segment start: 0x44 (offset 0x02)'
+      // TODO:
+      // 'FF D8 FF 44': 'unknown marker: 0x44 (offset 0x03)'
     };
 
-    filter.push(new TypedArray([ 0xFF, 0xD8, 0x44 ]));
-    filter.end();
+    async.eachSeries(Object.keys(errors), function (hex, callback) {
+      let filter = filter_jpeg();
+
+      filter.onError = function (err) {
+        assert.equal(err.message, errors[hex]);
+        callback();
+      };
+
+      filter.push(new TypedArray((hex.match(/[0-9a-f]{2}/gi) || []).map(i => parseInt(i, 16))));
+      filter.end();
+    }, callback);
   });
 }
 

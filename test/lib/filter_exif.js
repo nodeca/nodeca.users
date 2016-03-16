@@ -5,7 +5,7 @@ const assert      = require('assert');
 const fs          = require('fs');
 const glob        = require('glob').sync;
 const path        = require('path');
-const filter_exif = require('nodeca.users/models/users/_lib/filter_exif');
+const filter_exif = require('nodeca.users/lib/filter_exif');
 
 
 function addTestBlock(Buffer) {

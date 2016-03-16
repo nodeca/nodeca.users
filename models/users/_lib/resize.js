@@ -40,7 +40,7 @@ const stream      = require('readable-stream');
 const sharp       = require('sharp');
 const thenify     = require('thenify');
 const through2    = require('through2');
-const filter_jpeg = require('./filter_jpeg');
+const filter_jpeg = require('nodeca.users/lib/filter_jpeg');
 const probe       = thenify(require('probe-image-size'));
 
 let File;

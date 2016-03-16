@@ -23,7 +23,7 @@
 'use strict';
 
 
-const readExif    = require('nodeca.users/lib/exif');
+const filter_jpeg = require('nodeca.users/lib/filter_jpeg');
 const pica        = require('pica');
 
 
@@ -35,6 +35,27 @@ let aborted;
 let closeConfirmation;
 let uploadedFiles;
 let requests;
+
+
+// Concatenate multiple Uint8Arrays
+//
+function arrayConcat(list) {
+  let size = 0;
+  let pos = 0;
+
+  for (let i = 0; i < list.length; i++) {
+    size += list[i].length;
+  }
+
+  let result = new Uint8Array(size);
+
+  for (let i = 0; i < list.length; i++) {
+    result.set(list[i], pos);
+    pos += list[i].length;
+  }
+
+  return result;
+}
 
 
 // Check file extension
@@ -137,20 +158,33 @@ function resizeImage(data) {
         pica.resizeCanvas(source, dest, { alpha }, function () {
 
           dest.toBlob(function (blob) {
-            let jpegBlob, jpegBody;
-
-
-            if (jpegHeader) {
-              jpegBody = slice.call(blob, 20);
-
-              jpegBlob = new Blob([ jpegHeader, jpegBody ], { type: data.file.type });
-            }
-
+            let jpegBlob;
             let name = data.file.name;
 
-            data.file = jpegBlob || blob;
-            data.file.name = name;
+            if (jpegHeader) {
+              var fileReader = new FileReader();
 
+              fileReader.onload = function () {
+                let filter = filter_jpeg({ filter: true, removeICC: true, addMeta: jpegHeader });
+
+                filter.onEnd = function () {
+                  jpegBlob = new Blob(filter.output, { type: data.file.type });
+                  data.file = jpegBlob;
+                  data.file.name = name;
+                  $progressStatus.hide(0);
+                  resolve();
+                };
+
+                filter.push(new Uint8Array(this.result));
+                filter.end();
+              };
+
+              fileReader.readAsArrayBuffer(blob);
+              return;
+            }
+
+            data.file = blob;
+            data.file.name = name;
             $progressStatus.hide(0);
             resolve();
           }, data.file.type, quality);
@@ -160,11 +194,15 @@ function resizeImage(data) {
       let reader = new FileReader();
 
       reader.onloadend = function (e) {
-        let exifData = readExif(new Uint8Array(e.target.result));
+        // only keep comments and exif in header
+        let filter = filter_jpeg({ removeImage: true, filter: true, removeICC: true });
 
-        if (exifData) {
-          jpegHeader = exifData.header;
-        }
+        filter.onEnd = function () {
+          jpegHeader = arrayConcat(filter.output);
+        };
+
+        filter.push(new Uint8Array(e.target.result));
+        filter.end();
 
         img.src = window.URL.createObjectURL(data.file);
       };
