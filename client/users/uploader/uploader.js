@@ -75,7 +75,7 @@ function checkFile(data) {
 // Resize image if needed
 //
 function resizeImage(data) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     // Next tick
     setTimeout(() => {
       let slice = data.file.slice || data.file.webkitSlice || data.file.mozSlice;
@@ -179,6 +179,16 @@ function resizeImage(data) {
         });
       };
 
+      img.onerror = () => {
+        let message = t('err_bad_image', {
+          file_name: data.file.name
+        });
+
+        N.wire.emit('notify', message);
+
+        reject(new Error(message));
+      };
+
       let reader = new FileReader();
 
       reader.onloadend = () => {
@@ -192,8 +202,19 @@ function resizeImage(data) {
             removeICC:   true
           });
 
-          filter.push(fileData);
-          filter.end();
+          try {
+            filter.push(fileData);
+            filter.end();
+          } catch (err) {
+            let message = t('err_bad_image', {
+              file_name: data.file.name
+            });
+
+            N.wire.emit('notify', message);
+
+            reject(new Error(message));
+            return;
+          }
 
           let tmp = arrayConcat(filter.output);
 

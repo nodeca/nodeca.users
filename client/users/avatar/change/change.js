@@ -460,8 +460,13 @@ function loadImage(file) {
       }
     });
 
-    filter.push(new Uint8Array(e.target.result));
-    filter.end();
+    try {
+      filter.push(new Uint8Array(e.target.result));
+      filter.end();
+    } catch (err) {
+      N.wire.emit('notify', t('err_image_invalid'));
+      return;
+    }
 
     image.src = window.URL.createObjectURL(file);
   };

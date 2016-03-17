@@ -2,6 +2,7 @@ en-US:
   title: Uploading...
 
   err_upload: "#{file_name}: upload failed"
+  err_bad_image: "#{file_name}: corrupted image"
   err_invalid_ext: "#{file_name}: you can't upload files of this type"
   err_max_size: "#{file_name}: too big file size (> #{max_size_kb} KB)"
 
