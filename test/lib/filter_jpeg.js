@@ -77,7 +77,7 @@ function addTestBlock(TypedArray) {
   it('removeImage should strip everything', function (callback) {
     addTest({ removeImage: true },
             fixtures['jpeg1-comment'],
-            new TypedArray('FF FE 00 18 68 C3 A8 6C 6C 6F 20 77 C3 B5 72 6C 64 EF BC 81 20 F0 9F 98 BC 00'
+            new TypedArray('FF D8 FF FE 00 18 68 C3 A8 6C 6C 6F 20 77 C3 B5 72 6C 64 EF BC 81 20 F0 9F 98 BC 00 FF D9'
               .match(/[0-9a-f]{2}/gi).map(i => parseInt(i, 16))),
             callback);
 

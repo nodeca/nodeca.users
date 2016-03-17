@@ -78,6 +78,7 @@ function resizeImage(data) {
   return new Promise(resolve => {
     // Next tick
     setTimeout(() => {
+      let slice = data.file.slice || data.file.webkitSlice || data.file.mozSlice;
       let ext = data.file.name.split('.').pop();
       let typeConfig = settings.types[ext] || {};
 
@@ -157,30 +158,20 @@ function resizeImage(data) {
         pica.resizeCanvas(source, dest, { alpha }, function () {
 
           dest.toBlob(function (blob) {
-            let jpegBlob;
-            let name = data.file.name;
+            let jpegBlob, jpegBody;
 
             if (jpegHeader) {
-              var fileReader = new FileReader();
+              // remove JPEG header (2 bytes) and JFIF segment (18 bytes),
+              // assuming JFIF is always present and always the same in all
+              // images from canvas
+              jpegBody = slice.call(blob, 20);
 
-              fileReader.onload = function () {
-                let filter = filter_jpeg({ filter: true, removeICC: true, addMeta: jpegHeader });
-
-                filter.push(new Uint8Array(this.result));
-                filter.end();
-
-                jpegBlob = new Blob(filter.output, { type: data.file.type });
-                data.file = jpegBlob;
-                data.file.name = name;
-                $progressStatus.hide(0);
-                resolve();
-              };
-
-              fileReader.readAsArrayBuffer(blob);
-              return;
+              jpegBlob = new Blob([ jpegHeader, jpegBody ], { type: data.file.type });
             }
 
-            data.file = blob;
+            let name = data.file.name;
+
+            data.file = jpegBlob || blob;
             data.file.name = name;
             $progressStatus.hide(0);
             resolve();
@@ -190,18 +181,26 @@ function resizeImage(data) {
 
       let reader = new FileReader();
 
-      reader.onloadend = e => {
-        // only keep comments and exif in header
-        let filter = filter_jpeg({
-          removeImage: true,
-          filter:      true,
-          removeICC:   true
-        });
+      reader.onloadend = () => {
+        let fileData = new Uint8Array(reader.result);
 
-        filter.push(new Uint8Array(e.target.result));
-        filter.end();
+        if (fileData[0] === 0xFF && fileData[1] === 0xD8) {
+          // only keep comments and exif in header
+          let filter = filter_jpeg({
+            removeImage: true,
+            filter:      true,
+            removeICC:   true
+          });
 
-        jpegHeader = arrayConcat(filter.output);
+          filter.push(fileData);
+          filter.end();
+
+          let tmp = arrayConcat(filter.output);
+
+          // cut off last 2 bytes (EOI, 0xFFD9),
+          // they are always added by filter_jpeg on end
+          jpegHeader = tmp.subarray(0, tmp.length - 2);
+        }
 
         img.src = window.URL.createObjectURL(data.file);
       };
