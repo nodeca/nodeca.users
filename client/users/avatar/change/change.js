@@ -6,10 +6,9 @@
 'use strict';
 
 
-const _        = require('lodash');
-const pica     = require('pica');
-
-const readExif = require('nodeca.users/lib/exif');
+const _           = require('lodash');
+const filter_jpeg = require('nodeca.users/lib/filter_jpeg');
+const pica        = require('pica');
 
 
 // Avatar upload finish callback
@@ -449,21 +448,25 @@ function loadImage(file) {
     previewUpdate();
   };
 
-  let slice = file.slice || file.webkitSlice || file.mozSlice;
-  let maxMetadataSize = Math.min(file.size, 256 * 1024);
   let reader = new FileReader();
 
   reader.onloadend = e => {
-    let exifData = readExif(new Uint8Array(e.target.result));
+    // only keep comments and exif in header
+    let filter = filter_jpeg({
+      onIFDEntry: function readOrientation(ifd, entry) {
+        if (ifd === 0 && entry.tag === 0x112 && entry.type === 3) {
+          orientation = this.readUInt16(entry.value, 0);
+        }
+      }
+    });
 
-    if (exifData && exifData.orientation) {
-      orientation = exifData.orientation;
-    }
+    filter.push(new Uint8Array(e.target.result));
+    filter.end();
 
     image.src = window.URL.createObjectURL(file);
   };
 
-  reader.readAsArrayBuffer(slice.call(file, 0, maxMetadataSize));
+  reader.readAsArrayBuffer(file);
 }
 
 

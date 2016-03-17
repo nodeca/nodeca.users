@@ -32,7 +32,7 @@ function addTestBlock(Buffer) {
   it('should remove large entries #1', function () {
     assert.deepEqual(
       filter_exif(fixtures['exif1-orig'], {
-        exifMaxEntrySize: 20
+        maxEntrySize: 20
       }),
       fixtures['exif1-nothumb']);
   });
@@ -40,7 +40,7 @@ function addTestBlock(Buffer) {
   it('should remove large entries #2', function () {
     assert.deepEqual(
       filter_exif(fixtures['exif1-orig'], {
-        exifMaxEntrySize: 19
+        maxEntrySize: 19
       }),
       fixtures['exif1-nolarge']);
   });

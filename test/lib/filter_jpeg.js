@@ -88,9 +88,8 @@ function addTestBlock(TypedArray) {
       '':            'unexpected end of file (offset 0x00)',
       FF:            'unexpected end of file (offset 0x01)',
       'FF 00':       'unknown file format',
-      'FF D8 44':    'unexpected byte at segment start: 0x44 (offset 0x02)'
-      // TODO:
-      // 'FF D8 FF 44': 'unknown marker: 0x44 (offset 0x03)'
+      'FF D8 44':    'unexpected byte at segment start: 0x44 (offset 0x02)',
+      'FF D8 FF 44': 'unknown marker: 0x44 (offset 0x03)'
     };
 
     async.eachSeries(Object.keys(errors), function (hex, callback) {

@@ -78,7 +78,6 @@ function resizeImage(data) {
   return new Promise(resolve => {
     // Next tick
     setTimeout(() => {
-      let slice = data.file.slice || data.file.webkitSlice || data.file.mozSlice;
       let ext = data.file.name.split('.').pop();
       let typeConfig = settings.types[ext] || {};
 
@@ -104,7 +103,7 @@ function resizeImage(data) {
         .text(t('progress.compressing'))
         .show(0);
 
-      img.onload = function () {
+      img.onload = () => {
         // To scale image we calculate new width and height, resize image by height and crop by width
         let scaledHeight, scaledWidth;
 
@@ -167,16 +166,14 @@ function resizeImage(data) {
               fileReader.onload = function () {
                 let filter = filter_jpeg({ filter: true, removeICC: true, addMeta: jpegHeader });
 
-                filter.onEnd = function () {
-                  jpegBlob = new Blob(filter.output, { type: data.file.type });
-                  data.file = jpegBlob;
-                  data.file.name = name;
-                  $progressStatus.hide(0);
-                  resolve();
-                };
-
                 filter.push(new Uint8Array(this.result));
                 filter.end();
+
+                jpegBlob = new Blob(filter.output, { type: data.file.type });
+                data.file = jpegBlob;
+                data.file.name = name;
+                $progressStatus.hide(0);
+                resolve();
               };
 
               fileReader.readAsArrayBuffer(blob);
@@ -193,23 +190,23 @@ function resizeImage(data) {
 
       let reader = new FileReader();
 
-      reader.onloadend = function (e) {
+      reader.onloadend = e => {
         // only keep comments and exif in header
-        let filter = filter_jpeg({ removeImage: true, filter: true, removeICC: true });
-
-        filter.onEnd = function () {
-          jpegHeader = arrayConcat(filter.output);
-        };
+        let filter = filter_jpeg({
+          removeImage: true,
+          filter:      true,
+          removeICC:   true
+        });
 
         filter.push(new Uint8Array(e.target.result));
         filter.end();
 
+        jpegHeader = arrayConcat(filter.output);
+
         img.src = window.URL.createObjectURL(data.file);
       };
 
-      let maxMetadataSize = Math.min(data.file.size, 256 * 1024);
-
-      reader.readAsArrayBuffer(slice.call(data.file, 0, maxMetadataSize));
+      reader.readAsArrayBuffer(data.file);
     }, 0);
   });
 }
