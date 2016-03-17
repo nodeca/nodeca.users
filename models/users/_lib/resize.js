@@ -87,7 +87,7 @@ function filter_jpeg_stream(options) {
 const createPreview = co.wrap(function* (image, resizeConfig, imageType) {
   // To scale image, we calculate new width and height,
   // resize image by height, and crop by width
-  let scaledHeight, scaledWidth;
+  let scaledHeight, scaledWidth, saveAsIs = false;
 
   if (resizeConfig.height && !resizeConfig.width) {
     // If only height is defined, scale to fit height
@@ -145,54 +145,66 @@ const createPreview = co.wrap(function* (image, resizeConfig, imageType) {
     scaledHeight = resizeConfig.max_height;
   }
 
-  // If image size is smaller than 'skip_size', skip resizing;
-  // this saves image as is, including metadata like EXIF
-  //
-  if (resizeConfig.skip_size && image.length < resizeConfig.skip_size) {
-    return { image, type: imageType };
-  }
+  let outType = resizeConfig.type || imageType;
 
-  // If image is smaller than needed already, save it as is
-  //
-  if (scaledWidth >= image.width && scaledHeight >= image.height) {
-    if (!resizeConfig.max_size || image.length < resizeConfig.max_size) {
-      return { image, type: imageType };
+  if (imageType === outType) {
+    // If image size is smaller than 'skip_size', skip resizing;
+    // this saves image as is, including metadata like EXIF
+    //
+    if (resizeConfig.skip_size && image.length < resizeConfig.skip_size) {
+      saveAsIs = true;
+    }
+
+    // If image is smaller than needed already, save it as is
+    //
+    if (scaledWidth >= image.width && scaledHeight >= image.height) {
+      if (!resizeConfig.max_size || image.length < resizeConfig.max_size) {
+        saveAsIs = true;
+      }
     }
   }
 
-  let outType = resizeConfig.type || imageType;
+  // Do not repack small non-jpeg images,
+  // we always process jpegs to fix orientation
+  //
+  if (saveAsIs && imageType !== 'jpeg') {
+    return { image, type: imageType };
+  }
 
   let sharpInstance = sharp(image.buffer);
 
-  // Set quality only for jpeg image
   if (outType === 'jpeg') {
-    sharpInstance.quality(resizeConfig.jpeg_quality).rotate();
-  }
+    // Set quality for jpeg image (default sharp quality is 80)
+    sharpInstance.quality(resizeConfig.jpeg_quality);
 
-  // jpeg doesn't support alpha channel, so substitute it with white background
-  if (outType === 'jpeg') {
+    // Rotate image / fix Exif orientation
+    sharpInstance.rotate();
+
+    // Jpeg doesn't support alpha channel, so substitute it with white background
     if (imageType === 'gif' || imageType === 'png') {
       sharpInstance.background('white').flatten();
     }
   }
 
-  if (resizeConfig.unsharp) {
-    sharpInstance.sharpen();
+  if (!saveAsIs) {
+    if (resizeConfig.unsharp) {
+      sharpInstance.sharpen();
+    }
+
+    // Prevent scaled image to be larger than the original;
+    // this prevents "Invalid height (1 to 16383)" error
+    // caused by thin vertical images
+    //
+    if (scaledWidth > image.width || scaledHeight > image.height) {
+      let factor = Math.max(scaledWidth / image.width, scaledHeight / image.height);
+
+      scaledWidth /= factor;
+      scaledHeight /= factor;
+    }
+
+    sharpInstance.resize(Math.round(scaledWidth), Math.round(scaledHeight));
+    sharpInstance.withoutEnlargement().crop('center');
   }
-
-  // Prevent scaled image to be larger than the original;
-  // this prevents "Invalid height (1 to 16383)" error
-  // caused by thin vertical images
-  //
-  if (scaledWidth > image.width || scaledHeight > image.height) {
-    let factor = Math.max(scaledWidth / image.width, scaledHeight / image.height);
-
-    scaledWidth /= factor;
-    scaledHeight /= factor;
-  }
-
-  sharpInstance.resize(Math.round(scaledWidth), Math.round(scaledHeight));
-  sharpInstance.withoutEnlargement().crop('center');
 
   let res = yield new Promise((resolve, reject) => {
     // using callback interface instead of promises here,
