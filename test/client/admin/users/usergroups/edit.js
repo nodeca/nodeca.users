@@ -1,6 +1,9 @@
 'use strict';
 
 
+/*global $*/
+
+
 describe('ACP edit user group', function () {
   it('should save changes', function (done) {
     let user;
@@ -26,7 +29,9 @@ describe('ACP edit user group', function () {
       .do.click('button.btn-primary[type="submit"]')
       .do.wait('.alert-info')
       .do.reload()
-      .test.value('#setting_can_see_deleted_users', '')
+      .test.evaluate(function () {
+        return $('#setting_can_see_deleted_users').is(':checked') === false;
+      })
       // Set setting back
       .do.click('#setting_can_see_deleted_users')
       .do.click('button.btn-primary[type="submit"]')
