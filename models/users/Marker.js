@@ -102,8 +102,8 @@ module.exports = function (N, collectionName) {
     if (contentId.getTimestamp() < res[categoryId]) return;
 
     yield [
-      N.redis.saddAsync('marker_marks_items', userId),
-      N.redis.zaddAsync('marker_marks:' + userId, +contentId.getTimestamp(), contentId)
+      N.redis.saddAsync('marker_marks_items', String(userId)),
+      N.redis.zaddAsync('marker_marks:' + userId, +contentId.getTimestamp(), String(contentId))
     ];
     yield Marker.gc(type, userId, categoryId, res[categoryId]);
   });
@@ -203,7 +203,7 @@ module.exports = function (N, collectionName) {
     }
 
     let now = Date.now();
-    let posJson = yield N.redis.hgetAsync('marker_pos:' + userId, contentId);
+    let posJson = yield N.redis.hgetAsync('marker_pos:' + userId, String(contentId));
     let pos;
     let maxUpdated = false;
 
@@ -224,7 +224,7 @@ module.exports = function (N, collectionName) {
     }
 
     yield N.redis.zaddAsync('marker_pos_updates', now, userId + ':' + contentId);
-    yield N.redis.hsetAsync('marker_pos:' + userId, contentId, JSON.stringify(pos));
+    yield N.redis.hsetAsync('marker_pos:' + userId, String(contentId), JSON.stringify(pos));
 
     yield new Promise((resolve, reject) => {
       limitPositionMarkers(userId, err => {

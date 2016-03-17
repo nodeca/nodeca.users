@@ -43,11 +43,11 @@ describe('Marker', function () {
 
       yield Marker.mark(uid, cid, cat, 'test');
 
-      let res = yield redis.zscoreAsync('marker_marks:' + uid, cid);
+      let res = yield redis.zscoreAsync('marker_marks:' + uid, String(cid));
 
       assert.strictEqual(+res, +cid.getTimestamp());
 
-      res = yield redis.sismemberAsync('marker_marks_items', uid);
+      res = yield redis.sismemberAsync('marker_marks_items', String(uid));
 
       assert.ok(res);
     }));
@@ -60,7 +60,7 @@ describe('Marker', function () {
 
       yield Marker.mark(uid, cid, cat, 'test');
 
-      let res = yield redis.zscoreAsync('marker_marks:' + uid, cid);
+      let res = yield redis.zscoreAsync('marker_marks:' + uid, String(cid));
 
       assert.strictEqual(res, null);
     }));
@@ -97,7 +97,7 @@ describe('Marker', function () {
 
     assert.ok(now - 1000 <= res && res <= now + 1000);
 
-    let resJson = yield redis.hgetAsync('marker_pos:' + uid, cid);
+    let resJson = yield redis.hgetAsync('marker_pos:' + uid, String(cid));
 
     res = JSON.parse(resJson);
 
@@ -203,7 +203,7 @@ describe('Marker', function () {
 
     query.zadd('marker_marks:' + uid, now, 'qwe');
     query.zadd('marker_marks:' + uid, now - expire - 1000, 'ewq');
-    query.sadd('marker_marks_items', uid);
+    query.sadd('marker_marks_items', String(uid));
 
     query.hset('marker_pos:' + uid, 'fgh', JSON.stringify({ max: 22, current: 11, ts: +now }));
     query.hset('marker_pos:' + uid, 'hgf', JSON.stringify({ max: 33, current: 15, ts: +now }));

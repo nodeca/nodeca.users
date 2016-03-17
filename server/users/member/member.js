@@ -43,7 +43,7 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    let score = yield N.redis.zscoreAsync('users:last_active', env.data.user._id);
+    let score = yield N.redis.zscoreAsync('users:last_active', String(env.data.user._id));
 
     // Score not found, use `last_active_ts` from mongodb
     if (!score) {
