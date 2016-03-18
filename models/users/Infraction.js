@@ -25,6 +25,8 @@ module.exports = function (N, collectionName) {
     // FORUM_POST, BLOG_ENTRY, etc.
     src_type: String,
 
+    ts: { type: Date, 'default': Date.now },
+
     del_reason: String,
     del_by: Schema.ObjectId,
     exists: { type: Boolean, 'default': true }
@@ -37,7 +39,8 @@ module.exports = function (N, collectionName) {
   //////////////////////////////////////////////////////////////////////////////
   // Indexes
 
-  Infraction.index({ 'for': 1 });
+  // Used on member page to get all user's infractions
+  Infraction.index({ 'for': 1, exists: 1 });
 
 
   N.wire.on('init:models', function emit_init_Infraction() {

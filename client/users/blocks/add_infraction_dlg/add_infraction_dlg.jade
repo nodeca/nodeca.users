@@ -24,9 +24,9 @@
           .form-group.add-infraction-points
             label=self.t('points')
             .row
-              .col-xs-8
+              .col-xs-6
                 input.add-infraction-points__input.form-control(type='number' tabindex='3' name='points' data-on-change=self.apiPath + ':change_points')
-              .col-xs-4
+              .col-xs-6
                 .checkbox: label
                   input.add-infraction-points__checkbox(type='checkbox' tabindex='4' data-on-change=self.apiPath + ':set_points_none')
                   =self.t('points_none')

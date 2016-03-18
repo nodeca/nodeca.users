@@ -1,0 +1,52 @@
+.member-block
+
+  .member-block__header
+    .member-block__header-title.h2
+      .member-block__header-text.pull-left
+        =self.t('title')
+        =' (' + self.blocks.infractions.list.length + ')'
+      a.member-block__header-collapser(href='#member-infractions-info', data-toggle='collapse')
+        .pull-right.icon.icon-collapse
+        .pull-right.icon.icon-expand
+
+  #member-infractions-info.member-block__inner.collapse.in
+    ul.list-unstyled.member-infractions
+
+      li.member-infractions__header.row
+        .col-xs-3=self.t('author')
+        .col-xs-2=self.t('date')
+        .col-xs-3=self.t('reason')
+        .col-xs-1=self.t('points')
+        .col-xs-2=self.t('expire')
+
+      each infraction in self.blocks.infractions.list
+        - var url = self.blocks.infractions.urls[infraction.src_id];
+        - var author = self.users[infraction.from];
+        - var expire = infraction.expire ? Date.now() >= infraction.expire : false;
+
+        li.row.member-infractions-item(class=expire ? 'member-infractions-item__m-expire' : '')
+
+          if author
+            a.col-xs-3.member-infractions-item__author(
+              href=self.link_to('users.member', { user_hid: author.hid })
+            )= author.name
+
+          .col-xs-2.member-infractions-item__ts!=self.timetag(infraction.ts, 'compact')
+
+          .col-xs-3.member-infractions-item__reason=infraction.reason || self.t('@users.infractions.types.' + infraction.type)
+
+          .col-xs-1.member-infractions-item__points=infraction.points
+
+          .col-xs-2.member-infractions-item__expire
+            if infraction.expire
+              !=self.timetag(infraction.expire, 'compact')
+            else
+              =self.t('never')
+
+          .col-xs-1.member-infractions-item__controls
+            if url
+              a(href=url title=self.t('show')).member-infractions-item__link: span.icon.icon-ref-outer
+
+            a(href='#' title=self.t('delete')).member-infractions-item__remove: span.icon.icon-deleted
+
+    .clearfix

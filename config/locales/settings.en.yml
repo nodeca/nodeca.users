@@ -35,6 +35,8 @@ i18n:
 
           can_receive_infractions: Can recieve infractions
 
+          can_see_infractions: Can see infractions
+
           users_can_upload_media: Can upload media
 
           users_media_total_quota_mb: Total media quota (MB)
