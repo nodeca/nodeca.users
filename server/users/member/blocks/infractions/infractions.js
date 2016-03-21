@@ -4,6 +4,7 @@
 
 
 const _ = require('lodash');
+const userInfo = require('nodeca.users/lib/user_info');
 
 
 module.exports = function (N) {
@@ -22,7 +23,9 @@ module.exports = function (N) {
                                 .sort({ ts: -1 })
                                 .lean(true);
 
+
     // Hide infractions older than half year for owner
+    //
     if (!can_see_infractions) {
       let hide = Date.now() - 6 * 30 * 24 * 60 * 60 * 1000;
 
@@ -32,25 +35,13 @@ module.exports = function (N) {
       });
     }
 
-    let users_mod_can_add_infractions = yield env.extras.settings.fetch('users_mod_can_add_infractions');
-
-    let params = {
-      user_id: env.data.user._id,
-      usergroup_ids: env.data.user.usergroups
-    };
-    let can_receive_infractions = yield N.settings.get('can_receive_infractions', params, {});
-
-    let data = {
-      list: infractions,
-      settings: {
-        users_mod_can_add_infractions,
-        can_receive_infractions
-      },
-      urls: {}
-    };
 
     // Subcall to fill urls to content (forum posts, blog entries, etc.)
-    yield N.wire.emit('internal:users.infractions.fill_content_urls', data);
+    //
+    let user_info = yield userInfo(N, env.data.user._id);
+    let params = { items: infractions.map(i => ({ id: i.src_id, type: i.src_type })), user_info };
+
+    yield N.wire.emit('internal:common.fill_content_urls', params);
 
 
     // Fetch moderators info
@@ -59,8 +50,24 @@ module.exports = function (N) {
     infractions.forEach(i => env.data.users.push(i.from));
 
 
+    // Fetch settings
+    //
+    let users_mod_can_add_infractions = yield env.extras.settings.fetch('users_mod_can_add_infractions');
+    let can_receive_infractions = yield N.settings.get('can_receive_infractions', {
+      user_id: env.data.user._id,
+      usergroup_ids: env.data.user.usergroups
+    }, {});
+
+
     if (infractions.length || (users_mod_can_add_infractions && can_receive_infractions)) {
-      _.set(env.res, 'blocks.infractions', data);
+      _.set(env.res, 'blocks.infractions', {
+        list: infractions,
+        settings: {
+          users_mod_can_add_infractions,
+          can_receive_infractions
+        },
+        urls: params.urls || {}
+      });
     }
   });
 };
