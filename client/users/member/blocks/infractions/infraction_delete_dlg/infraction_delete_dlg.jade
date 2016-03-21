@@ -1,0 +1,13 @@
+.modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
+  .modal-dialog
+    .modal-content
+      form(data-on-submit=self.apiPath + ':submit')
+        .modal-header
+          button.close(type='button' tabindex='-1' data-dismiss='modal') &times;
+          h4.modal-title=self.t('title')
+        .modal-body
+          p.text-danger=self.t('confirmation_text')
+          input.form-control(type='text' name='reason' tabindex='1' placeholder=self.t('reason_input_help'))
+        .modal-footer
+          button.btn.btn-default(type='button' tabindex='2' data-dismiss='modal')=self.t('cancel')
+          button.btn.btn-danger(type='submit' tabindex='3')=self.t('ok')

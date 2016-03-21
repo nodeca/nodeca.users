@@ -32,8 +32,13 @@ module.exports = function (N) {
       });
     }
 
+    let users_mod_can_add_infractions = yield env.extras.settings.fetch('users_mod_can_add_infractions');
+
     let data = {
       list: infractions,
+      settings: {
+        users_mod_can_add_infractions
+      },
       urls: {}
     };
 
