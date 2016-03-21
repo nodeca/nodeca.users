@@ -8,4 +8,5 @@ en-US:
   expire: Expire
   show: Show
   delete: Delete
-
+  add: Add
+  infraction_added: Infraction added

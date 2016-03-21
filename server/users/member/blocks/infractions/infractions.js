@@ -34,10 +34,17 @@ module.exports = function (N) {
 
     let users_mod_can_add_infractions = yield env.extras.settings.fetch('users_mod_can_add_infractions');
 
+    let params = {
+      user_id: env.data.user._id,
+      usergroup_ids: env.data.user.usergroups
+    };
+    let can_receive_infractions = yield N.settings.get('can_receive_infractions', params, {});
+
     let data = {
       list: infractions,
       settings: {
-        users_mod_can_add_infractions
+        users_mod_can_add_infractions,
+        can_receive_infractions
       },
       urls: {}
     };
@@ -52,7 +59,7 @@ module.exports = function (N) {
     infractions.forEach(i => env.data.users.push(i.from));
 
 
-    if (infractions.length) {
+    if (infractions.length || (users_mod_can_add_infractions && can_receive_infractions)) {
       _.set(env.res, 'blocks.infractions', data);
     }
   });
