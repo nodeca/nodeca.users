@@ -44,7 +44,7 @@
                   data-on-click='users.album.edit:select_cover'
                 )
                   img#album-edit__cover-img.thumb__image(
-                    src=self.link_to('core.gridfs', { 'bucket': self.album.cover_id + '_sm' })
+                    src=self.album.cover_id ? self.link_to('core.gridfs', { 'bucket': self.album.cover_id + '_sm' }) : ''
                   )
 
               .album-edit__no-cover
