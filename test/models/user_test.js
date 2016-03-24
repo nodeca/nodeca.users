@@ -2,7 +2,7 @@
 
 
 const assert = require('assert');
-const co     = require('co');
+const co     = require('bluebird-co').co;
 const User   = TEST.N.models.users.User;
 
 

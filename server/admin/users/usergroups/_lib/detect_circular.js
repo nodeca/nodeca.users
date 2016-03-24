@@ -7,7 +7,7 @@
 
 
 const _  = require('lodash');
-const co = require('co');
+const co = require('bluebird-co').co;
 
 
 module.exports = co.wrap(function* detectCircular(N, groupId, parentId) {

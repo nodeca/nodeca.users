@@ -1,7 +1,7 @@
 'use strict';
 
 
-const co = require('co');
+const co = require('bluebird-co').co;
 
 
 exports.up = co.wrap(function* (N) {

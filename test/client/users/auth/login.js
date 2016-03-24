@@ -2,7 +2,7 @@
 
 
 const randomBytes = require('crypto').randomBytes;
-const co          = require('co');
+const co          = require('bluebird-co').co;
 
 
 describe('Login', function () {

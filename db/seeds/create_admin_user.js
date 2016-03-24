@@ -2,7 +2,7 @@
 
 const prompt  = require('prompt');
 const thenify = require('thenify');
-const co      = require('co');
+const co      = require('bluebird-co').co;
 
 module.exports = co.wrap(function* (N) {
 

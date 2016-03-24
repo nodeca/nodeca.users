@@ -4,7 +4,7 @@
 const assert    = require('assert');
 const _         = require('lodash');
 const ObjectId  = require('mongoose').Types.ObjectId;
-const co        = require('co');
+const co        = require('bluebird-co').co;
 const Marker    = TEST.N.models.users.Marker;
 const redis     = TEST.N.redis;
 

@@ -4,7 +4,7 @@
 'use strict';
 
 const fs          = require('mz/fs');
-const co          = require('co');
+const co          = require('bluebird-co').co;
 const extname     = require('path').extname;
 const Mongoose    = require('mongoose');
 const Schema      = Mongoose.Schema;

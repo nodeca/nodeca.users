@@ -30,7 +30,7 @@
 'use strict';
 
 const _           = require('lodash');
-const co          = require('co');
+const co          = require('bluebird-co').co;
 const from2       = require('from2');
 const fs          = require('mz/fs');
 const mime        = require('mime-types').lookup;

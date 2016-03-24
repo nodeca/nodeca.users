@@ -2,7 +2,7 @@
 
 
 const _        = require('lodash');
-const co       = require('co');
+const co       = require('bluebird-co').co;
 const memoizee = require('memoizee');
 const thenify  = require('thenify');
 

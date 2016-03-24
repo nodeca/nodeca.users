@@ -4,7 +4,7 @@
 
 
 const Promise   = require('bluebird');
-const co        = require('co');
+const co        = require('bluebird-co').co;
 const Charlatan = require('charlatan');
 const path      = require('path');
 const glob      = require('glob').sync;

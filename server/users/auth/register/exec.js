@@ -5,7 +5,7 @@
 'use strict';
 
 
-const co          = require('co');
+const co          = require('bluebird-co').co;
 const _           = require('lodash');
 const validator   = require('is-my-json-valid');
 const recaptcha   = require('nodeca.core/lib/recaptcha.js');
