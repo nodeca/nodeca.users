@@ -42,6 +42,6 @@ describe('Albums create dialog', function () {
       .test.text('.user-albumlist li:last-child .thumb-caption__line:first-child', 'new test album!')
 
       // Run test
-      .run(done);
+      .run(true, done);
   });
 });
