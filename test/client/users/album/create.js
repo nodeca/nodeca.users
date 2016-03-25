@@ -25,7 +25,7 @@ describe('Albums create dialog', function () {
       .do.click('[data-on-click="users.albums_root.create_album"]')
 
       // Wait for dialog
-      .do.wait('.modal.fade.in')
+      .do.wait(500)
 
       // Type album's name
       .do.type('input[name="album_name"]', 'new test album!')
