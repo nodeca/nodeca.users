@@ -43,8 +43,18 @@
 
   - self.add_raw_data('prev_media', self.prev_media)
   - self.add_raw_data('next_media', self.next_media)
-  ul#users-media-list.user-medialist.thumb-grid.thumb-grid__m-responsive
-    != self.partial('@users.album.list')
+  ul#users-media-list.user-medialist.thumb-grid.thumb-grid__m-responsive._affix(
+    data-affix-top={
+      offset:     160,
+      wire_above: 'users.album:load_prev',
+      throttle:   100
+    }
+    data-affix-bottom={
+      offset:     160,
+      wire_below: 'users.album:load_next',
+      throttle:   100
+    }
+  )!= self.partial('@users.album.list')
 
   nav.user-album-root__page-links
     .pager

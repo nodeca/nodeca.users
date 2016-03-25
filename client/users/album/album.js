@@ -271,16 +271,14 @@ N.wire.on('navigate.exit:' + module.apiPath, function location_updater_teardown(
 // Whenever we are close to beginning/end of media list, check if we can
 // load more pages from the server
 //
-let prefetchScrollHandler = null;
-
-N.wire.on('navigate.done:' + module.apiPath, function prefetcher_init() {
-  // an amount of time between successful xhr requests and failed xhr requests respectively
+N.wire.once('navigate.done:' + module.apiPath, function prefetch_handler_setup() {
+  // A delay after failed xhr request (delay between successful requests
+  // is set with affix `throttle` argument)
   //
   // For example, suppose user continuously scrolls. If server is up, each
   // subsequent request will be sent each 100 ms. If server goes down, the
   // interval between request initiations goes up to 2000 ms.
   //
-  const LOAD_INTERVAL    = 100;
   const LOAD_AFTER_ERROR = 2000;
 
   // an amount of media files we try to load when user scrolls
@@ -288,7 +286,7 @@ N.wire.on('navigate.done:' + module.apiPath, function prefetcher_init() {
   const LOAD_MEDIA_ALL   = 30;
   const LOAD_MEDIA_ALBUM = 100;
 
-  function load_prev_page() {
+  N.wire.on(module.apiPath + ':load_prev', function load_prev_page() {
     if (mediaState.reached_start) return;
 
     let now = Date.now();
@@ -324,11 +322,6 @@ N.wire.on('navigate.done:' + module.apiPath, function prefetcher_init() {
       before:   load_count,
       after:    0
     }).then(function (res) {
-      // Stop debouncer to avoid progress bar jump after page load
-      if ($window.scrollTop() <= 0) {
-        prefetchScrollHandler.cancel();
-      }
-
       if (!res.media) return;
 
       if (!res.prev_media) {
@@ -360,9 +353,9 @@ N.wire.on('navigate.done:' + module.apiPath, function prefetcher_init() {
     }).catch(err => {
       N.wire.emit('error', err);
     });
-  }
+  });
 
-  function load_next_page() {
+  N.wire.on(module.apiPath + ':load_next', function load_next_page() {
     if (mediaState.reached_end) return;
 
     let now = Date.now();
@@ -398,14 +391,6 @@ N.wire.on('navigate.done:' + module.apiPath, function prefetcher_init() {
       before:   0,
       after:    load_count
     }).then(function (res) {
-      let scrollHeight = (document.documentElement && document.documentElement.scrollHeight) ||
-                         document.body.scrollHeight;
-
-      // Stop debouncer to avoid progress bar jump after page load
-      if ($window.height() + $window.scrollTop() >= scrollHeight) {
-        prefetchScrollHandler.cancel();
-      }
-
       if (!res.media) return;
 
       if (!res.next_media) {
@@ -432,37 +417,5 @@ N.wire.on('navigate.done:' + module.apiPath, function prefetcher_init() {
     }).catch(err => {
       N.wire.emit('error', err);
     });
-  }
-
-  // If we're browsing one of the first/last 3 media rows, load more pages from
-  // the server in that direction.
-  //
-  prefetchScrollHandler = _.debounce(function prefetch_on_scroll() {
-    let media         = document.getElementById('users-media-list').getElementsByClassName('thumb'),
-        viewportStart = $window.scrollTop() + navbarHeight,
-        viewportEnd   = $window.scrollTop() + $window.height();
-
-    if (media.length <= 1 || media[media.length - 1].offsetTop < viewportEnd) {
-      load_next_page();
-    }
-
-    if (media.length <= 1 || media[0].offsetTop > viewportStart) {
-      load_prev_page();
-    }
-  }, LOAD_INTERVAL, { maxWait: LOAD_INTERVAL });
-
-
-  // avoid executing it on first tick because of initial scrollTop()
-  setTimeout(function () {
-    $window.on('scroll', prefetchScrollHandler);
-    $window.on('resize', prefetchScrollHandler);
-  }, 1);
-});
-
-N.wire.on('navigate.exit:' + module.apiPath, function prefetcher_teardown() {
-  if (!prefetchScrollHandler) return;
-  prefetchScrollHandler.cancel();
-  $window.off('scroll', prefetchScrollHandler);
-  $window.off('resize', prefetchScrollHandler);
-  prefetchScrollHandler = null;
+  });
 });
