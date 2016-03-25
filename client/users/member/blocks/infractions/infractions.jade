@@ -29,7 +29,7 @@
         each infraction in self.blocks.infractions.list
           - var url = self.blocks.infractions.urls[infraction.src_id];
           - var author = self.users[infraction.from];
-          - var expire = infraction.expire ? Date.now() >= infraction.expire : false;
+          - var expire = infraction.expire ? Date.now() >= new Date(infraction.expire).getTime() : false;
 
           li.row.member-infractions-item(class=expire ? 'member-infractions-item__m-expire' : '')
 

@@ -43,6 +43,25 @@ module.exports = function (N, collectionName) {
   Infraction.index({ 'for': 1, exists: 1 });
 
 
+  Infraction.pre('save', function (next) {
+    // Pass `isNew` flag to post hook. https://github.com/Automattic/mongoose/issues/1474
+    this.wasNew = this.isNew;
+    next();
+  });
+
+
+  // Emit event after add for:
+  //
+  // - apply automatic rules
+  // - add hooks for concrete infractions types
+  //
+  Infraction.post('save', function (infraction) {
+    if (infraction.wasNew) {
+      N.wire.emit('internal:users.infraction', infraction).catch(err => N.logger.error(err));
+    }
+  });
+
+
   N.wire.on('init:models', function emit_init_Infraction() {
     return N.wire.emit('init:models.' + collectionName, Infraction);
   });
