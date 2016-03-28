@@ -42,6 +42,9 @@ module.exports = function (N, collectionName) {
   // Used on member page to get all user's infractions
   Infraction.index({ 'for': 1, exists: 1 });
 
+  // Used on forum in posts list
+  Infraction.index({ src_id: 1, exists: 1 });
+
 
   Infraction.pre('save', function (next) {
     // Pass `isNew` flag to post hook. https://github.com/Automattic/mongoose/issues/1474
