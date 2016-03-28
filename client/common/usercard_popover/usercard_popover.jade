@@ -1,16 +1,19 @@
 #ucard-popover
   .ucard-head.cleafix
-    a(href=self.link_to('users.member', { user_hid: self.hid }))= self.name
+    a(href=self.link_to('users.member', { user_hid: self.user.hid }))= self.user.name
   
   aside.ucard-sidebar
-    a.ucard-avatar(href=self.link_to('users.member', { user_hid: self.hid }))
-      img.av-l(alt=self.name)&attributes(self.avatar(self))
+    a.ucard-avatar(href=self.link_to('users.member', { user_hid: self.user.hid }))
+      img.av-l(alt=self.user.name)&attributes(self.avatar(self.user))
 
     a.btn.btn-default.btn-xs.btn-block= self.t('find_posts')
     a.btn.btn-default.btn-xs.btn-block= self.t('send_message')
 
   .ucard-info
     dl.dl-horizontal
+      if self.infractions_points && self.infractions_points > 0
+        dt=self.t('infractions_title')
+        dd=self.t('infractions_text', self.infractions_points)
 
       dt Age
       dd 32
@@ -19,7 +22,7 @@
       dd Honolulu
 
       dt Member since
-      dd #{self.date(self.joined_ts, 'relative')}
+      dd #{self.date(self.user.joined_ts, 'relative')}
 
       dt Total posts
       dd 678

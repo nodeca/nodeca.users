@@ -41,7 +41,7 @@ N.wire.once('navigate.done', function init_usercard_click() {
     N.io.rpc(module.apiPath, { user_hid })
       .then(function (res) {
         var pos_left = $link.offset().left + $link.innerWidth();
-        var $card = $(N.runtime.render(module.apiPath, res.user));
+        var $card = $(N.runtime.render(module.apiPath, res));
 
         if (pos_left + POPOVER_WIDTH > $container.width()) {
 

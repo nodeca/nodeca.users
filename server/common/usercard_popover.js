@@ -3,7 +3,7 @@
 'use strict';
 
 
-var user_fields = [
+const user_fields = [
   '_id',
   'hid',
   'joined_ts',
@@ -42,10 +42,32 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Fetch infractions info
+  //
+  N.wire.before(apiPath, function* fetch_infractions(env) {
+    let can_see_infractions = yield env.extras.settings.fetch('can_see_infractions');
+
+    if (!can_see_infractions) return;
+
+    let infractions = yield N.models.users.Infraction.find()
+                                .where('for').equals(env.data.user._id)
+                                .where('exists').equals(true)
+                                .select('points expire')
+                                .lean(true);
+    let now = Date.now();
+    let points = infractions.reduce((acc, infraction) => {
+      if (!infraction.expire || infraction.expire > now) acc += infraction.points;
+      return acc;
+    }, 0);
+
+    env.res.infractions_points = points;
+  });
+
+
   // Fill user
   //
   N.wire.on(apiPath, function fill_user(env) {
-    var user = env.data.user;
+    let user = env.data.user;
 
     // only registered users can see full name and avatar
     if (!env.user_info.is_member) {
