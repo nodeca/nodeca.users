@@ -213,7 +213,7 @@ module.exports = function (N, collectionName) {
       } catch (__) {}
     }
 
-    pos = pos || { max, current: position, ts: +now };
+    pos = pos || { max: 1, current: position, ts: +now };
 
     pos.current = position;
     pos.ts = +now;
