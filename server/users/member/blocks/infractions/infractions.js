@@ -4,7 +4,6 @@
 
 
 const _ = require('lodash');
-const userInfo = require('nodeca.users/lib/user_info');
 
 
 module.exports = function (N) {
@@ -36,12 +35,20 @@ module.exports = function (N) {
     }
 
 
-    // Subcall to fill urls to content (forum posts, blog entries, etc.)
+    // Subcall to fill urls and titles of content (forum posts, blog entries, etc.)
     //
-    let user_info = yield userInfo(N, env.data.user._id);
-    let params = { items: infractions.map(i => ({ id: i.src_id, type: i.src_type })), user_info };
+    // In:
+    //
+    // - infractions
+    // - user_info
+    //
+    // Out:
+    //
+    // - info (Object) - key is `src_id`, value { url, title }
+    //
+    let info_env = { infractions, user_info: env.user_info, info: {} };
 
-    yield N.wire.emit('internal:common.fill_content_urls', params);
+    yield N.wire.emit('internal:users.infraction.info', info_env);
 
 
     // Fetch moderators info
@@ -66,7 +73,7 @@ module.exports = function (N) {
           users_mod_can_add_infractions,
           can_receive_infractions
         },
-        urls: params.urls || {}
+        content_info: info_env.info
       });
     }
   });
