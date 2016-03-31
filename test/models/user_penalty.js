@@ -83,4 +83,41 @@ describe('UserPenalty', function () {
 
     assert.deepStrictEqual(usergroups, [ banned._id ]);
   }));
+
+
+  it('should expire penalty', co.wrap(function* () {
+    let violators = yield TEST.N.models.users.UserGroup.findOne().where('short_name').equals('violators').lean(true);
+    let user = new TEST.N.models.users.User({
+      nick: 'userpenalty_test2',
+      joined_ts: new Date()
+    });
+
+    yield user.save();
+
+    yield (new TEST.N.models.users.Infraction({
+      from: user._id,
+      'for': user._id,
+      type: _.keys(TEST.N.config.users.infractions.types)[0],
+      points: 20
+    })).save();
+
+    yield Promise.delay(100);
+
+    let usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
+
+    assert.deepStrictEqual(usergroups, [ user.usergroups[0], violators._id ]);
+
+    // Set expire now
+    yield TEST.N.models.users.UserPenalty.update(
+      { user_id: user._id },
+      { expire: new Date() }
+    );
+
+    // Run task
+    yield TEST.N.queue.worker('invalidate_penalties').push();
+    yield Promise.delay(600);
+
+    usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
+    assert.deepStrictEqual(usergroups, [ user.usergroups[0] ]);
+  }));
 });

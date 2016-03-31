@@ -19,7 +19,15 @@ module.exports = function (N, collectionName) {
   //////////////////////////////////////////////////////////////////////////////
   // Indexes
 
+  // Used in internal methods:
+  //
+  // - users.infraction.to_banned
+  // - users.infraction.to_violators
+  //
   UserPenalty.index({ user_id: 1 });
+
+  // Used in `invalidate_penalties` job
+  UserPenalty.index({ expire: 1 });
 
 
   N.wire.on('init:models', function emit_init_UserPenalty() {
