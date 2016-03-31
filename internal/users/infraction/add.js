@@ -32,7 +32,7 @@ module.exports = function (N, apiPath) {
 
     if (!apply_rule) return;
 
-    return N.wire.emit(`internal:users.infraction.${apply_rule.action}`, {
+    return N.wire.emit(`internal:users.infraction.${apply_rule.action}.add`, {
       infraction,
       action_data: apply_rule.action_data
     });

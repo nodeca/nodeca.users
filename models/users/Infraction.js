@@ -60,7 +60,7 @@ module.exports = function (N, collectionName) {
   //
   Infraction.post('save', function (infraction) {
     if (infraction.wasNew) {
-      N.wire.emit('internal:users.infraction', infraction).catch(err => N.logger.error(err));
+      N.wire.emit('internal:users.infraction.add', infraction).catch(err => N.logger.error(err));
     }
   });
 
