@@ -11,6 +11,10 @@
 
   .ucard-info
     dl.dl-horizontal
+      if self.penalty_expire
+        dt=self.t('penalty_title')
+        dd!=self.timetag(self.penalty_expire, 'compact')
+
       if self.infractions_points && self.infractions_points > 0
         dt=self.t('infractions_title')
         dd=self.t('infractions_text', self.infractions_points)

@@ -10,6 +10,11 @@
       =self.t('last_active')
       | 
       != self.timetag(self.user.last_active_ts, 'compact')
+    if self.penalty_expire
+      p.page-head__descr.member__penalty(itemprop='description')
+        =self.t('blocked_until')
+        | 
+        !=self.timetag(self.penalty_expire, 'compact')
 
   - var modifier = self.avatar_exists ? 'member-layout__m-avatar-exists' : '';
   .member-layout(class=modifier)

@@ -45,6 +45,20 @@ module.exports = function (N, apiPath) {
   // Fetch infractions info
   //
   N.wire.before(apiPath, function* fetch_infractions(env) {
+
+    // Fill penalty info
+    //
+    let penalty = yield N.models.users.UserPenalty.findOne()
+                            .where('user_id').equals(env.data.user._id)
+                            .lean(true);
+
+    if (penalty && penalty.expire) {
+      env.res.penalty_expire = penalty.expire;
+    }
+
+
+    // Fill infractions info
+    //
     let can_see_infractions = yield env.extras.settings.fetch('can_see_infractions');
 
     if (!can_see_infractions) return;

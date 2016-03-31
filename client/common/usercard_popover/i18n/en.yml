@@ -4,3 +4,4 @@ en-US:
   send_message: Send message
   infractions_title: Infractions
   infractions_text: "#{count} ((point|points))"
+  penalty_title: Blocked until

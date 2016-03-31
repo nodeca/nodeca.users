@@ -30,6 +30,19 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Fill penalty info
+  //
+  N.wire.before(apiPath, function* fill_penalty_info(env) {
+    let penalty = yield N.models.users.UserPenalty.findOne()
+                            .where('user_id').equals(env.data.user._id)
+                            .lean(true);
+
+    if (penalty && penalty.expire) {
+      env.res.penalty_expire = penalty.expire;
+    }
+  });
+
+
   // Update activity info with fresh data if available
   //
   N.wire.before(apiPath, function* fetch_activity_info(env) {
