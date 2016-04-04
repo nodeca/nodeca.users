@@ -13,9 +13,9 @@
 'use strict';
 
 
-module.exports = function (N) {
+module.exports = function (N, apiPath) {
 
-  N.wire.on('internal:common.content.attachments', function* get_attachments(data) {
+  N.wire.on(apiPath, function* get_attachments(data) {
     data.attachments = data.attachments || {};
 
     let ids = data.ids.map(String).filter(id => !data.attachments[id]);

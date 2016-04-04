@@ -7,9 +7,9 @@ const pump     = require('pump');
 const through2 = require('through2');
 
 
-module.exports = function (N) {
+module.exports = function (N, apiPath) {
 
-  N.wire.on('internal:common.sitemap.collect', function get_users_sitemap(data) {
+  N.wire.on(apiPath, function get_users_sitemap(data) {
     data.streams.push(
       pump(
         N.models.users.User.collection
