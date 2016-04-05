@@ -61,8 +61,8 @@ setting_schemas:
       default: false
 
     can_receive_infractions:
-      priority: 2000
-      category_key: perm_infractions
+      priority: 200
+      category_key: perm_users
       type: boolean
       default: true
 
