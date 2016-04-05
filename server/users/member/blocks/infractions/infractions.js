@@ -16,11 +16,17 @@ module.exports = function (N) {
     // Allow if permitted and if owner
     if (!can_see_infractions && String(env.data.user._id) !== env.user_info.user_id) return;
 
-    let infractions = yield N.models.users.Infraction.find()
-                                .where('for').equals(env.data.user._id)
-                                .where('exists').equals(true)
-                                .sort({ ts: -1 })
-                                .lean(true);
+    let query = N.models.users.Infraction.find()
+                    .where('for').equals(env.data.user._id)
+                    .sort({ ts: -1 })
+                    .lean(true);
+
+    // Don't show deleted infractions to user
+    if (!can_see_infractions) {
+      query.where('exists').equals(true);
+    }
+
+    let infractions = yield query;
 
 
     // Hide infractions older than half year for owner
@@ -54,7 +60,10 @@ module.exports = function (N) {
     // Fetch moderators info
     //
     env.data.users = env.data.users || [];
-    infractions.forEach(i => env.data.users.push(i.from));
+    infractions.forEach(i => {
+      env.data.users.push(i.from);
+      if (i.del_by) env.data.users.push(i.del_by);
+    });
 
 
     // Fetch settings

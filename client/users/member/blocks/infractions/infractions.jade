@@ -5,7 +5,7 @@
       .member-block__header-text.pull-left
         - var points = 0;
         each infraction in self.blocks.infractions.list
-          if !infraction.expire || (new Date(infraction.expire).getTime() > Date.now())
+          if infraction.exists && (!infraction.expire || (new Date(infraction.expire).getTime() > Date.now()))
             - points += infraction.points;
 
         =self.t('title', points)
@@ -50,7 +50,22 @@
 
               td.member-infractions-item__ts!=self.timetag(infraction.ts, 'compact')
 
-              td.member-infractions-item__reason=infraction.reason || self.t('@users.infractions.types.' + infraction.type)
+              td
+                .member-infractions-item__reason
+                  if info
+                    a(href=info.url)=infraction.reason || self.t('@users.infractions.types.' + infraction.type)
+                  else
+                    =infraction.reason || self.t('@users.infractions.types.' + infraction.type)
+
+                if !infraction.exists && self.users[infraction.del_by]
+                  - var del_by = self.users[infraction.del_by];
+                  .member-infractions-item__del-by
+                    =self.t('deleted_by')
+                    a.member-infractions-item__author-link(
+                      href=self.link_to('users.member', { user_hid: del_by.hid })
+                    )= del_by.nick
+                  .member-infractions-item__del-reason
+                    =infraction.del_reason
 
               td.member-infractions-item__points=infraction.points
 
@@ -63,7 +78,7 @@
               td.member-infractions-item__controls
                 if info
                   a(href=info.url title=info.title).member-infractions-item__link: span.icon.icon-ref-outer
-                if self.blocks.infractions.settings.can_delete_infractions || infraction.from === self.runtime.user_id
+                if infraction.exists && (self.blocks.infractions.settings.can_delete_infractions || infraction.from === self.runtime.user_id)
                   a(href='#'
                     data-on-click='users.member.blocks.infractions:delete'
                     data-infraction-id=infraction._id
