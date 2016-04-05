@@ -60,6 +60,7 @@ module.exports = function (N) {
     // Fetch settings
     //
     let users_mod_can_add_infractions = yield env.extras.settings.fetch('users_mod_can_add_infractions');
+    let can_delete_infractions = yield env.extras.settings.fetch('can_delete_infractions');
     let can_receive_infractions = yield N.settings.get('can_receive_infractions', {
       user_id: env.data.user._id,
       usergroup_ids: env.data.user.usergroups
@@ -71,7 +72,8 @@ module.exports = function (N) {
         list: infractions,
         settings: {
           users_mod_can_add_infractions,
-          can_receive_infractions
+          can_receive_infractions,
+          can_delete_infractions
         },
         content_info: info_env.info
       });

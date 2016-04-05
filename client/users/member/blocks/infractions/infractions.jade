@@ -58,7 +58,7 @@
               if info
                 a(href=info.url title=info.title).member-infractions-item__link: span.icon.icon-ref-outer
 
-              if self.blocks.infractions.settings.users_mod_can_add_infractions
+              if self.blocks.infractions.settings.can_delete_infractions || infraction.from === self.runtime.user_id
                 a(href='#'
                   data-on-click='users.member.blocks.infractions:delete'
                   data-infraction-id=infraction._id
