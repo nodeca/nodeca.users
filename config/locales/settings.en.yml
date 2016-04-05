@@ -12,6 +12,7 @@ i18n:
           perm_admin: Administration
           perm_users: Users
           perm_users_moderate: Users moderation
+          perm_infractions: Infractions
 
         setting_names:
           general_login_expire_days: Login expire time (days)
@@ -47,4 +48,4 @@ i18n:
 
           can_report_abuse: Can report abuses
 
-          users_mod_can_add_infractions: Can add profile infractions
+          users_mod_can_add_infractions: Can give infractions in profile
