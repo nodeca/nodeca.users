@@ -1,12 +1,14 @@
 en-US:
   title: "((=0 Infractions|Infractions \\(#{count} point\\)|Infractions \\(#{count} points\\)))"
   never: Never
-  author: Author
+  expired: Expied
+  deleted: Deleted
+  by: By
   date: Date
   reason: Reason
   points: Points
-  expire: Expire
+  expires: Expires
   delete: Delete
   add: Add
   infraction_added: Infraction added
-  deleted_by: "Deleted by: "
+  deleted_by: "Deleted by:"

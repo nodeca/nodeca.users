@@ -25,12 +25,11 @@
       .table-responsive
         table.table
           tr
-            th=self.t('author')
+            th=self.t('by')
             th=self.t('date')
             th=self.t('reason')
             th=self.t('points')
-            th=self.t('expire')
-            th
+            th=self.t('expires')
 
           each infraction in self.blocks.infractions.list
             - var info = self.blocks.infractions.content_info[infraction.src_id];
@@ -48,41 +47,48 @@
                     href=self.link_to('users.member', { user_hid: author.hid })
                   )= author.nick
 
-              td.member-infractions-item__ts!=self.timetag(infraction.ts, 'compact')
+              td.member-infractions-item__ts
+                !=self.timetag(infraction.ts, 'compact')
 
-              td
-                .member-infractions-item__reason
-                  if info
-                    a(href=info.url)=infraction.reason || self.t('@users.infractions.types.' + infraction.type)
+              td.member-infractions-item__reason
+                  - var reason = infraction.reason || self.t('@users.infractions.types.' + infraction.type);
+
+                  if infraction.exists
+                    if info
+                      a(href=info.url title=info.title)=reason
+                    else
+                      =reason
                   else
-                    =infraction.reason || self.t('@users.infractions.types.' + infraction.type)
+                    - var del_reason = [ self.t('deleted_by') ];
 
-                if !infraction.exists && self.users[infraction.del_by]
-                  - var del_by = self.users[infraction.del_by];
-                  .member-infractions-item__del-by
-                    =self.t('deleted_by')
-                    a.member-infractions-item__author-link(
-                      href=self.link_to('users.member', { user_hid: del_by.hid })
-                    )= del_by.nick
-                  .member-infractions-item__del-reason
-                    =infraction.del_reason
+                    if self.users[infraction.del_by]
+                      - del_reason.push(self.users[infraction.del_by].nick);
+
+                    if infraction.del_reason
+                      - del_reason.push('(' + infraction.del_reason + ')');
+
+                    if info
+                      a(href=info.url title=del_reason.join(' '))=reason
+                    else
+                      span(title=del_reason.join(' '))=reason
 
               td.member-infractions-item__points=infraction.points
 
               td.member-infractions-item__expire
-                if infraction.expire
+                if !infraction.exists
+                  =self.t('deleted')
+                else if expired
+                  =self.t('expired')
+                else if infraction.expire
                   !=self.timetag(infraction.expire, 'compact')
                 else
                   =self.t('never')
 
-              td.member-infractions-item__controls
-                if info
-                  a(href=info.url title=info.title).member-infractions-item__link: span.icon.icon-ref-outer
-                if infraction.exists && (self.blocks.infractions.settings.can_delete_infractions || infraction.from === self.runtime.user_id)
+                if infraction.exists && !expired && (self.blocks.infractions.settings.can_delete_infractions || infraction.from === self.runtime.user_id)
                   a(href='#'
                     data-on-click='users.member.blocks.infractions:delete'
                     data-infraction-id=infraction._id
                     title=self.t('delete')
-                  ).member-infractions-item__remove: span.icon.icon-deleted
+                  ).member-infractions-item__remove.pull-right: span.icon.icon-deleted
 
     .clearfix
