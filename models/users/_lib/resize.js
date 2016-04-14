@@ -203,7 +203,7 @@ const createPreview = co.wrap(function* (image, resizeConfig, imageType) {
     }
 
     sharpInstance.resize(Math.round(scaledWidth), Math.round(scaledHeight));
-    sharpInstance.withoutEnlargement().crop('center');
+    sharpInstance.withoutEnlargement().crop(sharp.strategy.entropy);
   }
 
   let res = yield new Promise((resolve, reject) => {

@@ -9,8 +9,9 @@
             - points += infraction.points;
 
         =self.t('title', points)
+        |  
         if self.blocks.infractions.settings.users_mod_can_add_infractions && self.blocks.infractions.settings.can_receive_infractions
-          button.btn.btn-link.btn-sm.icon.icon-plus(
+          button.btn.btn-default.btn-xs.icon.icon-plus(
             title=self.t('add')
             data-on-click='users.member.blocks.infractions:add'
             data-user-id=self.user._id
@@ -23,7 +24,7 @@
     if self.blocks.infractions.list.length
 
       .table-responsive
-        table.table
+        table.table.table-condensed.table-bordered
           thead: tr
             th=self.t('by')
             th=self.t('date')
