@@ -108,11 +108,6 @@ module.exports = function (N, apiPath) {
   // Stub for unimplemented blocks
   //
   N.wire.after(apiPath, function stub(env) {
-    // TODO
-    if (String(env.data.user._id) === env.user_info.user_id) {
-      _.set(env.res, 'blocks.notepad', {});
-    }
-
     _.set(env, 'res.blocks.bookmarks', {});
     _.set(env, 'res.blocks.friends', {});
     _.set(env, 'res.blocks.blog', {});

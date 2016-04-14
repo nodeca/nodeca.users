@@ -1,0 +1,21 @@
+@import "nodeca.core/client/common/_variables"
+
+filledNoteBg = #fcf8e3
+emptyNoteBg  = grayLightest
+
+.member-block-usernote
+  width 100%
+  border-radius 2px
+  background-color filledNoteBg
+  border 1px solid filledNoteBg - 10%
+  padding 5px
+
+.member-block-usernote__m-empty
+  cursor pointer
+  background-color emptyNoteBg
+  border 1px solid emptyNoteBg - 10%
+  text-align center
+  color gray
+
+  &:hover
+    color grayDark

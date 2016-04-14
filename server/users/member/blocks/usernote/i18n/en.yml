@@ -1,0 +1,3 @@
+en-US:
+  update:
+    err_text_is_empty: Cannot save an empty note
