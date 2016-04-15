@@ -16,12 +16,14 @@ module.exports = function (N) {
       to:   env.data.user._id
     });
 
+    let template_params = {
+      user_id: env.data.user._id
+    };
+
     if (note) {
-      _.set(env.res, 'blocks.usernote', { html: note.html });
-    } else {
-      // adding empty object, 'cause otherwise this block
-      // won't be inserted into the profile page
-      _.set(env.res, 'blocks.usernote', {});
+      template_params.html = note.html;
     }
+
+    _.set(env.res, 'blocks.usernote', template_params);
   });
 };

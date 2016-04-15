@@ -4,6 +4,19 @@
 const _     = require('lodash');
 const bagjs = require('bagjs');
 
+// if we're on profile page, it equals to the hid of the user
+// profile page belongs to; otherwise it's 0
+let profile_user_hid = 0;
+
+
+N.wire.on('navigate.done:users.member', function usernotes_setup(data) {
+  profile_user_hid = data.params.user_hid;
+});
+
+N.wire.on('navigate.exit:users.member', function usernotes_teardown() {
+  profile_user_hid = 0;
+});
+
 
 // Init user notes
 //
@@ -64,7 +77,6 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
   N.wire.on(module.apiPath + ':edit', function show_editor(data) {
     let user_hid   = data.$this.data('user-hid');
     let user_nick  = data.$this.data('user-nick');
-    let return_url = location.href;
 
     let $editor = N.MDEdit.show({
       text: (draft.text && draft.version === origVersion) ? draft.text : origText,
@@ -99,15 +111,20 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
         }
 
         N.io.rpc(rpc_method, rpc_params)
-          .then(() => {
+          .then(response => {
             bag.remove(draftKey)
               .catch(() => {}) // Suppress storage errors
               .then(() => {
                 N.MDEdit.hide();
 
-                // do not use navigate.reload here, because user
-                // might leave the page in the meantime
-                return N.wire.emit('navigate.to', { href: return_url, force: true });
+                if (profile_user_hid === user_hid) {
+                  // if we're still on the same page, update the note
+                  $('.usernote').replaceWith(N.runtime.render(module.apiPath, response));
+                  return;
+                }
+
+                // otherwise show a completion message to user
+                return N.wire.emit('notify', { type: 'info', message: t('update_notice') });
               });
           })
           .catch(err => N.wire.emit('error', err));
@@ -117,13 +134,21 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
   });
 
 
+  // Confirmation dialog
+  //
+  N.wire.before(module.apiPath + ':remove', function remove_note() {
+    return N.wire.emit('common.blocks.confirm', t('remove_confirm'));
+  });
+
+
   // Remove a note
   //
   N.wire.on(module.apiPath + ':remove', function remove_note(data) {
     let user_hid = data.$this.data('user-hid');
 
-    N.io.rpc('users.member.blocks.usernote.delete', { user_hid })
-      .then(() => N.wire.emit('navigate.reload'))
-      .catch(err => N.wire.emit('error', err));
+    return N.io.rpc('users.member.blocks.usernote.delete', { user_hid })
+      .then(response => {
+        $('.usernote').replaceWith(N.runtime.render(module.apiPath, response));
+      });
   });
 });

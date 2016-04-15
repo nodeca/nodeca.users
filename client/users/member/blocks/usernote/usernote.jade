@@ -1,28 +1,27 @@
-.member-block
-  - var user = self.users[self.user._id]
+- var user = self.users[self.blocks.usernote.user_id]
 
-  if user
-    if self.blocks.usernote.html
-      .member-block-usernote
-        .pull-right.member-block-usernote__controls
-          button.btn-link.icon.icon-edit(
-            title=self.t('edit_note')
-            data-on-click='users.member.blocks.usernote:edit'
-            data-user-nick=user.nick
-            data-user-hid=user.hid
-          )
+if user
+  if self.blocks.usernote.html
+    .member-block.usernote.markup
+      .pull-right.usernote__controls
+        button.btn-link.icon.icon-edit(
+          title=self.t('edit_note')
+          data-on-click='users.member.blocks.usernote:edit'
+          data-user-nick=user.nick
+          data-user-hid=user.hid
+        )
 
-          button.btn-link.icon.icon-cancel(
-            title=self.t('remove_note')
-            data-on-click='users.member.blocks.usernote:remove'
-            data-user-hid=user.hid
-          )
+        button.btn-link.icon.icon-cancel(
+          title=self.t('remove_note')
+          data-on-click='users.member.blocks.usernote:remove'
+          data-user-hid=user.hid
+        )
 
-        != self.blocks.usernote.html
-    else
-      .member-block-usernote.member-block-usernote__m-empty(
-        data-on-click='users.member.blocks.usernote:edit'
-        data-user-nick=user.nick
-        data-user-hid=user.hid
-      )
-        = self.t('add_note')
+      != self.blocks.usernote.html
+  else
+    .member-block.usernote.usernote__m-placeholder(
+      data-on-click='users.member.blocks.usernote:edit'
+      data-user-nick=user.nick
+      data-user-hid=user.hid
+    )
+      span.usernote__placeholder-text.icon.icon-space-after.icon-plus= self.t('add_note')

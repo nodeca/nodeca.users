@@ -2,6 +2,8 @@
 //
 'use strict';
 
+const _ = require('lodash');
+
 
 module.exports = function (N, apiPath) {
 
@@ -27,6 +29,18 @@ module.exports = function (N, apiPath) {
     yield N.models.users.UserNote.remove({
       from: env.user_info.user_id,
       to:   env.data.target_user._id
+    });
+  });
+
+
+  // Expose data to re-render template on the server
+  //
+  N.wire.on(apiPath, function add_render_data(env) {
+    env.data.users = env.data.users || [];
+    env.data.users.push(env.data.target_user._id);
+
+    _.set(env.res, 'blocks.usernote', {
+      user_id: env.data.target_user._id
     });
   });
 };

@@ -2,6 +2,8 @@
 //
 'use strict';
 
+const _ = require('lodash');
+
 
 module.exports = function (N, apiPath) {
 
@@ -52,7 +54,7 @@ module.exports = function (N, apiPath) {
       };
     }
 
-    let parse_result = yield N.parse({
+    env.data.parse_result = yield N.parse({
       text:        env.params.txt,
       options:     env.data.parse_options,
       attachments: [],
@@ -65,11 +67,24 @@ module.exports = function (N, apiPath) {
     }, {
       $set: {
         md:      env.params.txt,
-        html:    parse_result.html
+        html:    env.data.parse_result.html
       },
       $inc: {
         version: 1
       }
     }, { upsert: true });
+  });
+
+
+  // Expose data to re-render template on the server
+  //
+  N.wire.on(apiPath, function add_render_data(env) {
+    env.data.users = env.data.users || [];
+    env.data.users.push(env.data.target_user._id);
+
+    _.set(env.res, 'blocks.usernote', {
+      html:    env.data.parse_result.html,
+      user_id: env.data.target_user._id
+    });
   });
 };
