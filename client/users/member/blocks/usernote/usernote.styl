@@ -1,21 +1,31 @@
 @import "nodeca.core/client/common/_variables"
 
 filledNoteBg = #fcf8e3
-emptyNoteBg  = grayLightest
 
 .usernote
   width 100%
-  border-radius 2px
+  border-radius 4px
   background-color filledNoteBg
-  border 1px solid filledNoteBg - 10%
-  padding 5px
+  border 1px solid filledNoteBg - 20%
+  padding 15px 15px 5px
+  margin 0 0 30px
+
+.usernote__controls
+  margin-right -10px
+  margin-top -10px
+  opacity .5
+  transition opacity .5s ease
+  &:hover
+    opacity 1
 
 .usernote__m-placeholder
   cursor pointer
-  background-color emptyNoteBg
-  border 1px solid emptyNoteBg - 10%
+  background-color grayLightest + 60%
+  border none
+  padding 7px 15px
   text-align center
   color gray
-
+  opacity .5
+  transition opacity .5s ease
   &:hover
-    color grayDark
+    opacity 1

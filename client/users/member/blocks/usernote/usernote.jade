@@ -4,14 +4,14 @@ if user
   if self.blocks.usernote.html
     .member-block.usernote.markup
       .pull-right.usernote__controls
-        button.btn-link.icon.icon-edit(
+        button.btn.btn-xs.btn-link.icon.icon-edit(
           title=self.t('edit_note')
           data-on-click='users.member.blocks.usernote:edit'
           data-user-nick=user.nick
           data-user-hid=user.hid
         )
 
-        button.btn-link.icon.icon-cancel(
+        button.btn.btn-xs.btn-link.icon.icon-cancel(
           title=self.t('remove_note')
           data-on-click='users.member.blocks.usernote:remove'
           data-user-hid=user.hid
@@ -23,5 +23,6 @@ if user
       data-on-click='users.member.blocks.usernote:edit'
       data-user-nick=user.nick
       data-user-hid=user.hid
+      title=self.t('add_note_help')
     )
       span.usernote__placeholder-text.icon.icon-space-after.icon-plus= self.t('add_note')

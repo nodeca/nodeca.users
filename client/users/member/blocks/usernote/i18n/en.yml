@@ -1,5 +1,6 @@
 en-US:
-  add_note: Add a note to this user
+  add_note: Add a note here
+  add_note_help: Only you will see this note
   edit_note: Edit this note
   remove_note: Remove this note
   editor_title: "Edit notes for user &quot;<a href='#{url}'>#{nick}</a>&quot;"
