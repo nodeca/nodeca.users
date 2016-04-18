@@ -1,0 +1,15 @@
+mdedit:
+
+  # buttons list for toolbar
+
+  usernote:
+    bold: true
+    italic: true
+    link: true
+    separator1:
+      priority: 45
+    ol: true
+    ul: true
+    separator3:
+      priority: 105
+    help: true

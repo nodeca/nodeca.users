@@ -78,6 +78,7 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
 
     let $editor = N.MDEdit.show({
       text: (draft.text && draft.version === orig_version) ? draft.text : orig_text,
+      toolbar: 'usernote',
       parseOptions
     });
 
