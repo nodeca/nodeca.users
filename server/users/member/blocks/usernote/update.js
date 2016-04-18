@@ -18,23 +18,6 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function* get_parse_options(env) {
-    let options = yield N.settings.getByCategory(
-      'forum_markup',
-      { usergroup_ids: env.user_info.usergroups },
-      { alias: true }
-    );
-
-    options.attachment      = false;
-    options.footnote        = false;
-    options.link_to_snippet = false;
-    options.spoiler         = false;
-    options.table           = false;
-
-    env.data.parse_options = options;
-  });
-
-
   N.wire.on(apiPath, function* check_target_user(env) {
     env.data.target_user = yield N.models.users.User.findOne({ hid: env.params.user_hid });
 
@@ -54,14 +37,30 @@ module.exports = function (N, apiPath) {
       };
     }
 
+    let parseOptions = {
+      code:           true,
+      emoji:          true,
+      emphasis:       true,
+      heading:        true,
+      hr:             true,
+      image:          true,
+      link:           true,
+      link_to_title:  true,
+      list:           true,
+      quote:          true,
+      quote_collapse: true,
+      sub:            true,
+      sup:            true
+    };
+
     env.data.parse_result = yield N.parse({
       text:        env.params.txt,
-      options:     env.data.parse_options,
+      options:     parseOptions,
       attachments: [],
       user_info:   env.user_info
     });
 
-    yield N.models.users.UserNote.update({
+    env.data.usernote = yield N.models.users.UserNote.findOneAndUpdate({
       from: env.user_info.user_id,
       to:   env.data.target_user._id
     }, {
@@ -72,7 +71,7 @@ module.exports = function (N, apiPath) {
       $inc: {
         version: 1
       }
-    }, { upsert: true });
+    }, { 'new': true, upsert: true });
   });
 
 
@@ -83,7 +82,9 @@ module.exports = function (N, apiPath) {
     env.data.users.push(env.data.target_user._id);
 
     _.set(env.res, 'blocks.usernote', {
-      html:    env.data.parse_result.html,
+      md:      env.data.usernote.md,
+      html:    env.data.usernote.html,
+      version: env.data.usernote.version,
       user_id: env.data.target_user._id
     });
   });

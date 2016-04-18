@@ -25,9 +25,23 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
 
   let draft;
   let draftKey;
-  let parseOptions;
-  let origText;
-  let origVersion;
+
+  let parseOptions = {
+    code:           true,
+    emoji:          true,
+    emphasis:       true,
+    heading:        true,
+    hr:             true,
+    image:          true,
+    link:           true,
+    link_to_title:  true,
+    list:           true,
+    quote:          true,
+    quote_collapse: true,
+    sub:            true,
+    sup:            true
+  };
+
 
   // Load mdedit
   //
@@ -54,32 +68,16 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
   });
 
 
-  // Fetch old note
-  //
-  // TODO: we can embed all this data to DOM and get it from there instead,
-  //       saving 1 rpc request
-  //
-  N.wire.before(module.apiPath + ':edit', function fetch_note(data) {
-    let user_hid = data.$this.data('user-hid');
-
-    return N.io.rpc('users.member.blocks.usernote.get', {
-      user_hid
-    }).then(response => {
-      origText     = response.txt;
-      origVersion  = response.version;
-      parseOptions = response.parse_options;
-    });
-  });
-
-
   // Show editor and add handlers for editor events
   //
   N.wire.on(module.apiPath + ':edit', function show_editor(data) {
-    let user_hid   = data.$this.data('user-hid');
-    let user_nick  = data.$this.data('user-nick');
+    let user_hid     = data.$this.data('user-hid');
+    let user_nick    = data.$this.data('user-nick');
+    let orig_text    = data.$this.data('md');
+    let orig_version = data.$this.data('version');
 
     let $editor = N.MDEdit.show({
-      text: (draft.text && draft.version === origVersion) ? draft.text : origText,
+      text: (draft.text && draft.version === orig_version) ? draft.text : orig_text,
       parseOptions
     });
 
@@ -95,7 +93,7 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
       .on('change.nd.mdedit', () => {
         bag.set(draftKey, {
           text:    N.MDEdit.text(),
-          version: origVersion
+          version: orig_version
         });
       })
       .on('submit.nd.mdedit', () => {

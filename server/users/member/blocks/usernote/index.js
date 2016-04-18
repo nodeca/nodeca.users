@@ -11,7 +11,7 @@ module.exports = function (N) {
   N.wire.after('server:users.member', function* add_notepad(env) {
     if (env.user_info.is_guest) return;
 
-    let note = yield N.models.users.UserNote.findOne({
+    let usernote = yield N.models.users.UserNote.findOne({
       from: env.user_info.user_id,
       to:   env.data.user._id
     });
@@ -20,8 +20,10 @@ module.exports = function (N) {
       user_id: env.data.user._id
     };
 
-    if (note) {
-      template_params.html = note.html;
+    if (usernote) {
+      template_params.html    = usernote.html;
+      template_params.md      = usernote.md;
+      template_params.version = usernote.version;
     }
 
     _.set(env.res, 'blocks.usernote', template_params);
