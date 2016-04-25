@@ -3,23 +3,23 @@
 'use strict';
 
 
-var _ = require('lodash');
+const _ = require('lodash');
 
 
 N.wire.once('navigate.done', function init_usercard_click() {
-  var $body = $('body');
-  var $container = $('.layout__container');
-  var $fake_popover = $('<div id="ucard-popover"></div>').appendTo($body);
-  var POPOVER_WIDTH = $fake_popover.outerWidth(true);
-  var POPOVER_HEIGHT = $fake_popover.outerHeight(true);
-  var popover_shown = false;
+  let $body = $('body');
+  let $container = $('.layout__container');
+  let $fake_popover = $('<div id="ucard-popover"></div>').appendTo($body);
+  let POPOVER_WIDTH = $fake_popover.outerWidth(true);
+  let POPOVER_HEIGHT = $fake_popover.outerHeight(true);
+  let popover_shown = false;
 
   $fake_popover.remove();
 
   // Add click handler to `._ucard-popover`.
   //
   $body.on('click', '._ucard-popover', function (event) {
-    var $link = $(this);
+    let $link = $(this);
 
     // Skip for devices with small screens (navigate profile page).
     if (POPOVER_WIDTH * 1.5 > $container.width() ||
@@ -28,7 +28,7 @@ N.wire.once('navigate.done', function init_usercard_click() {
     }
 
     // Try parse href to get `user_hid` from member page link.
-    var user_hid = _.chain(N.router.matchAll($link.attr('href')))
+    let user_hid = _.chain(N.router.matchAll($link.attr('href')))
       .find(function (match) { return _.get(match, 'meta.methods.get') === 'users.member'; })
       .get('params.user_hid')
       .value();
@@ -40,8 +40,8 @@ N.wire.once('navigate.done', function init_usercard_click() {
 
     N.io.rpc(module.apiPath, { user_hid })
       .then(function (res) {
-        var pos_left = $link.offset().left + $link.innerWidth();
-        var $card = $(N.runtime.render(module.apiPath, res));
+        let pos_left = $link.offset().left + $link.innerWidth();
+        let $card = $(N.runtime.render(module.apiPath, res));
 
         if (pos_left + POPOVER_WIDTH > $container.width()) {
 
@@ -99,5 +99,18 @@ N.wire.once('navigate.done', function init_usercard_click() {
       $('#ucard-popover').remove();
       popover_shown = false;
     }
+  });
+
+
+  // Create new dialog with user
+  //
+  N.wire.on(module.apiPath + ':message', function create_dialog(data) {
+    return N.wire.emit('users.dialog.create:begin', { to: data.$this.data('to') })
+      .then(() => {
+        if (popover_shown) {
+          $('#ucard-popover').remove();
+          popover_shown = false;
+        }
+      });
   });
 });

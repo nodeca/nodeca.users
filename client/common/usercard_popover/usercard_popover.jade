@@ -7,7 +7,10 @@
       img.av-l(alt=self.user.name)&attributes(self.avatar(self.user))
 
     a.btn.btn-default.btn-xs.btn-block= self.t('find_posts')
-    a.btn.btn-default.btn-xs.btn-block= self.t('send_message')
+    a.btn.btn-default.btn-xs.btn-block(href='#'
+      data-on-click='common.usercard_popover:message'
+      data-to=self.user.nick
+    )= self.t('send_message')
 
   .ucard-info
     dl.dl-horizontal
