@@ -1,0 +1,3 @@
+en-US:
+  err_too_many_images: "Message should have no more than #{count} ((image|images))"
+  err_too_many_emojis: "Message should have no more than #{count} ((emoticon|emoticons))"

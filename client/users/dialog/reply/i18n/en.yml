@@ -1,0 +1,4 @@
+en-US:
+  reply: "Add reply to &quot;<a href='#{dialog_url}'>#{dialog_title}</a>&quot;"
+  options_btn:
+    options: Options

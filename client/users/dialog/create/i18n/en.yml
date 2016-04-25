@@ -1,0 +1,7 @@
+en-US:
+  new_message: New message
+  inputs:
+    title: Title
+    to: Write to
+  options_btn:
+    options: Options

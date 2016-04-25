@@ -1,0 +1,5 @@
+en-US:
+  err_too_many_images: "Message should have no more than #{count} ((image|images))"
+  err_too_many_emojis: "Message should have no more than #{count} ((emoticon|emoticons))"
+  err_user_not_found: User you write to not found
+  err_write_to_self: You can't write to yourself
