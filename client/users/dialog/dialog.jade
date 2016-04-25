@@ -1,0 +1,39 @@
+- self.add_raw_data('pagination', self.pagination);
+- self.add_raw_data('dialog', self.dialog);
+- self.add_raw_data('last_message_id', self.last_message_id);
+- self.add_raw_data('first_message_id', self.first_message_id);
+
+#content
+  != self.partial('@users.blocks.breadcrumbs')
+
+  header.page-head
+    h1.page-head__title(itemprop='name')=self.dialog.title
+    if self.users[self.dialog.to]
+      p.page-head__descr(itemprop='description')=self.users[self.dialog.to].name
+
+  button.btn.btn-default.user-messages-list-reply(
+    data-dialog-id=self.dialog._id
+    data-dialog-title=self.dialog.title
+    data-dialog-last-message=self.dialog.last_message
+    data-on-click='users.dialog:reply'
+  )
+    span.icon.icon-plus
+    =' '
+    =self.t('reply')
+
+  if self.messages.length === 0
+    .user-messages-list-no-items=self.t('no_messages')
+
+  else
+    .user-messages-list._affix(
+      data-affix-top={
+        offset: 500,
+        wire_above: 'users.dialog:load_prev',
+        throttle: 100
+      }
+      data-affix-bottom={
+        offset: 500,
+        wire_below: 'users.dialog:load_next',
+        throttle: 100
+      }
+    )!=self.partial('@users.blocks.message_list')

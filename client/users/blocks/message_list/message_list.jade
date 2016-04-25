@@ -1,0 +1,24 @@
+each message in self.messages
+  - var author = self.users[message.user_id];
+
+  .user-messages-list-item(
+    id='message' + message._id
+    data-message-id=message._id
+  )
+    .user-messages-list-item__aside
+      if author
+        a.user-messages-list-item__avatar._ucard-popover(
+          href=self.link_to('users.member', { user_hid: author.hid })
+          data-user-id=author._id
+          title=author.name
+        )
+          img.av-s(alt=author.name)&attributes(self.avatar(author, 'sm'))
+
+    .user-messages-list-item__content
+      .user-messages-list-item__header
+        if author
+          .user-messages-list-item__author=author.name
+
+        .user-messages-list-item__date!=self.timetag(message.ts, 'relative')
+
+      .user-messages-list-item__message!=message.html
