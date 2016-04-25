@@ -1,0 +1,15 @@
+i18n:
+  en-US:
+    admin:
+      core:
+        group_names:
+          users: Users
+          users_messages: Messages
+
+        category_names:
+          messages_text: Text
+          messages_markup: Markup
+
+        setting_names:
+          users_messages_text_max_images: Max number of images in a message
+          users_messages_text_max_emojis: Max number of emoticons in a message

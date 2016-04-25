@@ -36,6 +36,12 @@ setting_schemas:
       type: boolean
       default: false
 
+    can_send_messages:
+      priority: 1090
+      category_key: perm_users
+      type: boolean
+      default: false
+
     can_access_acp:
       priority: 2000
       category_key: perm_admin

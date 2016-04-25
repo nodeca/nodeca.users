@@ -3,7 +3,7 @@ users:
 
     menu:
       messages:
-        to: users.messages
+        to: users.dialogs_root
         priority: 20
       albums:
         to: users.albums_root

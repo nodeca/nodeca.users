@@ -1,3 +1,9 @@
+setting_groups:
+  users: ~
+
+  users_messages:
+    parent: users
+
 setting_schemas:
   global:
     general_login_expire_days:
@@ -6,3 +12,15 @@ setting_schemas:
       category_key: general_common
       type: number
       default: 7
+
+    users_messages_text_max_images:
+      type: number
+      group_key: users_messages
+      category_key: messages_text
+      default: 100
+
+    users_messages_text_max_emojis:
+      type: number
+      group_key: users_messages
+      category_key: messages_text
+      default: 20

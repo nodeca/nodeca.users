@@ -9,6 +9,18 @@ router:
           match: /\d+/
           type: 'integer'
 
+    users.dialogs_root:
+      "/messages(/{dialog_id})":
+        dialog_id:
+          match: /[0-9a-f]{24}/
+
+    users.dialog:
+      "/messages/{dialog_id}/{message_id}":
+        dialog_id:
+          match: /[0-9a-f]{24}/
+        message_id:
+          match: /[0-9a-f]{24}/
+
     users.settings.index:
       "/settings": ~
 
