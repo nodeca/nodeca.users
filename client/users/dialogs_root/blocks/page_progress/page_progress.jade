@@ -1,0 +1,27 @@
+
+- var current  = self.current;
+- var total    = self.max;
+- var page_max = Math.ceil(total / self.per_page) || 1;
+
+//- ensure that current is in [1..total] range
+- current = Math.max(1, Math.min(current, total));
+
+ul.page-progress(data-current=current, data-total=total)
+  li.page-progress__item
+    a.page-progress__button-first.icon.icon-to-top(
+      href=self.link_to('users.dialogs_root')
+    )
+
+  li.page-progress__item.dropdown
+    a.page-progress__info.dropdown-toggle(
+      href='#'
+      data-toggle='dropdown'
+    )
+      .page-progress__label= self.t('label', { current: current, total: total })
+      .page-progress__bar
+        .page-progress__bar-fill(style="width: " + (current / total * 100).toFixed(2) + "%")
+
+  li.page-progress__item
+    a.page-progress__button-last.icon.icon-to-bottom(
+      href=self.link_to('users.dialogs_root', { dialog_id: self.last_dialog_id })
+    )

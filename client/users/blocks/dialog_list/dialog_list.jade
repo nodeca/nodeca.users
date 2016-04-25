@@ -1,0 +1,39 @@
+each dialog in self.dialogs
+  .user-dialog-list-item(
+    id='dialog' + dialog._id
+    data-dialog-id=dialog._id
+    class=dialog.unread > 0 ? 'user-dialog-list-item__m-unread' : ''
+  )
+    - var to = self.users[dialog.to];
+    - var preview = self.previews[dialog.last_message];
+
+      .user-dialog-list-item__aside
+
+        if to
+          a.user-dialog-list-item__avatar._ucard-popover(
+            href=self.link_to('users.member', { user_hid: to.hid })
+            data-user-id=to._id
+            title=to.name
+          )
+            img.av-l(alt=to.name)&attributes(self.avatar(to, 'md'))
+
+      .user-dialog-list-item__content
+
+        a.user-dialog-list-item__link(href=self.link_to('users.dialog', {
+          dialog_id: dialog._id,
+          message_id: dialog.last_message
+        }))
+
+          .user-dialog-list-item__title=dialog.title
+
+          - var author = self.users[preview.user_id];
+
+          .user-dialog-list-item__preview
+            if author
+              span.user-dialog-list-item__preview-nick=author.nick
+            !=preview.shorten_html
+
+        .user-dialog-list-item__info
+          .user-dialog-list-item__date!=self.timetag(preview.ts, 'relative')
+
+    .clearfix

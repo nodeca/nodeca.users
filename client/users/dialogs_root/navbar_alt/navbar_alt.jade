@@ -1,0 +1,11 @@
+.pull-left
+  a.navbar__level-up.icon.icon-level-up(
+    href=self.link_to('users.member', { user_hid: self.runtime.user_hid })
+  )
+
+  !=self.partial('@users.dialogs_root.blocks.page_progress', self.page_progress)
+
+.pull-right
+  != self.partial('@users.dialogs_root.blocks.toolbar_controls')
+
+.navbar-alt__title=self.t('title')
