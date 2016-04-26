@@ -48,7 +48,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Fill pagination
+  // Fill pagination (progress)
   //
   N.wire.after(apiPath, function* fill_pagination(env) {
     let dialogs_total = yield N.models.users.Dialog

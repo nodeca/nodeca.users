@@ -30,7 +30,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Fill pagination
+  // Fill pagination (progress)
   //
   N.wire.after(apiPath, function* fill_pagination(env) {
     let messages_total = yield N.models.users.DlgMessage

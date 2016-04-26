@@ -15,7 +15,7 @@ each dialog in self.dialogs
             data-user-id=to._id
             title=to.name
           )
-            img.av-l(alt=to.name)&attributes(self.avatar(to, 'md'))
+            img.user-dialog-list-item__avatar-image.av-l(alt=to.name)&attributes(self.avatar(to, 'md'))
 
       .user-dialog-list-item__content
 
@@ -28,7 +28,9 @@ each dialog in self.dialogs
 
           - var author = self.users[preview.user_id];
 
-          .user-dialog-list-item__preview
+          .user-dialog-list-item__preview(
+            class=preview.user_id === N.runtime.user_id ? 'user-dialog-list-item__preview_m-own' : ''
+          )
             if author
               span.user-dialog-list-item__preview-nick=author.nick
             !=preview.shorten_html

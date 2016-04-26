@@ -6,8 +6,8 @@
     a.ucard-avatar(href=self.link_to('users.member', { user_hid: self.user.hid }))
       img.av-l(alt=self.user.name)&attributes(self.avatar(self.user))
 
-    a.btn.btn-default.btn-xs.btn-block= self.t('find_posts')
-    a.btn.btn-default.btn-xs.btn-block(href='#'
+    button.btn.btn-default.btn-xs.btn-block= self.t('find_posts')
+    button.btn.btn-default.btn-xs.btn-block(
       data-on-click='common.usercard_popover:message'
       data-to=self.user.nick
     )= self.t('send_message')

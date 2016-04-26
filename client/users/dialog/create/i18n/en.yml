@@ -2,6 +2,6 @@ en-US:
   new_message: New message
   inputs:
     title: Title
-    to: Write to
+    to: Send to (user nick)
   options_btn:
     options: Options

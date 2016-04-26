@@ -1,4 +1,4 @@
-// Check draft attachments exists
+// Check if draft attachments exist
 //
 // params:
 //
