@@ -12,11 +12,13 @@
 //       dialog
 //       users: []
 //       messages: []
+//       settings: {}
 //       last_message_id
 //       first_message_id
 //     data:
 //       dialog
 //       messages: []
+//       settings: {}
 //
 'use strict';
 
@@ -25,6 +27,13 @@ const _ = require('lodash');
 
 
 module.exports = function (N, apiPath) {
+
+  // Fetch and fill permissions
+  //
+  N.wire.before(apiPath, function* fetch_and_fill_permissions(env) {
+    env.res.settings = env.data.settings = yield env.extras.settings.fetch([ 'can_send_messages' ]);
+  });
+
 
   // Fetch dialog
   //

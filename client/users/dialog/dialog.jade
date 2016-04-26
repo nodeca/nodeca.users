@@ -11,15 +11,16 @@
     if self.users[self.dialog.to]
       p.page-head__descr(itemprop='description')=self.users[self.dialog.to].name
 
-  button.btn.btn-default.user-messages-list-reply(
-    data-dialog-id=self.dialog._id
-    data-dialog-title=self.dialog.title
-    data-dialog-last-message=self.dialog.last_message
-    data-on-click='users.dialog:reply'
-  )
-    span.icon.icon-plus
-    =' '
-    =self.t('reply')
+  if self.settings.can_send_messages
+    button.btn.btn-default.user-messages-list-reply(
+      data-dialog-id=self.dialog._id
+      data-dialog-title=self.dialog.title
+      data-dialog-last-message=self.dialog.last_message
+      data-on-click='users.dialog:reply'
+    )
+      span.icon.icon-plus
+      =' '
+      =self.t('reply')
 
   if self.messages.length === 0
     .user-messages-list-no-items=self.t('no_messages')

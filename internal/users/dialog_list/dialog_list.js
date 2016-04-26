@@ -11,10 +11,12 @@
 //       users: []
 //       dialogs: []
 //       previews: {}
+//       settings: {}
 //       last_dialog_id
 //     data:
 //       dialogs: []
 //       previews: {}
+//       settings: {}
 //
 'use strict';
 
@@ -24,6 +26,13 @@ const shorten = require('./_shorten_html');
 
 
 module.exports = function (N, apiPath) {
+
+  // Fetch and fill permissions
+  //
+  N.wire.before(apiPath, function* fetch_and_fill_permissions(env) {
+    env.res.settings = env.data.settings = yield env.extras.settings.fetch([ 'can_send_messages' ]);
+  });
+
 
   // Get dialogs ids
   //

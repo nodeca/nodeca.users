@@ -7,10 +7,11 @@
   !=self.partial('@users.blocks.breadcrumbs')
 
   .breadcrumbs
-    button.btn.btn-default.btn-sm.icon.icon-plus(
-      title=self.t('new_message')
-      data-on-click='users.dialogs_root:create_message'
-    )
+    if self.settings.can_send_messages
+      button.btn.btn-default.btn-sm.icon.icon-plus(
+        title=self.t('new_message')
+        data-on-click='users.dialogs_root:create_message'
+      )
 
   if self.dialogs.length === 0
     .user-dialog-list-no-items=self.t('no_messages')
