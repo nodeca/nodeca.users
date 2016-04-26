@@ -23,10 +23,10 @@ let parser;
 
 let users = [];
 let msg_day = 0;
-let admin;
+let markup_options;
 
 
-const createUsers = co.wrap(function* () {
+const createDemoUsers = co.wrap(function* () {
   for (let i = 0; i < USER_COUNT; i++) {
     let user = new models.users.User({
       first_name: charlatan.Name.firstName(),
@@ -45,14 +45,12 @@ const createUsers = co.wrap(function* () {
 
 
 const createMessages = co.wrap(function* (dlg1, dlg2, msg_count) {
-  let options = yield settings.getByCategory('forum_markup', { usergroup_ids: admin.usergroups }, { alias: true });
-
   for (let i = 0; i < msg_count; i++) {
     let md = charlatan.Lorem.paragraphs(charlatan.Helpers.rand(5, 1)).join('\n\n');
     let result = yield parser({
       text: md,
       attachments: [],
-      options
+      options: markup_options
     });
     let ts = new Date(2010, 0, msg_day++);
 
@@ -82,7 +80,7 @@ const createMessages = co.wrap(function* (dlg1, dlg2, msg_count) {
 });
 
 
-const createDialogs = co.wrap(function* () {
+const createDialogs = co.wrap(function* (owner) {
   for (let i = 0; i < DLG_COUNT; i++) {
     let dlg_data = {
       common_id: new ObjectId(),
@@ -91,13 +89,13 @@ const createDialogs = co.wrap(function* () {
     let opponent = users[charlatan.Helpers.rand(USER_COUNT)];
 
     let own = new models.users.Dialog(_.assign({
-      user_id: admin._id,
+      user_id: owner._id,
       to: opponent._id
     }, dlg_data));
 
     let opp = new models.users.Dialog(_.assign({
       user_id: opponent._id,
-      to: admin._id
+      to: owner._id
     }, dlg_data));
 
     // The last dialog will be big
@@ -114,12 +112,25 @@ module.exports = co.wrap(function* (N) {
   settings = N.settings;
   parser   = N.parse;
 
-  admin = yield models.users.User.findOne()
-                  .where('nick').equals('admin')
-                  .lean(true);
+  // Get administrators group _id
+  let adm_group = yield models.users.UserGroup.findOne()
+                          .where('short_name').equals('administrators')
+                          .select('_id')
+                          .lean(true);
 
-  if (!admin) return;
+  let users = yield models.users.User.find()
+                      .where('usergroups').equals(adm_group._id)
+                      .select('_id')
+                      .lean(true);
 
-  yield createUsers();
-  yield createDialogs();
+  if (!users.length) return;
+
+  markup_options = yield settings.getByCategory(
+    'messages_markup',
+    { usergroup_ids: [ adm_group._id ] },
+    { alias: true }
+  );
+
+  yield createDemoUsers();
+  yield users.map(u => createDialogs(u));
 });
