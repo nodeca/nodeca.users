@@ -85,7 +85,7 @@ const createMessages = co.wrap(function* (dlg1, dlg2, msg_count) {
 const createDialogs = co.wrap(function* () {
   for (let i = 0; i < DLG_COUNT; i++) {
     let dlg_data = {
-      shared_id: new ObjectId(),
+      common_id: new ObjectId(),
       title: charlatan.Lorem.sentence().slice(0, -1)
     };
     let opponent = users[charlatan.Helpers.rand(USER_COUNT)];

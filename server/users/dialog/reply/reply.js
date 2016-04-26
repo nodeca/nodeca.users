@@ -185,7 +185,7 @@ module.exports = function (N, apiPath) {
     // Fetch related dialog
     //
     let related_dialog = yield N.models.users.Dialog.findOne()
-                                  .where('shared_id').equals(env.data.dialog.shared_id)
+                                  .where('common_id').equals(env.data.dialog.common_id)
                                   .where('user_id').ne(env.user_info.user_id)
                                   .lean(true);
 

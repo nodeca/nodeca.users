@@ -160,7 +160,7 @@ module.exports = function (N, apiPath) {
     };
 
     let dialog_data = {
-      shared_id: new ObjectId(),
+      common_id: new ObjectId(),
       title:     env.params.title
     };
 

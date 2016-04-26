@@ -8,7 +8,7 @@ const Schema   = Mongoose.Schema;
 module.exports = function (N, collectionName) {
 
   let Dialog = new Schema({
-      shared_id    : Schema.Types.ObjectId, // common _id between personal copies of dialogue
+      common_id    : Schema.Types.ObjectId, // common _id between personal copies of dialogue
 
       title        : String,
       user_id      : Schema.Types.ObjectId, // copy owner's _id
@@ -34,7 +34,7 @@ module.exports = function (N, collectionName) {
   // - dialogs list
   // - reply
   //
-  Dialog.index({ shared_id: 1 });
+  Dialog.index({ common_id: 1 });
 
   /////////////////////////////////////////////////////////////////////////////
 
