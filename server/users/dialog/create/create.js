@@ -54,6 +54,7 @@ module.exports = function (N, apiPath) {
 
     if (!env.data.to) {
       throw {
+        type: 'BAD_NICK',
         code: N.io.CLIENT_ERROR,
         message: env.t('err_user_not_found')
       };
@@ -61,6 +62,7 @@ module.exports = function (N, apiPath) {
 
     if (String(env.data.to._id) === env.user_info.user_id) {
       throw {
+        type: 'BAD_NICK',
         code: N.io.CLIENT_ERROR,
         message: env.t('err_write_to_self')
       };

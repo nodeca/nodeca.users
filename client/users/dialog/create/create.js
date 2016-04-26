@@ -144,7 +144,13 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
           });
         })
         .then(() => bag.remove(draftKey).catch(() => {})) // Suppress storage errors
-        .catch(err => N.wire.emit('error', err));
+        .catch(err => {
+          if (err.type === 'BAD_NICK') {
+            $to.parent().addClass('has-error');
+          }
+
+          return N.wire.emit('error', err);
+        });
 
       return false;
     });
