@@ -147,39 +147,16 @@ module.exports = function (N, apiPath) {
     };
 
 
-    // Create own message
+    // Create own message and update dialog
     //
     let own_msg = new N.models.users.DlgMessage(_.assign({
       dialog_id: env.data.dialog._id
     }, message_data));
 
-
-    // Fill response
-    //
-    env.res.dialog_id  = own_msg.dialog_id;
-    env.res.message_id = own_msg._id;
-
-
-    // If current user is hellbanned - send message only if opponent:
-    //
-    // - is also hellbanned
-    // - can see hellbanned
-    //
-    if (env.user_info.hb) {
-      let opponent_can_see_hellbanned = yield N.settings.get('can_see_hellbanned', {
-        user_id:       env.data.to._id,
-        usergroup_ids: env.data.to.usergroups
-      }, {});
-
-      if (!env.data.to.hb && !opponent_can_see_hellbanned) {
-        // Save own only
-        yield [
-          own_msg.save(),
-          N.models.users.Dialog.update({ _id: own_msg.dialog_id }, { unread: 0, last_message: own_msg._id })
-        ];
-        return;
-      }
-    }
+    yield [
+      own_msg.save(),
+      N.models.users.Dialog.update({ _id: own_msg.dialog_id }, { unread: 0, last_message: own_msg._id })
+    ];
 
 
     // Fetch related dialog
@@ -189,36 +166,32 @@ module.exports = function (N, apiPath) {
                                   .where('user_id').ne(env.user_info.user_id)
                                   .lean(true);
 
-    // Skip if related dialog not found (if user start this dialog when he was hellbanned)
+
+    // Create opponent's message if:
     //
-    if (!related_dialog) {
-      // Save own only
+    // - related dialog exists (current user start this dialog when he was not hellbanned)
+    // - both users are hellbanned
+    // - both users are not hellbanned
+    //
+    if ((env.user_info.hb && env.data.to.hb) || (!env.user_info.hb && !env.data.to.hb)) {
+      let opponent_msg = new N.models.users.DlgMessage(_.assign({
+        dialog_id: related_dialog._id
+      }, message_data));
+
       yield [
-        own_msg.save(),
-        N.models.users.Dialog.update({ _id: own_msg.dialog_id }, { unread: 0, last_message: own_msg._id })
+        opponent_msg.save(),
+        N.models.users.Dialog.update({ _id: opponent_msg.dialog_id }, {
+          exists:       true, // force undelete
+          $inc:         { unread: 1 }, // increment unread count
+          last_message: opponent_msg._id
+        })
       ];
-      return;
     }
 
 
-    // Create opponent's message
+    // Fill response
     //
-    let opponent_msg = new N.models.users.DlgMessage(_.assign({
-      dialog_id: related_dialog._id
-    }, message_data));
-
-
-    // Save both messages and update dialogs
-    //
-    yield [
-      own_msg.save(),
-      N.models.users.Dialog.update({ _id: own_msg.dialog_id }, { unread: 0, last_message: own_msg._id }),
-      opponent_msg.save(),
-      N.models.users.Dialog.update({ _id: opponent_msg.dialog_id }, {
-        exists:       true, // force undelete
-        $inc:         { unread: 1 }, // increment unread count
-        last_message: opponent_msg._id
-      })
-    ];
+    env.res.dialog_id  = own_msg.dialog_id;
+    env.res.message_id = own_msg._id;
   });
 };

@@ -166,6 +166,8 @@ module.exports = function (N, apiPath) {
       title:     env.params.title
     };
 
+    let models_to_save = [];
+
 
     // Create own dialog and message
     //
@@ -180,56 +182,39 @@ module.exports = function (N, apiPath) {
 
     own_dialog.last_message = own_msg._id;
 
+    models_to_save = models_to_save.concat([ own_dialog, own_msg ]);
+
+
+    // Create opponent's dialog and message if:
+    //
+    // - both users are hellbanned
+    // - both users are not hellbanned
+    //
+    if ((env.user_info.hb && env.data.to.hb) || (!env.user_info.hb && !env.data.to.hb)) {
+      let opponent_dialog = new N.models.users.Dialog(_.assign({
+        user_id: env.data.to._id,
+        to:      env.user_info.user_id,
+        unread:  1
+      }, dialog_data));
+
+      let opponent_msg = new N.models.users.DlgMessage(_.assign({
+        dialog_id: opponent_dialog._id
+      }, message_data));
+
+      opponent_dialog.last_message = opponent_msg._id;
+
+      models_to_save = models_to_save.concat([ opponent_dialog, opponent_msg ]);
+    }
+
+
+    // Save models
+    //
+    yield models_to_save.map(m => m.save());
+
 
     // Fill response
     //
     env.res.dialog_id  = own_msg.dialog_id;
     env.res.message_id = own_msg._id;
-
-
-    // If current user is hellbanned - send message only if opponent:
-    //
-    // - is also hellbanned
-    // - can see hellbanned
-    //
-    if (env.user_info.hb) {
-      let opponent_can_see_hellbanned = yield N.settings.get('can_see_hellbanned', {
-        user_id:       env.data.to._id,
-        usergroup_ids: env.data.to.usergroups
-      }, {});
-
-      if (!env.data.to.hb && !opponent_can_see_hellbanned) {
-        yield [
-          own_dialog.save(),
-          own_msg.save()
-        ];
-        return;
-      }
-    }
-
-
-    // Create opponent's dialog and message
-    //
-    let opponent_dialog = new N.models.users.Dialog(_.assign({
-      user_id: env.data.to._id,
-      to:      env.user_info.user_id,
-      unread:  1
-    }, dialog_data));
-
-    let opponent_msg = new N.models.users.DlgMessage(_.assign({
-      dialog_id: opponent_dialog._id
-    }, message_data));
-
-    opponent_dialog.last_message = opponent_msg._id;
-
-
-    // Save both
-    //
-    yield [
-      own_dialog.save(),
-      own_msg.save(),
-      opponent_dialog.save(),
-      opponent_msg.save()
-    ];
   });
 };
