@@ -7,10 +7,11 @@
       img.av-l(alt=self.user.name)&attributes(self.avatar(self.user))
 
     button.btn.btn-default.btn-xs.btn-block= self.t('find_posts')
-    button.btn.btn-default.btn-xs.btn-block(
-      data-on-click='common.usercard_popover:message'
-      data-to=self.user.nick
-    )= self.t('send_message')
+    if self.settings.can_use_messages && self.settings.can_send_messages
+      button.btn.btn-default.btn-xs.btn-block(
+        data-on-click='common.usercard_popover:message'
+        data-to=self.user.nick
+      )= self.t('send_message')
 
   .ucard-info
     dl.dl-horizontal

@@ -78,6 +78,16 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Fill permissions to use messages
+  //
+  N.wire.before(apiPath, function* fill_messages_permissions(env) {
+    env.res.settings = yield env.extras.settings.fetch([
+      'can_use_messages',
+      'can_send_messages'
+    ]);
+  });
+
+
   // Fill user
   //
   N.wire.on(apiPath, function fill_user(env) {
