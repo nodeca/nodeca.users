@@ -30,7 +30,18 @@ module.exports = function (N, apiPath) {
   // Fetch and fill permissions
   //
   N.wire.before(apiPath, function* fetch_and_fill_permissions(env) {
-    env.res.settings = env.data.settings = yield env.extras.settings.fetch([ 'can_send_messages' ]);
+    env.res.settings = env.data.settings = yield env.extras.settings.fetch([
+      'can_use_messages',
+      'can_send_messages'
+    ]);
+  });
+
+
+  // Check permissions
+  //
+  N.wire.before(apiPath, function check_permissions(env) {
+    if (env.user_info.is_guest) throw N.io.NOT_FOUND;
+    if (!env.data.settings.can_use_messages) throw N.io.NOT_FOUND;
   });
 
 

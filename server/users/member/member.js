@@ -70,7 +70,7 @@ module.exports = function (N, apiPath) {
 
   // Fill response
   //
-  N.wire.on(apiPath, function fetch_user_by_hid(env) {
+  N.wire.on(apiPath, function* fetch_user_by_hid(env) {
     env.res.user = {};
     env.res.user._id = env.data.user._id;
     env.res.user.hid = env.data.user.hid;
@@ -78,7 +78,13 @@ module.exports = function (N, apiPath) {
 
     env.res.avatar_exists = env.data.user.avatar_id ? true : false;
 
-    env.res.menu_ordered = menu;
+    let can_use_messages = yield env.extras.settings.fetch('can_use_messages');
+
+    env.res.menu_ordered = menu.filter(item => {
+      // Show "Messages" menu item only if permitted
+      if (item.to === 'users.dialogs_root') return can_use_messages;
+      return true;
+    });
     env.res.blocks_ordered = blocks;
 
     env.data.users = env.data.users || [];

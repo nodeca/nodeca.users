@@ -52,4 +52,6 @@ i18n:
 
           can_delete_infractions: Can delete infractions
 
+          can_use_messages: Can use messages
+
           can_send_messages: Can send messages
