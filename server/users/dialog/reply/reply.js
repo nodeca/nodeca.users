@@ -96,7 +96,7 @@ module.exports = function (N, apiPath) {
   // Limit an amount of images in the message
   //
   N.wire.after(apiPath, function* check_images_count(env) {
-    let max_images = yield env.extras.settings.fetch('users_messages_text_max_images');
+    let max_images = yield env.extras.settings.fetch('users_message_max_images');
 
     if (max_images <= 0) return;
 
@@ -117,7 +117,7 @@ module.exports = function (N, apiPath) {
   // Limit an amount of emoticons in the post
   //
   N.wire.after(apiPath, function* check_emoji_count(env) {
-    let max_emojis = yield env.extras.settings.fetch('users_messages_text_max_emojis');
+    let max_emojis = yield env.extras.settings.fetch('users_message_max_emojis');
 
     if (max_emojis < 0) return;
 
