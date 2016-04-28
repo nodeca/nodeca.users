@@ -45,6 +45,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
   // disable automatic scroll to an anchor in the navigator
   data.no_scroll = true;
 
+  // If we have state in history - scroll to saved offset
   if (data.state && typeof data.state.message_id !== 'undefined' && typeof data.state.offset !== 'undefined') {
     let el = $(`#message${data.state.message_id}`);
 
@@ -53,24 +54,21 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
       return;
     }
 
-  } else if (data.params.message_id) {
-    let el = $(`#message${data.params.message_id}`);
-
-    if (el.length) {
-      $window.scrollTop(el.offset().top - $('.navbar').height() - TOP_OFFSET);
-      el.addClass('user-messages-list-item__m-highlight');
-      return;
-    }
   }
 
-  // If we're on the first page, scroll to the top;
-  // otherwise, scroll to the first dialog on that page
-  //
-  if (pagination.chunk_offset > 1 && $('.user-dialog-list').length) {
-    $window.scrollTop($('.user-messages-list').offset().top - navbar_height);
-
-  } else {
+  // If navigated to first message - scroll to top
+  if (data.params.message_id === dlgState.first_message_id) {
     $window.scrollTop(0);
+    return;
+  }
+
+  let el = $(`#message${data.params.message_id}`);
+
+  // Scroll to needed message
+  if (el.length) {
+    $window.scrollTop(el.offset().top - $('.navbar').height() - TOP_OFFSET);
+    el.addClass('user-messages-list-item__m-highlight');
+    return;
   }
 });
 
