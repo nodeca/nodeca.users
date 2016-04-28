@@ -35,7 +35,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function* fill_pagination(env) {
     let dialogs_total = yield N.models.users.Dialog
-                                  .where('user_id').equals(env.user_info.user_id)
+                                  .where('user').equals(env.user_info.user_id)
                                   .where('exists').equals(true)
                                   .count();
 
@@ -44,7 +44,7 @@ module.exports = function (N, apiPath) {
     // Count an amount of visible dialogs before the first one
     if (env.data.dialogs.length) {
       dialog_offset = yield N.models.users.Dialog
-                                .where('user_id').equals(env.user_info.user_id)
+                                .where('user').equals(env.user_info.user_id)
                                 .where('exists').equals(true)
                                 .where('last_message').gt(env.data.dialogs[0].last_message)
                                 .count();

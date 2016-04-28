@@ -38,7 +38,7 @@ module.exports = function (N) {
       if (!env.data.select_messages_start) return Promise.resolve([]);
 
       return N.models.users.DlgMessage.find()
-                .where('dialog_id').equals(env.data.dialog._id)
+                .where('parent').equals(env.data.dialog._id)
                 .where('exists').equals(true)
                 .where('_id').gt(env.data.select_messages_start)
                 .sort('_id')
@@ -68,7 +68,7 @@ module.exports = function (N) {
       }
 
       return query
-              .where('dialog_id').equals(env.data.dialog._id)
+              .where('parent').equals(env.data.dialog._id)
               .where('exists').equals(true)
               .sort('-_id')
               .select('_id')

@@ -50,7 +50,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function* fetch_dialog(env) {
     let dialog = yield N.models.users.Dialog.findOne()
-                          .where('user_id').equals(env.user_info.user_id)
+                          .where('user').equals(env.user_info.user_id)
                           .where('exists').equals(true)
                           .where('_id').equals(env.data.dialog_id)
                           .lean(true);
@@ -72,7 +72,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, function* fetch_and_sort_messages(env) {
     let messages = yield N.models.users.DlgMessage.find()
-                            .where('dialog_id').equals(env.data.dialog._id)
+                            .where('parent').equals(env.data.dialog._id)
                             .where('exists').equals(true)
                             .where('_id').in(env.data.messages_ids)
                             .lean(true);
@@ -98,14 +98,14 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function* fill_first_and_last_message_id(env) {
     let last_msg = yield N.models.users.DlgMessage.findOne()
-                            .where('dialog_id').equals(env.data.dialog._id)
+                            .where('parent').equals(env.data.dialog._id)
                             .where('exists').equals(true)
                             .sort('_id')
                             .select('_id')
                             .lean(true);
 
     let first_msg = yield N.models.users.DlgMessage.findOne()
-                              .where('dialog_id').equals(env.data.dialog._id)
+                              .where('parent').equals(env.data.dialog._id)
                               .where('exists').equals(true)
                               .sort('-_id')
                               .select('_id')
@@ -124,7 +124,7 @@ module.exports = function (N, apiPath) {
     env.data.users.push(env.data.dialog.to);
 
     env.data.messages.forEach(msg => {
-      env.data.users.push(msg.user_id);
+      env.data.users.push(msg.user);
     });
   });
 };

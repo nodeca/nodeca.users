@@ -150,7 +150,7 @@ module.exports = function (N, apiPath) {
   N.wire.after(apiPath, function* create_dialog(env) {
     let message_data = {
       ts:           Date.now(),
-      user_id:      env.user_info.user_id,
+      user:         env.user_info.user_id,
       html:         env.data.parse_result.html,
       md:           env.params.txt,
       attach:       env.params.attach,
@@ -172,12 +172,12 @@ module.exports = function (N, apiPath) {
     // Create own dialog and message
     //
     let own_dialog = new N.models.users.Dialog(_.assign({
-      user_id: env.user_info.user_id,
-      to:      env.data.to._id
+      user: env.user_info.user_id,
+      to:   env.data.to._id
     }, dialog_data));
 
     let own_msg = new N.models.users.DlgMessage(_.assign({
-      dialog_id: own_dialog._id
+      parent: own_dialog._id
     }, message_data));
 
     own_dialog.last_message = own_msg._id;
@@ -192,13 +192,13 @@ module.exports = function (N, apiPath) {
     //
     if ((env.user_info.hb && env.data.to.hb) || (!env.user_info.hb && !env.data.to.hb)) {
       let opponent_dialog = new N.models.users.Dialog(_.assign({
-        user_id: env.data.to._id,
-        to:      env.user_info.user_id,
-        unread:  1
+        user:   env.data.to._id,
+        to:     env.user_info.user_id,
+        unread: 1
       }, dialog_data));
 
       let opponent_msg = new N.models.users.DlgMessage(_.assign({
-        dialog_id: opponent_dialog._id
+        parent: opponent_dialog._id
       }, message_data));
 
       opponent_dialog.last_message = opponent_msg._id;
@@ -214,7 +214,7 @@ module.exports = function (N, apiPath) {
 
     // Fill response
     //
-    env.res.dialog_id  = own_msg.dialog_id;
+    env.res.dialog_id  = own_msg.parent;
     env.res.message_id = own_msg._id;
   });
 };

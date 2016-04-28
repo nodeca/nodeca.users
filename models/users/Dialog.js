@@ -11,7 +11,7 @@ module.exports = function (N, collectionName) {
       common_id    : Schema.Types.ObjectId, // common _id between personal copies of dialogue
 
       title        : String,
-      user_id      : Schema.Types.ObjectId, // copy owner's _id
+      user         : Schema.Types.ObjectId, // copy owner's _id
       to           : Schema.Types.ObjectId, // opponent user _id
 
       last_message : Schema.Types.ObjectId,
@@ -27,7 +27,7 @@ module.exports = function (N, collectionName) {
   // Indexes
 
   // Used in dialogs list page
-  Dialog.index({ user_id: 1, exists: 1, last_message: -1, _id: 1 });
+  Dialog.index({ user: 1, exists: 1, last_message: -1, _id: 1 });
 
   // Used to find opponent's dialog copy in:
   //

@@ -56,7 +56,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, function* fetch_and_sort_dialogs(env) {
     let dialogs = yield N.models.users.Dialog.find()
-                            .where('user_id').equals(env.user_info.user_id)
+                            .where('user').equals(env.user_info.user_id)
                             .where('exists').equals(true)
                             .where('_id').in(env.data.dialogs_ids)
                             .lean(true);
@@ -82,7 +82,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function* fill_last_dialog(env) {
     let last_dlg = yield N.models.users.Dialog.findOne()
-                            .where('user_id').equals(env.user_info.user_id)
+                            .where('user').equals(env.user_info.user_id)
                             .where('exists').equals(true)
                             .sort('last_message')
                             .select('_id')
@@ -121,7 +121,7 @@ module.exports = function (N, apiPath) {
     });
 
     _.forEach(env.data.previews, msg => {
-      env.data.users.push(msg.user_id);
+      env.data.users.push(msg.user);
     });
   });
 };

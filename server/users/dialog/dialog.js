@@ -34,7 +34,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function* fill_pagination(env) {
     let messages_total = yield N.models.users.DlgMessage
-                                  .where('dialog_id').equals(env.data.dialog._id)
+                                  .where('parent').equals(env.data.dialog._id)
                                   .where('exists').equals(true)
                                   .count();
 
@@ -43,7 +43,7 @@ module.exports = function (N, apiPath) {
     // Count an amount of visible dialogs before the first one
     if (env.data.messages.length) {
       message_offset = yield N.models.users.DlgMessage
-                                .where('dialog_id').equals(env.data.dialog._id)
+                                .where('parent').equals(env.data.dialog._id)
                                 .where('exists').equals(true)
                                 .where('_id').gt(env.data.messages[0]._id)
                                 .count();

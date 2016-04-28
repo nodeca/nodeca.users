@@ -8,8 +8,8 @@ const Schema = Mongoose.Schema;
 module.exports = function (N, collectionName) {
 
   let DlgMessage = new Schema({
-      dialog_id    : Schema.Types.ObjectId,
-      user_id      : Schema.Types.ObjectId,
+      parent       : Schema.Types.ObjectId,
+      user         : Schema.Types.ObjectId,
       ts           : { type: Date, 'default': Date.now },
       exists       : { type: Boolean, 'default': true },
 
@@ -36,7 +36,7 @@ module.exports = function (N, collectionName) {
   // Indexes
 
   // Used in messages list
-  DlgMessage.index({ dialog_id: 1, exists: 1, _id: -1 });
+  DlgMessage.index({ parent: 1, exists: 1, _id: -1 });
 
   /////////////////////////////////////////////////////////////////////////////
 

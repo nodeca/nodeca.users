@@ -55,7 +55,7 @@ const createMessages = co.wrap(function* (dlg1, dlg2, msg_count) {
     let ts = new Date(2010, 0, msg_day++);
 
     let msg_data = {
-      user_id: Math.random() > 0.5 ? dlg1.user_id : dlg2.user_id,
+      user: Math.random() > 0.5 ? dlg1.user : dlg2.user,
       ts,
       md,
       html: result.html
@@ -63,14 +63,14 @@ const createMessages = co.wrap(function* (dlg1, dlg2, msg_count) {
 
     let msg1 = new models.users.DlgMessage(_.assign({
       _id: new ObjectId(Math.round(ts / 1000)),
-      dialog_id: dlg1._id
+      parent: dlg1._id
     }, msg_data));
 
     dlg1.last_message = msg1._id;
 
     let msg2 = new models.users.DlgMessage(_.assign({
       _id: new ObjectId(Math.round(ts / 1000)),
-      dialog_id: dlg2._id
+      parent: dlg2._id
     }, msg_data));
 
     dlg2.last_message = msg2._id;
@@ -89,12 +89,12 @@ const createDialogs = co.wrap(function* (owner) {
     let opponent = users[charlatan.Helpers.rand(USER_COUNT)];
 
     let own = new models.users.Dialog(_.assign({
-      user_id: owner._id,
+      user: owner._id,
       to: opponent._id
     }, dlg_data));
 
     let opp = new models.users.Dialog(_.assign({
-      user_id: opponent._id,
+      user: opponent._id,
       to: owner._id
     }, dlg_data));
 

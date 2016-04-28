@@ -37,7 +37,7 @@ module.exports = function (N) {
       if (!env.data.select_dialogs_start) return Promise.resolve([]);
 
       return N.models.users.Dialog.find()
-                .where('user_id').equals(env.user_info.user_id)
+                .where('user').equals(env.user_info.user_id)
                 .where('exists').equals(true)
                 .where('last_message').gt(env.data.select_dialogs_start)
                 .sort('last_message')
@@ -67,7 +67,7 @@ module.exports = function (N) {
       }
 
       return query
-              .where('user_id').equals(env.user_info.user_id)
+              .where('user').equals(env.user_info.user_id)
               .where('exists').equals(true)
               .sort('-last_message')
               .select('_id')

@@ -39,7 +39,7 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function* check_title_length(env) {
     env.data.dialog = yield N.models.users.Dialog.findOne()
                                 .where('_id').equals(env.params.dialog_id)
-                                .where('user_id').equals(env.user_info.user_id)
+                                .where('user').equals(env.user_info.user_id)
                                 .lean(true);
 
     if (!env.data.dialog) throw N.io.NOT_FOUND;
@@ -135,7 +135,7 @@ module.exports = function (N, apiPath) {
   N.wire.after(apiPath, function* create_message(env) {
     let message_data = {
       ts:           Date.now(),
-      user_id:      env.user_info.user_id,
+      user:         env.user_info.user_id,
       html:         env.data.parse_result.html,
       md:           env.params.txt,
       attach:       env.params.attach,
@@ -150,12 +150,12 @@ module.exports = function (N, apiPath) {
     // Create own message and update dialog
     //
     let own_msg = new N.models.users.DlgMessage(_.assign({
-      dialog_id: env.data.dialog._id
+      parent: env.data.dialog._id
     }, message_data));
 
     yield [
       own_msg.save(),
-      N.models.users.Dialog.update({ _id: own_msg.dialog_id }, { unread: 0, last_message: own_msg._id })
+      N.models.users.Dialog.update({ _id: own_msg.parent }, { unread: 0, last_message: own_msg._id })
     ];
 
 
@@ -163,7 +163,7 @@ module.exports = function (N, apiPath) {
     //
     let related_dialog = yield N.models.users.Dialog.findOne()
                                   .where('common_id').equals(env.data.dialog.common_id)
-                                  .where('user_id').ne(env.user_info.user_id)
+                                  .where('user').ne(env.user_info.user_id)
                                   .lean(true);
 
 
@@ -175,12 +175,12 @@ module.exports = function (N, apiPath) {
     //
     if ((env.user_info.hb && env.data.to.hb) || (!env.user_info.hb && !env.data.to.hb)) {
       let opponent_msg = new N.models.users.DlgMessage(_.assign({
-        dialog_id: related_dialog._id
+        parent: related_dialog._id
       }, message_data));
 
       yield [
         opponent_msg.save(),
-        N.models.users.Dialog.update({ _id: opponent_msg.dialog_id }, {
+        N.models.users.Dialog.update({ _id: opponent_msg.parent }, {
           exists:       true, // force undelete
           $inc:         { unread: 1 }, // increment unread count
           last_message: opponent_msg._id
@@ -191,7 +191,7 @@ module.exports = function (N, apiPath) {
 
     // Fill response
     //
-    env.res.dialog_id  = own_msg.dialog_id;
+    env.res.dialog_id  = own_msg.parent;
     env.res.message_id = own_msg._id;
   });
 };
