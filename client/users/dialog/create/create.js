@@ -3,13 +3,15 @@
 'use strict';
 
 
-const _   = require('lodash');
-const bag = require('bagjs')({ prefix: 'nodeca_drafts' });
+const _          = require('lodash');
+const bag        = require('bagjs')({ prefix: 'nodeca_drafts' });
+const Bloodhound = require('typeahead.js/dist/bloodhound.js');
 
 
 let options;
 let draft;
 let draftKey;
+let bloodhound;
 
 
 function updateOptions() {
@@ -79,31 +81,68 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
     text: draft.text,
     attachments: draft.attachments
   });
+  let $inputs = $(N.runtime.render(module.apiPath + '.inputs', {
+    title: draft.title,
+    to: (data || {}).to || draft.to
+  }));
+  let $to = $inputs.find('.dialogs-create__to');
+  let $title = $inputs.find('.dialogs-create__title');
 
   updateOptions();
 
   $editor
     .on('show.nd.mdedit', () => {
-      let title = draft.title;
-      let to = (data || {}).to || draft.to;
-
       $editor.find('.mdedit-header__caption').html(t('new_message'));
-      $editor.find('.mdedit-header')
-        .append(N.runtime.render(module.apiPath + '.inputs', { title, to }));
-
+      $editor.find('.mdedit-header').append($inputs);
       $editor.find('.mdedit-footer').append(N.runtime.render(module.apiPath + '.options_btn'));
+
+
+      // If bloodhound not initialized - init
+      //
+      if (!bloodhound) {
+        bloodhound = new Bloodhound({
+          remote: {
+            // Hack to get nick in first param of transport call
+            url: '%QUERY',
+            wildcard: '%QUERY',
+            // Reroute request to rpc
+            transport(req, onSuccess, onError) {
+              N.io.rpc('common.user_lookup', { nick: req.url })
+                .then(onSuccess)
+                .catch(onError);
+            }
+          },
+          datumTokenizer(d) {
+            return Bloodhound.tokenizers.whitespace(d.nick);
+          },
+          queryTokenizer: Bloodhound.tokenizers.whitespace
+        });
+
+        bloodhound.initialize();
+      }
+
+
+      // Bind typeahead to nick field
+      //
+      $to.typeahead({ highlight: true }, {
+        source: bloodhound.ttAdapter(),
+        display: 'nick',
+        templates: {
+          suggestion(user) {
+            return '<div>' + _.escape(user.name) + '</div>';
+          }
+        }
+      });
     })
     .on('change.nd.mdedit', () => {
       bag.set(draftKey, {
-        to: $('.dialogs-create__to').val(),
-        title: $('.dialogs-create__title').val(),
+        to: $to.val(),
+        title: $title.val(),
         text: N.MDEdit.text(),
         attachments: N.MDEdit.attachments()
       }).catch(() => {}); // Suppress storage errors
     })
     .on('submit.nd.mdedit', () => {
-      let $to = $('.dialogs-create__to');
-      let $title = $('.dialogs-create__title');
       let errors = false;
 
       if (!$.trim($to.val())) {
