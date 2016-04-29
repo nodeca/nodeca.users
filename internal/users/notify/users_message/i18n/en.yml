@@ -1,0 +1,3 @@
+en-US:
+  subject: '#{project_name}: #{user_name} wrote you a message'
+  reply: Reply

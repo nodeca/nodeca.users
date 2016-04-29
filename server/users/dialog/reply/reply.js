@@ -186,6 +186,13 @@ module.exports = function (N, apiPath) {
           last_message: opponent_msg._id
         })
       ];
+
+      // Notify opponent
+      yield N.wire.emit('internal:users.notify', {
+        src:  related_dialog._id,
+        to:   related_dialog.user,
+        type: 'USERS_MESSAGE'
+      });
     }
 
 
