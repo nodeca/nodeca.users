@@ -161,10 +161,10 @@ module.exports = function (N, apiPath) {
 
     // Fetch related dialog
     //
-    let related_dialog = yield N.models.users.Dialog.findOne()
-                                  .where('common_id').equals(env.data.dialog.common_id)
-                                  .where('user').ne(env.user_info.user_id)
-                                  .lean(true);
+    let dialogs = yield N.models.users.Dialog.find()
+                            .where('common_id').equals(env.data.dialog.common_id)
+                            .lean(true);
+    let related_dialog = _.find(dialogs, d => String(d.user) !== env.user_info.user_id);
 
 
     // Create opponent's message if:
@@ -173,7 +173,7 @@ module.exports = function (N, apiPath) {
     // - both users are hellbanned
     // - both users are not hellbanned
     //
-    if ((env.user_info.hb && env.data.to.hb) || (!env.user_info.hb && !env.data.to.hb)) {
+    if (related_dialog && ((env.user_info.hb && env.data.to.hb) || (!env.user_info.hb && !env.data.to.hb))) {
       let opponent_msg = new N.models.users.DlgMessage(_.assign({
         parent: related_dialog._id
       }, message_data));

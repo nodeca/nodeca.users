@@ -25,7 +25,6 @@ module.exports = function (N, apiPath) {
     let users = yield N.models.users.User.find()
                           .where('nick').regex(new RegExp('^' + _.escapeRegExp(env.params.nick), 'i'))
                           .where('exists').equals(true)
-                          .where('_id').ne(env.user_info.user_id)
                           .limit(10)
                           .select('_id name nick')
                           .lean(true);

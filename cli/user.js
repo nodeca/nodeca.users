@@ -143,9 +143,9 @@ module.exports.run = function (N, args) {
     // set email and check that it's unique
     //
     if (args.email) {
-      doc = yield User.findOne({ _id: { $ne: user._id }, email: args.email });
+      doc = yield User.findOne({ email: args.email });
 
-      if (doc) throw 'User with that email already exists';
+      if (String(doc._id) !== String(user._id)) throw 'User with that email already exists';
 
       user.email = args.email;
     }
