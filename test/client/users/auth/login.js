@@ -26,7 +26,7 @@ describe('Login', function () {
     authLink.type = 'plain';
     authLink.email = email;
     yield authLink.setPass(password);
-    authLink.user_id = user._id;
+    authLink.user = user._id;
     authLink.ip = '127.0.0.1';
     authLink.last_ip = '127.0.0.1';
     yield authLink.save();

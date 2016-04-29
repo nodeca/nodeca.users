@@ -120,7 +120,7 @@ module.exports.run = function (N, args) {
     if (args.pass) {
       // disable all other passwords
       yield N.models.users.AuthLink.update(
-        { user_id: user._id, type: 'plain', exists: true },
+        { user: user._id, type: 'plain', exists: true },
         { $set: { exists: false } },
         { multi: true }
       );
@@ -132,7 +132,7 @@ module.exports.run = function (N, args) {
 
       yield authLink.setPass(args.pass);
 
-      authLink.user_id = user._id;
+      authLink.user = user._id;
       authLink.ip = '127.0.0.1';
       authLink.last_ip = '127.0.0.1';
 

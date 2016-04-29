@@ -60,7 +60,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function* fetch_user_auth_data(env) {
     let token = env.data.token;
-    let authLink = yield N.models.users.AuthLink.findById(token.authlink_id);
+    let authLink = yield N.models.users.AuthLink.findById(token.authlink);
 
     if (!authLink) {
       throw {
@@ -87,14 +87,14 @@ module.exports = function (N, apiPath) {
   // Remove current and all other password reset tokens for this provider.
   //
   N.wire.after(apiPath, function* remove_token(env) {
-    yield N.models.users.TokenResetPassword.remove({ authlink_id: env.data.authLink._id });
+    yield N.models.users.TokenResetPassword.remove({ authlink: env.data.authLink._id });
   });
 
 
   // Auto login after password change
   //
   N.wire.after(apiPath, function* autologin(env) {
-    env.data.user = yield N.models.users.User.findById(env.data.authLink.user_id);
+    env.data.user = yield N.models.users.User.findById(env.data.authLink.user);
     yield N.wire.emit('internal:users.login', env);
   });
 

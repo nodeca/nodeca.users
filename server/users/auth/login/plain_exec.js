@@ -88,7 +88,7 @@ module.exports = function (N, apiPath) {
     if (!authLink) return;
 
     let user = yield N.models.users.User
-                        .findOne({ _id: authLink.user_id })
+                        .findOne({ _id: authLink.user })
                         .lean(true);
 
     // There is no error - let next hooks do their job.
@@ -115,7 +115,7 @@ module.exports = function (N, apiPath) {
     if (!user) return;
 
     let authLink = yield N.models.users.AuthLink
-      .findOne({ user_id: user._id, type: 'plain', exists: true });
+      .findOne({ user: user._id, type: 'plain', exists: true });
 
     // There is no error - let next hooks do their job.
     if (!authLink) return;

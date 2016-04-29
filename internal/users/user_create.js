@@ -34,7 +34,7 @@ module.exports = function (N, apiPath) {
   N.wire.after(apiPath, function* create_user_privider(env) {
     let user = env.data.user;
     let authLink = new N.models.users.AuthLink({
-      user_id: user._id,
+      user:    user._id,
       type:    'plain',
       email:   env.data.reg_info.email,
       ip:      env.req.ip,
@@ -46,7 +46,7 @@ module.exports = function (N, apiPath) {
       yield authLink.save();
     } catch (__) {
       yield N.models.users.User.remove({ _id: user._id });
-      yield N.models.users.AuthLink.remove({ user_id: user._id });
+      yield N.models.users.AuthLink.remove({ user: user._id });
     }
   });
 
@@ -59,7 +59,7 @@ module.exports = function (N, apiPath) {
     let user = env.data.user;
     let authLink = new N.models.users.AuthLink(env.data.oauth_info);
 
-    authLink.user_id = user._id;
+    authLink.user    = user._id;
     authLink.ip      = env.req.ip;
     authLink.last_ip = env.req.ip;
 
@@ -67,7 +67,7 @@ module.exports = function (N, apiPath) {
       yield authLink.save();
     } catch (__) {
       yield N.models.users.User.remove({ _id: user._id });
-      yield N.models.users.AuthLink.remove({ user_id: user._id });
+      yield N.models.users.AuthLink.remove({ user: user._id });
     }
   });
 };

@@ -19,7 +19,7 @@ module.exports = function (N, collectionName) {
   //
   let AuthLink = new Schema({
 
-    user_id:          Schema.Types.ObjectId,
+    user:             Schema.Types.ObjectId,
 
     // Provider types.
     //
@@ -61,7 +61,7 @@ module.exports = function (N, collectionName) {
   //////////////////////////////////////////////////////////////////////////////
 
   // - plain login
-  AuthLink.index({ user_id: 1, type: 1, exist: 1 });
+  AuthLink.index({ user: 1, type: 1, exist: 1 });
 
   // used in login via oauth
   AuthLink.index({ provider_user_id: 1, exist: 1 });

@@ -47,7 +47,7 @@ module.exports = co.wrap(function* (N) {
 
   yield authLink.setPass(password);
 
-  authLink.user_id = user._id;
+  authLink.user = user._id;
   authLink.ip = '127.0.0.1';
   authLink.last_ip = '127.0.0.1';
 

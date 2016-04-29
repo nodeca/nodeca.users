@@ -23,9 +23,9 @@ module.exports = function (N, apiPath) {
     }
 
     let token = new N.models.users.TokenLogin({
-      user_id:     env.data.user._id,
-      ip:          env.req.ip,
-      authlink_id: env.data.authLink._id
+      user:     env.data.user._id,
+      ip:       env.req.ip,
+      authlink: env.data.authLink._id
     });
 
     yield token.save();
@@ -38,7 +38,7 @@ module.exports = function (N, apiPath) {
     // So if something is saved for a guest, it'll still be available when
     // he logs in.
     //
-    env.session.user_id = token.user_id.toString();
+    env.session.user_id = token.user.toString();
 
     // fill redirect with default value
     env.data.redirect_url = N.router.linkTo('users.member', { user_hid: env.data.user.hid });

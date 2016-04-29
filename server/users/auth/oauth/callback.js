@@ -92,7 +92,7 @@ module.exports = function (N, apiPath) {
 
       // Find user for oauth data
     let user = yield N.models.users.User
-                        .findOne({ _id: authLink.user_id, exists: true })
+                        .findOne({ _id: authLink.user, exists: true })
                         .lean(true);
 
     // If AuthLink exists, but user not found - db is broken,

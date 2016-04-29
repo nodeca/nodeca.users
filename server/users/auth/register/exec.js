@@ -171,7 +171,7 @@ module.exports = function (N, apiPath) {
     // TODO: when we will have oauth registration, it should select link based on
     //       env.data.oauth_info
     //
-    env.data.authLink = yield N.models.users.AuthLink.findOne({ user_id: env.data.user._id });
+    env.data.authLink = yield N.models.users.AuthLink.findOne({ user: env.data.user._id });
 
     yield N.wire.emit('internal:users.login', env);
 

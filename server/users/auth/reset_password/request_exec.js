@@ -65,8 +65,8 @@ module.exports = function (N, apiPath) {
     let authlink = env.data.authlink;
 
     let token = yield N.models.users.TokenResetPassword.create({
-      authlink_id: authlink._id,
-      ip:          env.req.ip
+      authlink: authlink._id,
+      ip:       env.req.ip
     });
 
     let general_project_name = yield N.settings.get('general_project_name');
