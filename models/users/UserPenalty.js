@@ -8,7 +8,7 @@ const Schema   = Mongoose.Schema;
 module.exports = function (N, collectionName) {
 
   let UserPenalty = new Schema({
-    user_id: Schema.Types.ObjectId,
+    user:   Schema.Types.ObjectId,
     expire: Date
   },
   {
@@ -24,7 +24,7 @@ module.exports = function (N, collectionName) {
   // - users.infraction.to_banned
   // - users.infraction.to_violators
   //
-  UserPenalty.index({ user_id: 1 });
+  UserPenalty.index({ user: 1 });
 
   // Used in `invalidate_penalties` job
   UserPenalty.index({ expire: 1 });

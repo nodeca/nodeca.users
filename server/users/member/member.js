@@ -34,7 +34,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function* fill_penalty_info(env) {
     let penalty = yield N.models.users.UserPenalty.findOne()
-                            .where('user_id').equals(env.data.user._id)
+                            .where('user').equals(env.data.user._id)
                             .lean(true);
 
     if (penalty && penalty.expire) {

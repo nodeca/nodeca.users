@@ -15,7 +15,7 @@ module.exports = function (N, apiPath) {
     let expire = new Date(Date.now() + (params.action_data.days * 24 * 60 * 60 * 1000));
 
     yield N.models.users.UserPenalty.update(
-      { user_id: params.infraction.for },
+      { user: params.infraction.for },
       { expire },
       { upsert: true }
     );

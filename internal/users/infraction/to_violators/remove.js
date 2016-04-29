@@ -16,7 +16,7 @@ module.exports = function (N, apiPath) {
     let expired_penalties = yield N.models.users.UserPenalty.find()
                                       .where('expire').lte(now)
                                       .lean(true);
-    let user_ids = _.map(expired_penalties, 'user_id');
+    let user_ids = _.map(expired_penalties, 'user');
 
 
     // Fetch usergroup
@@ -59,7 +59,7 @@ module.exports = function (N, apiPath) {
     // Remove penalty info
     //
     yield N.models.users.UserPenalty.remove(
-      { user_id: { $in: user_ids } }
+      { user: { $in: user_ids } }
     );
   });
 };

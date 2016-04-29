@@ -109,7 +109,7 @@ describe('UserPenalty', function () {
 
     // Set expire now
     yield TEST.N.models.users.UserPenalty.update(
-      { user_id: user._id },
+      { user: user._id },
       { expire: new Date() }
     );
 
