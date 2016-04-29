@@ -242,6 +242,21 @@ N.wire.on('navigate.exit:' + module.apiPath, function progress_updater_teardown(
 //
 N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
+  // Delete dialog
+  //
+  N.wire.on(module.apiPath + ':delete_dialog', function delete_dialog(data) {
+    let dialog_id = data.$this.data('dialog-id');
+    let $dialog = $(`#dialog${dialog_id}`);
+
+    return Promise.resolve()
+      .then(() => N.wire.emit('common.blocks.confirm', t('delete_confirmation')))
+      .then(() => N.io.rpc('users.dialog.destroy', { dialog_id }))
+      .then(() => {
+        $dialog.fadeOut(() => $dialog.remove());
+      });
+  });
+
+
   // Show editor for new dialog
   //
   N.wire.on(module.apiPath + ':create_message', function create_message() {

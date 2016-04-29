@@ -1,3 +1,4 @@
 en-US:
   no_messages: No messages
   new_message: New message
+  delete_confirmation: Are you sure want to delete whole conversation? This action is uncancalable.
