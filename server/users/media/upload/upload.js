@@ -86,7 +86,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function* check_quota(env) {
     let extra = yield N.models.users.UserExtra
-                          .findOne({ user_id: env.user_info.user_id })
+                          .findOne({ user: env.user_info.user_id })
                           .select('media_size')
                           .lean(true);
     let users_media_total_quota_mb = yield env.extras.settings.fetch('users_media_total_quota_mb');

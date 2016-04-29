@@ -40,7 +40,7 @@ module.exports = function (N, apiPath) {
     }
 
     let extra = yield N.models.users.UserExtra
-      .findOne({ user_id: env.user_info.user_id })
+      .findOne({ user: env.user_info.user_id })
       .select('media_size')
       .lean(true);
 

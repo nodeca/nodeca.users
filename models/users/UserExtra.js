@@ -1,14 +1,15 @@
 'use strict';
 
 
-var Mongoose = require('mongoose');
-var Schema = Mongoose.Schema;
+const Mongoose = require('mongoose');
+const Schema = Mongoose.Schema;
+
 
 module.exports = function (N, collectionName) {
 
-  var UserExtra = new Schema(
+  let UserExtra = new Schema(
     {
-      user_id: Schema.Types.ObjectId,
+      user: Schema.Types.ObjectId,
 
       media_size: { type: Number, 'default': 0 }
     },
@@ -20,7 +21,7 @@ module.exports = function (N, collectionName) {
   // Indexes
   //////////////////////////////////////////////////////////////////////////////
 
-  UserExtra.index({ user_id: 1 });
+  UserExtra.index({ user: 1 });
 
   //////////////////////////////////////////////////////////////////////////////
 

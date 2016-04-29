@@ -111,7 +111,7 @@ module.exports = function (N, collectionName) {
     if (!media) return;
 
     yield N.models.users.UserExtra.update(
-      { user_id: media.user_id },
+      { user: media.user_id },
       { $inc: { media_size: media.file_size * (revert ? 1 : -1) } }
     );
   });
@@ -227,7 +227,7 @@ module.exports = function (N, collectionName) {
 
     yield media.save();
     yield N.models.users.UserExtra.update(
-      { user_id: media.user_id },
+      { user: media.user_id },
       { $inc: { media_size: media.file_size } }
     );
 

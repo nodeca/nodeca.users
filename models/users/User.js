@@ -137,7 +137,7 @@ module.exports = function (N, collectionName) {
     }
 
     // this._id generates automatically before first pre('save') call
-    var extra = new N.models.users.UserExtra({ user_id: this._id });
+    let extra = new N.models.users.UserExtra({ user: this._id });
 
     extra.save(callback);
   });
