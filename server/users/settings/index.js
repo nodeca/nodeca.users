@@ -27,7 +27,7 @@ module.exports = function (N, apiPath) {
   // Fill response
   //
   N.wire.on(apiPath, function* fill_response(env) {
-    let settings = yield N.models.users.UserSettings.findOne({ user_id: env.user_info.user_id });
+    let settings = yield N.models.users.UserSettings.findOne({ user: env.user_info.user_id });
 
     env.res.setting_schemas = N.config.setting_schemas.user || {};
     env.res.settings = settings || {};

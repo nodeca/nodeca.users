@@ -1,13 +1,14 @@
 'use strict';
 
 
-var Mongoose = require('mongoose');
-var Schema = Mongoose.Schema;
+const Mongoose = require('mongoose');
+const Schema = Mongoose.Schema;
+
 
 module.exports = function (N, collectionName) {
 
-  var UserSettings = new Schema({
-      user_id : Schema.Types.ObjectId
+  let UserSettings = new Schema({
+      user : Schema.Types.ObjectId
     },
     {
       versionKey: false,
@@ -18,7 +19,7 @@ module.exports = function (N, collectionName) {
   //////////////////////////////////////////////////////////////////////////////
 
   // Needed in user store
-  UserSettings.index({ user_id: 1 });
+  UserSettings.index({ user: 1 });
 
   //////////////////////////////////////////////////////////////////////////////
 
