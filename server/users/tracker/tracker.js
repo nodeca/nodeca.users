@@ -28,7 +28,7 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function* fetch_subscriptions(env) {
     env.data.subscriptions = yield N.models.users.Subscription
                                       .find()
-                                      .where('user_id').equals(env.user_info.user_id)
+                                      .where('user').equals(env.user_info.user_id)
                                       .where('type').in(N.models.users.Subscription.types.LIST_SUBSCRIBED)
                                       .lean(true);
   });

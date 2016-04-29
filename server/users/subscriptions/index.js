@@ -37,7 +37,7 @@ module.exports = function (N, apiPath) {
     ];
 
     env.data.subscriptions = yield N.models.users.Subscription.find()
-                                      .where('user_id').equals(env.user_info.user_id)
+                                      .where('user').equals(env.user_info.user_id)
                                       .where('type').in(list_visible)
                                       .sort('-_id')
                                       .lean(true);

@@ -22,6 +22,6 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function* remove_subscription(env) {
     yield N.models.users.Subscription.remove()
               .where('_id').equals(env.params.subscription_id)
-              .where('user_id').equals(env.user_info.user_id);
+              .where('user').equals(env.user_info.user_id);
   });
 };

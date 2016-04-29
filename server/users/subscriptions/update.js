@@ -36,7 +36,7 @@ module.exports = function (N, apiPath) {
     let res = yield N.models.users.Subscription
                         .findOneAndUpdate({ type: env.params.type })
                         .where('_id').equals(env.params.subscription_id)
-                        .where('user_id').equals(env.user_info.user_id)
+                        .where('user').equals(env.user_info.user_id)
                         .lean(true);
 
     if (!res) throw N.io.NOT_FOUND;

@@ -20,7 +20,7 @@ module.exports = function (N, collectionName) {
   var Subscription = new Schema({
 
     // Subscriber
-    user_id: Schema.ObjectId,
+    user: Schema.ObjectId,
 
     // Content id
     to: Schema.ObjectId,
@@ -43,11 +43,11 @@ module.exports = function (N, collectionName) {
   // - forum topic
   // - forum section
   //
-  Subscription.index({ user_id: 1, to: 1 });
+  Subscription.index({ user: 1, to: 1 });
 
   // Used in tracker
   //
-  Subscription.index({ user_id: 1, type: 1 });
+  Subscription.index({ user: 1, type: 1 });
 
   /////////////////////////////////////////////////////////////////////////////
 
