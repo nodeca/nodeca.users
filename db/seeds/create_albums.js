@@ -113,7 +113,7 @@ let createAlbums = co.wrap(function* () {
 function createComment(mediaId, userId) {
   let comment = new models.users.Comment();
 
-  comment.user_id = userId;
+  comment.user = userId;
   comment.media_id = mediaId;
   comment.ts = new Date();
   comment.text = Charlatan.Lorem.paragraph(Charlatan.Helpers.rand(1, 2));

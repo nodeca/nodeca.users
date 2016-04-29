@@ -9,7 +9,7 @@ exports.post_in = [
   '_id',
   'to',
   'text',
-  'user_id',
+  'user',
   'media_id',
   'st',
   'ts'

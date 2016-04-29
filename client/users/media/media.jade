@@ -55,7 +55,7 @@
 
         ul.user-media__comments
           each comment in self.comments
-            - var user = self.users[comment.user_id]
+            - var user = self.users[comment.user]
               li
                 div= comment.text
                 div

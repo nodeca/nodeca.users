@@ -110,8 +110,8 @@ module.exports = function (N, apiPath) {
 
     // collect users
     env.data.comments.forEach(comment => {
-      if (comment.user_id) {
-        env.data.users.push(comment.user_id);
+      if (comment.user) {
+        env.data.users.push(comment.user);
       }
     });
   });

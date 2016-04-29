@@ -14,7 +14,7 @@ module.exports = function (N, collectionName) {
 
   var Comment = new Schema({
 
-    user_id         : Schema.ObjectId,
+    user            : Schema.ObjectId,
     media_id        : Schema.ObjectId,
     to              : Schema.ObjectId,
     ts              : { type: Date, 'default': Date.now },
