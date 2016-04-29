@@ -21,7 +21,7 @@ module.exports = function (N, collectionName) {
     expire: Date,
     points: Number,
 
-    src_id: Schema.Types.ObjectId,
+    src: Schema.Types.ObjectId,
     // FORUM_POST, BLOG_ENTRY, etc.
     src_type: String,
 
@@ -43,7 +43,7 @@ module.exports = function (N, collectionName) {
   Infraction.index({ 'for': 1, exists: 1 });
 
   // Used on forum in posts list
-  Infraction.index({ src_id: 1, exists: 1 });
+  Infraction.index({ src: 1, exists: 1 });
 
 
   Infraction.pre('save', function (next) {

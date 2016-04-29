@@ -50,7 +50,7 @@ module.exports = function (N) {
     //
     // Out:
     //
-    // - info (Object) - key is `src_id`, value { url, title }
+    // - info (Object) - key is `src`, value { url, title }
     //
     let info_env = { infractions, user_info: env.user_info, info: {} };
 

@@ -34,7 +34,7 @@
 
           tbody
             each infraction in self.blocks.infractions.list
-              - var info = self.blocks.infractions.content_info[infraction.src_id];
+              - var info = self.blocks.infractions.content_info[infraction.src];
               - var author = self.users[infraction.from];
               - var expired = infraction.expire ? Date.now() >= new Date(infraction.expire).getTime() : false;
 
