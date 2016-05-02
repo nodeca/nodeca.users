@@ -16,7 +16,7 @@ module.exports = function (N, apiPath) {
     let mTypes = N.models.users.MediaInfo.types;
 
     env.res.medias = yield N.models.users.MediaInfo
-                              .find({ type: mTypes.IMAGE, album_id: env.params.album_id })
+                              .find({ type: mTypes.IMAGE, album: env.params.album_id })
                               .lean(true)
                               .sort('-media_id');
   });

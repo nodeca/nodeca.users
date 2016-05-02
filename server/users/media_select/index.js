@@ -43,9 +43,9 @@ module.exports = function (N, apiPath) {
 
     // If album_id not set, will fetch all user medias
     if (env.params.album_id) {
-      criteria.album_id = env.params.album_id;
+      criteria.album = env.params.album_id;
     } else {
-      criteria.user_id = env.data.user._id;
+      criteria.user = env.data.user._id;
     }
 
     // Get photos from `from_media_id`

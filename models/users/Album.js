@@ -55,7 +55,7 @@ module.exports = function (N, collectionName) {
       return;
     }
 
-    let result = yield N.models.users.MediaInfo.count({ album_id: albumId, type: { $in: mTypes.LIST_VISIBLE } });
+    let result = yield N.models.users.MediaInfo.count({ album: albumId, type: { $in: mTypes.LIST_VISIBLE } });
 
     yield N.models.users.Album.update({ _id: albumId }, { count: result });
   });
@@ -69,7 +69,7 @@ module.exports = function (N, collectionName) {
     let fileId = album.cover_id || '000000000000000000000000';
     let cover = yield N.models.users.MediaInfo
                           // album_id used to check if media moved to another album
-                          .findOne({ media_id: fileId, type: mTypes.IMAGE, album_id: album._id })
+                          .findOne({ media_id: fileId, type: mTypes.IMAGE, album: album._id })
                           .select('media_id')
                           .lean(true);
 
@@ -77,7 +77,7 @@ module.exports = function (N, collectionName) {
     if (cover) return;
 
     let result = yield N.models.users.MediaInfo
-      .findOne({ album_id: album._id, type: mTypes.IMAGE })
+      .findOne({ album: album._id, type: mTypes.IMAGE })
       .sort('-ts')
       .lean(true);
 

@@ -40,7 +40,7 @@ module.exports = function (N, apiPath) {
                           .findOne({
                             media_id: env.params.cover_id,
                             type: mTypes.IMAGE,
-                            album_id: env.data.album._id
+                            album: env.data.album._id
                           })
                           .lean(true);
 

@@ -143,7 +143,7 @@ let createComments = co.wrap(function* () {
 
   let results = yield models.users.MediaInfo.find().lean(true);
 
-  let usersId = _.uniq(_.map(results, 'user_id'));
+  let usersId = _.uniq(_.map(results, 'user'));
   let mediasId = _.map(results, 'media_id');
 
   // Create comments for prepared media and user list

@@ -42,8 +42,8 @@ module.exports = function (N, collectionName) {
     //   ...
     // }
     image_sizes    : Schema.Types.Mixed,
-    user_id        : Schema.Types.ObjectId,
-    album_id       : Schema.Types.ObjectId,
+    user           : Schema.Types.ObjectId,
+    album          : Schema.Types.ObjectId,
     ts             : { type: Date, 'default': Date.now },
     type           : Number,
     medialink_html : String,
@@ -77,10 +77,10 @@ module.exports = function (N, collectionName) {
 
   // - Album page, fetch medias
   // - Media page, fetch next and prev _id's
-  MediaInfo.index({ album_id: 1, type: 1, media_id: 1 });
+  MediaInfo.index({ album: 1, type: 1, media_id: 1 });
 
   // - "All medias" page, medias list, sorted by date
-  MediaInfo.index({ user_id: 1, type: 1, media_id: 1 });
+  MediaInfo.index({ user: 1, type: 1, media_id: 1 });
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -104,14 +104,14 @@ module.exports = function (N, collectionName) {
                             },
                             { $bit: { type: { xor: types.MASK_DELETED } } }
                           )
-                          .select('file_size user_id')
+                          .select('file_size user')
                           .lean(true);
 
 
     if (!media) return;
 
     yield N.models.users.UserExtra.update(
-      { user: media.user_id },
+      { user: media.user },
       { $inc: { media_size: media.file_size * (revert ? 1 : -1) } }
     );
   });
@@ -162,8 +162,8 @@ module.exports = function (N, collectionName) {
   MediaInfo.statics.createFile = co.wrap(function* (options) {
     let media = new N.models.users.MediaInfo();
     media._id = new Mongoose.Types.ObjectId();
-    media.user_id = options.user_id;
-    media.album_id = options.album_id;
+    media.user = options.user_id;
+    media.album = options.album_id;
 
     let format;
     // Format (extension) taken from options.name, options.ext or options.path in same order
@@ -227,7 +227,7 @@ module.exports = function (N, collectionName) {
 
     yield media.save();
     yield N.models.users.UserExtra.update(
-      { user: media.user_id },
+      { user: media.user },
       { $inc: { media_size: media.file_size } }
     );
 

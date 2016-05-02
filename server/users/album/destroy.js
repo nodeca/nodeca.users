@@ -49,7 +49,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function* fetch_media(env) {
     env.data.album_media = yield N.models.users.MediaInfo
-      .find({ album_id: env.data.album._id })
+      .find({ album: env.data.album._id })
       .lean(false); // Use as mongoose model
   });
 

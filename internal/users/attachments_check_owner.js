@@ -17,7 +17,7 @@ module.exports = function (N, apiPath) {
     // Find media info by `media_id` (from params) and `user_id`
     let result = yield N.models.users.MediaInfo
                           .where('media_id').in(mediaIds)
-                          .where('user_id').equals(env.user_info.user_id)
+                          .where('user').equals(env.user_info.user_id)
                           .select('media_id')
                           .lean(true);
 

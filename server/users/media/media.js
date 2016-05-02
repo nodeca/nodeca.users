@@ -34,14 +34,14 @@ module.exports = function (N, apiPath) {
     let deletedTypes = N.models.users.MediaInfo.types.LIST_DELETED;
     let result = yield  N.models.users.MediaInfo
                             .findOne({ media_id: env.params.media_id })
-                            .where({ user_id: env.data.user._id }) // Make sure that user is real owner
+                            .where({ user: env.data.user._id }) // Make sure that user is real owner
                             .lean(true);
 
     if (!result) {
       throw N.io.NOT_FOUND;
     }
 
-    if (deletedTypes.indexOf(result.type) !== -1 && env.user_info.user_id !== String(result.user_id)) {
+    if (deletedTypes.indexOf(result.type) !== -1 && env.user_info.user_id !== String(result.user)) {
       throw N.io.NOT_FOUND;
     }
 
@@ -69,7 +69,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function* fetch_media(env) {
     let result = yield N.models.users.Album
-                          .findOne({ _id: env.data.media.album_id })
+                          .findOne({ _id: env.data.media.album })
                           .where({ user: env.data.user._id }) // Make sure that user is real owner
                           .lean(true);
 
@@ -141,7 +141,7 @@ module.exports = function (N, apiPath) {
     let media = env.data.media;
     let result = yield N.models.users.MediaInfo
                           .findOne({
-                            album_id: media.album_id,
+                            album: media.album,
                             type: { $in: mTypes.LIST_VISIBLE },
                             media_id: { $gt: media.media_id }
                           })
@@ -169,7 +169,7 @@ module.exports = function (N, apiPath) {
     let media = env.data.media;
     let result = yield N.models.users.MediaInfo
                           .findOne({
-                            album_id: media.album_id,
+                            album: media.album,
                             type: { $in: mTypes.LIST_VISIBLE },
                             media_id: { $lt: media.media_id }
                           })

@@ -11,7 +11,7 @@
             each album in self.albums
               option(
                 value=album._id
-                selected=(self.media.album_id === album._id)
+                selected=(self.media.album === album._id)
               )= album.title || self.t('default_album_name')
         .modal-footer
           button.btn.btn-default(type='button' tabindex='2' data-dismiss='modal')= self.t('cancel')

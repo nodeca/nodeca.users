@@ -17,7 +17,7 @@ module.exports = function (N) {
     let mTypes = N.models.users.MediaInfo.types;
 
     let medias = yield N.models.users.MediaInfo
-                          .find({ user_id: env.data.user._id, type: { $in: mTypes.LIST_VISIBLE } })
+                          .find({ user: env.data.user._id, type: { $in: mTypes.LIST_VISIBLE } })
                           .lean(true)
                           .sort('-media_id')
                           .limit(MEDIA_LIMIT);
@@ -37,7 +37,7 @@ module.exports = function (N) {
     if (!_.get(env.res, 'blocks.medias')) return;
 
     let count = yield N.models.users.MediaInfo
-                          .find({ user_id: env.data.user._id, type: { $in: mTypes.LIST_VISIBLE } })
+                          .find({ user: env.data.user._id, type: { $in: mTypes.LIST_VISIBLE } })
                           .count();
 
     env.res.blocks.medias.count = count;

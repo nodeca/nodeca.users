@@ -24,7 +24,7 @@ module.exports = function (N, apiPath) {
     if (!media) throw N.io.NOT_FOUND;
 
     // Check media owner
-    if (env.user_info.user_id !== String(media.user_id)) throw N.io.FORBIDDEN;
+    if (env.user_info.user_id !== String(media.user)) throw N.io.FORBIDDEN;
 
     env.res.media = env.data.media = media;
   });
@@ -36,7 +36,7 @@ module.exports = function (N, apiPath) {
     var media = env.data.media;
 
     env.res.albums = yield N.models.users.Album
-                              .find({ user: media.user_id })
+                              .find({ user: media.user })
                               .sort('-default -last_ts')
                               .select('_id title')
                               .lean(true);

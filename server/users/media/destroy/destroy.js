@@ -23,7 +23,7 @@ module.exports = function (N, apiPath) {
     }
 
     // Check media owner
-    if (env.user_info.user_id !== String(media.user_id)) {
+    if (env.user_info.user_id !== String(media.user)) {
       throw N.io.FORBIDDEN;
     }
 
@@ -65,6 +65,6 @@ module.exports = function (N, apiPath) {
   // Update album info
   //
   N.wire.after(apiPath, function* update_album(env) {
-    yield N.models.users.Album.updateInfo(env.data.media.album_id, true);
+    yield N.models.users.Album.updateInfo(env.data.media.album, true);
   });
 };
