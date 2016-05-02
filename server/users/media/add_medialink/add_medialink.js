@@ -29,7 +29,7 @@ module.exports = function (N, apiPath) {
   // Check is current user owner of album
   //
   N.wire.before(apiPath, function check_permissions(env) {
-    if (env.user_info.user_id !== String(env.data.album.user_id)) {
+    if (env.user_info.user_id !== String(env.data.album.user)) {
       return N.io.FORBIDDEN;
     }
   });
@@ -79,7 +79,7 @@ module.exports = function (N, apiPath) {
 
     media.medialink_html = block.html;
     media.medialink_meta = { thumb: thumb.html };
-    media.user_id = env.data.album.user_id;
+    media.user_id = env.data.album.user;
     media.album_id = env.data.album._id;
     media.type = N.models.users.MediaInfo.types.MEDIALINK;
 

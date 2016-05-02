@@ -43,7 +43,7 @@ function createMedia(userId, album) {
 let createAlbum = co.wrap(function* (userId) {
   var album = new models.users.Album();
 
-  album.user_id = userId;
+  album.user = userId;
   album.title = Charlatan.Name.name();
   yield album.save();
 

@@ -36,7 +36,7 @@ module.exports = function (N, apiPath) {
     var media = env.data.media;
 
     env.res.albums = yield N.models.users.Album
-                              .find({ user_id: media.user_id })
+                              .find({ user: media.user_id })
                               .sort('-default -last_ts')
                               .select('_id title')
                               .lean(true);

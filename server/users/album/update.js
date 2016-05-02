@@ -55,7 +55,7 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function check_permissions(env) {
     var album = env.data.album;
 
-    if (env.user_info.user_id !== String(album.user_id)) throw N.io.FORBIDDEN;
+    if (env.user_info.user_id !== String(album.user)) throw N.io.FORBIDDEN;
   });
 
 

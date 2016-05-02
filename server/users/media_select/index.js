@@ -26,7 +26,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, function* get_user_albums(env) {
     env.res.albums = yield N.models.users.Album
-                              .find({ user_id: env.data.user._id })
+                              .find({ user: env.data.user._id })
                               .sort('-default -last_ts')
                               .lean(true);
   });

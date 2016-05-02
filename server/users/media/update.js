@@ -43,7 +43,7 @@ module.exports = function (N, apiPath) {
     }
 
     // Check album owner
-    if (env.user_info.user_id !== String(album.user_id)) {
+    if (env.user_info.user_id !== String(album.user)) {
       throw N.io.FORBIDDEN;
     }
 

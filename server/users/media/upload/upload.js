@@ -26,8 +26,8 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function* fetch_album(env) {
     let queryParams = env.params.album_id ?
-                      { _id: env.params.album_id, user_id: env.user_info.user_id } :
-                      { user_id: env.user_info.user_id, 'default': true };
+                      { _id: env.params.album_id, user: env.user_info.user_id } :
+                      { user: env.user_info.user_id, 'default': true };
 
     let album = yield N.models.users.Album
                           .findOne(queryParams)

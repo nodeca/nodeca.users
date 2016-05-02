@@ -12,7 +12,7 @@ module.exports = function (N, collectionName) {
 
   var Album = new Schema({
     title:        String,
-    user_id:      Schema.Types.ObjectId,
+    user:         Schema.Types.ObjectId,
     last_ts:      { type: Date, 'default': Date.now },
 
     // Source file '_id'. Use thumbnail to show cover.
@@ -39,7 +39,7 @@ module.exports = function (N, collectionName) {
   // Note, album last ts & menia count are updated on each photo upload. It's
   // good to avoid index change.
   //
-  Album.index({ user_id   : 1 });
+  Album.index({ user: 1 });
 
 
   //////////////////////////////////////////////////////////////////////////////

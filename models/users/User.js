@@ -154,7 +154,7 @@ module.exports = function (N, collectionName) {
     var album = new N.models.users.Album();
     album.default = true;
     // this._id generates automatically before first pre('save') call
-    album.user_id = this._id;
+    album.user = this._id;
     album.save(callback);
   });
 

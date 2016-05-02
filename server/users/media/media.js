@@ -70,7 +70,7 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function* fetch_media(env) {
     let result = yield N.models.users.Album
                           .findOne({ _id: env.data.media.album_id })
-                          .where({ user_id: env.data.user._id }) // Make sure that user is real owner
+                          .where({ user: env.data.user._id }) // Make sure that user is real owner
                           .lean(true);
 
     // That should never happen

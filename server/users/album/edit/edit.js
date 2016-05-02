@@ -38,7 +38,7 @@ module.exports = function (N, apiPath) {
     let album = env.data.album;
 
     // Wrong member_hid parameter
-    if (env.data.user._id.toString() !== album.user_id.toString()) {
+    if (env.data.user._id.toString() !== album.user.toString()) {
       return N.io.NOT_FOUND;
     }
 
@@ -47,7 +47,7 @@ module.exports = function (N, apiPath) {
       return N.io.NOT_FOUND;
     }
 
-    if (env.user_info.user_id !== String(album.user_id)) {
+    if (env.user_info.user_id !== String(album.user)) {
       return N.io.FORBIDDEN;
     }
   });

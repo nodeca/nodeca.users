@@ -16,7 +16,7 @@ module.exports = function (N) {
   N.wire.after('server:users.member', function* fetch_last_photos(env) {
 
     let albums = yield N.models.users.Album
-                          .find({ user_id: env.data.user._id })
+                          .find({ user: env.data.user._id })
                           .lean(true)
                           .sort('-last_ts')
                           .limit(ALBUMS_LIMIT + 1); // Remove default album later to optimize query
@@ -43,7 +43,7 @@ module.exports = function (N) {
     if (!_.get(env.res, 'blocks.albums')) return;
 
     let count = yield N.models.users.Album
-                          .find({ user_id: env.data.user._id })
+                          .find({ user: env.data.user._id })
                           .count();
 
     env.res.blocks.albums.count = count - 1; // Don't count default album
