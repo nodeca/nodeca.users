@@ -197,9 +197,10 @@ module.exports = function (N, apiPath) {
     let general_project_name = yield N.settings.get('general_project_name');
 
     yield N.mailer.send({
-      to:      env.data.reg_info.email,
-      subject: env.t('email_subject', { project_name: general_project_name }),
-      text:    env.t('email_text',    { link })
+      to:         env.data.reg_info.email,
+      subject:    env.t('email_subject', { project_name: general_project_name }),
+      text:       env.t('email_text',    { link }),
+      safe_error: true
     });
   });
 
