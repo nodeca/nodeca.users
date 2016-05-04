@@ -82,6 +82,9 @@ module.exports = function (N, collectionName) {
 
     return password.hash(pass).then(hash => {
       _.set(this, 'meta.pass', hash);
+
+      // Notify mongoose about changes in nested object
+      this.markModified('meta');
     });
   };
 
