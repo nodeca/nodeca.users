@@ -1,0 +1,29 @@
+- self.add_raw_data('messages_task', self.task_info);
+
+#rebuild-messages-task.rebuild-widget
+  h4
+    = self.t('title')
+    = ' '
+    small(data-bind='visible: started, text: (current() / total() * 100 || 0).toFixed(2) + "%"')
+
+  .progress
+    .progress-bar(
+      data-bind='style: { width: (current() / total() * 100).toFixed(4) + "%" }, visible: current() && total() && current() !== total()'
+      style='display: none'
+    )
+    .progress-bar(
+      data-bind='visible: current() && total() && current() === total()'
+      style='display: none; width: 100%'
+    )= self.t('complete')
+
+  div
+    button.btn.btn-default(
+      data-on-click='admin.core.rebuild.blocks.messages.start'
+      data-bind='visible: !started()'
+    )= self.t('start')
+
+    button.btn.btn-danger(
+      data-on-click='admin.core.rebuild.blocks.messages.stop'
+      data-bind='visible: started'
+      style='display: none'
+    )= self.t('stop')
