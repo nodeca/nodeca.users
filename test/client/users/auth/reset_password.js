@@ -1,7 +1,6 @@
 'use strict';
 
 
-//const assert     = require('assert');
 const simplesmtp  = require('simplesmtp');
 const randomBytes = require('crypto').randomBytes;
 const co          = require('bluebird-co').co;
