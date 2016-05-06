@@ -26,13 +26,11 @@ each dialog in self.dialogs
 
           .user-dialog-list-item__title=dialog.title
 
-          - var author = self.users[preview.user];
-
           .user-dialog-list-item__preview(
             class=preview.user === N.runtime.user_id ? 'user-dialog-list-item__preview_m-own' : ''
           )
-            if author
-              span.user-dialog-list-item__preview-nick=author.nick
+            if to
+              span.user-dialog-list-item__preview-nick=to.nick
             !=preview.shorten_html
 
         .user-dialog-list-item__info
