@@ -28,7 +28,6 @@ module.exports = co.wrap(function* (N) {
 
   let adminGroup = yield N.models.users.UserGroup.findOne({ short_name: 'administrators' });
 
-  user.hid = 1;
   user.nick = login;
   user.email = email;
   user.joined_ts = new Date();
