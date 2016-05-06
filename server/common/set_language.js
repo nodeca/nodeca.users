@@ -1,14 +1,13 @@
-// Store the preference locale in cookies and (if available) session to use
-// on next requests.
-
-
+// Store the preference locale in cookies and (if user authorized) DB
+// to use on next requests.
+//
 'use strict';
 
 
-var _ = require('lodash');
+const _ = require('lodash');
 
 
-var LOCALE_COOKIE_MAX_AGE = 0xFFFFFFFF; // Maximum 32-bit unsigned integer.
+const LOCALE_COOKIE_MAX_AGE = 0xFFFFFFFF; // Maximum 32-bit unsigned integer.
 
 
 module.exports = function (N, apiPath) {
@@ -28,10 +27,6 @@ module.exports = function (N, apiPath) {
       path: '/',
       maxAge: LOCALE_COOKIE_MAX_AGE
     });
-
-    if (env.session) {
-      env.session.locale = locale;
-    }
 
     env.user_info.locale = locale;
 
