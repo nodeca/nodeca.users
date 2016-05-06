@@ -21,4 +21,6 @@ each message in self.messages
 
         .user-messages-list-item__date!=self.timetag(message.ts, 'relative')
 
-      .user-messages-list-item__message!=message.html
+      .user-messages-list-item__message
+        !=message.html
+        .user-messages-list-item__tail.markup-tail!=self.partial('@users.blocks.message_list.attachments', { message: message, author: author })
