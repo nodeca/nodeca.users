@@ -14,9 +14,10 @@ function Setting(name, schema, value) {
   this.name = N.runtime.t('users.setting_names.' + name);
   this.help = N.runtime.t.exists(tHelp) ? N.runtime.t(tHelp) : '';
   this.type = schema.type;
-  this._value = value || schema.default;
 
-  this.value = ko.observable(value || schema.default);
+  this._value = _.isNull(value) ? schema.default : value;
+
+  this.value = ko.observable(this._value);
 
   this.valueOptions = _.map(schema.values, function (option) {
     var titlePath = '@users.setting_values.' + name + '.' + option.name;

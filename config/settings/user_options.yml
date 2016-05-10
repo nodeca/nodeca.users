@@ -8,3 +8,9 @@ setting_schemas:
         - WATCHING
         - TRACKING
       default: TRACKING
+
+    dialogs_notify:
+      priority: 20
+      category_key: dialogs
+      type: boolean
+      default: true

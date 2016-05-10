@@ -14,6 +14,9 @@ router:
         dialog_id:
           match: /[0-9a-f]{24}/
 
+    users.dialogs_root.unsubscribe.index:
+      "/unsubscribe/messages": ~
+
     users.dialog:
       "/messages/{dialog_id}/{message_id}":
         dialog_id:

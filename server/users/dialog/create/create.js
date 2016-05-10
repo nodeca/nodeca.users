@@ -205,12 +205,16 @@ module.exports = function (N, apiPath) {
 
       models_to_save = models_to_save.concat([ opponent_dialog, opponent_msg ]);
 
-      // Notify opponent
-      yield N.wire.emit('internal:users.notify', {
-        src:  opponent_dialog._id,
-        to:   opponent_dialog.user,
-        type: 'USERS_MESSAGE'
-      });
+      let dialogs_notify = yield N.settings.get('dialogs_notify', { user_id: opponent_dialog.user });
+
+      if (dialogs_notify) {
+        // Notify opponent
+        yield N.wire.emit('internal:users.notify', {
+          src:  opponent_dialog._id,
+          to:   opponent_dialog.user,
+          type: 'USERS_MESSAGE'
+        });
+      }
     }
 
 

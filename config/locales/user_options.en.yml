@@ -4,9 +4,11 @@ i18n:
 
       setting_cat:
         subscriptions: Subscriptions
+        dialogs: Dialogs
 
       setting_names:
         default_subscription_mode: Default subscription mode
+        dialogs_notify: Send me an email when someone messages me
 
       setting_values:
         default_subscription_mode:

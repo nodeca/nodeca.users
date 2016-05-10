@@ -187,12 +187,16 @@ module.exports = function (N, apiPath) {
         })
       ];
 
-      // Notify opponent
-      yield N.wire.emit('internal:users.notify', {
-        src:  related_dialog._id,
-        to:   related_dialog.user,
-        type: 'USERS_MESSAGE'
-      });
+      let dialogs_notify = yield N.settings.get('dialogs_notify', { user_id: related_dialog.user });
+
+      if (dialogs_notify) {
+        // Notify opponent
+        yield N.wire.emit('internal:users.notify', {
+          src: related_dialog._id,
+          to: related_dialog.user,
+          type: 'USERS_MESSAGE'
+        });
+      }
     }
 
 
