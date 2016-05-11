@@ -4,7 +4,7 @@
 
 
 const _           = require('lodash');
-const Bag         = require('bagjs');
+const bag         = require('bagjs')({ prefix: 'nodeca' });
 const identicon   = require('nodeca.users/lib/identicon');
 const avatarWidth = '$$ JSON.stringify(N.config.users.avatars.resize.orig.width) $$';
 
@@ -20,11 +20,6 @@ N.wire.on('navigate.done:' + module.apiPath, function store_blocks_state(data) {
   ].join('_');
 
   let collapsedBlocks;
-
-  let bag = new Bag({
-    prefix: 'nodeca_settings',
-    expire: 12 * 30 * 24 // 1 year
-  });
 
   // Handle show/hide events
   $('.member-block__inner')

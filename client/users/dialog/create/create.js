@@ -4,7 +4,7 @@
 
 
 const _          = require('lodash');
-const bag        = require('bagjs')({ prefix: 'nodeca_drafts' });
+const bag        = require('bagjs')({ prefix: 'nodeca' });
 const Bloodhound = require('typeahead.js/dist/bloodhound.js');
 
 
@@ -135,12 +135,13 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
       });
     })
     .on('change.nd.mdedit', () => {
+      // Expire after 7 days
       bag.set(draftKey, {
         to: $to.val(),
         title: $title.val(),
         text: N.MDEdit.text(),
         attachments: N.MDEdit.attachments()
-      }).catch(() => {}); // Suppress storage errors
+      }, 7 * 24 * 60 * 60).catch(() => {}); // Suppress storage errors
     })
     .on('submit.nd.mdedit', () => {
       let errors = false;

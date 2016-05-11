@@ -1,8 +1,8 @@
 'use strict';
 
 
-const _     = require('lodash');
-const bagjs = require('bagjs');
+const _   = require('lodash');
+const bag = require('bagjs')({ prefix: 'nodeca' });
 
 // if we're on profile page, it equals to the hid of the user
 // profile page belongs to; otherwise it's 0
@@ -21,8 +21,6 @@ N.wire.on('navigate.exit:users.member', function usernotes_teardown() {
 // Init user notes
 //
 N.wire.once('navigate.done:users.member', function init_usernotes() {
-  let bag = bagjs({ prefix: 'nodeca_usernotes', expire: 24 /* hours */ });
-
   let draft;
   let draftKey;
 
@@ -92,10 +90,11 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
         $editor.find('.mdedit-header__caption').html(title);
       })
       .on('change.nd.mdedit', () => {
+        // Expire after 7 days
         bag.set(draftKey, {
           text:    N.MDEdit.text(),
           version: orig_version
-        });
+        }, 7 * 24 * 60 * 60);
       })
       .on('submit.nd.mdedit', () => {
         let rpc_method, rpc_params, txt = N.MDEdit.text();

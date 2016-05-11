@@ -4,7 +4,7 @@
 
 
 const _   = require('lodash');
-const bag = require('bagjs')({ prefix: 'nodeca_drafts' });
+const bag = require('bagjs')({ prefix: 'nodeca' });
 
 
 let options;
@@ -97,10 +97,11 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
       $editor.find('.mdedit-footer').append(N.runtime.render(module.apiPath + '.options_btn'));
     })
     .on('change.nd.mdedit', () => {
+      // Expire after 7 days
       bag.set(draftKey, {
         text: N.MDEdit.text(),
         attachments: N.MDEdit.attachments()
-      }).catch(() => {}); // Suppress storage errors
+      }, 7 * 24 * 60 * 60).catch(() => {}); // Suppress storage errors
     })
     .on('submit.nd.mdedit', () => {
       let params = {
