@@ -32,14 +32,6 @@ module.exports = function (N, apiPath) {
 
     env.session_id      = token.session_id;
 
-    // Attach user id to the existing session, while preserving existing
-    // session data.
-    //
-    // So if something is saved for a guest, it'll still be available when
-    // he logs in.
-    //
-    env.session.user_id = token.user.toString();
-
     // fill redirect with default value
     env.data.redirect_url = N.router.linkTo('users.member', { user_hid: env.data.user.hid });
 
