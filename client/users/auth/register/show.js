@@ -47,9 +47,9 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
 
   // Reset nick CSS class and message on every change.
   view.nick.value.subscribe(() => {
-    this.css('');
-    this.message(null);
-  }, view.nick);
+    view.nick.css('');
+    view.nick.message(null);
+  });
 
   // Setup automatic nick validation on input.
   view.nick.value.subscribe(_.debounce(text => {
@@ -57,10 +57,10 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
 
     N.io.rpc('users.auth.check_nick', { nick: text })
       .then(res => {
-        this.css(res.error ? 'has-error' : '');
-        this.message(res.message);
+        view.nick.css(res.error ? 'has-error' : '');
+        view.nick.message(res.message);
       });
-  }, CHECK_NICK_DELAY), view.nick);
+  }, CHECK_NICK_DELAY));
 
   // Apply root view model.
   ko.applyBindings(view, $('#content')[0]);
@@ -92,6 +92,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         window.location = res.redirect_url;
       })
       .catch(err => {
+        // Non client error will be processed with default error handler
+        if (err.code !== N.io.CLIENT_ERROR) throw err;
+
         // Update classes and messages on all input fields.
         _.forEach(view, (field, name) => {
           field.css(_.has(err.data, name) ? 'has-error' : '');
