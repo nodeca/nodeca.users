@@ -51,6 +51,21 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Delete missed subscriptions
+  //
+  N.wire.after(apiPath, function* remove_missed_subscriptions(env) {
+    if (!env.data.missed_subscriptions || !env.data.missed_subscriptions.length) return;
+
+    // Exclude from fetched
+    env.data.subscriptions = _.difference(env.data.subscriptions, env.data.missed_subscriptions);
+
+    // Remove from database
+    yield N.models.users.Subscription.find()
+              .where('_id').in(_.map(env.data.missed_subscriptions, '_id'))
+              .remove();
+  });
+
+
   // Fill tabs
   //
   N.wire.after(apiPath, function fill_tabs(env) {
