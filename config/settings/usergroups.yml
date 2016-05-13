@@ -72,11 +72,11 @@ setting_schemas:
       type: boolean
       default: false
 
-    can_receive_infractions:
+    cannot_receive_infractions:
       priority: 200
       category_key: perm_users
       type: boolean
-      default: true
+      default: false
 
     can_see_infractions:
       priority: 2010

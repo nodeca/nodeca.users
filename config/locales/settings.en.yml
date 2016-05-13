@@ -34,7 +34,7 @@ i18n:
 
           can_see_ip: Show IP
 
-          can_receive_infractions: Can recieve infractions
+          cannot_receive_infractions: Cannot recieve infractions
 
           can_see_infractions: Can see infractions
 

@@ -40,10 +40,10 @@ module.exports = function (N, apiPath) {
       user_id: user_info.user_id,
       usergroup_ids: user_info.usergroups
     };
-    let can_receive_infractions = yield N.settings.get('can_receive_infractions', params, {});
+    let cannot_receive_infractions = yield N.settings.get('cannot_receive_infractions', params, {});
 
     // Should never happens - restricted on client
-    if (!can_receive_infractions) throw N.io.BAD_REQUEST;
+    if (cannot_receive_infractions) throw N.io.BAD_REQUEST;
   });
 
 

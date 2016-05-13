@@ -70,18 +70,18 @@ module.exports = function (N) {
     //
     let users_mod_can_add_infractions = yield env.extras.settings.fetch('users_mod_can_add_infractions');
     let can_delete_infractions = yield env.extras.settings.fetch('can_delete_infractions');
-    let can_receive_infractions = yield N.settings.get('can_receive_infractions', {
+    let cannot_receive_infractions = yield N.settings.get('cannot_receive_infractions', {
       user_id: env.data.user._id,
       usergroup_ids: env.data.user.usergroups
     }, {});
 
 
-    if (infractions.length || (users_mod_can_add_infractions && can_receive_infractions)) {
+    if (infractions.length || (users_mod_can_add_infractions && !cannot_receive_infractions)) {
       _.set(env.res, 'blocks.infractions', {
         list: infractions,
         settings: {
           users_mod_can_add_infractions,
-          can_receive_infractions,
+          cannot_receive_infractions,
           can_delete_infractions
         },
         content_info: info_env.info
