@@ -4,7 +4,7 @@ setting_schemas:
       priority: 1030
       category_key: perm_users
       type: boolean
-      default: true
+      default: false
 
     users_can_upload_media:
       priority: 1040
@@ -28,7 +28,7 @@ setting_schemas:
       priority: 1070
       category_key: perm_users
       type: boolean
-      default: true
+      default: false
 
     can_report_abuse:
       priority: 1080
@@ -40,7 +40,7 @@ setting_schemas:
       priority: 1090
       category_key: perm_users
       type: boolean
-      default: true
+      default: false
 
     can_send_messages:
       priority: 1100
