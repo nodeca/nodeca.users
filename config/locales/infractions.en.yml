@@ -12,3 +12,12 @@ i18n:
           personal_conversation: Personal conversation
           bad_section: Section not match topic
           multiple_accounts: Multiple accounts
+
+        types_description:
+
+          overquoting: |
+            Usually this infraction issued for:
+
+            - if quote size (height) bigger than your message text
+            - if you quoting last message in topic (so clear for that your answer)
+            - if you keep big images and video in quotes

@@ -1,0 +1,13 @@
+en-US:
+  title: "You have received ((=0 admonition|infraction \\(#{count} point\\)|infraction \\(#{count} points\\)))"
+  original_message: "Original message:"
+  text: |
+    #{nick} have given you an ((=0 admonition|infraction \(#{points} point\)|infraction \(#{points} points\))):points
+
+    Reason: #{reason}
+
+    #{description}
+
+    #{message_url}
+
+    #{message_text}
