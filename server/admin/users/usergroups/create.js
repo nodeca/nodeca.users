@@ -63,7 +63,5 @@ module.exports = function (N, apiPath) {
     if (!store) throw 'Settings store `usergroup` is not registered.';
 
     yield store.set(env.params.settings, { usergroup_id: group._id });
-
-    yield store.updateInherited();
   });
 };

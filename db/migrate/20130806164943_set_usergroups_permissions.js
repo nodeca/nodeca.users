@@ -56,7 +56,4 @@ module.exports.up = co.wrap(function* (N) {
     can_vote:               { value: false, force: true },
     users_can_upload_media: { value: false, force: true }
   }, { usergroup_id: violatorsGroup._id });
-
-  // Recalculate store settings of all groups.
-  yield usergroupStore.updateInherited();
 });

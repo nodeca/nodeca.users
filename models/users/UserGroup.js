@@ -31,7 +31,6 @@ module.exports = function (N, collectionName) {
     //     settings:
     //       setting1_key:
     //         value: Mixed
-    //         own:   Boolean
     //         force: Boolean
     //
     settings     : { type: Schema.Types.Mixed, 'default': {} }

@@ -9,12 +9,12 @@ const thenify  = require('thenify');
 
 module.exports = function (N) {
 
-  // Helper to fetch usergroups by IDs
+  // Helper to fetch all usergroups
   //
-  function fetchUsrGrpSettings(ids, callback) {
+  function fetchUsrGrpSettings(callback) {
     N.models.users.UserGroup
-      .find({ _id: { $in: ids } })
-      .select('settings')
+      .find()
+      .select('parent_group settings')
       .lean(true)
       .exec(callback);
   }
@@ -31,43 +31,74 @@ module.exports = function (N) {
   let fetchUsrGrpSettingsAsync = thenify(fetchUsrGrpSettings);
 
 
+  // Find first own setting for group.
+  //
+  function findInheritedSetting(groupId, settingName, groupsById) {
+    if (!groupId) return null;
+
+    let group = groupsById[groupId];
+
+    // Setting exists, and it is not inherited from another section.
+    if (group &&
+        group.settings &&
+        group.settings[settingName]) {
+
+      return group.settings[settingName];
+    }
+
+    // Recursively walk through ancestors sequence.
+    if (group.parent_group) {
+      return findInheritedSetting(group.parent_group, settingName, groupsById);
+    }
+
+    return null;
+  }
+
+
   // ##### Params
   //
   // - usergroup_ids (Array)
   //
   let UsergroupStore = N.settings.createStore({
-    get(keys, params, options) {
+    get: co.wrap(function* get(keys, params, options) {
       let fetch = options.skipCache ? fetchUsrGrpSettingsAsync : fetchUsrGrpSettingsCached;
 
       if (!_.isArray(params.usergroup_ids) || _.isEmpty(params.usergroup_ids)) {
-        return Promise.reject('usergroup_ids param required to be non-empty array ' +
-                              'for getting settings from usergroup store');
+        throw 'usergroup_ids param required to be non-empty array ' +
+              'for getting settings from usergroup store';
       }
 
-      return fetch(params.usergroup_ids.sort()).then(groups => {
-        let results = {};
+      let groups_by_id = _.keyBy(yield fetch(), '_id');
+      let groups = params.usergroup_ids.map(id => groups_by_id[id]).filter(Boolean);
 
-        keys.forEach(key => {
-          let values = [];
+      let results = {};
 
-          groups.forEach(group => {
-            if (group.settings && group.settings[key]) {
-              values.push(group.settings[key]);
+      for (let key of keys) {
+        let values = [];
+
+        for (let group of groups) {
+          if (group.settings && group.settings[key]) {
+            values.push(group.settings[key]);
+          } else {
+            let setting = findInheritedSetting(group.parent_group, key, groups_by_id);
+
+            if (setting) {
+              values.push(setting);
             } else {
               values.push({
                 value: this.getDefaultValue(key),
                 force: false // Default value SHOULD NOT be forced.
               });
             }
-          });
+          }
+        }
 
-          // Get merged value.
-          results[key] = N.settings.mergeValues(values);
-        });
+        // Get merged value.
+        results[key] = N.settings.mergeValues(values);
+      }
 
-        return results;
-      });
-    },
+      return results;
+    }),
 
     // ##### Params
     //
@@ -90,8 +121,7 @@ module.exports = function (N) {
           } else {
             group.settings[key] = {
               value: setting.value,
-              force: setting.force,
-              own:   true
+              force: setting.force
             };
           }
         });
@@ -100,79 +130,6 @@ module.exports = function (N) {
         return group.save();
       });
     }
-  });
-
-  // Walk through all existent usergroups and recalculate their permissions
-  //
-  UsergroupStore.updateInherited = co.wrap(function* updateInherited() {
-    let self = this;
-    let groups = yield N.models.users.UserGroup.find();
-
-
-    // Get group from groups array by its id
-    //
-    function getGroupById(id) {
-      return groups.filter(
-        // Universal way for equal check on: Null, ObjectId, and String.
-        g => String(g._id) === String(id)
-      )[0];
-    }
-
-
-    // Find first own setting for group.
-    //
-    function findInheritedSetting(groupId, settingName) {
-      if (!groupId) return null;
-
-      let group = getGroupById(groupId);
-
-      // Setting exists, and it is not inherited from another section.
-      if (group &&
-        group.settings &&
-        group.settings[settingName] &&
-        group.settings[settingName].own) {
-        return group.settings[settingName];
-      }
-
-      // Recursively walk through ancestors sequence.
-      if (group.parent_group) {
-        return findInheritedSetting(group.parent_group, settingName);
-      }
-
-      return null;
-    }
-
-    // Retrieve all inherited settings and store them back to the database
-    //
-    function updateSettings(group) {
-      self.keys.forEach(settingName => {
-        // Do not touch own settings. We only update inherited settings.
-        if (group.settings[settingName] &&
-          group.settings[settingName].own) {
-          return;
-        }
-
-        let setting = findInheritedSetting(group.parent_group, settingName);
-
-        if (setting) {
-          // Set/update inherited setting.
-          group.settings[settingName] = {
-            value: setting.value,
-            force: setting.force,
-            own:   false
-          };
-        } else {
-          // Drop deprecated inherited setting.
-          delete group.settings[settingName];
-        }
-      });
-
-      group.markModified('settings');
-
-      return group.save();
-    }
-
-    yield groups.map(group => updateSettings(group));
   });
 
 
