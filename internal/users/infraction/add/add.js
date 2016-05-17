@@ -14,8 +14,9 @@ module.exports = function (N, apiPath) {
   // Apply penalty action if needed
   //
   N.wire.on(apiPath, function* apply_penalty(infraction) {
+    let penalties = _.get(N.config, 'users.infractions.penalties', []);
     // Rules sorted by `points` in desc order
-    let rules = (N.config.users.infractions.penalties || []).sort((a, b) => b.points - a.points);
+    let rules = penalties.sort((a, b) => b.points - a.points);
 
     let infractions = yield N.models.users.Infraction.find()
                                 .where('for').equals(infraction.for)

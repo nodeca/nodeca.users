@@ -3,6 +3,7 @@
 'use strict';
 
 
+const _        = require('lodash');
 const userInfo = require('nodeca.users/lib/user_info');
 
 
@@ -20,9 +21,11 @@ module.exports = function (N, apiPath) {
   // Validate type
   //
   N.wire.before(apiPath, function validate_type(env) {
+    let types = _.get(N.config, 'users.infractions.types', {});
+
     if (env.params.type === 'custom') {
       if (!env.params.reason) throw N.io.BAD_REQUEST;
-    } else if (!N.config.users.infractions.types[env.params.type]) throw N.io.BAD_REQUEST;
+    } else if (!types[env.params.type]) throw N.io.BAD_REQUEST;
   });
 
 

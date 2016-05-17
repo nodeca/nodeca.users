@@ -23,7 +23,7 @@ N.wire.once(module.apiPath, function init_handlers() {
 
   // Prepare types by categories
   //
-  let types = '$$ JSON.stringify(N.config.users.infractions.types) $$';
+  let types = '$$ JSON.stringify((N.config.users.infractions || {}).types || {}) $$';
 
   types = _.mapValues(types, (type, name) => _.defaults(type, { category_key: '', name, priority: 10 }));
 

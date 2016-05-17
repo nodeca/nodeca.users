@@ -1,54 +1,36 @@
-users:
-  infractions:
-
-    types:
-      overquoting:
-        points: 1
-        expire_days: 30
-        priority: 10
-      offtopic:
-        points: 2
-        expire_days: 30
-        priority: 20
-      bad_title:
-        points: 3
-        expire_days: 30
-        priority: 30
-      personal_conversation:
-        points: 3
-        expire_days: 30
-        priority: 40
-      bad_section:
-        points: 3
-        expire_days: 30
-        priority: 50
-      multiple_accounts:
-        points: 1000
-        expire_days: -1
-        priority: 1060
-        category_key: profile
-
-    penalties:
-      -
-        points: 7
-        action: to_violators
-        action_data: { days: 7 }
-      -
-        points: 14
-        action: to_violators
-        action_data: { days: 14 }
-      -
-        points: 30
-        action: to_violators
-        action_data: { days: 30 }
-      -
-        points: 60
-        action: to_violators
-        action_data: { days: 60 }
-      -
-        points: 90
-        action: to_violators
-        action_data: { days: 90 }
-      -
-        points: 100
-        action: to_banned
+# Use this template to add custom infractions and penalties.
+#
+#    users:
+#      infractions:
+#
+#        types:
+#          overquoting:
+#            points: 1
+#            category_key: forum
+#            expire_days: 30
+#            priority: 10
+#
+#        penalties:
+#          -
+#            points: 7
+#            action: to_violators
+#            action_data: { days: 7 }
+#          -
+#            points: 14
+#            action: to_violators
+#            action_data: { days: 14 }
+#          -
+#            points: 30
+#            action: to_violators
+#            action_data: { days: 30 }
+#          -
+#            points: 60
+#            action: to_violators
+#            action_data: { days: 60 }
+#          -
+#            points: 90
+#            action: to_violators
+#            action_data: { days: 90 }
+#          -
+#            points: 100
+#            action: to_banned

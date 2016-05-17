@@ -9,6 +9,17 @@ const _       = require('lodash');
 
 describe('UserPenalty', function () {
   let user;
+  let config;
+
+
+  before(function save_current_config() {
+    config = _.get(TEST.N.config, 'users.infractions');
+
+    _.set(TEST.N.config, 'users.infractions.penalties', [
+      { points: 7, action: 'to_violators', action_data: { days: 7 } },
+      { points: 100, action: 'to_banned' }
+    ]);
+  });
 
 
   before(function create_user() {
@@ -27,7 +38,8 @@ describe('UserPenalty', function () {
     yield (new TEST.N.models.users.Infraction({
       from: user._id,
       'for': user._id,
-      type: _.keys(TEST.N.config.users.infractions.types)[0],
+      type: 'custom',
+      reason: 'Custom reason',
       points: 5
     })).save();
 
@@ -41,7 +53,8 @@ describe('UserPenalty', function () {
     yield (new TEST.N.models.users.Infraction({
       from: user._id,
       'for': user._id,
-      type: _.keys(TEST.N.config.users.infractions.types)[0],
+      type: 'custom',
+      reason: 'Custom reason',
       points: 5
     })).save();
 
@@ -54,7 +67,8 @@ describe('UserPenalty', function () {
     yield (new TEST.N.models.users.Infraction({
       from: user._id,
       'for': user._id,
-      type: _.keys(TEST.N.config.users.infractions.types)[0],
+      type: 'custom', reason:
+        'Custom reason',
       points: 20
     })).save();
 
@@ -72,7 +86,8 @@ describe('UserPenalty', function () {
     yield (new TEST.N.models.users.Infraction({
       from: user._id,
       'for': user._id,
-      type: _.keys(TEST.N.config.users.infractions.types)[0],
+      type: 'custom',
+      reason: 'Custom reason',
       points: 95
     })).save();
 
@@ -97,7 +112,8 @@ describe('UserPenalty', function () {
     yield (new TEST.N.models.users.Infraction({
       from: user._id,
       'for': user._id,
-      type: _.keys(TEST.N.config.users.infractions.types)[0],
+      type: 'custom',
+      reason: 'Custom reason',
       points: 20
     })).save();
 
@@ -120,4 +136,9 @@ describe('UserPenalty', function () {
     usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
     assert.deepStrictEqual(usergroups, [ user.usergroups[0] ]);
   }));
+
+
+  after(function reset_config() {
+    _.set(TEST.N.config, 'users.infractions', config);
+  });
 });
