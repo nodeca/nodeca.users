@@ -106,7 +106,7 @@ module.exports = function (N) {
   //
   UsergroupStore.updateInherited = co.wrap(function* updateInherited() {
     let self = this;
-    let groups = yield N.models.users.UserGroup.find().select('_id parent_group settings');
+    let groups = yield N.models.users.UserGroup.find();
 
 
     // Get group from groups array by its id
@@ -142,13 +142,9 @@ module.exports = function (N) {
       return null;
     }
 
-    // Get full settings list for specified group
-    // For inherited settings automatically extract values from parents
+    // Retrieve all inherited settings and store them back to the database
     //
-    function fetchSettings(groupId) {
-      let group = getGroupById(groupId);
-      let result = {};
-
+    function updateSettings(group) {
       self.keys.forEach(settingName => {
         // Do not touch own settings. We only update inherited settings.
         if (group.settings[settingName] &&
@@ -171,10 +167,12 @@ module.exports = function (N) {
         }
       });
 
-      return result;
+      group.markModified('settings');
+
+      return group.save();
     }
 
-    yield groups.map(group => this.set(fetchSettings(group.id), { usergroup_id: group._id }));
+    yield groups.map(group => updateSettings(group));
   });
 
 

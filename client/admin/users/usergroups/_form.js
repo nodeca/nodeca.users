@@ -183,7 +183,7 @@ function UserGroup(form, data) {
   //
   this.settings     = _(form.setting_schemas)
                           .map((schema, name) => {
-                            let overriden = _.has(settings, name);
+                            let overriden = _.has(settings, name) && settings[name].own;
 
                             return new Setting(form, name, schema, {
                               group:     this,
