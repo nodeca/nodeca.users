@@ -1,7 +1,7 @@
 en-US:
   title: "((=0 Infractions|Infractions \\(#{count} point\\)|Infractions \\(#{count} points\\)))"
   never: Never
-  expired: Expied
+  expired: Expired
   deleted: Deleted
   by: By
   date: Date
