@@ -12,9 +12,7 @@ module.exports = function (N, apiPath) {
 
     yield N.models.users.User.update({ _id: params.infraction.for }, { usergroups: [ banned._id ] });
 
-    yield N.models.users.UserPenalty.update(
-      { user: params.infraction.for },
-      { $unset: { expire: '' } }
-    );
+    // Remove previous penalty if exists
+    yield N.models.users.UserPenalty.remove({ user: params.infraction.for });
   });
 };

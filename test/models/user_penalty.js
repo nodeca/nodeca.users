@@ -8,7 +8,6 @@ const _       = require('lodash');
 
 
 describe('UserPenalty', function () {
-  let user;
   let config;
 
 
@@ -22,18 +21,14 @@ describe('UserPenalty', function () {
   });
 
 
-  before(function create_user() {
-    user = new TEST.N.models.users.User({
-      nick: 'userpenalty_test',
+  it('should add user to violators', co.wrap(function* () {
+    let violators = yield TEST.N.models.users.UserGroup.findOne().where('short_name').equals('violators').lean(true);
+    let user = new TEST.N.models.users.User({
+      nick: 'userpenalty_test1',
       joined_ts: new Date()
     });
 
-    return user.save();
-  });
-
-
-  it('should add user to violators', co.wrap(function* () {
-    let violators = yield TEST.N.models.users.UserGroup.findOne().where('short_name').equals('violators').lean(true);
+    yield user.save();
 
     yield (new TEST.N.models.users.Infraction({
       from: user._id,
@@ -67,8 +62,8 @@ describe('UserPenalty', function () {
     yield (new TEST.N.models.users.Infraction({
       from: user._id,
       'for': user._id,
-      type: 'custom', reason:
-        'Custom reason',
+      type: 'custom',
+      reason: 'Custom reason',
       points: 20
     })).save();
 
@@ -82,13 +77,19 @@ describe('UserPenalty', function () {
 
   it('should move to banned after 100 points', co.wrap(function* () {
     let banned = yield TEST.N.models.users.UserGroup.findOne().where('short_name').equals('banned').lean(true);
+    let user = new TEST.N.models.users.User({
+      nick: 'userpenalty_test2',
+      joined_ts: new Date()
+    });
+
+    yield user.save();
 
     yield (new TEST.N.models.users.Infraction({
       from: user._id,
       'for': user._id,
       type: 'custom',
       reason: 'Custom reason',
-      points: 95
+      points: 105
     })).save();
 
     // We need delay because post save hook in model without callback
@@ -103,7 +104,7 @@ describe('UserPenalty', function () {
   it('should expire penalty', co.wrap(function* () {
     let violators = yield TEST.N.models.users.UserGroup.findOne().where('short_name').equals('violators').lean(true);
     let user = new TEST.N.models.users.User({
-      nick: 'userpenalty_test2',
+      nick: 'userpenalty_test3',
       joined_ts: new Date()
     });
 
@@ -135,6 +136,48 @@ describe('UserPenalty', function () {
 
     usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
     assert.deepStrictEqual(usergroups, [ user.usergroups[0] ]);
+  }));
+
+
+  it('should remove penalty when move from violators to banned', co.wrap(function* () {
+    let user = new TEST.N.models.users.User({
+      nick: 'userpenalty_test4',
+      joined_ts: new Date()
+    });
+
+    yield user.save();
+
+    yield (new TEST.N.models.users.Infraction({
+      from: user._id,
+      'for': user._id,
+      type: 'custom',
+      reason: 'Custom reason',
+      points: 20
+    })).save();
+
+    yield Promise.delay(100);
+
+    let cnt = yield TEST.N.models.users.UserPenalty
+                            .where('user').equals(user._id)
+                            .count();
+
+    assert.deepStrictEqual(cnt, 1);
+
+    yield (new TEST.N.models.users.Infraction({
+      from: user._id,
+      'for': user._id,
+      type: 'custom',
+      reason: 'Custom reason',
+      points: 100
+    })).save();
+
+    yield Promise.delay(100);
+
+    cnt = yield TEST.N.models.users.UserPenalty
+                        .where('user').equals(user._id)
+                        .count();
+
+    assert.deepStrictEqual(cnt, 0);
   }));
 
 

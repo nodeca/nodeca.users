@@ -3,22 +3,9 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 module.exports = function (N, apiPath) {
 
-  N.wire.on(apiPath, function* remove_user_from_violators() {
-    let now = new Date();
-
-
-    // Fetch expired
-    let expired_penalties = yield N.models.users.UserPenalty.find()
-                                      .where('expire').lte(now)
-                                      .lean(true);
-    let user_ids = _.map(expired_penalties, 'user');
-
-
+  N.wire.on(apiPath, function* remove_user_from_violators(penalty) {
     // Fetch usergroup
     let violators_group = yield N.models.users.UserGroup.findOne()
                                     .where('short_name').equals('violators')
@@ -26,40 +13,27 @@ module.exports = function (N, apiPath) {
 
 
     // Fetch users
-    let users = yield N.models.users.User.find()
-                          .where('_id').in(user_ids)
+    let user = yield N.models.users.User.findOne()
+                          .where('_id').equals(penalty.user)
                           .select('_id usergroups')
                           .lean(true);
+    if (!user) return;
 
 
     // Remove violators usergroup
     //
-    for (let i = 0; i < user_ids.length; i++) {
-      let user = users.find(u => String(u._id) === String(user_ids[i]));
+    let usergroups = user.usergroups.filter(gid => String(gid) !== String(violators_group._id));
 
-      if (!user) continue;
+    // If user have no more groups (should never happens) - add default group
+    if (!usergroups.length) {
+      let registered_group = yield N.settings.get('registered_user_group');
 
-      // Remove violators from array
-      let usergroups = user.usergroups.filter(gid => String(gid) !== String(violators_group._id));
-
-      if (!usergroups.length) {
-        let registered_group = yield N.settings.get('registered_user_group');
-
-        // If user have no more groups (should never happens) - add default group
-        usergroups = [ registered_group ];
-      }
-
-      yield N.models.users.User.update(
-        { _id: user._id },
-        { usergroups }
-      );
+      usergroups = [ registered_group ];
     }
 
-
-    // Remove penalty info
-    //
-    yield N.models.users.UserPenalty.remove(
-      { user: { $in: user_ids } }
+    yield N.models.users.User.update(
+      { _id: user._id },
+      { usergroups }
     );
   });
 };
