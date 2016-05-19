@@ -9,7 +9,7 @@ module.exports.up = co.wrap(function* (N) {
 
   // add usergroup settings for admin
 
-  let adminGroup = yield N.models.users.UserGroup.findOne({ short_name: 'administrators' });
+  let adminGroupId = yield N.models.users.UserGroup.findIdByName('administrators');
 
   yield usergroupStore.set({
     // admin-specific settings
@@ -29,11 +29,11 @@ module.exports.up = co.wrap(function* (N) {
     can_use_messages:       { value: true },
     can_vote:               { value: true },
     users_can_upload_media: { value: true }
-  }, { usergroup_id: adminGroup._id });
+  }, { usergroup_id: adminGroupId });
 
   // add usergroup settings for member
 
-  let memberGroup = yield N.models.users.UserGroup.findOne({ short_name: 'members' });
+  let memberGroupId = yield N.models.users.UserGroup.findIdByName('members');
 
   yield usergroupStore.set({
     can_receive_email:      { value: true },
@@ -42,18 +42,18 @@ module.exports.up = co.wrap(function* (N) {
     can_use_messages:       { value: true },
     can_vote:               { value: true },
     users_can_upload_media: { value: true }
-  }, { usergroup_id: memberGroup._id });
+  }, { usergroup_id: memberGroupId });
 
   // add usergroup settings for violators
   //
   // note: it is a modifier group added to users in addition to their
   //       existing usergroups, thus we should turn "force" flag on
 
-  let violatorsGroup = yield N.models.users.UserGroup.findOne({ short_name: 'violators' });
+  let violatorsGroupId = yield N.models.users.UserGroup.findIdByName('violators');
 
   yield usergroupStore.set({
     can_report_abuse:       { value: false, force: true },
     can_vote:               { value: false, force: true },
     users_can_upload_media: { value: false, force: true }
-  }, { usergroup_id: violatorsGroup._id });
+  }, { usergroup_id: violatorsGroupId });
 });

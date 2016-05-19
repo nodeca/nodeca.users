@@ -26,13 +26,13 @@ module.exports = co.wrap(function* (N) {
 
   // create admin user
 
-  let adminGroup = yield N.models.users.UserGroup.findOne({ short_name: 'administrators' });
+  let adminGroupId = yield N.models.users.UserGroup.findIdByName('administrators');
 
   user.nick = login;
   user.email = email;
   user.joined_ts = new Date();
   user.post_count = 1;
-  user.usergroups = [ adminGroup ];
+  user.usergroups = [ adminGroupId ];
 
   user.first_name = 'Admin';
   user.last_name = 'Adminovski';

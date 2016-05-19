@@ -6,10 +6,8 @@
 module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, function* remove_user_from_violators(penalty) {
-    // Fetch usergroup
-    let violators_group = yield N.models.users.UserGroup.findOne()
-                                    .where('short_name').equals('violators')
-                                    .lean(true);
+    // Fetch usergroup _id
+    let violators_group_id = yield N.models.users.UserGroup.findIdByName('violators');
 
 
     // Fetch users
@@ -22,7 +20,7 @@ module.exports = function (N, apiPath) {
 
     // Remove violators usergroup
     //
-    let usergroups = user.usergroups.filter(gid => String(gid) !== String(violators_group._id));
+    let usergroups = user.usergroups.filter(gid => String(gid) !== String(violators_group_id));
 
     // If user have no more groups (should never happens) - add default group
     if (!usergroups.length) {

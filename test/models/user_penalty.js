@@ -22,7 +22,7 @@ describe('UserPenalty', function () {
 
 
   it('should add user to violators', co.wrap(function* () {
-    let violators = yield TEST.N.models.users.UserGroup.findOne().where('short_name').equals('violators').lean(true);
+    let violators_group_id = yield TEST.N.models.users.UserGroup.findIdByName('violators');
     let user = new TEST.N.models.users.User({
       nick: 'userpenalty_test1',
       joined_ts: new Date()
@@ -57,7 +57,7 @@ describe('UserPenalty', function () {
 
     usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
 
-    assert.deepStrictEqual(usergroups, [ user.usergroups[0], violators._id ]);
+    assert.deepStrictEqual(usergroups, [ user.usergroups[0], violators_group_id ]);
 
     yield (new TEST.N.models.users.Infraction({
       from: user._id,
@@ -71,12 +71,12 @@ describe('UserPenalty', function () {
 
     usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
 
-    assert.deepStrictEqual(usergroups, [ user.usergroups[0], violators._id ]);
+    assert.deepStrictEqual(usergroups, [ user.usergroups[0], violators_group_id ]);
   }));
 
 
   it('should move to banned after 100 points', co.wrap(function* () {
-    let banned = yield TEST.N.models.users.UserGroup.findOne().where('short_name').equals('banned').lean(true);
+    let banned_group_id = yield TEST.N.models.users.UserGroup.findIdByName('banned');
     let user = new TEST.N.models.users.User({
       nick: 'userpenalty_test2',
       joined_ts: new Date()
@@ -97,12 +97,12 @@ describe('UserPenalty', function () {
 
     let usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
 
-    assert.deepStrictEqual(usergroups, [ banned._id ]);
+    assert.deepStrictEqual(usergroups, [ banned_group_id ]);
   }));
 
 
   it('should expire penalty', co.wrap(function* () {
-    let violators = yield TEST.N.models.users.UserGroup.findOne().where('short_name').equals('violators').lean(true);
+    let violators_group_id = yield TEST.N.models.users.UserGroup.findIdByName('violators');
     let user = new TEST.N.models.users.User({
       nick: 'userpenalty_test3',
       joined_ts: new Date()
@@ -122,7 +122,7 @@ describe('UserPenalty', function () {
 
     let usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
 
-    assert.deepStrictEqual(usergroups, [ user.usergroups[0], violators._id ]);
+    assert.deepStrictEqual(usergroups, [ user.usergroups[0], violators_group_id ]);
 
     // Set expire now
     yield TEST.N.models.users.UserPenalty.update(

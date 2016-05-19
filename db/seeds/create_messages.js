@@ -113,13 +113,10 @@ module.exports = co.wrap(function* (N) {
   parser   = N.parse;
 
   // Get administrators group _id
-  let adm_group = yield models.users.UserGroup.findOne()
-                          .where('short_name').equals('administrators')
-                          .select('_id')
-                          .lean(true);
+  let adm_group_id = yield models.users.UserGroup.findIdByName('administrators');
 
   let users = yield models.users.User.find()
-                      .where('usergroups').equals(adm_group._id)
+                      .where('usergroups').equals(adm_group_id)
                       .select('_id')
                       .lean(true);
 
@@ -127,7 +124,7 @@ module.exports = co.wrap(function* (N) {
 
   markup_options = yield settings.getByCategory(
     'messages_markup',
-    { usergroup_ids: [ adm_group._id ] },
+    { usergroup_ids: [ adm_group_id ] },
     { alias: true }
   );
 
