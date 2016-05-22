@@ -7,9 +7,8 @@
 
 
 const Mongoose = require('mongoose');
-const thenify  = require('thenify');
 const Schema   = Mongoose.Schema;
-const memoizee = require('memoizee');
+const memoize  = require('promise-memoize');
 
 
 module.exports = function (N, collectionName) {
@@ -40,24 +39,15 @@ module.exports = function (N, collectionName) {
   });
 
 
-  UserGroup.statics.findIdByName = thenify.withCallback(memoizee(function findIdByName(shortName, callback) {
-    this.findOne({ short_name: shortName }, '_id', { lean: true }, function (err, group) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      if (!group) {
-        callback(new Error('Cannot find usergroup by short name "' + shortName + '"'));
-        return;
-      }
-
-      callback(null, group._id);
-    });
-  }, {
-    async: true,
-    maxAge: 60000
-  }));
+  UserGroup.statics.findIdByName = memoize(function findIdByName(shortName) {
+    return N.models.users.UserGroup.findOne({ short_name: shortName })
+      .select('_id')
+      .lean(true)
+      .then(group => {
+        if (!group) throw new Error(`Cannot find usergroup by short name "${shortName}"`);
+        return group._id;
+      });
+  }, { maxAge: 60000 });
 
 
   N.wire.on('init:models', function emit_init_UserGroup() {

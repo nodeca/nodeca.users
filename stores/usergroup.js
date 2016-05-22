@@ -3,32 +3,24 @@
 
 const _        = require('lodash');
 const co       = require('bluebird-co').co;
-const memoizee = require('memoizee');
-const thenify  = require('thenify');
+const memoize  = require('promise-memoize');
 
 
 module.exports = function (N) {
 
   // Helper to fetch all usergroups
   //
-  function fetchUsrGrpSettings(callback) {
-    N.models.users.UserGroup
+  function fetchUsrGrpSettings() {
+    return N.models.users.UserGroup
       .find()
       .select('parent_group settings')
       .lean(true)
-      .exec(callback);
+      .exec();
   }
 
   // Memoized version of fetchUserGroups helper
   //
-  let fetchUsrGrpSettingsCached = thenify(memoizee(fetchUsrGrpSettings, {
-    // Memoizee options. Revalidate cache after each 60 sec.
-    async:     true,
-    maxAge:    60000,
-    primitive: true
-  }));
-
-  let fetchUsrGrpSettingsAsync = thenify(fetchUsrGrpSettings);
+  let fetchUsrGrpSettingsCached = memoize(fetchUsrGrpSettings, { maxAge: 60000 });
 
 
   // Find first own setting for group.
@@ -61,7 +53,7 @@ module.exports = function (N) {
   //
   let UsergroupStore = N.settings.createStore({
     get: co.wrap(function* get(keys, params, options) {
-      let fetch = options.skipCache ? fetchUsrGrpSettingsAsync : fetchUsrGrpSettingsCached;
+      let fetch = options.skipCache ? fetchUsrGrpSettings : fetchUsrGrpSettingsCached;
 
       if (!_.isArray(params.usergroup_ids) || _.isEmpty(params.usergroup_ids)) {
         throw 'usergroup_ids param required to be non-empty array ' +
@@ -79,18 +71,20 @@ module.exports = function (N) {
         for (let group of groups) {
           if (group.settings && group.settings[key]) {
             values.push(group.settings[key]);
-          } else {
-            let setting = findInheritedSetting(group.parent_group, key, groups_by_id);
-
-            if (setting) {
-              values.push(setting);
-            } else {
-              values.push({
-                value: this.getDefaultValue(key),
-                force: false // Default value SHOULD NOT be forced.
-              });
-            }
+            continue;
           }
+
+          let setting = findInheritedSetting(group.parent_group, key, groups_by_id);
+
+          if (setting) {
+            values.push(setting);
+            continue;
+          }
+
+          values.push({
+            value: this.getDefaultValue(key),
+            force: false // Default value SHOULD NOT be forced.
+          });
         }
 
         // Get merged value.

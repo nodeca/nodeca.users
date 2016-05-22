@@ -14,15 +14,14 @@ describe('ACP edit user group', function () {
         user = usr;
       })
       .fn(cb => {
-        TEST.N.models.users.UserGroup.findIdByName('administrators', (err, res) => {
-          if (err) {
-            cb(err);
-            return;
-          }
-          adminGroupId = res;
-          user.usergroups.push(adminGroupId);
-          user.save(cb);
-        });
+        TEST.N.models.users.UserGroup.findIdByName('administrators')
+          .then(res => {
+            adminGroupId = res;
+            user.usergroups.push(adminGroupId);
+            return user.save();
+          })
+          .then(() => process.nextTick(cb.bind(null)))
+          .catch(err => process.nextTick(cb.bind(null, err)));
       })
       .do.open(() => TEST.N.router.linkTo('admin.users.usergroups.edit', { _id: adminGroupId }))
       .do.click('#setting_can_see_deleted_users')
