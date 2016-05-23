@@ -46,18 +46,14 @@ module.exports = function (N, collectionName) {
   DlgMessage.pre('save', function (callback) {
     let self = this;
 
-    N.models.core.MessageParams.setParams(self.params, function (err, id) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      /*eslint-disable no-undefined*/
-      self.params = undefined;
-      self.params_ref = id;
-
-      callback();
-    });
+    N.models.core.MessageParams.setParams(self.params)
+      .then(id => {
+        /*eslint-disable no-undefined*/
+        self.params = undefined;
+        self.params_ref = id;
+      })
+      .then(() => process.nextTick(callback.bind(null)))
+      .catch(err => process.nextTick(callback.bind(null, err)));
   });
 
 
