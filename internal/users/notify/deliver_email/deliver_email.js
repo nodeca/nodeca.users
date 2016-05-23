@@ -29,12 +29,9 @@ module.exports = function (N) {
     //
     let users_info = yield user_info(N, Object.keys(local_env.messages));
 
-    // Send via email
+    // Remove users without email and send email to the rest
     //
-    yield Object.keys(local_env.messages).map(user_id => {
-      // If user have no email - skip
-      if (!emails[user_id]) return Promise.resolve();
-
+    yield Object.keys(local_env.messages).filter(user_id => emails[user_id]).map(user_id => {
       let params = {
         user_id,
         usergroup_ids: users_info[user_id].usergroups
