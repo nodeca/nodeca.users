@@ -38,10 +38,10 @@ const Mongoose    = require('mongoose');
 const pump        = require('pump');
 const stream      = require('readable-stream');
 const sharp       = require('sharp');
-const thenify     = require('thenify');
 const through2    = require('through2');
 const filter_jpeg = require('nodeca.users/lib/filter_jpeg');
-const probe       = thenify(require('probe-image-size'));
+const probe       = require('probe-image-size');
+const Promise     = require('bluebird');
 
 let File;
 
@@ -310,7 +310,10 @@ module.exports = co.wrap(function* (src, options) {
   streamBuffer.push(data);
   streamBuffer.end();
 
-  let imgSz = yield probe(streamBuffer);
+  let imgSz = yield new Promise((res, rej) => {
+    probe(streamBuffer, (err, data) => (err ? rej(err) : res(data)));
+  });
+
   let origImage = {
     buffer: data,
     length: data.length,
