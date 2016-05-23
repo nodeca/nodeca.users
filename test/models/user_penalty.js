@@ -3,7 +3,7 @@
 
 const Promise = require('bluebird');
 const assert  = require('assert');
-const co      = require('co');
+const co      = require('bluebird-co').co;
 const _       = require('lodash');
 
 
