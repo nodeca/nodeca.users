@@ -121,10 +121,11 @@ module.exports = function (N, collectionName) {
 
     var self = this;
 
-    N.settings.get('registered_user_group').then(registered_user_group => {
-      self.usergroups = [ registered_user_group ];
-      process.nextTick(callback);
-    }, err => process.nextTick(() => callback(err)));
+    N.settings.get('registered_user_group')
+      .then(registered_user_group => {
+        self.usergroups = [ registered_user_group ];
+      })
+      .asCallback(callback);
   });
 
 

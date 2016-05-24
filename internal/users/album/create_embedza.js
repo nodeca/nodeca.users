@@ -5,7 +5,7 @@
 'use strict';
 
 
-const thenify   = require('thenify');
+const Promise   = require('bluebird');
 const _         = require('lodash');
 const Embedza   = require('embedza');
 const templates = require('embedza/lib/templates');
@@ -38,10 +38,10 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Wrap embedza async methods with thenify
+  // Convert embedza async methods to promise
   //
-  instance.render = thenify.withCallback(instance.render);
-  instance.info = thenify.withCallback(instance.info);
+  instance.render = Promise.promisify(instance.render);
+  instance.info = Promise.promisify(instance.info);
 
 
   N.wire.on(apiPath, function create_embedza_for_albums(data) {

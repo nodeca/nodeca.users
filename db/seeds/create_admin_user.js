@@ -1,7 +1,7 @@
 'use strict';
 
 const prompt  = require('prompt');
-const thenify = require('thenify');
+const Promise = require('bluebird');
 const co      = require('bluebird-co').co;
 
 module.exports = co.wrap(function* (N) {
@@ -18,7 +18,7 @@ module.exports = co.wrap(function* (N) {
     { name: 'password', description: 'Administrator password? (admin)', hidden: true }
   ];
 
-  let result = yield thenify(prompt.get)(schema);
+  let result = yield Promise.fromCallback(cb => prompt.get(schema, cb));
 
   let login = result.login || 'admin';
   let password = result.password || 'admin';

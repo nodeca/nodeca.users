@@ -13,16 +13,14 @@ describe('ACP edit user group', function () {
       .do.auth('admin_users_usergroups_edit', usr => {
         user = usr;
       })
-      .fn(cb => {
-        TEST.N.models.users.UserGroup.findIdByName('administrators')
-          .then(res => {
-            adminGroupId = res;
-            user.usergroups.push(adminGroupId);
-            return user.save();
-          })
-          .then(() => process.nextTick(cb.bind(null)))
-          .catch(err => process.nextTick(cb.bind(null, err)));
-      })
+      .fn(cb => TEST.N.models.users.UserGroup.findIdByName('administrators')
+                  .then(res => {
+                    adminGroupId = res;
+                    user.usergroups.push(adminGroupId);
+                    return user.save();
+                  })
+                  .asCallback(cb)
+      )
       .do.open(() => TEST.N.router.linkTo('admin.users.usergroups.edit', { _id: adminGroupId }))
       .do.click('#setting_can_see_deleted_users')
       .do.click('button.btn-primary[type="submit"]')

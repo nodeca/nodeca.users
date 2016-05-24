@@ -52,8 +52,7 @@ module.exports = function (N, collectionName) {
         self.params = undefined;
         self.params_ref = id;
       })
-      .then(() => process.nextTick(callback.bind(null)))
-      .catch(err => process.nextTick(callback.bind(null, err)));
+      .asCallback(callback);
   });
 
 

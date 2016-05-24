@@ -2,12 +2,11 @@
 
 
 const assert      = require('assert');
-const async       = require('async');
 const fs          = require('fs');
 const glob        = require('glob').sync;
 const path        = require('path');
 const filter_jpeg = require('nodeca.users/lib/filter_jpeg');
-
+const Promise     = require('bluebird');
 
 function addTestBlock(TypedArray) {
   let fixtures = {};
@@ -83,7 +82,7 @@ function addTestBlock(TypedArray) {
 
   });
 
-  it('should fail on errors', function (callback) {
+  it('should fail on errors', function () {
     let errors = {
       '':            'unexpected end of file (offset 0x00)',
       FF:            'unexpected end of file (offset 0x01)',
@@ -92,17 +91,17 @@ function addTestBlock(TypedArray) {
       'FF D8 FF 44': 'unknown marker: 0x44 (offset 0x03)'
     };
 
-    async.eachSeries(Object.keys(errors), function (hex, callback) {
+    return Promise.map(Object.keys(errors), hex => Promise.fromCallback(cb => {
       let filter = filter_jpeg();
 
       filter.onError = function (err) {
         assert.equal(err.message, errors[hex]);
-        callback();
+        cb();
       };
 
       filter.push(new TypedArray((hex.match(/[0-9a-f]{2}/gi) || []).map(i => parseInt(i, 16))));
       filter.end();
-    }, callback);
+    }));
   });
 }
 

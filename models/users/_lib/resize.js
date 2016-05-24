@@ -210,12 +210,8 @@ const createPreview = co.wrap(function* (image, resizeConfig, imageType) {
     // using callback interface instead of promises here,
     // because promises don't return `info` object
     sharpInstance.toFormat(outType).withMetadata().toBuffer(function (err, buffer, info) {
-      if (err) {
-        reject(err);
-        return;
-      }
-
-      resolve({ buffer, info });
+      if (err) reject(err);
+      else resolve({ buffer, info });
     });
   });
 
@@ -279,17 +275,12 @@ const saveImages = co.wrap(function* (previews, options) {
                  through2();
 
     /* eslint-disable no-loop-func */
-    yield new Promise((resolve, reject) => {
-      pump(
-        from2([ data.image.buffer ]),
-        filter,
-        File.createWriteStream(params),
-        err => {
-          if (err) reject(err);
-          else resolve();
-        }
-      );
-    });
+    yield Promise.fromCallback(cb => pump(
+      from2([ data.image.buffer ]),
+      filter,
+      File.createWriteStream(params),
+      cb)
+    );
   }
 
   return origId;
@@ -310,9 +301,7 @@ module.exports = co.wrap(function* (src, options) {
   streamBuffer.push(data);
   streamBuffer.end();
 
-  let imgSz = yield new Promise((res, rej) => {
-    probe(streamBuffer, (err, data) => (err ? rej(err) : res(data)));
-  });
+  let imgSz = yield Promise.fromCallback(cb => probe(streamBuffer, cb));
 
   let origImage = {
     buffer: data,

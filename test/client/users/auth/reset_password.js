@@ -4,6 +4,7 @@
 const simplesmtp  = require('simplesmtp');
 const randomBytes = require('crypto').randomBytes;
 const co          = require('bluebird-co').co;
+const Promise     = require('bluebird');
 
 
 describe('Reset password', function () {
@@ -37,12 +38,7 @@ describe('Reset password', function () {
     smtp.on('startData', connection => { connection.body = ''; });
     smtp.on('data', (connection, chunk) => { connection.body += chunk; });
 
-    yield new Promise((res, rej) => {
-      smtp.listen(2525, err => {
-        if (err) rej(err);
-        res();
-      });
-    });
+    yield Promise.fromCallback(cb => smtp.listen(2525, cb));
   }));
 
 

@@ -367,9 +367,6 @@ module.exports = function (N, collectionName) {
     let content_read_marks_expire = yield N.settings.get('content_read_marks_expire');
     let lastTs = Date.now() - (content_read_marks_expire * 24 * 60 * 60 * 1000);
 
-    // Here could be `async.parallel` but we don't need callbacks
-
-
     // Cleanup position markers
     //
     N.redis.zrangebyscoreAsync('marker_pos_updates', '-inf', lastTs).then(items => {
