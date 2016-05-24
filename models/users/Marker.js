@@ -16,13 +16,14 @@
 'use strict';
 
 
-const _  = require('lodash');
-const co = require('bluebird-co').co;
+const Promise = require('bluebird');
+const _       = require('lodash');
+const co      = require('bluebird-co').co;
 
 
 module.exports = function (N, collectionName) {
 
-  var gcHandlers = {};
+  let gcHandlers = {};
 
 
   function Marker() {
@@ -120,7 +121,7 @@ module.exports = function (N, collectionName) {
       return;
     }
 
-    var now = Date.now();
+    let now = Date.now();
 
     if (!ts) {
       ts = now;
@@ -136,56 +137,42 @@ module.exports = function (N, collectionName) {
 
   // Remove extra position markers if user have more than limit
   //
-  function limitPositionMarkers(userId, callback) {
-    var maxItems = 1000;
-    var gcThreshold = maxItems + Math.round(maxItems * 0.10) + 1;
+  const limitPositionMarkers = co.wrap(function* (userId) {
+    let maxItems = 1000;
+    let gcThreshold = maxItems + Math.round(maxItems * 0.10) + 1;
 
     // Get position records count
-    N.redis.hlen('marker_pos:' + userId, function (err, cnt) {
-      if (err) {
-        callback(err);
-        return;
-      }
+    let cnt = yield N.redis.hlenAsync('marker_pos:' + userId);
 
-      // If count less than limit - skip
-      if (cnt <= gcThreshold) {
-        callback();
-        return;
-      }
+    // If count less than limit - skip
+    if (cnt <= gcThreshold) return Promise.resolve();
 
-      N.redis.hgetall('marker_pos:' + userId, function (err, items) {
-        if (err) {
-          callback(err);
-          return;
+    let items = yield N.redis.hgetallAsync('marker_pos:' + userId);
+    let query = N.redis.multi();
+
+    _(items)
+      .mapValues((json, id) => {
+        let result = { ts: -1 };
+
+        if (json) {
+          try {
+            result = JSON.parse(json);
+          } catch (__) {}
         }
 
-        var query = N.redis.multi();
+        result.id = id;
 
-        _(items)
-          .mapValues(function (json, id) {
-            var result = { ts: -1 };
-
-            if (json) {
-              try {
-                result = JSON.parse(json);
-              } catch (__) {}
-            }
-
-            result.id = id;
-
-            return result;
-          })
-          .sortBy('ts')
-          .take(_.values(items).length - maxItems)
-          .forEach(function (item) {
-            query.hdel('marker_pos:' + userId, item.id);
-            query.zrem('marker_pos_updates', userId + ':' + item.id);
-          });
-
-        query.exec(callback);
+        return result;
+      })
+      .sortBy('ts')
+      .take(_.values(items).length - maxItems)
+      .forEach(item => {
+        query.hdel('marker_pos:' + userId, item.id);
+        query.zrem('marker_pos_updates', userId + ':' + item.id);
       });
-    });
-  }
+
+    return query.execAsync();
+  });
 
 
   // Set current scroll position in topic
@@ -225,13 +212,7 @@ module.exports = function (N, collectionName) {
 
     yield N.redis.zaddAsync('marker_pos_updates', now, userId + ':' + contentId);
     yield N.redis.hsetAsync('marker_pos:' + userId, String(contentId), JSON.stringify(pos));
-
-    yield new Promise((resolve, reject) => {
-      limitPositionMarkers(userId, err => {
-        if (err) reject(err);
-        else resolve();
-      });
-    });
+    yield limitPositionMarkers(userId);
 
     if (!maxUpdated) return;
 
@@ -391,9 +372,7 @@ module.exports = function (N, collectionName) {
 
     // Cleanup position markers
     //
-    N.redis.zrangebyscore('marker_pos_updates', '-inf', lastTs, (err, items) => {
-      if (err) return;
-
+    N.redis.zrangebyscoreAsync('marker_pos_updates', '-inf', lastTs).then(items => {
       let query = N.redis.multi();
 
       items.forEach(item => {
@@ -403,15 +382,13 @@ module.exports = function (N, collectionName) {
         query.zrem('marker_pos_updates', item);
       });
 
-      query.exec();
+      return query.execAsync();
     });
 
 
     // Cleanup cut markers
     //
-    N.redis.zrangebyscore('marker_cut_updates', '-inf', lastTs, (err, items) => {
-      if (err) return;
-
+    N.redis.zrangebyscoreAsync('marker_cut_updates', '-inf', lastTs).then(items => {
       let query = N.redis.multi();
 
       items.forEach(item => {
@@ -419,15 +396,13 @@ module.exports = function (N, collectionName) {
         query.zrem('marker_cut_updates', item);
       });
 
-      query.exec();
+      return query.execAsync();
     });
 
 
     // Cleanup read markers
     //
-    N.redis.smembers('marker_marks_items', (err, items) => {
-      if (err) return;
-
+    N.redis.smembersAsync('marker_marks_items').then(items => {
       let query = N.redis.multi();
 
       items.forEach(function (item) {
@@ -435,9 +410,7 @@ module.exports = function (N, collectionName) {
         query.zcard('marker_marks:' + item);
       });
 
-      query.exec((err, res) => {
-        if (err) return;
-
+      return query.execAsync().then(res => {
         let query = N.redis.multi();
 
         items.forEach((item, i) => {
@@ -446,7 +419,7 @@ module.exports = function (N, collectionName) {
           }
         });
 
-        query.exec();
+        return query.execAsync();
       });
     });
   });
