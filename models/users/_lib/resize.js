@@ -301,7 +301,7 @@ module.exports = co.wrap(function* (src, options) {
   streamBuffer.push(data);
   streamBuffer.end();
 
-  let imgSz = yield Promise.fromCallback(cb => probe(streamBuffer, cb));
+  let imgSz = yield probe(streamBuffer);
 
   let origImage = {
     buffer: data,
