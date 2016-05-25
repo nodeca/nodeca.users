@@ -53,7 +53,7 @@ module.exports = function (N, apiPath) {
       sup:            true
     };
 
-    env.data.parse_result = yield N.parse({
+    env.data.parse_result = yield N.parser.md2html({
       text:        env.params.txt,
       options:     parseOptions,
       attachments: [],

@@ -14,7 +14,7 @@ module.exports = function (N, apiPath) {
     if (!post) return;
 
     let params = yield N.models.core.MessageParams.getParams(post.params_ref);
-    let result = yield N.parse({
+    let result = yield N.parser.md2html({
       text:         post.md,
       attachments:  post.attach,
       options:      params,

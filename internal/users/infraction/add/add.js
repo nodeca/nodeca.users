@@ -127,7 +127,7 @@ module.exports = function (N, apiPath) {
       sub:            true,
       sup:            true
     };
-    let parse_result = yield N.parse({
+    let parse_result = yield N.parser.md2html({
       text,
       attachments: [],
       options,
