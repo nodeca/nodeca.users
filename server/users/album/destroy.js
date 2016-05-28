@@ -60,7 +60,7 @@ module.exports = function (N, apiPath) {
     yield Promise.map(
       env.data.album_media,
       media => N.models.users.MediaInfo.markDeleted(media.media_id, false),
-      numCPUs
+      { concurrency: numCPUs }
     );
 
     yield env.data.album.remove();

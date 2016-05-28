@@ -104,7 +104,7 @@ let createAlbums = co.wrap(function* () {
   user_ids = _.uniq(user_ids.map(String));
 
   // Create albums for prepared user list
-  yield Promise.map(user_ids, uid => createMultipleAlbums(uid), numCPUs);
+  yield Promise.map(user_ids, uid => createMultipleAlbums(uid), { concurrency: numCPUs });
 });
 
 
@@ -147,7 +147,11 @@ let createComments = co.wrap(function* () {
   let mediasId = _.map(results, 'media_id');
 
   // Create comments for prepared media and user list
-  yield Promise.map(mediasId, mid => createMultipleComments(mid, usersId), numCPUs);
+  yield Promise.map(
+    mediasId,
+    mid => createMultipleComments(mid, usersId),
+    { concurrency: numCPUs }
+  );
 });
 
 
