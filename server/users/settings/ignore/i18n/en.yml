@@ -1,0 +1,7 @@
+en-US:
+  title: Ignore list
+  breadcrumbs_title: Settings
+
+  add:
+    err_invalid_user: Invalid user
+    err_same_user: You can't ignore yourself

@@ -42,6 +42,11 @@ module.exports = function (N, apiPath) {
 
     yield N.wire.emit('internal:users.breadcrumbs.fill_user', env);
 
+    env.data.breadcrumbs.push({
+      text: env.t('breadcrumbs_title'),
+      route: 'users.settings.general'
+    });
+
     env.res.breadcrumbs = env.data.breadcrumbs;
   });
 };

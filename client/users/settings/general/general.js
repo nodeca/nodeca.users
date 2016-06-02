@@ -96,7 +96,7 @@ Form.prototype.submit = function submit() {
     data.settings[setting.settingName] = setting.value();
   });
 
-  N.io.rpc('users.settings.update', data).then(function () {
+  N.io.rpc('users.settings.general.update', data).then(function () {
     N.wire.emit('notify', {
       type: 'info',
       message: t('saved')
@@ -111,10 +111,10 @@ Form.prototype.submit = function submit() {
 
 
 N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
-  ko.applyBindings(new Form(N.runtime.page_data), $('#user-settings').get(0));
+  ko.applyBindings(new Form(N.runtime.page_data), $('#user-settings-general').get(0));
 });
 
 
 N.wire.on('navigate.exit:' + module.apiPath, function page_exit() {
-  ko.cleanNode($('#user-settings').get(0));
+  ko.cleanNode($('#user-settings-general').get(0));
 });

@@ -43,6 +43,20 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Check if this user is ignored
+  //
+  N.wire.before(apiPath, function* check_ignore(env) {
+    let ignore = yield N.models.users.Ignore.findOne()
+                           .where('from').equals(env.user_info.user_id)
+                           .where('to').equals(env.data.user._id)
+                           .lean(true);
+
+    if (ignore) {
+      env.res.user_is_ignored = true;
+    }
+  });
+
+
   // Update activity info with fresh data if available
   //
   N.wire.before(apiPath, function* fetch_activity_info(env) {

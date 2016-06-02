@@ -5,6 +5,23 @@
   //- != self.partial('@users.blocks.breadcrumbs')
 
   header.page-head
+    .pull-right.page-actions
+      .page-actions__dropdown
+        button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+          span.caret
+        ul.dropdown-menu.dropdown-menu-right
+          if !own_page
+            if !self.user_is_ignored
+              li: a(href='#'
+                data-on-click='users.member:add_ignore'
+                data-user=self.users[self.user._id]
+              )= self.t('add_ignore')
+            else
+              li: a(href='#'
+                data-on-click='users.member:remove_ignore'
+                data-user-id=self.user._id
+              )= self.t('remove_ignore')
+
     h1.page-head__title(itemprop='name')= self.users[self.user._id].name
     p.page-head__descr.member__last-visit(itemprop='description')
       =self.t('last_active')

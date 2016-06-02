@@ -1,14 +1,17 @@
 - self.add_raw_data('setting_schemas', self.setting_schemas)
 - self.add_raw_data('settings', self.settings)
 
-#content.user-settings-root
+#content.user-settings-general-root
   != self.partial('@users.blocks.breadcrumbs')
 
   header.page-head
-    h1.page-head__title(itemprop='name')= self.t('title')
-    p.page-head__descr.hidden-xs(itemprop='description')
+    ul.nav.nav-pills
+      li.active
+        a(href=self.link_to('users.settings.general'))= self.t('general')
+      li
+        a(href=self.link_to('users.settings.ignore'))= self.t('ignore')
 
-  form.form#user-settings(data-bind='submit: submit')
+  form.form#user-settings-general(data-bind='submit: submit')
     // ko foreach: categories
 
     fieldset

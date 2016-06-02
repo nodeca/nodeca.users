@@ -24,8 +24,11 @@ router:
         message_id:
           match: /[0-9a-f]{24}/
 
-    users.settings.index:
+    users.settings.general:
       "/settings": ~
+
+    users.settings.ignore:
+      "/settings/ignore": ~
 
     users.subscriptions.index:
       "/subscriptions": ~

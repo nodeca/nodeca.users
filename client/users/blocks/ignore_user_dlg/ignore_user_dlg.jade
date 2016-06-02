@@ -1,0 +1,29 @@
+.modal.fade(tabindex='-1', role='dialog', aria-hidden='true')
+  .modal-dialog
+    .modal-content
+      form.ignore-user-dlg(data-on-submit=self.apiPath + ':submit')
+        .modal-header
+          button.close(type='button' tabindex='-1' data-dismiss='modal') &times;
+          h4.modal-title=self.t('title')
+        .modal-body
+          .form-group
+            a(href=self.link_to('users.member', { user_hid: self.user.hid }))
+              img.ignore-user-dlg__avatar(alt=self.user.name)&attributes(self.avatar(self.user, 'sm'))
+              = self.user.name
+
+          input(name='user', type='hidden', value=self.user._id)
+
+          .form-group
+            input.form-control(type='text', name='reason', placeholder=self.t('input_reason_placeholder'), tabindex='2')
+
+          .form-group
+            select.form-control(name='period', tabindex='1')
+              option(value='0')=self.t('period_forever')
+              option(value='7')=self.t('period_7d')
+              option(value='30')=self.t('period_30d')
+              option(value='90')=self.t('period_90d')
+              option(value='365')=self.t('period_365d')
+
+        .modal-footer
+          button.btn.btn-default(type='button' tabindex='3' data-dismiss='modal')=self.t('cancel')
+          button.btn.btn-danger(type='submit' tabindex='4')=self.t('ok')

@@ -1,0 +1,7 @@
+en-US:
+  ignore: Ignore
+  general: General
+  ignored_till: 'till #{date}'
+  ignored_forever: forever
+  remove: remove
+  no_ignored_users: No users are ignored
