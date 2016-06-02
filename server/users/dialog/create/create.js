@@ -161,9 +161,12 @@ module.exports = function (N, apiPath) {
       tail:         env.data.parse_result.tail
     };
 
+    let preview_data = yield N.parser.md2preview({ text: message_data.md, limit: 500, link2text: true });
+
     let dialog_data = {
       common_id: new ObjectId(),
-      title:     env.params.title
+      title:     env.params.title,
+      preview:   preview_data.preview
     };
 
     let models_to_save = [];

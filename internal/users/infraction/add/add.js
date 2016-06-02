@@ -150,9 +150,12 @@ module.exports = function (N, apiPath) {
       tail:         parse_result.tail
     };
 
+    let preview_data = yield N.parser.md2preview({ text: message_data.md, limit: 500, link2text: true });
+
     let dialog_data = {
       common_id: new ObjectId(),
-      title
+      title,
+      preview: preview_data.preview
     };
 
 

@@ -45,9 +45,14 @@ const createDemoUsers = co.wrap(function* () {
 
 
 const createMessages = co.wrap(function* (dlg1, dlg2, msg_count) {
+  if (msg_count <= 0) return;
+
+  let msg1, msg2, md;
+
   for (let i = 0; i < msg_count; i++) {
-    let md = charlatan.Lorem.paragraphs(charlatan.Helpers.rand(5, 1)).join('\n\n');
-    let result = yield parser({
+    md = charlatan.Lorem.paragraphs(charlatan.Helpers.rand(5, 1)).join('\n\n');
+
+    let result = yield parser.md2html({
       text: md,
       attachments: [],
       options: markup_options
@@ -61,22 +66,24 @@ const createMessages = co.wrap(function* (dlg1, dlg2, msg_count) {
       html: result.html
     };
 
-    let msg1 = new models.users.DlgMessage(_.assign({
+    msg1 = new models.users.DlgMessage(_.assign({
       _id: new ObjectId(Math.round(ts / 1000)),
       parent: dlg1._id
     }, msg_data));
 
-    dlg1.last_message = msg1._id;
-
-    let msg2 = new models.users.DlgMessage(_.assign({
+    msg2 = new models.users.DlgMessage(_.assign({
       _id: new ObjectId(Math.round(ts / 1000)),
       parent: dlg2._id
     }, msg_data));
 
-    dlg2.last_message = msg2._id;
-
     yield [ msg1.save(), msg2.save() ];
   }
+
+  let preview_data = yield parser.md2preview({ text: md, limit: 500, link2text: true });
+
+  dlg1.preview = dlg2.preview = preview_data.preview;
+  dlg1.last_message = msg1._id;
+  dlg2.last_message = msg2._id;
 });
 
 
@@ -110,7 +117,7 @@ const createDialogs = co.wrap(function* (owner) {
 module.exports = co.wrap(function* (N) {
   models   = N.models;
   settings = N.settings;
-  parser   = N.parse;
+  parser   = N.parser;
 
   // Get administrators group _id
   let adm_group_id = yield models.users.UserGroup.findIdByName('administrators');

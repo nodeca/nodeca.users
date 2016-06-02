@@ -15,6 +15,8 @@ module.exports = function (N, collectionName) {
       to           : Schema.Types.ObjectId, // opponent user _id
 
       last_message : Schema.Types.ObjectId,
+      preview      : String, // last message preview
+
       unread       : { type: Number, 'default': 0 }, // number of messages unread by owner
       exists       : { type: Boolean, 'default': true }
     },

@@ -10,19 +10,18 @@
 //     res:
 //       users: []
 //       dialogs: []
-//       previews: {}
+//       last_messages: {}
 //       settings: {}
 //       last_dialog_id
 //     data:
 //       dialogs: []
-//       previews: {}
+//       last_messages: {}
 //       settings: {}
 //
 'use strict';
 
 
-const _       = require('lodash');
-const shorten = require('./_shorten_html');
+const _ = require('lodash');
 
 
 module.exports = function (N, apiPath) {
@@ -92,22 +91,14 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Fetch messages and create preview
+  // Fetch last messages
   //
-  N.wire.after(apiPath, function* fetch_previews(env) {
+  N.wire.after(apiPath, function* fetch_last_messages(env) {
     let messages = yield N.models.users.DlgMessage.find()
                             .where('_id').in(_.map(env.data.dialogs, 'last_message'))
                             .lean(true);
 
-    env.data.previews = messages.reduce((acc, msg) => {
-      msg.shorten_html = shorten(msg.html);
-      acc[msg._id] = msg;
-
-      return acc;
-    }, {});
-
-    // Fill previews
-    env.res.previews = env.data.previews;
+    env.res.last_messages = env.data.last_messages = _.keyBy(messages, '_id');
   });
 
 
@@ -120,7 +111,7 @@ module.exports = function (N, apiPath) {
       env.data.users.push(dlg.to);
     });
 
-    _.forEach(env.data.previews, msg => {
+    _.forEach(env.data.last_messages, msg => {
       env.data.users.push(msg.user);
     });
   });

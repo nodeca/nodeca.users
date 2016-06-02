@@ -146,6 +146,8 @@ module.exports = function (N, apiPath) {
       tail:         env.data.parse_result.tail
     };
 
+    let preview_data = yield N.parser.md2preview({ text: message_data.md, limit: 500, link2text: true });
+
 
     // Create own message and update dialog
     //
@@ -155,7 +157,11 @@ module.exports = function (N, apiPath) {
 
     yield [
       own_msg.save(),
-      N.models.users.Dialog.update({ _id: own_msg.parent }, { unread: 0, last_message: own_msg._id })
+      N.models.users.Dialog.update({ _id: own_msg.parent }, {
+        unread: 0,
+        last_message: own_msg._id,
+        preview: preview_data.preview
+      })
     ];
 
 
@@ -183,7 +189,8 @@ module.exports = function (N, apiPath) {
         N.models.users.Dialog.update({ _id: opponent_msg.parent }, {
           exists:       true, // force undelete
           $inc:         { unread: 1 }, // increment unread count
-          last_message: opponent_msg._id
+          last_message: opponent_msg._id,
+          preview: preview_data.preview
         })
       ];
 
