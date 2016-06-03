@@ -2,4 +2,5 @@ cron:
   deleted_media_cleanup: 0 0 5 * * * # everyday at 5:00
   last_active_update:    0 */10 * * * * # every 10 minutes
   markers_cleanup: 0 0 1 17 * * # everyday at 1:17
-  invalidate_penalties: 0 0 */3 * * * # every 3 hour
+  invalidate_penalties: 0 0 */3 * * * # every 3 hours
+  ignore_expire: 0 1 */3 * * * # every 3 hours
