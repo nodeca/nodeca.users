@@ -54,6 +54,15 @@ module.exports = function (N, apiPath) {
     if (ignore) {
       env.res.user_is_ignored = true;
     }
+
+    let cannot_be_ignored = yield N.settings.get('cannot_be_ignored', {
+      user_id: env.data.user._id,
+      usergroup_ids: env.data.user.usergroups
+    }, {});
+
+    if (cannot_be_ignored) {
+      env.res.user_cannot_be_ignored = true;
+    }
   });
 
 

@@ -34,9 +34,23 @@ module.exports = function (N, apiPath) {
 
   // Check if user is trying to ignore herself
   //
-  N.wire.on(apiPath, function update_ignore_list(env) {
+  N.wire.on(apiPath, function prevent_ignoring_yourself(env) {
     if (String(env.user_info.user_id) === String(env.data.user._id)) {
       return { code: N.io.CLIENT_ERROR, message: env.t('err_cant_ignore_yourself') };
+    }
+  });
+
+
+  // Stop people from ignoring moderators (because it has no effect anyway)
+  //
+  N.wire.on(apiPath, function* prevent_ignoring_moderators(env) {
+    let cannot_be_ignored = yield N.settings.get('cannot_be_ignored', {
+      user_id: env.data.user._id,
+      usergroup_ids: env.data.user.usergroups
+    }, {});
+
+    if (cannot_be_ignored) {
+      throw { code: N.io.CLIENT_ERROR, message: env.t('err_cant_ignore_moderators') };
     }
   });
 

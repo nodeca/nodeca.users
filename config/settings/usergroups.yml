@@ -1,5 +1,11 @@
 setting_schemas:
   usergroup:
+    cannot_be_ignored:
+      priority: 1020
+      category_key: perm_users
+      type: boolean
+      default: false
+
     can_vote:
       priority: 1030
       category_key: perm_users

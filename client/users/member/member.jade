@@ -7,15 +7,16 @@
   header.page-head
     .pull-right.page-actions
       .page-actions__dropdown
-        button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
-          span.caret
-        ul.dropdown-menu.dropdown-menu-right
-          if !own_page
+        if self.runtime.is_member && !own_page
+          button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
+            span.caret
+          ul.dropdown-menu.dropdown-menu-right
             if !self.user_is_ignored
-              li: a(href='#'
-                data-on-click='users.member:add_ignore'
-                data-user=self.users[self.user._id]
-              )= self.t('add_ignore')
+              if !self.user_cannot_be_ignored
+                li: a(href='#'
+                  data-on-click='users.member:add_ignore'
+                  data-user=self.users[self.user._id]
+                )= self.t('add_ignore')
             else
               li: a(href='#'
                 data-on-click='users.member:remove_ignore'

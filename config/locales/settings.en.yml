@@ -36,6 +36,8 @@ i18n:
 
           cannot_receive_infractions: Cannot recieve infractions
 
+          cannot_be_ignored: Cannot be ignored
+
           can_see_infractions: Can see infractions
 
           users_can_upload_media: Can upload media

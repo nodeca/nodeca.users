@@ -4,4 +4,5 @@ en-US:
 
   add:
     err_invalid_user: Invalid user
-    err_same_user: You can't ignore yourself
+    err_cant_ignore_yourself: You can't ignore yourself
+    err_cant_ignore_moderators: You are not allowed to ignore moderators

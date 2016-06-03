@@ -55,6 +55,45 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Check if people are ignoring each other
+  //
+  N.wire.before(apiPath, function* check_ignore(env) {
+    let ignore_data;
+
+    // Check if recipient ignores us (except for moderators)
+    //
+    ignore_data = yield N.models.users.Ignore.findOne()
+                            .where('from').equals(env.data.to._id)
+                            .where('to').equals(env.user_info.user_id)
+                            .lean(true);
+
+    if (ignore_data) {
+      let cannot_be_ignored = yield env.extras.settings.fetch('cannot_be_ignored');
+
+      if (!cannot_be_ignored) {
+        throw {
+          code: N.io.CLIENT_ERROR,
+          message: env.t('err_sender_is_ignored')
+        };
+      }
+    }
+
+    // Check we ignoring recipient to make sure he can reply
+    //
+    ignore_data = yield N.models.users.Ignore.findOne()
+                            .where('to').equals(env.data.to._id)
+                            .where('from').equals(env.user_info.user_id)
+                            .lean(true);
+
+    if (ignore_data) {
+      throw {
+        code: N.io.CLIENT_ERROR,
+        message: env.t('err_recipient_is_ignored')
+      };
+    }
+  });
+
+
   // Prepare parse options
   //
   N.wire.before(apiPath, function* prepare_options(env) {

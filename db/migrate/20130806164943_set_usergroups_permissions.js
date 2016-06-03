@@ -20,6 +20,7 @@ module.exports.up = co.wrap(function* (N) {
     can_see_infractions:           { value: true },
     can_see_ip:                    { value: true },
     cannot_receive_infractions:    { value: true },
+    cannot_be_ignored:             { value: true },
     users_mod_can_add_infractions: { value: true },
 
     // same as members
