@@ -40,8 +40,8 @@ module.exports = function (N) {
       return N.models.users.Dialog.find()
                 .where('user').equals(env.user_info.user_id)
                 .where('exists').equals(true)
-                .where('last_message').gt(env.data.select_dialogs_start)
-                .sort('last_message')
+                .where('cache.last_message').gt(env.data.select_dialogs_start)
+                .sort('cache.last_message')
                 .select('_id')
                 .limit(env.data.select_dialogs_before)
                 .lean(true)
@@ -60,17 +60,17 @@ module.exports = function (N) {
         if (env.data.select_dialogs_after > 0 && env.data.select_dialogs_before > 0) {
           // if we're selecting both `after` and `before`, include current dialog
           // in the result, otherwise don't
-          query = query.where('last_message').lte(env.data.select_dialogs_start);
+          query = query.where('cache.last_message').lte(env.data.select_dialogs_start);
           count++;
         } else {
-          query = query.where('last_message').lt(env.data.select_dialogs_start);
+          query = query.where('cache.last_message').lt(env.data.select_dialogs_start);
         }
       }
 
       return query
               .where('user').equals(env.user_info.user_id)
               .where('exists').equals(true)
-              .sort('-last_message')
+              .sort('-cache.last_message')
               .select('_id')
               .limit(count)
               .lean(true)

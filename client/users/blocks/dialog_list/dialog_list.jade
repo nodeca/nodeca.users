@@ -5,7 +5,6 @@ each dialog in self.dialogs
     class=dialog.unread > 0 ? 'user-dialog-list-item__m-unread' : ''
   )
     - var to = self.users[dialog.to];
-    - var last_msg = self.last_messages[dialog.last_message];
 
       .user-dialog-list-item__aside
 
@@ -21,20 +20,20 @@ each dialog in self.dialogs
 
         a.user-dialog-list-item__link(href=self.link_to('users.dialog', {
           dialog_id: dialog._id,
-          message_id: dialog.last_message
+          message_id: dialog.cache.last_message
         }))
 
           .user-dialog-list-item__title=dialog.title
 
           .user-dialog-list-item__preview(
-            class=last_msg.user === N.runtime.user_id ? 'user-dialog-list-item__preview_m-own' : ''
+            class=dialog.cache.last_user === N.runtime.user_id ? 'user-dialog-list-item__preview_m-own' : ''
           )
             if to
               span.user-dialog-list-item__preview-nick=to.nick
-            !=dialog.preview
+            !=dialog.cache.preview
 
         .user-dialog-list-item__info
-          .user-dialog-list-item__date!=self.timetag(last_msg.ts, 'relative')
+          .user-dialog-list-item__date!=self.timetag(dialog.cache.last_ts, 'relative')
           button.user-dialog-list-item__delete.btn.btn-xs.btn-default.icon.icon-deleted(
             title=self.t('delete')
             data-dialog-id=dialog._id

@@ -25,11 +25,11 @@ module.exports = function (N, apiPath) {
                 .where('_id').equals(env.params.dialog_id)
                 .where('user').equals(env.user_info.user_id)
                 .where('exists').equals(true)
-                .select('last_message')
+                .select('cache.last_message')
                 .lean(true)
                 .then(dlg => {
                   if (dlg) {
-                    env.data.select_dialogs_start = dlg.last_message;
+                    env.data.select_dialogs_start = dlg.cache.last_message;
                   }
                 })
                 .then(() => buildDialogsIds(env));
@@ -63,7 +63,7 @@ module.exports = function (N, apiPath) {
       dialog_offset = yield N.models.users.Dialog
                                 .where('user').equals(env.user_info.user_id)
                                 .where('exists').equals(true)
-                                .where('last_message').gt(env.data.dialogs[0].last_message)
+                                .where('cache.last_message').gt(env.data.dialogs[0].cache.last_message)
                                 .count();
     }
 

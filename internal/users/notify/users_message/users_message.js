@@ -29,7 +29,7 @@ module.exports = function (N) {
 
     // Fetch last message
     let message = yield N.models.users.DlgMessage.findOne()
-                            .where('_id').equals(dialog.last_message)
+                            .where('_id').equals(dialog.cache.last_message)
                             .where('exists').equals(true)
                             .lean(true);
 

@@ -108,6 +108,19 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Parse user input to preview
+  //
+  N.wire.after(apiPath, function* parse_to_preview(env) {
+    let preview_data = yield N.parser.md2preview({
+      text: env.params.txt,
+      limit: 500,
+      link2text: true
+    });
+
+    env.data.preview = preview_data.preview;
+  });
+
+
   // Limit an amount of images in the message
   //
   N.wire.after(apiPath, function* check_images_count(env) {
@@ -161,12 +174,14 @@ module.exports = function (N, apiPath) {
       tail:         env.data.parse_result.tail
     };
 
-    let preview_data = yield N.parser.md2preview({ text: message_data.md, limit: 500, link2text: true });
-
     let dialog_data = {
       common_id: new ObjectId(),
-      title:     env.params.title,
-      preview:   preview_data.preview
+      title: env.params.title,
+      cache: {
+        last_user: message_data.user,
+        last_ts: message_data.ts,
+        preview: env.data.preview
+      }
     };
 
     let models_to_save = [];
@@ -174,7 +189,7 @@ module.exports = function (N, apiPath) {
 
     // Create own dialog and message
     //
-    let own_dialog = new N.models.users.Dialog(_.assign({
+    let own_dialog = new N.models.users.Dialog(_.merge({
       user: env.user_info.user_id,
       to:   env.data.to._id
     }, dialog_data));
@@ -183,7 +198,7 @@ module.exports = function (N, apiPath) {
       parent: own_dialog._id
     }, message_data));
 
-    own_dialog.last_message = own_msg._id;
+    own_dialog.cache.last_message = own_msg._id;
 
     models_to_save = models_to_save.concat([ own_dialog, own_msg ]);
 
@@ -194,7 +209,7 @@ module.exports = function (N, apiPath) {
     // - both users are not hellbanned
     //
     if ((env.user_info.hb && env.data.to.hb) || (!env.user_info.hb && !env.data.to.hb)) {
-      let opponent_dialog = new N.models.users.Dialog(_.assign({
+      let opponent_dialog = new N.models.users.Dialog(_.merge({
         user:   env.data.to._id,
         to:     env.user_info.user_id,
         unread: 1
@@ -204,7 +219,7 @@ module.exports = function (N, apiPath) {
         parent: opponent_dialog._id
       }, message_data));
 
-      opponent_dialog.last_message = opponent_msg._id;
+      opponent_dialog.cache.last_message = opponent_msg._id;
 
       models_to_save = models_to_save.concat([ opponent_dialog, opponent_msg ]);
 

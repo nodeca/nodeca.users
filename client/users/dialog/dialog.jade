@@ -15,7 +15,7 @@
     button.btn.btn-default.user-messages-list-reply(
       data-dialog-id=self.dialog._id
       data-dialog-title=self.dialog.title
-      data-dialog-last-message=self.dialog.last_message
+      data-dialog-last-message=self.dialog.cache.last_message
       data-on-click='users.dialog:reply'
     )
       span.icon.icon-plus

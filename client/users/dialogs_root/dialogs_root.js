@@ -321,7 +321,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
       // update scroll so it would point at the same spot as before
       $window.scrollTop($window.scrollTop() + $list.height() - old_height);
 
-      dlgListState.first_message_id = res.dialogs[0].last_message;
+      dlgListState.first_message_id = res.dialogs[0].cache.last_message;
       dlgListState.first_offset = res.pagination.chunk_offset;
       dlgListState.topic_count = res.pagination.total;
 
@@ -381,7 +381,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
         $window.scrollTop($window.scrollTop() + $list.height() - old_height);
       }
 
-      dlgListState.last_message_id = res.dialogs[res.dialogs.length - 1].last_message;
+      dlgListState.last_message_id = res.dialogs[res.dialogs.length - 1].cache.last_message;
       dlgListState.first_offset = res.pagination.chunk_offset - $('.user-dialog-list-item').length;
       dlgListState.topic_count = res.pagination.total;
 

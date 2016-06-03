@@ -10,12 +10,10 @@
 //     res:
 //       users: []
 //       dialogs: []
-//       last_messages: {}
 //       settings: {}
 //       last_dialog_id
 //     data:
 //       dialogs: []
-//       last_messages: {}
 //       settings: {}
 //
 'use strict';
@@ -83,22 +81,11 @@ module.exports = function (N, apiPath) {
     let last_dlg = yield N.models.users.Dialog.findOne()
                             .where('user').equals(env.user_info.user_id)
                             .where('exists').equals(true)
-                            .sort('last_message')
+                            .sort('cache.last_message')
                             .select('_id')
                             .lean(true);
 
     env.res.last_dialog_id = last_dlg ? last_dlg._id : null;
-  });
-
-
-  // Fetch last messages
-  //
-  N.wire.after(apiPath, function* fetch_last_messages(env) {
-    let messages = yield N.models.users.DlgMessage.find()
-                            .where('_id').in(_.map(env.data.dialogs, 'last_message'))
-                            .lean(true);
-
-    env.res.last_messages = env.data.last_messages = _.keyBy(messages, '_id');
   });
 
 
@@ -109,10 +96,7 @@ module.exports = function (N, apiPath) {
 
     env.data.dialogs.forEach(dlg => {
       env.data.users.push(dlg.to);
-    });
-
-    _.forEach(env.data.last_messages, msg => {
-      env.data.users.push(msg.user);
+      env.data.users.push(dlg.cache.last_user);
     });
   });
 };

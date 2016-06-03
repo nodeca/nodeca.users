@@ -93,6 +93,19 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Parse user input to preview
+  //
+  N.wire.after(apiPath, function* parse_to_preview(env) {
+    let preview_data = yield N.parser.md2preview({
+      text: env.params.txt,
+      limit: 500,
+      link2text: true
+    });
+
+    env.data.preview = preview_data.preview;
+  });
+
+
   // Limit an amount of images in the message
   //
   N.wire.after(apiPath, function* check_images_count(env) {
@@ -146,7 +159,13 @@ module.exports = function (N, apiPath) {
       tail:         env.data.parse_result.tail
     };
 
-    let preview_data = yield N.parser.md2preview({ text: message_data.md, limit: 500, link2text: true });
+    let dlg_update_data = {
+      cache: {
+        last_user: message_data.user,
+        last_ts: message_data.ts,
+        preview: env.data.preview
+      }
+    };
 
 
     // Create own message and update dialog
@@ -157,11 +176,10 @@ module.exports = function (N, apiPath) {
 
     yield [
       own_msg.save(),
-      N.models.users.Dialog.update({ _id: own_msg.parent }, {
+      N.models.users.Dialog.update({ _id: own_msg.parent }, _.merge({
         unread: 0,
-        last_message: own_msg._id,
-        preview: preview_data.preview
-      })
+        cache: { last_message: own_msg._id }
+      }, dlg_update_data))
     ];
 
 
@@ -186,12 +204,11 @@ module.exports = function (N, apiPath) {
 
       yield [
         opponent_msg.save(),
-        N.models.users.Dialog.update({ _id: opponent_msg.parent }, {
+        N.models.users.Dialog.update({ _id: opponent_msg.parent }, _.merge({
           exists:       true, // force undelete
           $inc:         { unread: 1 }, // increment unread count
-          last_message: opponent_msg._id,
-          preview: preview_data.preview
-        })
+          cache:        { last_message: opponent_msg._id }
+        }, dlg_update_data))
       ];
 
       let dialogs_notify = yield N.settings.get('dialogs_notify', { user_id: related_dialog.user });

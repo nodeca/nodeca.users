@@ -112,6 +112,7 @@ module.exports = function (N, apiPath) {
       message_url,
       message_text
     });
+
     let options = {
       code:           true,
       emoji:          true,
@@ -127,11 +128,18 @@ module.exports = function (N, apiPath) {
       sub:            true,
       sup:            true
     };
+
     let parse_result = yield N.parser.md2html({
       text,
       attachments: [],
       options,
       user_info: to
+    });
+
+    let preview_data = yield N.parser.md2preview({
+      text,
+      limit: 500,
+      link2text: true
     });
 
 
@@ -150,18 +158,20 @@ module.exports = function (N, apiPath) {
       tail:         parse_result.tail
     };
 
-    let preview_data = yield N.parser.md2preview({ text: message_data.md, limit: 500, link2text: true });
-
     let dialog_data = {
       common_id: new ObjectId(),
       title,
-      preview: preview_data.preview
+      cache: {
+        last_user: message_data.user,
+        last_ts: message_data.ts,
+        preview: preview_data.preview
+      }
     };
 
 
     // Create moderator dialog and message
     //
-    let from_dialog = new N.models.users.Dialog(_.assign({
+    let from_dialog = new N.models.users.Dialog(_.merge({
       user: infraction.from,
       to:   infraction.for
     }, dialog_data));
@@ -170,12 +180,12 @@ module.exports = function (N, apiPath) {
       parent: from_dialog._id
     }, message_data));
 
-    from_dialog.last_message = from_msg._id;
+    from_dialog.cache.last_message = from_msg._id;
 
 
     // Create violator dialog and message
     //
-    let to_dialog = new N.models.users.Dialog(_.assign({
+    let to_dialog = new N.models.users.Dialog(_.merge({
       user:   infraction.for,
       to:     infraction.from,
       unread: 1
@@ -185,7 +195,7 @@ module.exports = function (N, apiPath) {
       parent: to_dialog._id
     }, message_data));
 
-    to_dialog.last_message = to_msg._id;
+    to_dialog.cache.last_message = to_msg._id;
 
 
     // Save dialogs and messages
