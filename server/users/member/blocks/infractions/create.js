@@ -18,7 +18,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Validate type
+  // Additional type validation
   //
   N.wire.before(apiPath, function validate_type(env) {
     let types = _.get(N.config, 'users.infractions.types', {});
@@ -53,11 +53,18 @@ module.exports = function (N, apiPath) {
   // Save infraction
   //
   N.wire.on(apiPath, function* add_infraction(env) {
+    let reason = env.params.reason;
+
+    if (env.params.type !== 'custom') {
+      // Save fallback data (if infraction type deleted from config)
+      reason = env.t(`@users.infractions.types.${env.params.type}`);
+    }
+
     let infraction = new N.models.users.Infraction({
       from: env.user_info.user_id,
       'for': env.params.user_id,
       type: env.params.type,
-      reason: env.params.reason,
+      reason,
       points: env.params.points
     });
 

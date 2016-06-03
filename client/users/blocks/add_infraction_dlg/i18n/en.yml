@@ -2,7 +2,7 @@ en-US:
   title: Add infraction
   custom: Custom
   type: Type
-  reason: Reason (optional)
+  reason: Reason
   reason_help: Write reason of default is not enough
   points: Points
   expire: Expire (days)

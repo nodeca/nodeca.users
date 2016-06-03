@@ -53,7 +53,12 @@
                   !=self.timetag(infraction.ts, 'compact')
 
                 td.member-infractions-item__reason
-                    - var reason = infraction.reason || self.t('@users.infractions.types.' + infraction.type);
+                    - var reason;
+
+                    if self.t.exists('@users.infractions.types.' + infraction.type)
+                      - reason = self.t('@users.infractions.types.' + infraction.type)
+                    else
+                      - reason = infraction.reason
 
                     if infraction.exists
                       if info

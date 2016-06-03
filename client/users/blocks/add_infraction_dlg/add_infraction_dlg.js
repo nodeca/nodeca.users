@@ -97,9 +97,18 @@ N.wire.once(module.apiPath, function init_handlers() {
   //
   N.wire.on(module.apiPath + ':select_type', function select_infraction_type(data) {
     let type_name = data.$this.val();
+    let $reason = $('.add-infraction-reason__input');
 
-    if (!type_name || type_name === 'custom') return;
+    if (!type_name || type_name === 'custom') {
+      $reason
+        .prop('disabled', false)
+        .val('');
+      return;
+    }
 
+    $reason
+      .prop('disabled', true)
+      .val(t('@users.infractions.types.' + type_name));
     $('.add-infraction-points__input').val(types[type_name].points);
     $('.add-infraction-expire__input').val(types[type_name].expire_days);
     $('.add-infraction-points__checkbox').prop('checked', types[type_name].points === 0);
