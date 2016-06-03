@@ -1,5 +1,10 @@
-.user-settings-ignore > tbody > tr > td
-  border-top 0
+@import "nodeca.core/client/common/_variables"
+
+
+.user-settings-ignore
+  table-layout fixed
+  > tbody > tr > td
+    border-top 0
 
 .user-settings-ignore__avatar
   width 16px
@@ -8,7 +13,26 @@
   border-radius 2px
 
 .user-settings-ignore__user
+  shortable()
   width 250px
+  padding-left 0 !important
 
 .user-settings-ignore__expire
-  width 150px
+  width 130px
+  text-align right
+
+.user-settings-ignore__controls
+  width 30px
+  text-align right
+  padding-right 0 !important
+
+
+@media (max-width: screenSm - 1)
+  .user-settings-ignore__reason
+    display none
+  .user-settings-ignore__user
+    width auto
+
+@media (max-width: screenXs - 1)
+  .user-settings-ignore__expire
+    display none

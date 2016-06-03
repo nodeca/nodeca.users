@@ -19,12 +19,19 @@
         if self.users
         tr
           td.user-settings-ignore__user
-            a(href=self.link_to('users.member', { user_hid: user.hid }), title=row.expire ? self.date(row.ts, 'date') : undefined)
+            a(
+              href=self.link_to('users.member', { user_hid: user.hid })
+              title=row.expire ? self.date(row.ts, 'date') : undefined
+            )
               img.user-settings-ignore__avatar(alt=user.name)&attributes(self.avatar(user, 'sm'))
               = user.name
           td.user-settings-ignore__reason= row.reason
           td.user-settings-ignore__expire
             = row.expire ? self.t('ignored_till', { date: self.date(row.expire, 'date') }) : self.t('ignored_forever')
-            a.pull-right.btn.btn-xs.btn-default(href='#', data-on-click='users.settings.ignore:remove', data-user-id=user._id) &times;
+          td.user-settings-ignore__controls
+            button.pull-right.btn.btn-xs.btn-default.icon.icon-deleted(
+              data-on-click='users.settings.ignore:remove'
+              data-user-id=user._id
+            )
       else
         td(colspan=4)= self.t('no_ignored_users')
