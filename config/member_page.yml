@@ -1,6 +1,10 @@
 users:
   member_page:
 
+    actions:
+      ignore:
+        priority: 20
+
     menu:
       messages:
         to: users.dialogs_root

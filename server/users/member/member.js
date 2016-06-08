@@ -30,6 +30,23 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Fill actions
+  //
+  N.wire.before(apiPath, function fill_actions(env) {
+    if (env.user_info.is_guest) {
+      env.data.actions = [];
+      return;
+    }
+
+    let actions = _.map(
+      N.config.users.member_page.actions,
+      (v, k) => _.assign({ name: k }, v)
+    );
+
+    env.data.actions = _.sortBy(actions, _.property('priority'));
+  });
+
+
   // Fill penalty info
   //
   N.wire.before(apiPath, function* fill_penalty_info(env) {
@@ -60,8 +77,12 @@ module.exports = function (N, apiPath) {
       usergroup_ids: env.data.user.usergroups
     }, {});
 
-    if (cannot_be_ignored) {
-      env.res.user_cannot_be_ignored = true;
+
+    if (cannot_be_ignored || String(env.data.user._id) === env.user_info.user_id) {
+      // Remove ignore action if user can't be ignored or it's own page
+      env.data.actions = env.data.actions.filter(action => action.name !== 'ignore');
+    }
+  });
     }
   });
 
@@ -140,5 +161,17 @@ module.exports = function (N, apiPath) {
     _.set(env, 'res.blocks.bookmarks', {});
     _.set(env, 'res.blocks.friends', {});
     _.set(env, 'res.blocks.blog', {});
+  });
+
+
+  // Fill actions (blocks could change `env.data.actions`)
+  //
+  N.wire.after(apiPath, { priority: 100 }, function fill_actions(env) {
+    // If last item is divider - remove it
+    if (env.data.actions.length && env.data.actions[env.data.actions.length - 1].name === 'mod_divider') {
+      env.data.actions.pop();
+    }
+
+    env.res.actions_ordered = env.data.actions;
   });
 };
