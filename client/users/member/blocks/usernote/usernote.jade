@@ -20,11 +20,3 @@ if user
         )
 
       != self.blocks.usernote.html
-  else
-    .member-block.usernote.usernote__m-placeholder(
-      data-on-click='users.member.blocks.usernote:edit'
-      data-user-nick=user.nick
-      data-user-hid=user.hid
-      title=self.t('add_note_help')
-    )
-      span.usernote__placeholder-text.icon.icon-space-after.icon-plus= self.t('add_note')

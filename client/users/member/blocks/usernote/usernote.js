@@ -109,16 +109,15 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
         }
 
         N.io.rpc(rpc_method, rpc_params)
-          .then(response => {
+          .then(() => {
             bag.remove(draftKey)
               .catch(() => {}) // Suppress storage errors
               .then(() => {
                 N.MDEdit.hide();
 
                 if (profile_user_hid === user_hid) {
-                  // if we're still on the same page, update the note
-                  $('.usernote').replaceWith(N.runtime.render(module.apiPath, response));
-                  return;
+                  // if we're still on the same page, update
+                  return N.wire.emit('navigate.reload');
                 }
 
                 // otherwise show a completion message to user
@@ -145,8 +144,6 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
     let user_hid = data.$this.data('user-hid');
 
     return N.io.rpc('users.member.blocks.usernote.delete', { user_hid })
-      .then(response => {
-        $('.usernote').replaceWith(N.runtime.render(module.apiPath, response));
-      });
+      .then(() => N.wire.emit('navigate.reload'));
   });
 });

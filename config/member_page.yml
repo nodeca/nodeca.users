@@ -2,6 +2,8 @@ users:
   member_page:
 
     actions:
+      usernote:
+        priority: 10
       ignore:
         priority: 20
 

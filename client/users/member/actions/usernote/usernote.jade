@@ -1,0 +1,10 @@
+- var user = self.users[self.blocks.usernote.user_id]
+
+li: a(href='#'
+  data-on-click='users.member.blocks.usernote:edit'
+  data-user-nick=user.nick
+  data-user-hid=user.hid
+  data-md=self.blocks.usernote.md || ''
+  data-version=self.blocks.usernote.version
+  title=self.t('add_note_help')
+)= self.t('add_note')
