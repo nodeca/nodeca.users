@@ -6,6 +6,16 @@
 
   header.page-head
     .pull-right.page-actions
+
+      if self.settings.can_use_messages && self.settings.can_send_messages && !own_page
+        button.btn.btn-default(
+          data-on-click='users.member:message'
+          data-to=self.users[self.user._id].nick
+          title=self.t('send_message_help')
+        )
+          //- TODO: use icon-message
+          span.icon.icon-comment
+
       .page-actions__dropdown
         if self.actions_ordered.length
           button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')

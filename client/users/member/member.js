@@ -90,6 +90,13 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   });
 
 
+  // Create new dialog with user
+  //
+  N.wire.on(module.apiPath + ':message', function create_dialog(data) {
+    return N.wire.emit('users.dialog.create:begin', { to: data.$this.data('to') });
+  });
+
+
   // Page exit
   //
   N.wire.on('navigate.exit:' + module.apiPath, function page_exit() {

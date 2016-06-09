@@ -8,6 +8,7 @@ en-US:
   remove_ignore: Remove from ignore list
   ignore_added: User added to ignore list
   ignore_removed: User removed from ignore list
+  send_message_help: Send message
   menu:
     messages: Messages
     albums: Albums
