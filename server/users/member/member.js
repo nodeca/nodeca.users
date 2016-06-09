@@ -11,13 +11,13 @@ module.exports = function (N, apiPath) {
   });
 
   let blocks = _.map(
-    N.config.users.member_page.blocks,
+    N.config.users.profile_page.blocks,
     (v, k) => _.assign({ name: k }, v)
   );
   blocks = _.sortBy(blocks, _.property('priority'));
 
   let menu = _.map(
-    N.config.users.member_page.menu,
+    N.config.users.profile_page.menu,
     (v, k) => _.assign({ name: k }, v)
   );
   menu = _.sortBy(menu, _.property('priority'));
@@ -39,7 +39,7 @@ module.exports = function (N, apiPath) {
     }
 
     let actions = _.map(
-      N.config.users.member_page.actions,
+      N.config.users.profile_page.actions,
       (v, k) => _.assign({ name: k }, v)
     );
 
