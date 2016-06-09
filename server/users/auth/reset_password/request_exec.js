@@ -42,31 +42,31 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Search auth record
+  // Search for user
   //
-  N.wire.before(apiPath, function* fetch_auth_link(env) {
+  N.wire.before(apiPath, function* fetch_user(env) {
 
-    env.data.authlink = yield N.models.users.AuthLink
-                                  .findOne({ email: env.params.email, type: 'plain', exists: true })
-                                  .lean(true);
+    let user = yield N.models.users.User
+                              .findOne({ email: env.params.email })
+                              .lean(true);
 
-    if (!env.data.authlink) {
+    if (!user) {
       throw {
         code:    N.io.CLIENT_ERROR,
         message: env.t('err_email_unknown')
       };
     }
+
+    env.data.user = user;
   });
 
 
   // Create token & send email
   //
   N.wire.on(apiPath, function* create_reset_confirmation(env) {
-    let authlink = env.data.authlink;
-
     let token = yield N.models.users.TokenResetPassword.create({
-      authlink: authlink._id,
-      ip:       env.req.ip
+      user: env.data.user._id,
+      ip:   env.req.ip
     });
 
     let general_project_name = yield N.settings.get('general_project_name');
@@ -76,7 +76,7 @@ module.exports = function (N, apiPath) {
     });
 
     yield N.mailer.send({
-      to:         authlink.email,
+      to:         env.data.user.email,
       subject:    env.t('email_subject', { project_name: general_project_name }),
       text:       env.t('email_text',    { link }),
       safe_error: true

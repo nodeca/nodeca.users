@@ -56,45 +56,56 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Fetch user authlink/provider data
+  // Search for user
   //
-  N.wire.before(apiPath, function* fetch_user_auth_data(env) {
+  N.wire.before(apiPath, function* fetch_user(env) {
     let token = env.data.token;
-    let authLink = yield N.models.users.AuthLink.findById(token.authlink);
 
-    if (!authLink) {
+    env.data.user = yield N.models.users.User.findById(token.user);
+
+    if (!env.data.user) {
       throw {
         code:         N.io.CLIENT_ERROR,
-        message:      env.t('broken_token'),
+        message:      env.t('err_broken_token'),
         bad_password: false
       };
     }
-
-    env.data.authLink = authLink;
   });
 
 
   // Update password & remove used token
   //
   N.wire.on(apiPath, function* update_password(env) {
-    let authLink = env.data.authLink;
+    let authLink = yield N.models.users.AuthLink.findOne({ user: env.data.user._id, type: 'plain', exists: true });
+
+    if (!authLink) {
+      authLink = new N.models.users.AuthLink({
+        user:    env.data.user._id,
+        type:    'plain',
+        email:   env.data.user.email,
+        ip:      env.req.ip,
+        last_ip: env.req.ip
+      });
+    }
 
     yield authLink.setPass(env.params.password);
     yield authLink.save();
+
+    // keep it for logging in later on
+    env.data.authLink = authLink;
   });
 
 
-  // Remove current and all other password reset tokens for this provider.
+  // Remove current and all other password reset tokens for this user
   //
   N.wire.after(apiPath, function* remove_token(env) {
-    yield N.models.users.TokenResetPassword.remove({ authlink: env.data.authLink._id });
+    yield N.models.users.TokenResetPassword.remove({ user: env.data.user._id });
   });
 
 
   // Auto login after password change
   //
   N.wire.after(apiPath, function* autologin(env) {
-    env.data.user = yield N.models.users.User.findById(env.data.authLink.user);
     yield N.wire.emit('internal:users.login', env);
   });
 
@@ -105,7 +116,7 @@ module.exports = function (N, apiPath) {
     let general_project_name = yield N.settings.get('general_project_name');
 
     yield N.mailer.send({
-      to: env.data.authLink.email,
+      to: env.data.user.email,
       subject: env.t('email_subject', { project_name: general_project_name }),
       text: env.t('email_text', {
         nick: env.data.user.nick,

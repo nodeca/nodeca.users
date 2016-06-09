@@ -61,10 +61,10 @@ module.exports = function (N, collectionName) {
   //////////////////////////////////////////////////////////////////////////////
 
   // - plain login
-  AuthLink.index({ user: 1, type: 1, exist: 1 });
+  AuthLink.index({ user: 1, type: 1, exists: 1 });
 
   // used in login via oauth
-  AuthLink.index({ provider_user_id: 1, exist: 1 });
+  AuthLink.index({ provider_user_id: 1, exists: 1 });
 
 
   //////////////////////////////////////////////////////////////////////////////
