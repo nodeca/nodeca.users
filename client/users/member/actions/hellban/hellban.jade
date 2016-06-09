@@ -1,0 +1,10 @@
+if self.user_is_hb
+  li: a(href='#'
+    data-on-click='users.member:unhellban'
+    data-user-id=self.user._id
+  )= self.t('unhellban')
+else
+  li: a(href='#'
+    data-on-click='users.member:hellban'
+    data-user-id=self.user._id
+  )= self.t('hellban')

@@ -55,6 +55,12 @@ setting_schemas:
       default: false
 
     can_access_acp:
+      priority: 1990
+      category_key: perm_admin
+      type: boolean
+      default: false
+
+    can_hellban:
       priority: 2000
       category_key: perm_admin
       type: boolean

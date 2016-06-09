@@ -83,6 +83,20 @@ module.exports = function (N, apiPath) {
       env.data.actions = env.data.actions.filter(action => action.name !== 'ignore');
     }
   });
+
+
+  // Check user can hellban
+  //
+  N.wire.before(apiPath, function* check_hellban(env) {
+    let can_hellban = yield env.extras.settings.fetch('can_hellban');
+
+    if (can_hellban) {
+      env.res.user_is_hb = env.data.user.hb;
+    }
+
+    if (!can_hellban || String(env.data.user._id) === env.user_info.user_id) {
+      // Remove hellban action if user can't hellban or it's own page
+      env.data.actions = env.data.actions.filter(action => action.name !== 'hellban');
     }
   });
 

@@ -16,6 +16,7 @@ module.exports.up = co.wrap(function* (N) {
     can_access_acp:                { value: true },
     can_delete_infractions:        { value: true },
     can_see_deleted_users:         { value: true },
+    can_hellban:                   { value: true },
     can_see_hellbanned:            { value: true },
     can_see_infractions:           { value: true },
     can_see_ip:                    { value: true },

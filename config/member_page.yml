@@ -6,6 +6,10 @@ users:
         priority: 10
       ignore:
         priority: 20
+      mod_divider:
+        priority: 30
+      hellban:
+        priority: 40
 
     menu:
       messages:

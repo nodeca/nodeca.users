@@ -1,0 +1,7 @@
+en-US:
+  hellban: Hellban
+  unhellban: Unhelban
+  confirm_hellban: Are you sure want to hellban this user?
+  confirm_unhellban: Are you sure want to unhellban this user?
+  msg_hellban_done: User hellbanned
+  msg_unhellban_done: User unhellbanned

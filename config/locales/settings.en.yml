@@ -28,6 +28,8 @@ i18n:
 
           can_access_acp: Can access ACP
 
+          can_hellban: Can hellban users
+
           can_see_hellbanned: Show hellbanned content
 
           can_see_deleted_users: Show deleted users
