@@ -9,6 +9,7 @@ en-US:
   ignore_added: User added to ignore list
   ignore_removed: User removed from ignore list
   send_message_help: Send message
+  hellbaned: Hellbaned
   menu:
     messages: Messages
     albums: Albums

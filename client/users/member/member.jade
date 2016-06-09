@@ -29,6 +29,8 @@
       =self.t('last_active')
       | 
       != self.timetag(self.user.last_active_ts, 'compact')
+    if self.user_is_hb
+      p.page-head__descr.member__hb(itemprop='description')=self.t('hellbaned')
     if self.penalty_expire
       p.page-head__descr.member__penalty(itemprop='description')
         =self.t('blocked_until')

@@ -88,11 +88,13 @@ module.exports = function (N, apiPath) {
   // Check user can hellban
   //
   N.wire.before(apiPath, function* check_hellban(env) {
-    let can_hellban = yield env.extras.settings.fetch('can_hellban');
+    let can_see_hellbanned = yield env.extras.settings.fetch('can_see_hellbanned');
 
-    if (can_hellban) {
+    if (can_see_hellbanned) {
       env.res.user_is_hb = env.data.user.hb;
     }
+
+    let can_hellban = yield env.extras.settings.fetch('can_hellban');
 
     if (!can_hellban || String(env.data.user._id) === env.user_info.user_id) {
       // Remove hellban action if user can't hellban or it's own page

@@ -16,7 +16,6 @@ N.wire.once('navigate.done:users.member', function page_once() {
     let user_id = data.$this.data('user-id');
 
     return  N.io.rpc('users.member.actions.hellban', { user_id, hellban: true })
-      .then(() => N.wire.emit('notify', { type: 'info', message: t('msg_hellban_done') }))
       .then(() => N.wire.emit('navigate.reload'));
   });
 
@@ -34,7 +33,6 @@ N.wire.once('navigate.done:users.member', function page_once() {
     let user_id = data.$this.data('user-id');
 
     return N.io.rpc('users.member.actions.hellban', { user_id, hellban: false })
-      .then(() => N.wire.emit('notify', { type: 'info', message: t('msg_unhellban_done') }))
       .then(() => N.wire.emit('navigate.reload'));
   });
 });
