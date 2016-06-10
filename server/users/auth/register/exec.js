@@ -8,7 +8,7 @@
 const co          = require('bluebird-co').co;
 const _           = require('lodash');
 const validator   = require('is-my-json-valid');
-const recaptcha   = require('nodeca.core/lib/recaptcha.js');
+const recaptcha   = require('nodeca.core/lib/app/recaptcha');
 
 
 module.exports = function (N, apiPath) {

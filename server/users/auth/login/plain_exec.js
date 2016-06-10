@@ -5,7 +5,7 @@
 
 
 const _         = require('lodash');
-const recaptcha = require('nodeca.core/lib/recaptcha');
+const recaptcha = require('nodeca.core/lib/app/recaptcha');
 
 
 module.exports = function (N, apiPath) {

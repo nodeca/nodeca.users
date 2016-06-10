@@ -4,7 +4,7 @@
 'use strict';
 
 
-var recaptcha = require('nodeca.core/lib/recaptcha');
+var recaptcha = require('nodeca.core/lib/app/recaptcha');
 
 
 module.exports = function (N, apiPath) {

@@ -10,7 +10,7 @@
 
 var Mongoose    = require('mongoose');
 var Schema      = Mongoose.Schema;
-var createToken = require('nodeca.core/lib/random_token');
+var createToken = require('nodeca.core/lib/app/random_token');
 
 
 module.exports = function (N, collectionName) {
