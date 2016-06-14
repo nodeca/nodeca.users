@@ -17,7 +17,8 @@ describe('Reset password', function () {
 
   before(co.wrap(function* () {
     user = new TEST.N.models.users.User({
-      nick: login
+      nick: login,
+      email
     });
 
     yield user.save();
