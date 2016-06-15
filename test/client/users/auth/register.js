@@ -45,9 +45,11 @@ describe('Register', function () {
       // Register user
       .do.auth()
       .do.open(TEST.N.router.linkTo('users.auth.register.show'))
-      .do.type('#register_email', email)
-      .do.type('#register_pass', password)
-      .do.type('#register_nick', login)
+      .do.fill('form[data-on-submit="users.auth.register.exec"]', {
+        email,
+        pass: password,
+        nick: login
+      })
       .do.click('button[type="submit"]')
       .fn(waitForEmail)
 

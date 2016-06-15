@@ -66,7 +66,9 @@ describe('Reset password', function () {
       // Request password
       .do.auth()
       .do.open(TEST.N.router.linkTo('users.auth.reset_password.request_show'))
-      .do.type('#reset_password_email', email)
+      .do.fill('form[data-on-submit="users.auth.reset_password.request_exec"]', {
+        email
+      })
       .do.click('button[type="submit"]')
       .fn(waitForEmail)
 
@@ -77,15 +79,19 @@ describe('Reset password', function () {
         email_body = '';
         return url;
       })
-      .do.type('#password', password)
+      .do.fill('form[data-on-submit="users.auth.reset_password.change_exec"]', {
+        password
+      })
       .do.click('button[type="submit"]')
       .fn(waitForEmail)
 
       // Login with new password
       .do.auth()
       .do.open(TEST.N.router.linkTo('users.auth.login.show'))
-      .do.type('#login_email_or_nick', login)
-      .do.type('#login_pass', password)
+      .do.fill('form[data-on-submit="users.auth.login.plain_exec"]', {
+        email_or_nick: login,
+        pass: password
+      })
       .do.click('button[type="submit"]')
       .do.wait('.user-member-page')
       .test.url(TEST.N.router.linkTo('users.member', { user_hid: user.hid }))

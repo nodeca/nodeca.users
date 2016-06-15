@@ -27,8 +27,10 @@ describe('Albums create dialog', function () {
       // Wait for dialog
       .do.wait(500)
 
-      // Type album's name
-      .do.type('input[name="album_name"]', 'new test album!')
+      // Fill out album's name
+      .do.fill('form[data-on-submit="users.album.create:submit"]', {
+        album_name: 'new test album!'
+      })
 
       // Click "OK"
       .do.click('.modal-dialog button[type="submit"]')

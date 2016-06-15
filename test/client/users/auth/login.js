@@ -37,8 +37,10 @@ describe('Login', function () {
     TEST.browser
       .do.auth()
       .do.open(TEST.N.router.linkTo('users.auth.login.show'))
-      .do.type('#login_email_or_nick', login)
-      .do.type('#login_pass', password)
+      .do.fill('form[data-on-submit="users.auth.login.plain_exec"]', {
+        email_or_nick: login,
+        pass: password
+      })
       .do.click('button[type="submit"]')
       .do.wait('.user-member-page')
       .test.url(TEST.N.router.linkTo('users.member', { user_hid: user.hid }))
@@ -51,9 +53,11 @@ describe('Login', function () {
       .do.auth()
       .do.open(TEST.N.router.linkTo('users.albums_root', { user_hid: user.hid }))
       .do.click('li[data-api-path="users.auth.login"] a')
-      .do.wait('#login_email_or_nick')
-      .do.type('#login_email_or_nick', login)
-      .do.type('#login_pass', password)
+      .do.wait('form[data-on-submit="users.auth.login.plain_exec"]')
+      .do.fill('form[data-on-submit="users.auth.login.plain_exec"]', {
+        email_or_nick: login,
+        pass: password
+      })
       .do.click('button[type="submit"]')
       .do.wait('.user-albumlist')
       .test.url(TEST.N.router.linkTo('users.albums_root', { user_hid: user.hid }))
@@ -65,9 +69,11 @@ describe('Login', function () {
     TEST.browser
       .do.auth()
       .do.open(TEST.N.router.linkTo('users.tracker'))
-      .do.wait('#login_email_or_nick')
-      .do.type('#login_email_or_nick', login)
-      .do.type('#login_pass', password)
+      .do.wait('form[data-on-submit="users.auth.login.plain_exec"]')
+      .do.fill('form[data-on-submit="users.auth.login.plain_exec"]', {
+        email_or_nick: login,
+        pass: password
+      })
       .do.click('button[type="submit"]')
       .do.wait('.user-tracker')
       .test.url(TEST.N.router.linkTo('users.tracker'))
