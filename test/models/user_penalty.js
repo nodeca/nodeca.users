@@ -43,7 +43,7 @@ describe('UserPenalty', function () {
 
     let usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
 
-    assert.deepStrictEqual(usergroups, user.usergroups);
+    assert.deepStrictEqual(usergroups.toObject(), user.usergroups.toObject());
 
     yield (new TEST.N.models.users.Infraction({
       from: user._id,
@@ -57,7 +57,7 @@ describe('UserPenalty', function () {
 
     usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
 
-    assert.deepStrictEqual(usergroups, [ user.usergroups[0], violators_group_id ]);
+    assert.deepStrictEqual(usergroups.toObject(), [ user.usergroups[0], violators_group_id ]);
 
     yield (new TEST.N.models.users.Infraction({
       from: user._id,
@@ -71,7 +71,7 @@ describe('UserPenalty', function () {
 
     usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
 
-    assert.deepStrictEqual(usergroups, [ user.usergroups[0], violators_group_id ]);
+    assert.deepStrictEqual(usergroups.toObject(), [ user.usergroups[0], violators_group_id ]);
   }));
 
 
@@ -97,7 +97,7 @@ describe('UserPenalty', function () {
 
     let usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
 
-    assert.deepStrictEqual(usergroups, [ banned_group_id ]);
+    assert.deepStrictEqual(usergroups.toObject(), [ banned_group_id ]);
   }));
 
 
@@ -122,7 +122,7 @@ describe('UserPenalty', function () {
 
     let usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
 
-    assert.deepStrictEqual(usergroups, [ user.usergroups[0], violators_group_id ]);
+    assert.deepStrictEqual(usergroups.toObject(), [ user.usergroups[0], violators_group_id ]);
 
     // Set expire now
     yield TEST.N.models.users.UserPenalty.update(
@@ -135,7 +135,7 @@ describe('UserPenalty', function () {
     yield Promise.delay(600);
 
     usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
-    assert.deepStrictEqual(usergroups, [ user.usergroups[0] ]);
+    assert.deepStrictEqual(usergroups.toObject(), [ user.usergroups[0] ]);
   }));
 
 
