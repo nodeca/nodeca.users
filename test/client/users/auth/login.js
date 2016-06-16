@@ -44,7 +44,7 @@ describe('Login', function () {
       .do.click('button[type="submit"]')
       .do.wait('.user-member-page')
       .test.url(TEST.N.router.linkTo('users.member', { user_hid: user.hid }))
-      .run(true, done);
+      .run(done);
   });
 
 
@@ -61,7 +61,7 @@ describe('Login', function () {
       .do.click('button[type="submit"]')
       .do.wait('.user-albumlist')
       .test.url(TEST.N.router.linkTo('users.albums_root', { user_hid: user.hid }))
-      .run(true, done);
+      .run(done);
   });
 
 
@@ -77,6 +77,6 @@ describe('Login', function () {
       .do.click('button[type="submit"]')
       .do.wait('.user-tracker')
       .test.url(TEST.N.router.linkTo('users.tracker'))
-      .run(true, done);
+      .run(done);
   });
 });

@@ -56,7 +56,7 @@ describe('Register', function () {
       // Confirm account
       .do.open(() => /http:\/\/localhost:3005\/[^\s]+/.exec(email_body)[0])
       .test.url(TEST.N.router.linkTo('users.auth.register.activate_done'))
-      .run(true, done);
+      .run(done);
   });
 
 
