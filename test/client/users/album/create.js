@@ -43,6 +43,7 @@ describe('Albums create dialog', function () {
       // Check that album created
       .test.text('.user-albumlist li:last-child .thumb-caption__line:first-child', 'new test album!')
 
+      .close()
       // Run test
       .run(done);
   });

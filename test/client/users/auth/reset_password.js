@@ -95,6 +95,7 @@ describe('Reset password', function () {
       .do.click('button[type="submit"]')
       .do.wait('.user-member-page')
       .test.url(TEST.N.router.linkTo('users.member', { user_hid: user.hid }))
+      .close()
       .run(done);
   });
 

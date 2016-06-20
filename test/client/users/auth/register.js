@@ -45,6 +45,7 @@ describe('Register', function () {
       // Register user
       .do.auth()
       .do.open(TEST.N.router.linkTo('users.auth.register.show'))
+      .wait(500)
       .do.fill('form[data-on-submit="users.auth.register.exec"]', {
         email,
         pass: password,
@@ -56,6 +57,7 @@ describe('Register', function () {
       // Confirm account
       .do.open(() => /http:\/\/localhost:3005\/[^\s]+/.exec(email_body)[0])
       .test.url(TEST.N.router.linkTo('users.auth.register.activate_done'))
+      .close()
       .run(done);
   });
 

@@ -33,6 +33,7 @@ describe('ACP edit user group', function () {
       .do.click('#setting_can_see_deleted_users')
       .do.click('button.btn-primary[type="submit"]')
       .do.wait('.alert-info')
+      .close()
       .run(true, done);
   });
 });
