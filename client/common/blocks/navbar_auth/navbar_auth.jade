@@ -1,5 +1,5 @@
 if self.runtime.is_member
-  li.dropdown
+  li.nav-item.dropdown
     a.dropdown-toggle(href='#', data-toggle='dropdown')
       img.navbar-auth__avatar()&attributes(self.avatar(self.runtime.user_id, 'md'))
     ul.dropdown-menu
@@ -12,8 +12,8 @@ if self.runtime.is_member
       li: a(href='#', data-on-click='common.blocks.logout')= self.t('logout')
 else
   //- data-api-path used to highlight curent navigation
-  li(data-api-path='users.auth.login')
-    a(href=self.link_to('users.auth.login.show'))= self.t('login')
+  li.nav-item(data-api-path='users.auth.login')
+    a.nav-link(href=self.link_to('users.auth.login.show'))= self.t('login')
 
-  li(data-api-path='users.auth.register')
-    a(href=self.link_to('users.auth.register.show'))= self.t('register')
+  li.nav-item(data-api-path='users.auth.register')
+    a.nav-link(href=self.link_to('users.auth.register.show'))= self.t('register')
