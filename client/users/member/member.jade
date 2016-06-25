@@ -4,58 +4,60 @@
 #content.user-member-page
   //- != self.partial('@users.blocks.breadcrumbs')
 
-  header.page-head
-    .pull-right.page-actions
-
-      if self.settings.can_use_messages && self.settings.can_send_messages && !own_page
-        button.btn.btn-default(
-          data-on-click='users.member:message'
-          data-to=self.users[self.user._id].nick
-          title=self.t('send_message_help')
-        )
-          //- TODO: use icon-message
-          span.icon.icon-comment
-
-      .page-actions__dropdown
-        if self.actions_ordered.length
-          button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
-            span.caret
-          ul.dropdown-menu.dropdown-menu-right
-            each item in self.actions_ordered
-              !=self.partial('@users.member.actions.' + item.name)
-
-    h1.page-head__title(itemprop='name')= self.users[self.user._id].name
-    p.page-head__descr.member__last-visit(itemprop='description')
-      =self.t('last_active')
-      | 
-      != self.timetag(self.user.last_active_ts, 'compact')
-    if self.user_is_hb
-      p.page-head__descr.member__hb(itemprop='description')=self.t('hellbaned')
-    if self.penalty_expire
-      p.page-head__descr.member__penalty(itemprop='description')
-        =self.t('blocked_until')
+  .layout__container.container-fluid
+    header.page-head
+      h1.page-head__title(itemprop='name')= self.users[self.user._id].name
+      p.page-head__descr.member__last-visit(itemprop='description')
+        =self.t('last_active')
         | 
-        !=self.timetag(self.penalty_expire, 'compact')
+        != self.timetag(self.user.last_active_ts, 'compact')
+      if self.user_is_hb
+        p.page-head__descr.member__hb(itemprop='description')=self.t('hellbaned')
+      if self.penalty_expire
+        p.page-head__descr.member__penalty(itemprop='description')
+          =self.t('blocked_until')
+          | 
+          !=self.timetag(self.penalty_expire, 'compact')
 
-  - var modifier = self.avatar_exists ? 'member-layout__m-avatar-exists' : '';
-  .member-layout(class=modifier)
-    .member-sidebar
-      .member-avatar
-        if own_page
-          a.member-avatar__delete.btn.btn-xs.btn-default(href='#' data-on-click='users.member:delete_avatar').icon.icon-cancel
-          a.member-avatar__link(href='#' data-on-click='users.member:change_avatar')
+    - var modifier = self.avatar_exists ? 'member-layout__m-avatar-exists' : '';
+    .member-layout(class=modifier)
+      .member-sidebar
+        .member-avatar
+          if own_page
+            a.member-avatar__delete.btn.btn-xs.btn-secondary(href='#' data-on-click='users.member:delete_avatar').icon.icon-cancel
+            a.member-avatar__link(href='#' data-on-click='users.member:change_avatar')
+              img.member-avatar__image()&attributes(self.avatar(self.user._id, self.users[self.user._id]))
+              .member-avatar__caption= self.t('change_avatar')
+          else
             img.member-avatar__image()&attributes(self.avatar(self.user._id, self.users[self.user._id]))
-            .member-avatar__caption= self.t('change_avatar')
-        else
-          img.member-avatar__image()&attributes(self.avatar(self.user._id, self.users[self.user._id]))
 
-      if own_page
-        ul.member-sidebar__menu
-          each item in self.menu_ordered
-            li.member-sidebar__menu-item
-              a.member-sidebar__menu-link(href=self.link_to(item.to, { user_hid: self.user.hid }))= self.t('menu.' + item.name)
+        if own_page
+          ul.member-sidebar__menu
+            each item in self.menu_ordered
+              li.member-sidebar__menu-item
+                a.member-sidebar__menu-link(href=self.link_to(item.to, { user_hid: self.user.hid }))= self.t('menu.' + item.name)
 
-    .member-blocks
-      each block in self.blocks_ordered
-        if (self.blocks[block.name])
-          != self.partial('@users.member.blocks.' + block.name)
+      .member-blocks
+        .page-actions
+
+          .page-actions__dropdown
+            if self.actions_ordered.length
+              button.btn.btn-secondary.btn-square.icon.icon-dropdown.dropdown-toggle(
+                type='button'
+                data-toggle='dropdown'
+              )
+              .dropdown-menu.dropdown-menu-left
+                each item in self.actions_ordered
+                  !=self.partial('@users.member.actions.' + item.name)
+
+          if self.settings.can_use_messages && self.settings.can_send_messages && !own_page
+            button.btn.btn-secondary.btn-square.icon.icon-comment(
+              type='button'
+              data-on-click='users.member:message'
+              data-to=self.users[self.user._id].nick
+              title=self.t('send_message_help')
+            )
+
+        each block in self.blocks_ordered
+          if (self.blocks[block.name])
+            != self.partial('@users.member.blocks.' + block.name)

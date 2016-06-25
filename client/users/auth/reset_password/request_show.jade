@@ -4,7 +4,7 @@
 
       .panel-heading
         .panel-title #{self.head.title}
-          .pull-right: small: a(href=self.link_to('users.auth.login.show'))= self.t('login')
+          .pull-xs-right: small: a(href=self.link_to('users.auth.login.show'))= self.t('login')
 
       form.panel-body(data-on-submit='users.auth.reset_password.request_exec')
 

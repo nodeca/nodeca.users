@@ -12,7 +12,7 @@
       p.page-head__descr(itemprop='description')=self.users[self.dialog.to].name
 
   if self.settings.can_send_messages
-    button.btn.btn-default.user-messages-list-reply(
+    button.btn.btn-secondary.user-messages-list-reply(
       data-dialog-id=self.dialog._id
       data-dialog-title=self.dialog.title
       data-dialog-last-message=self.dialog.cache.last_message

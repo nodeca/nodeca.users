@@ -2,7 +2,7 @@
 
   .member-block__header
     .member-block__header-title.h2
-      .member-block__header-text.pull-left
+      .member-block__header-text.pull-xs-left
         - var points = 0;
         each infraction in self.blocks.infractions.list
           if infraction.exists && (!infraction.expire || (new Date(infraction.expire).getTime() > Date.now()))
@@ -11,14 +11,14 @@
         =self.t('title', points)
         |  
         if self.blocks.infractions.settings.users_mod_can_add_infractions && !self.blocks.infractions.settings.cannot_receive_infractions
-          button.btn.btn-default.btn-xs.icon.icon-plus(
+          button.btn.btn-secondary.btn-xs.icon.icon-plus(
             title=self.t('add')
             data-on-click='users.member.blocks.infractions:add'
             data-user-id=self.user._id
           )
       a.member-block__header-collapser(href='#member-infractions-info', data-toggle='collapse')
-        .pull-right.icon.icon-collapse
-        .pull-right.icon.icon-expand
+        .pull-xs-right.icon.icon-collapse
+        .pull-xs-right.icon.icon-expand
 
   #member-infractions-info.member-block__inner.collapse.in
     if self.blocks.infractions.list.length
@@ -96,6 +96,6 @@
                       data-on-click='users.member.blocks.infractions:delete'
                       data-infraction-id=infraction._id
                       title=self.t('delete')
-                    ).member-infractions-item__remove.pull-right: span.icon.icon-deleted
+                    ).member-infractions-item__remove.pull-xs-right: span.icon.icon-deleted
 
     .clearfix

@@ -5,10 +5,10 @@
   != self.partial('@users.blocks.breadcrumbs')
 
   .breadcrumbs
-    a.btn.btn-default.btn-sm(href=self.link_to('users.album', { 'user_hid': self.user_hid }))
+    a.btn.btn-secondary.btn-sm(href=self.link_to('users.album', { 'user_hid': self.user_hid }))
       = self.t('all_media')
     if own_page
-      button.btn.btn-default.btn-sm.icon.icon-plus(
+      button.btn.btn-secondary.btn-sm.icon.icon-plus(
         data-on-click='users.albums_root.create_album'
         title=self.t('create_album')
       )
@@ -16,7 +16,7 @@
 
   //- header.page-head
     h1.page-head__title(itemprop='name')= self.t('title')
-    //-p.page-head__descr.hidden-xs(itemprop='description')
+    //-p.page-head__descr.hidden-xs-down(itemprop='description')
 
   ul.user-albumlist.thumb-grid.thumb-grid__m-responsive
     != self.partial('@users.albums_root.list')

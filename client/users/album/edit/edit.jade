@@ -48,7 +48,7 @@
                   )
 
               .album-edit__no-cover
-                button.btn.btn-default.btn-link(
+                button.btn.btn-secondary.btn-link(
                   data-on-click='users.album.edit:select_cover'
                 )= self.t('cover_select')
                 p.help-block= self.t('cover_input_desc')
@@ -60,7 +60,7 @@
               )
 
           button.btn.btn-primary(type='submit')= self.t('save')
-          button.btn.btn-link.pull-right(
+          button.btn.btn-link.pull-xs-right(
             type='button'
             data-on-click='users.album.edit:delete'
             data-album-id=self.album._id

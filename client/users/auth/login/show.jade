@@ -6,7 +6,7 @@
 
       .panel-heading
         h4.panel-title= self.t('title')
-          .pull-right: small: a(href=self.link_to('users.auth.register.show'))= self.t('register')
+          .pull-xs-right: small: a(href=self.link_to('users.auth.register.show'))= self.t('register')
 
       form.panel-body(data-on-submit='users.auth.login.plain_exec')
         //- Message to show on error

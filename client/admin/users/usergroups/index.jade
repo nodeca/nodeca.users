@@ -4,7 +4,7 @@
   .main
     != self.partial('@admin.core.blocks.breadcrumbs')
 
-    .pull-right
+    .pull-xs-right
       a.btn.btn-primary(href=self.link_to('admin.users.usergroups.new'))
         = self.t('new')
 
@@ -27,7 +27,7 @@
             a(href=self.link_to('admin.users.members.search'))= self.members_count[group._id]
           td
             unless group.is_protected
-              a.pull-right(
+              a.pull-xs-right(
                 data-on-click='admin.users.usergroups.destroy',
                 data-usergroup-id=group._id,
                 data-usergroup-name=group.short_name

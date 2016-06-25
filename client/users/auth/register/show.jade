@@ -9,7 +9,7 @@ if (self.email)
 
       .panel-heading
         h4.panel-title #{self.head.title}
-          .pull-right: small: a(href=self.link_to('users.auth.login.show')) #{self.t('login')}
+          .pull-xs-right: small: a(href=self.link_to('users.auth.login.show')) #{self.t('login')}
 
 
       form.panel-body(data-on-submit='users.auth.register.exec')

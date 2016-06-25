@@ -13,7 +13,7 @@ each media in self.media
 
         .thumb-caption.thumb-caption__m-secondary
           if media.comments_count > 0
-            .pull-right.icon.icon-space-after.icon-comment= media.comments_count
+            .pull-xs-right.icon.icon-space-after.icon-comment= media.comments_count
           .thumb-caption__line
             != self.timetag(media.ts, 'relative')
 
@@ -25,7 +25,7 @@ each media in self.media
 
           .thumb-caption.thumb-caption__m-secondary
             if media.comments_count > 0
-              .pull-right.icon.icon-space-after.icon-comment= media.comments_count
+              .pull-xs-right.icon.icon-space-after.icon-comment= media.comments_count
             .thumb-caption__line
               != self.timetag(media.ts, 'relative')
 
@@ -36,6 +36,6 @@ each media in self.media
 
         .thumb-caption.thumb-caption__m-secondary
           if media.comments_count > 0
-            .pull-right.icon.icon-space-after.icon-comment= media.comments_count
+            .pull-xs-right.icon.icon-space-after.icon-comment= media.comments_count
           .thumb-caption__line
             != self.timetag(media.ts, 'relative')

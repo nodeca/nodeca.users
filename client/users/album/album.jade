@@ -6,7 +6,7 @@
 
   .breadcrumbs
     if own_page && self.album && !self.album.default
-      a.btn.btn-default.btn-sm.icon.icon-edit(
+      a.btn.btn-secondary.btn-sm.icon.icon-edit(
         href=self.link_to('users.album.edit', { 'user_hid': self.user_hid, 'album_id': self.album._id })
         title=self.t('edit')
       )
@@ -19,13 +19,13 @@
 
   if own_page && self.album
     .user-album-upload.panel.panel-default(data-on-dragdrop='users.album:dd_area')
-      .pull-right
+      .pull-xs-right
         //- Should 'click' file input in context of current action
-        button.btn.btn-default(
+        button.btn.btn-secondary(
           onClick='document.getElementById("user-album-upload__files").click()'
         )= self.t('select_files')
 
-        button.btn.btn-default(
+        button.btn.btn-secondary(
           data-on-click='users.album:add_medialink'
           data-providers=self.medialink_providers
         )= self.t('add_medialink')

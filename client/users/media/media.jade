@@ -7,13 +7,13 @@
 
   .breadcrumbs.hidden-deleted
     if own_page
-      a.btn.btn-default.btn-sm.icon.icon-edit(
+      a.btn.btn-secondary.btn-sm.icon.icon-edit(
         data-on-click='users.media:edit'
         title=self.t('edit')
       )
 
   //-header.page-head.albums-head
-    p.page-head__descr.hidden-xs(itemprop='description')
+    p.page-head__descr.hidden-xs-down(itemprop='description')
 
   .user-media
     - var mType = self.media.type & ~mTypes.MASK_DELETED
@@ -32,9 +32,9 @@
           = self.media.file_name
 
   if self.previous
-    a.user-media-root__prev.btn.btn-default(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.previous }))= self.t('prev')
+    a.user-media-root__prev.btn.btn-secondary(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.previous }))= self.t('prev')
   if self.next
-    a.user-media-root__next.btn.btn-default(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.next }))= self.t('next')
+    a.user-media-root__next.btn.btn-secondary(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.next }))= self.t('next')
 
   .hidden-deleted
     if own_page

@@ -1,10 +1,12 @@
 if !self.user_is_ignored
-  li: a(href='#'
+  button.dropdown-item(
+    type='button'
     data-on-click='users.member:add_ignore'
     data-user=self.users[self.user._id]
   )= self.t('add_ignore')
 else
-  li: a(href='#'
+  button.dropdown-item(
+    type='button'
     data-on-click='users.member:remove_ignore'
     data-user-id=self.user._id
   )= self.t('remove_ignore')

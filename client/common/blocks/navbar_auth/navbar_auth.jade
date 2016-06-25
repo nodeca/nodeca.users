@@ -1,15 +1,28 @@
 if self.runtime.is_member
+
+  - var menu_rnd_id = 'rnd' + String(Math.random()).slice(2, 10)
+
   li.nav-item.dropdown
-    a.dropdown-toggle(href='#', data-toggle='dropdown')
+    a.dropdown-toggle(
+      href='#'
+      id=menu_rnd_id
+      aria-haspopup='true'
+      aria-expanded='false'
+      data-toggle='dropdown'
+    )
       img.navbar-auth__avatar()&attributes(self.avatar(self.runtime.user_id, 'md'))
-    ul.dropdown-menu
-      li: a(href=self.link_to('users.member', { user_hid: self.runtime.user_hid }))=self.t('profile')
 
-      - if (self.settings.can_access_acp)
-        li: a(href=self.link_to('admin.core.dashboard'), target='_blank')= self.t('admin')
+    .dropdown-menu.dropdown-menu-right(aria-labelledby=menu_rnd_id)
+      a.dropdown-item(href=self.link_to('users.member', { user_hid: self.runtime.user_hid }))=self.t('profile')
 
-      li.divider
-      li: a(href='#', data-on-click='common.blocks.logout')= self.t('logout')
+      if self.settings.can_access_acp
+        a.dropdown-item(href=self.link_to('admin.core.dashboard'), target='_blank')= self.t('admin')
+
+      .dropdown-divider
+      button.dropdown-item(
+        type='button'
+        data-on-click='common.blocks.logout'
+      )= self.t('logout')
 else
   //- data-api-path used to highlight curent navigation
   li.nav-item(data-api-path='users.auth.login')

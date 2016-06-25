@@ -169,7 +169,7 @@ N.wire.on(module.apiPath, function show_add_infraction_dlg(options) {
   return new Promise((resolve, reject) => {
     $dialog
       .on('shown.bs.modal', () => {
-        $dialog.find('.btn-default').focus();
+        $dialog.find('.btn-secondary').focus();
       })
       .on('hidden.bs.modal', () => {
         // When dialog closes - remove it from body and free resources

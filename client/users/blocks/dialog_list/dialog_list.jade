@@ -34,7 +34,7 @@ each dialog in self.dialogs
 
         .user-dialog-list-item__info
           .user-dialog-list-item__date!=self.timetag(dialog.cache.last_ts, 'relative')
-          button.user-dialog-list-item__delete.btn.btn-xs.btn-default.icon.icon-deleted(
+          button.user-dialog-list-item__delete.btn.btn-xs.btn-secondary.icon.icon-deleted(
             title=self.t('delete')
             data-dialog-id=dialog._id
             data-on-click='users.dialogs_root:delete_dialog'
