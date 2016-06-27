@@ -4,28 +4,31 @@
 - self.add_raw_data('last_message_id', self.dialogs.length ? self.dialogs[self.dialogs.length - 1].cache.last_message : null);
 
 #content
-  !=self.partial('@users.blocks.breadcrumbs')
+  nav.breadcrumbs-container
+    .layout__container.container-fluid
+      !=self.partial('@users.blocks.breadcrumbs')
 
-  .breadcrumbs
-    if self.settings.can_send_messages
-      button.btn.btn-secondary.btn-sm.icon.icon-plus(
-        title=self.t('new_message')
-        data-on-click='users.dialogs_root:create_message'
-      )
+      .breadcrumbs-controls
+        if self.settings.can_send_messages
+          button.btn.btn-secondary.btn-sm.icon.icon-plus(
+            title=self.t('new_message')
+            data-on-click='users.dialogs_root:create_message'
+          )
 
-  if self.dialogs.length === 0
-    .user-dialog-list-no-items=self.t('no_messages')
+  .layout__container.container-fluid
+    if self.dialogs.length === 0
+      .user-dialog-list-no-items=self.t('no_messages')
 
-  else
-    .user-dialog-list._affix(
-      data-affix-top={
-        offset: 500,
-        wire_above: 'users.dialogs_root:load_prev',
-        throttle: 100
-      }
-      data-affix-bottom={
-        offset: 500,
-        wire_below: 'users.dialogs_root:load_next',
-        throttle: 100
-      }
-    )!=self.partial('@users.blocks.dialog_list')
+    else
+      .user-dialog-list._affix(
+        data-affix-top={
+          offset: 500,
+          wire_above: 'users.dialogs_root:load_prev',
+          throttle: 100
+        }
+        data-affix-bottom={
+          offset: 500,
+          wire_below: 'users.dialogs_root:load_next',
+          throttle: 100
+        }
+      )!=self.partial('@users.blocks.dialog_list')

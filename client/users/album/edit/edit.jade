@@ -1,68 +1,70 @@
 - self.add_raw_data('profile_tab', true)
 
 #content
-  != self.partial('@users.blocks.breadcrumbs')
+  nav.breadcrumbs-container
+    .layout__container.container-fluid
+      != self.partial('@users.blocks.breadcrumbs')
 
-  .row
-    .col-sm-8.col-sm-offset-2
-      .panel.panel-default
+  .layout__container.container-fluid
+    .row
+      .col-sm-8.col-sm-offset-2
+        .panel.panel-default
 
-        .panel-heading
-          .panel-title= self.head.title
+          .panel-heading
+            .panel-title= self.head.title
 
-        form.panel-body(data-on-submit='users.album.edit:save')
-          input(
-            type='hidden'
-            value=self.album._id
-            name='album_id'
-          )
-
-          .form-group
-            label= self.t('title_input_name')
-            input.form-control(
-              name='title'
-              id='album-edit__title'
-              placeholder=self.t('title_input_desc')
-              value=self.album.title
+          form.panel-body(data-on-submit='users.album.edit:save')
+            input(
+              type='hidden'
+              value=self.album._id
+              name='album_id'
             )
 
-          .form-group
-            label= self.t('description_input_name')
-            textarea.form-control(
-              name='description'
-              placeholder=self.t('description_input_desc')
-            )= self.album.description
-
-          .form-group
-            label= self.t('cover_input_name')
-            - var state_class = self.album.cover_id ? 'has-cover' : '';
-            #album-edit__cover(class=state_class)
-
-              .album-edit__cover
-                a.thumb.thumb__m-sm(
-                  href='#'
-                  data-on-click='users.album.edit:select_cover'
-                )
-                  img#album-edit__cover-img.thumb__image(
-                    src=self.album.cover_id ? self.link_to('core.gridfs', { 'bucket': self.album.cover_id + '_sm' }) : ''
-                  )
-
-              .album-edit__no-cover
-                button.btn.btn-secondary.btn-link(
-                  data-on-click='users.album.edit:select_cover'
-                )= self.t('cover_select')
-                p.help-block= self.t('cover_input_desc')
-
-              input(
-                type='hidden'
-                value=self.album.cover_id || ''
-                name='cover_id'
+            .form-group
+              label= self.t('title_input_name')
+              input.form-control(
+                name='title'
+                id='album-edit__title'
+                placeholder=self.t('title_input_desc')
+                value=self.album.title
               )
 
-          button.btn.btn-primary(type='submit')= self.t('save')
-          button.btn.btn-link.pull-xs-right(
-            type='button'
-            data-on-click='users.album.edit:delete'
-            data-album-id=self.album._id
-          )= self.t('delete')
+            .form-group
+              label= self.t('description_input_name')
+              textarea.form-control(
+                name='description'
+                placeholder=self.t('description_input_desc')
+              )= self.album.description
 
+            .form-group
+              label= self.t('cover_input_name')
+              - var state_class = self.album.cover_id ? 'has-cover' : '';
+              #album-edit__cover(class=state_class)
+
+                .album-edit__cover
+                  a.thumb.thumb__m-sm(
+                    href='#'
+                    data-on-click='users.album.edit:select_cover'
+                  )
+                    img#album-edit__cover-img.thumb__image(
+                      src=self.album.cover_id ? self.link_to('core.gridfs', { 'bucket': self.album.cover_id + '_sm' }) : ''
+                    )
+
+                .album-edit__no-cover
+                  button.btn.btn-secondary.btn-link(
+                    data-on-click='users.album.edit:select_cover'
+                  )= self.t('cover_select')
+                  p.help-block= self.t('cover_input_desc')
+
+                input(
+                  type='hidden'
+                  value=self.album.cover_id || ''
+                  name='cover_id'
+                )
+
+            button.btn.btn-primary(type='submit')= self.t('save')
+            button.btn.btn-link.pull-xs-right(
+              type='button'
+              data-on-click='users.album.edit:delete'
+              data-album-id=self.album._id
+            )= self.t('delete')

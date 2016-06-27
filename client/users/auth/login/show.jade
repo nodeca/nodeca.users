@@ -1,45 +1,46 @@
 - self.add_raw_data('action', 'login')
 
 #content.row
-  .col-md-6.col-md-offset-3.col-sm-8.col-sm-offset-2
-    .panel.panel-default
+  .layout__container.container-fluid
+    .col-md-6.col-md-offset-3.col-sm-8.col-sm-offset-2
+      .panel.panel-default
 
-      .panel-heading
-        h4.panel-title= self.t('title')
-          .pull-xs-right: small: a(href=self.link_to('users.auth.register.show'))= self.t('register')
+        .panel-heading
+          h4.panel-title= self.t('title')
+            .pull-xs-right: small: a(href=self.link_to('users.auth.register.show'))= self.t('register')
 
-      form.panel-body(data-on-submit='users.auth.login.plain_exec')
-        //- Message to show on error
-        .form-group(data-bind='visible: message', style='display: none')
-          p.text-danger(data-bind='text: message')
+        form.panel-body(data-on-submit='users.auth.login.plain_exec')
+          //- Message to show on error
+          .form-group(data-bind='visible: message', style='display: none')
+            p.text-danger(data-bind='text: message')
 
-        if self.oauth && Object.keys(self.oauth).length
+          if self.oauth && Object.keys(self.oauth).length
+            .form-group
+              != self.partial('@common.blocks.oauth_buttons')
+              .help-block
+                =self.t('oauth_info')
+
           .form-group
-            != self.partial('@common.blocks.oauth_buttons')
-            .help-block
-              =self.t('oauth_info')
+            label(for='login_email_or_nick')= self.t('email')
+            input.form-control(
+              id='login_email_or_nick'
+              name='email_or_nick'
+              type='text'
+              placeholder=self.t('email_desc')
+            )
 
-        .form-group
-          label(for='login_email_or_nick')= self.t('email')
-          input.form-control(
-            id='login_email_or_nick'
-            name='email_or_nick'
-            type='text'
-            placeholder=self.t('email_desc')
-          )
+          .form-group
+            label(for='login_pass')= self.t('password')
+            input.form-control(
+              id='login_pass'
+              name='pass'
+              type='password'
+              placeholder=self.t('password_desc')
+            )
 
-        .form-group
-          label(for='login_pass')= self.t('password')
-          input.form-control(
-            id='login_pass'
-            name='pass'
-            type='password'
-            placeholder=self.t('password_desc')
-          )
+          // ko with: recaptcha_response_field
+          != self.partial('@common.blocks.recaptcha')
+          // /ko
 
-        // ko with: recaptcha_response_field
-        != self.partial('@common.blocks.recaptcha')
-        // /ko
-
-        button.btn.btn-primary(type='submit')= self.t('enter')
-        a.btn.btn-link(href=self.link_to('users.auth.reset_password.request_show'))= self.t('forgot')
+          button.btn.btn-primary(type='submit')= self.t('enter')
+          a.btn.btn-link(href=self.link_to('users.auth.reset_password.request_show'))= self.t('forgot')

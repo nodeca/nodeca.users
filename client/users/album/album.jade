@@ -2,66 +2,69 @@
 - self.add_raw_data('profile_tab', own_page)
 
 #content.user-album-root(class=self.media.length === 0 ? 'no-files' : '')
-  != self.partial('@users.blocks.breadcrumbs')
+  nav.breadcrumbs-container
+    .layout__container.container-fluid
+      != self.partial('@users.blocks.breadcrumbs')
 
-  .breadcrumbs
-    if own_page && self.album && !self.album.default
-      a.btn.btn-secondary.btn-sm.icon.icon-edit(
-        href=self.link_to('users.album.edit', { 'user_hid': self.user_hid, 'album_id': self.album._id })
-        title=self.t('edit')
-      )
+      .breadcrumbs-controls
+        if own_page && self.album && !self.album.default
+          a.btn.btn-secondary.btn-sm.icon.icon-edit(
+            href=self.link_to('users.album.edit', { 'user_hid': self.user_hid, 'album_id': self.album._id })
+            title=self.t('edit')
+          )
 
-  header.page-head
-    h1.page-head__title(itemprop='name')
-      = self.album ? self.album.title : self.t('title_all_files')
-    if self.album && self.album.description
-      p.page-head__descr(itemprop='description')= self.album.description
+  .layout__container.container-fluid
+    header.page-head
+      h1.page-head__title(itemprop='name')
+        = self.album ? self.album.title : self.t('title_all_files')
+      if self.album && self.album.description
+        p.page-head__descr(itemprop='description')= self.album.description
 
-  if own_page && self.album
-    .user-album-upload.panel.panel-default(data-on-dragdrop='users.album:dd_area')
-      .pull-xs-right
-        //- Should 'click' file input in context of current action
-        button.btn.btn-secondary(
-          onClick='document.getElementById("user-album-upload__files").click()'
-        )= self.t('select_files')
+    if own_page && self.album
+      .user-album-upload.panel.panel-default(data-on-dragdrop='users.album:dd_area')
+        .pull-xs-right
+          //- Should 'click' file input in context of current action
+          button.btn.btn-secondary(
+            onClick='document.getElementById("user-album-upload__files").click()'
+          )= self.t('select_files')
 
-        button.btn.btn-secondary(
-          data-on-click='users.album:add_medialink'
-          data-providers=self.medialink_providers
-        )= self.t('add_medialink')
+          button.btn.btn-secondary(
+            data-on-click='users.album:add_medialink'
+            data-providers=self.medialink_providers
+          )= self.t('add_medialink')
 
-        //- Hidden
-        input#user-album-upload__files(
-          name='files[]'
-          type='file'
-          style='position: absolute; left: -2000px'
-          multiple
-        )
+          //- Hidden
+          input#user-album-upload__files(
+            name='files[]'
+            type='file'
+            style='position: absolute; left: -2000px'
+            multiple
+          )
 
-      .user-album-upload__text
-        = self.t('drag_to_upload')
+        .user-album-upload__text
+          = self.t('drag_to_upload')
 
-  - self.add_raw_data('prev_media', self.prev_media)
-  - self.add_raw_data('next_media', self.next_media)
-  ul#users-media-list.user-medialist.thumb-grid.thumb-grid__m-responsive._affix(
-    data-affix-top={
-      offset:     160,
-      wire_above: 'users.album:load_prev',
-      throttle:   100
-    }
-    data-affix-bottom={
-      offset:     160,
-      wire_below: 'users.album:load_next',
-      throttle:   100
-    }
-  )!= self.partial('@users.album.list')
+    - self.add_raw_data('prev_media', self.prev_media)
+    - self.add_raw_data('next_media', self.next_media)
+    ul#users-media-list.user-medialist.thumb-grid.thumb-grid__m-responsive._affix(
+      data-affix-top={
+        offset:     160,
+        wire_above: 'users.album:load_prev',
+        throttle:   100
+      }
+      data-affix-bottom={
+        offset:     160,
+        wire_below: 'users.album:load_next',
+        throttle:   100
+      }
+    )!= self.partial('@users.album.list')
 
-  nav.user-album-root__page-links
-    .pager
-      - var link = self.link_to(self.apiPath, { user_hid: self.user_hid, album_id: self.album && self.album._id, media_id: self.prev_media });
-      li: a(href=link)= self.t('prev_page')
+    nav.user-album-root__page-links
+      .pager
+        - var link = self.link_to(self.apiPath, { user_hid: self.user_hid, album_id: self.album && self.album._id, media_id: self.prev_media });
+        li: a(href=link)= self.t('prev_page')
 
-      - var link = self.link_to(self.apiPath, { user_hid: self.user_hid, album_id: self.album && self.album._id, media_id: self.next_media });
-      li: a(href=link)= self.t('next_page')
+        - var link = self.link_to(self.apiPath, { user_hid: self.user_hid, album_id: self.album && self.album._id, media_id: self.next_media });
+        li: a(href=link)= self.t('next_page')
 
-  p.user-album-root__no-files= self.t('no_files')
+    p.user-album-root__no-files= self.t('no_files')

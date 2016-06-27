@@ -1,13 +1,16 @@
 - self.users = self.users || {};
 
 #content.user-tracker
-  != self.partial('@users.blocks.breadcrumbs')
+  nav.breadcrumbs-container
+    .layout__container.container-fluid
+      != self.partial('@users.blocks.breadcrumbs')
 
-  if self.items.length === 0
-    .user-tracker__no-items=self.t('nothing_new')
+  .layout__container.container-fluid
+    if self.items.length === 0
+      .user-tracker__no-items=self.t('nothing_new')
 
-  else
-    ul.user-tracker-items
+    else
+      ul.user-tracker-items
 
-      each item in self.items
-        != self.partial('@users.tracker.blocks.' + item.type, { item: item })
+        each item in self.items
+          != self.partial('@users.tracker.blocks.' + item.type, { item: item })

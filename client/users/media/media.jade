@@ -3,72 +3,75 @@
 - self.add_raw_data('profile_tab', own_page)
 
 #content.user-media-root(class=self.media.type & mTypes.MASK_DELETED ? 'deleted' : '')
-  != self.partial('@users.blocks.breadcrumbs')
+  nav.breadcrumbs-container
+    .layout__container.container-fluid
+      != self.partial('@users.blocks.breadcrumbs')
 
-  .breadcrumbs.hidden-deleted
+      .breadcrumbs-controls.hidden-deleted
+        if own_page
+          a.btn.btn-secondary.btn-sm.icon.icon-edit(
+            data-on-click='users.media:edit'
+            title=self.t('edit')
+          )
+
+  .layout__container.container-fluid
+    //-header.page-head.albums-head
+      p.page-head__descr.hidden-xs-down(itemprop='description')
+
+    .user-media
+      - var mType = self.media.type & ~mTypes.MASK_DELETED
+
+      if mType === mTypes.IMAGE
+        - var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.media_id })
+          img.img-responsive(src=imageUrl)
+
+      else if mType === mTypes.MEDIALINK
+        .user-media__video
+          != self.media.medialink_html
+
+      else if mType === mTypes.BINARY
+        .user-media__binary
+          a(href=self.link_to('core.gridfs', { bucket: self.media.media_id }))
+            = self.media.file_name
+
+    if self.previous
+      a.user-media-root__prev.btn.btn-secondary(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.previous }))= self.t('prev')
+    if self.next
+      a.user-media-root__next.btn.btn-secondary(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.next }))= self.t('next')
+
+    .hidden-deleted
+      if own_page
+        a(
+          href='#'
+          data-on-click='users.media:delete'
+        )= self.t('delete')
+
+
+      p= self.media.description
+      p= self.date(self.media.ts, 'relative')
+
+      .row
+        .col-md-8.col-md-offset-2
+
+          textarea
+          a Отправить
+
+          ul.user-media__comments
+            each comment in self.comments
+              - var user = self.users[comment.user]
+                li
+                  div= comment.text
+                  div
+                    a= user.name
+                    span= self.date(comment.ts, 'relative')
+                    a Edit
+                    a Delte
+                    a Complain
+
     if own_page
-      a.btn.btn-secondary.btn-sm.icon.icon-edit(
-        data-on-click='users.media:edit'
-        title=self.t('edit')
-      )
-
-  //-header.page-head.albums-head
-    p.page-head__descr.hidden-xs-down(itemprop='description')
-
-  .user-media
-    - var mType = self.media.type & ~mTypes.MASK_DELETED
-
-    if mType === mTypes.IMAGE
-      - var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.media_id })
-        img.img-responsive(src=imageUrl)
-
-    else if mType === mTypes.MEDIALINK
-      .user-media__video
-        != self.media.medialink_html
-
-    else if mType === mTypes.BINARY
-      .user-media__binary
-        a(href=self.link_to('core.gridfs', { bucket: self.media.media_id }))
-          = self.media.file_name
-
-  if self.previous
-    a.user-media-root__prev.btn.btn-secondary(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.previous }))= self.t('prev')
-  if self.next
-    a.user-media-root__next.btn.btn-secondary(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.next }))= self.t('next')
-
-  .hidden-deleted
-    if own_page
-      a(
-        href='#'
-        data-on-click='users.media:delete'
-      )= self.t('delete')
-
-
-    p= self.media.description
-    p= self.date(self.media.ts, 'relative')
-
-    .row
-      .col-md-8.col-md-offset-2
-
-        textarea
-        a Отправить
-
-        ul.user-media__comments
-          each comment in self.comments
-            - var user = self.users[comment.user]
-              li
-                div= comment.text
-                div
-                  a= user.name
-                  span= self.date(comment.ts, 'relative')
-                  a Edit
-                  a Delte
-                  a Complain
-
-  if own_page
-    .restore-notice.visible-deleted-block
-      a.restore-notice__inner(
-        href='#'
-        data-media-id=self.media._id
-        data-on-click='users.media:restore'
-      )= self.t('restore')
+      .restore-notice.visible-deleted-block
+        a.restore-notice__inner(
+          href='#'
+          data-media-id=self.media._id
+          data-on-click='users.media:restore'
+        )= self.t('restore')
