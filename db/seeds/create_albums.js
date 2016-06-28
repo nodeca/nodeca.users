@@ -26,6 +26,7 @@ const PHOTOS = glob('**', {
 
 
 let models;
+let settings;
 
 // Creates random photos to album from test fixtures
 //
@@ -94,12 +95,13 @@ let createAlbums = co.wrap(function* () {
       // Fetch all sections
   let sections = yield models.forum.Section.getChildren(null, 2);
 
-  let data = yield models.forum.Section.find()
-                    .where('_id').in(_.map(sections, '_id'))
-                    .select('moderators')
-                    .lean(true);
+  let SectionModeratorStore = settings.getStore('section_moderator');
 
-  user_ids = user_ids.concat(_(data).map('moderators').flatten().value());
+  let moderators = (yield SectionModeratorStore.getModeratorsInfo(sections[0]._id))
+                     .filter(moderator => moderator.visible)
+                     .map(moderator => moderator._id);
+
+  user_ids = user_ids.concat(moderators);
 
   user_ids = _.uniq(user_ids.map(String));
 
@@ -156,7 +158,8 @@ let createComments = co.wrap(function* () {
 
 
 module.exports = co.wrap(function* (N) {
-  models = N.models;
+  models   = N.models;
+  settings = N.settings;
 
   yield createAlbums();
   yield createComments();
