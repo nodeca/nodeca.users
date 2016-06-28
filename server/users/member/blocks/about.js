@@ -14,7 +14,6 @@ module.exports = function (N) {
     _.set(env.res, 'blocks.about.messengers', N.config.users.messengers);
     _.set(env.res, 'blocks.about.contacts', [
       { messenger: 'skype', value: 'skype_login_example' },
-      { messenger: 'icq', value: '111111111' },
       { messenger: 'hangout', value: 'hangout@example.com' },
       { messenger: 'jabber', value: 'jabber@example.com' },
       { messenger: 'email', value: 'email@example.com' }
