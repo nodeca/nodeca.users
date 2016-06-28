@@ -100,9 +100,7 @@ function resizeImage(data) {
       let jpegHeader;
       let img = new Image();
 
-      $progressStatus
-        .text(t('progress.compressing'))
-        .show(0);
+      $progressStatus.show(0);
 
       img.onload = () => {
         // To scale image we calculate new width and height, resize image by height and crop by width
@@ -279,8 +277,8 @@ function startUpload(data) {
       if (xhr.upload) {
         xhr.upload.addEventListener('progress', function (e) {
           if (e.lengthComputable) {
-            progress = Math.round((e.loaded * 100) / e.total);
-            $progressInfo.find('.progress-bar').width(progress + '%');
+            progress = (e.loaded * 100) / e.total;
+            $progressInfo.find('.uploader-progress__bar').attr('value', progress);
           }
         }, false);
       }
@@ -293,7 +291,7 @@ function startUpload(data) {
   return Promise.resolve(jqXhr)
     .then(res => {
       uploadedFiles.push(res.media);
-      $progressInfo.find('.progress-bar').addClass('progress-bar-success');
+      $progressInfo.find('.uploader-progress__bar').addClass('progress-success');
     })
     .catch(err => {
       // Don't show error if user terminate file upload
@@ -302,7 +300,7 @@ function startUpload(data) {
       }
 
       $progressInfo.find('.uploader-progress__name').addClass('text-danger');
-      $progressInfo.find('.progress-bar').addClass('progress-bar-danger');
+      $progressInfo.find('.uploader-progress__bar').addClass('progress-danger');
 
       // Client error
       if (err.status === N.io.CLIENT_ERROR) {

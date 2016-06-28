@@ -1,6 +1,5 @@
 .row(id=self.element_id)
   .col-md-4.uploader-progress__name= self.file_name
-  .col-md-8
-    .progress
-      .uploader-progress__status
-      .progress-bar
+  .col-md-8.uploader-progress__container
+    .uploader-progress__status= self.t('compressing')
+    progress.progress.uploader-progress__bar(value="0", max="100")

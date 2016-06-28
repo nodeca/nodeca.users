@@ -1,8 +1,16 @@
 @import "nodeca.core/client/common/_variables"
 
+.uploader-progress__container
+  position relative
+
 .uploader-progress__status
   display none
   text-align center
+  position absolute
+  font-size $font-size-xs
+  left 0
+  right 0
+  z-index 10
 
 .uploader-progress__name
   shortable()
