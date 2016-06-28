@@ -39,7 +39,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         window.location = N.router.linkTo('users.auth.reset_password.change_done_show');
       })
       .catch(err => {
-        view.status(err.bad_password ? 'has-error' : null);
+        view.status(err.bad_password ? 'has-danger' : null);
       });
   });
 });

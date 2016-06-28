@@ -147,17 +147,17 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
       let errors = false;
 
       if (!$.trim($to.val())) {
-        $to.parent().addClass('has-error');
+        $to.parent().addClass('has-danger');
         errors = true;
       } else {
-        $to.parent().removeClass('has-error');
+        $to.parent().removeClass('has-danger');
       }
 
       if (!$.trim($title.val())) {
-        $title.parent().addClass('has-error');
+        $title.parent().addClass('has-danger');
         errors = true;
       } else {
-        $title.parent().removeClass('has-error');
+        $title.parent().removeClass('has-danger');
       }
 
       if (errors) return false;
@@ -186,7 +186,7 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
         .then(() => bag.remove(draftKey).catch(() => {})) // Suppress storage errors
         .catch(err => {
           if (err.type === 'BAD_NICK') {
-            $to.parent().addClass('has-error');
+            $to.parent().addClass('has-danger');
           }
 
           return N.wire.emit('error', err);

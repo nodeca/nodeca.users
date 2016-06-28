@@ -17,7 +17,7 @@ if (self.email)
           if self.oauth && Object.keys(self.oauth).length
             .form-group
               != self.partial('@common.blocks.oauth_buttons')
-              p.help-block
+              small.text-muted
                 =self.t('oauth_info')
           // ko with: email
           .form-group(data-bind='css: css')
@@ -30,7 +30,7 @@ if (self.email)
               data-bind='value: value'
             )
             // ko if: message
-            p.help-block(data-bind='text: message')
+            small.text-muted(data-bind='text: message')
             // /ko
           // /ko
 
@@ -43,7 +43,7 @@ if (self.email)
               type='password'
               placeholder= self.t('pass_desc')
               data-bind='value: value')
-            p.help-block(data-bind='text: help')
+            small.text-muted(data-bind='text: help')
           // /ko
 
 
@@ -57,7 +57,7 @@ if (self.email)
               placeholder= self.t('nick_desc')
               data-bind='value: value, valueUpdate: "afterkeydown"')
             // ko if: message
-            p.help-block(data-bind='text: message')
+            small.text-muted(data-bind='text: message')
             // /ko
           // /ko
 

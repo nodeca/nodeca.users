@@ -54,31 +54,31 @@ N.wire.once(module.apiPath, function init_handlers() {
     let $points_group = $('.add-infraction-points');
 
     if (!data.fields.type) {
-      $type_group.addClass('has-error');
+      $type_group.addClass('has-danger');
       valid = false;
     } else {
-      $type_group.removeClass('has-error');
+      $type_group.removeClass('has-danger');
     }
 
     if (!data.fields.reason && data.fields.type === 'custom') {
-      $reason_group.addClass('has-error');
+      $reason_group.addClass('has-danger');
       valid = false;
     } else {
-      $reason_group.removeClass('has-error');
+      $reason_group.removeClass('has-danger');
     }
 
     if (data.fields.expire === '') {
-      $expire_group.addClass('has-error');
+      $expire_group.addClass('has-danger');
       valid = false;
     } else {
-      $expire_group.removeClass('has-error');
+      $expire_group.removeClass('has-danger');
     }
 
     if (data.fields.points === '') {
-      $points_group.addClass('has-error');
+      $points_group.addClass('has-danger');
       valid = false;
     } else {
-      $points_group.removeClass('has-error');
+      $points_group.removeClass('has-danger');
     }
 
     if (!valid) return;

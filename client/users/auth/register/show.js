@@ -57,7 +57,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
 
     N.io.rpc('users.auth.check_nick', { nick: text })
       .then(res => {
-        view.nick.css(res.error ? 'has-error' : '');
+        view.nick.css(res.error ? 'has-danger' : '');
         view.nick.message(res.message);
       });
   }, CHECK_NICK_DELAY));
@@ -97,7 +97,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
         // Update classes and messages on all input fields.
         _.forEach(view, (field, name) => {
-          field.css(_.has(err.data, name) ? 'has-error' : '');
+          field.css(_.has(err.data, name) ? 'has-danger' : '');
           field.message(err.data[name]);
         });
 
