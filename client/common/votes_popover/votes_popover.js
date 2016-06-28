@@ -34,7 +34,7 @@ N.wire.on('common.votes_popover', function show_votes_popover(data) {
       trigger: 'focus'
     }).on('hidden.bs.popover', function () {
       // Destroy popover after close
-      data.$this.popover('destroy');
+      data.$this.popover('dispose');
     });
 
     // Show popover
