@@ -18,10 +18,10 @@ let view = null;
 function Control(defaultHelp) {
   this.defaultHelp = defaultHelp;
 
-  this.css     = ko.observable('');
-  this.message = ko.observable(null);
-  this.value   = ko.observable('');
-  this.help    = ko.computed(() => this.message() || this.defaultHelp);
+  this.hasError = ko.observable(false);
+  this.message  = ko.observable(null);
+  this.value    = ko.observable('');
+  this.help     = ko.computed(() => this.message() || this.defaultHelp);
 }
 
 
@@ -35,9 +35,9 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
     nick:  new Control(t('')),
 
     recaptcha_response_field: {
-      visible: Boolean(N.runtime.recaptcha),
-      css:     ko.observable(''),
-      message: ko.observable(null)
+      visible:  Boolean(N.runtime.recaptcha),
+      hasError: ko.observable(false),
+      message:  ko.observable(null)
     }
   };
 
@@ -47,7 +47,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
 
   // Reset nick CSS class and message on every change.
   view.nick.value.subscribe(() => {
-    view.nick.css('');
+    view.nick.hasError(false);
     view.nick.message(null);
   });
 
@@ -57,7 +57,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
 
     N.io.rpc('users.auth.check_nick', { nick: text })
       .then(res => {
-        view.nick.css(res.error ? 'has-danger' : '');
+        view.nick.hasError(!!res.error);
         view.nick.message(res.message);
       });
   }, CHECK_NICK_DELAY));
@@ -97,7 +97,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
         // Update classes and messages on all input fields.
         _.forEach(view, (field, name) => {
-          field.css(_.has(err.data, name) ? 'has-danger' : '');
+          field.hasError(_.has(err.data, name));
           field.message(err.data[name]);
         });
 

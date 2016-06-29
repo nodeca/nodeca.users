@@ -26,7 +26,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
     return N.wire.emit('common.blocks.confirm', t('delete_confirmation'));
   });
 
-  N.wire.on(module.apiPath + ':delete', function delete_subscription(data) {
+  N.wire.on('users.subscriptions:delete', function delete_subscription(data) {
     let subscription = data.$this.data('subscription');
 
     return N.io.rpc('users.subscriptions.destroy', { subscription_id: subscription._id }).then(function () {

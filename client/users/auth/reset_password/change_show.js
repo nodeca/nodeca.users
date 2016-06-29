@@ -12,7 +12,7 @@ let view = null;
 // Page enter
 //
 N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
-  view = { status: ko.observable(null) };
+  view = { hasError: ko.observable(false) };
   ko.applyBindings(view, $('#content')[0]);
 });
 
@@ -39,7 +39,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         window.location = N.router.linkTo('users.auth.reset_password.change_done_show');
       })
       .catch(err => {
-        view.status(err.bad_password ? 'has-danger' : null);
+        view.hasError(err.bad_password);
       });
   });
 });

@@ -13,7 +13,7 @@
           form.panel-body(data-on-submit='users.auth.reset_password.change_exec')
             input(type='hidden' name='secret_key' value=self.secret_key)
 
-            .form-group(data-bind='css: status')
+            .form-group(data-bind='css: { "has-danger": hasError }')
               label(for='password')= self.t('password')
               input.form-control(
                 id='password'
@@ -21,6 +21,6 @@
                 type='password'
                 placeholder=self.t('password_desc')
               )
-              small.text-muted= self.t('password_help')
+              small(data-bind='css: hasError() ? "text-danger" : "text-muted"')=self.t('password_help')
 
             button.btn.btn-primary(type='submit')= self.t('ok')

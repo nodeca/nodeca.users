@@ -28,9 +28,9 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
     message: ko.observable(null),
 
     recaptcha_response_field: {
-      visible: Boolean(N.runtime.recaptcha),
-      css:     '',
-      message: null
+      visible:  Boolean(N.runtime.recaptcha),
+      hasError: ko.observable(false),
+      message:  ko.observable(null)
     }
   };
 
