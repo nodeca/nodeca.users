@@ -20,6 +20,8 @@ module.exports.up = co.wrap(function* (N) {
     can_see_hellbanned:            { value: true },
     can_see_infractions:           { value: true },
     can_see_ip:                    { value: true },
+    can_add_mod_notes:             { value: true },
+    can_delete_mod_notes:          { value: true },
     cannot_receive_infractions:    { value: true },
     cannot_be_ignored:             { value: true },
     users_mod_can_add_infractions: { value: true },

@@ -10,6 +10,8 @@ users:
         priority: 30
       hellban:
         priority: 40
+      add_mod_note:
+        priority: 50
 
     menu:
       messages:

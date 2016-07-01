@@ -9,6 +9,7 @@ en-US:
   ignore_added: User added to ignore list
   ignore_removed: User removed from ignore list
   send_message_help: Send message
+  mod_notes: "Notes (#{count})"
   hellbaned: Hellbaned
   menu:
     messages: Messages

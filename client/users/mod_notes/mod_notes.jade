@@ -1,0 +1,63 @@
+- var user_to = self.users[self.user_id];
+
+#content
+  nav.breadcrumbs-container
+    .layout__container.container-fluid
+      !=self.partial('@users.blocks.breadcrumbs')
+
+  .layout__container.container-fluid
+    header.page-head
+      h1.page-head__title(itemprop='name')
+        =self.t('title')
+        .pull-xs-right
+          .page-actions
+            button.btn.btn-primary.btn-square.icon.icon-plus(
+              data-on-click='users.mod_notes:edit'
+              title=self.t('add_note')
+              data-user-hid=user_to.hid
+              data-user-nick=user_to.nick
+            )
+      p.page-head__descr.hidden-xs-down(itemprop='description')
+
+    if self.notes.length === 0
+      .mod-notes-no-items=self.t('no_notes')
+    else
+      each note in self.notes
+        - var user_from = self.users[note.from];
+        .mod-notes-item
+          .mod-notes-item__info
+            .mod-notes-item__info-aside
+              a.mod-notes-item__avatar._ucard-popover(
+                href=self.link_to('users.member', { user_hid: user_from.hid })
+                data-user-id=user_from._id
+                title=user_from.name
+              )
+                img.mod-notes-item__avatar-image.av-l(alt=user_from.name)&attributes(self.avatar(user_from, 'md'))
+
+            .mod-notes-item__info-data
+              .mod-notes-item__author=user_from.nick
+              .mod-notes-item__ts!=self.timetag(note.ts, 'compact')
+
+            - var can_edit = note.from === self.runtime.user_id && (self.settings.mod_notes_edit_max_time === 0 || (new Date(note.ts).getTime() > Date.now() - self.settings.mod_notes_edit_max_time * 60 * 1000));
+            - var can_delete = self.settings.can_delete_mod_notes || (note.from === self.runtime.user_id && (self.settings.mod_notes_edit_max_time === 0 || (new Date(note.ts).getTime() > Date.now() - self.settings.mod_notes_edit_max_time * 60 * 1000)));
+
+            if can_edit || can_delete
+              .mod-notes-item__controls
+                if can_edit
+                  button.btn.btn-link.btn-xs.icon.icon-edit(
+                    title=self.t('edit_note')
+                    data-on-click='users.mod_notes:edit'
+                    data-note-id=note._id
+                    data-user-hid=user_to.hid
+                    data-user-nick=user_to.nick
+                    data-md=note.md
+                  )
+                if can_delete
+                  button.btn.btn-link.btn-xs.icon.icon-deleted(
+                    title=self.t('delete_note')
+                    data-on-click='users.mod_notes:delete'
+                    data-note-id=note._id
+                  )
+
+          .mod-notes-item__content!=note.html
+          .clearfix

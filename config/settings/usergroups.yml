@@ -107,3 +107,21 @@ setting_schemas:
       category_key: perm_infractions
       type: boolean
       default: false
+
+    can_add_mod_notes:
+      priority: 3010
+      category_key: perm_mod_notes
+      type: boolean
+      default: false
+
+    can_delete_mod_notes:
+      priority: 3020
+      category_key: perm_mod_notes
+      type: boolean
+      default: false
+
+    mod_notes_edit_max_time:
+      priority: 3030
+      category_key: perm_mod_notes
+      type: number
+      default: 30

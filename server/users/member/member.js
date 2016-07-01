@@ -103,6 +103,25 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Fill moderator's notes count and permission
+  //
+  N.wire.before(apiPath, function* fill_mod_notes_count(env) {
+    env.res.settings = env.res.settings || {};
+
+    let can_add_mod_notes = env.res.settings.can_add_mod_notes = yield env.extras.settings.fetch('can_add_mod_notes');
+
+    if (!can_add_mod_notes) {
+      // Remove `add_mod_note` action if user can't add notes
+      env.data.actions = env.data.actions.filter(action => action.name !== 'add_mod_note');
+      return;
+    }
+
+    env.res.mod_notes_count = yield N.models.users.ModeratorNote.find()
+                                        .where('to').equals(env.data.user._id)
+                                        .count();
+  });
+
+
   // Update activity info with fresh data if available
   //
   N.wire.before(apiPath, function* fetch_activity_info(env) {
@@ -131,10 +150,14 @@ module.exports = function (N, apiPath) {
   // Fill permissions to use messages
   //
   N.wire.before(apiPath, function* fill_messages_permissions(env) {
-    env.res.settings = yield env.extras.settings.fetch([
+    let settings = yield env.extras.settings.fetch([
       'can_use_messages',
       'can_send_messages'
     ]);
+
+    env.res.settings = env.res.settings || {};
+    env.res.settings.can_use_messages = settings.can_use_messages;
+    env.res.settings.can_send_messages = settings.can_send_messages;
   });
 
 

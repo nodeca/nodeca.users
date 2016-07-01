@@ -1,0 +1,7 @@
+- var user = self.users[self.user._id];
+button.dropdown-item(
+  type='button'
+  data-on-click='users.mod_notes:edit'
+  data-user-hid=user.hid
+  data-user-nick=user.nick
+)= self.t('add_mod_note')

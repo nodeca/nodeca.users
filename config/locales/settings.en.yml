@@ -13,6 +13,7 @@ i18n:
           perm_users: Users
           perm_users_moderate: Users moderation
           perm_infractions: Infractions
+          perm_mod_notes: Moderator's notes
 
         setting_names:
           general_login_expire_days: Login expire time (days)
@@ -35,6 +36,12 @@ i18n:
           can_see_deleted_users: Show deleted users
 
           can_see_ip: Show IP
+
+          can_add_mod_notes: Can add moderator's notes
+
+          can_delete_mod_notes: Can delete moderator's notes
+
+          mod_notes_edit_max_time: Max time to edit moderator's note after create (minutes)
 
           cannot_receive_infractions: Cannot recieve infractions
 

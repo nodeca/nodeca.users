@@ -39,6 +39,12 @@ router:
           match: /\d+/
           type: 'integer'
 
+    users.mod_notes:
+      "/member{user_hid}/mod_notes":
+        user_hid:
+          match: /\d+/
+          type: 'integer'
+
     users.album:
       "/member{user_hid}/album/{album_id}(/{media_id})":
         user_hid:
