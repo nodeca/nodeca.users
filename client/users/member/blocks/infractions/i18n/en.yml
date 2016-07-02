@@ -1,5 +1,6 @@
 en-US:
-  title: "((=0 Infractions|Infractions \\(#{count} point\\)|Infractions \\(#{count} points\\)))"
+  title: "Infractions"
+  counter: "#{count} ((point|points))"
   never: Never
   expired: Expired
   deleted: Deleted

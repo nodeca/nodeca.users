@@ -1,7 +1,7 @@
 .member-block
 
   .member-block__header
-    .member-block__header-title.h2
+    .member-block__header-title
       .member-block__header-text.pull-xs-left
         = self.t('title')
       a.member-block__header-collapser(href='#member-about-info', data-toggle='collapse')
@@ -9,19 +9,18 @@
         .pull-xs-right.icon.icon-expand
 
   #member-about-info.member-block__inner.collapse.in
-    dl.member-about-text.dl-horizontal
-      dt Registered:
-      dd 15 jun 2009
+    dl.member-about__dl
+      dt.member-about__dt Registered:
+      dd.member-about__dd 15 jun 2009
 
-    dl.member-about-text.dl-horizontal
-      dt Posts:
-      dd: a(href='#') 212
+      dt.member-about__dt Posts:
+      dd.member-about__dd: a(href='#') 212
 
-    dl.member-about-text.dl-horizontal
-      dt Location:
-      dd: a(href='#') New Urupinsk
+      dt.member-about__dt Location:
+      dd.member-about__dd: a(href='#') New Urupinsk
 
-    if self.blocks.about.contacts && self.blocks.about.contacts.length !== 0
+    //-
+      if self.blocks.about.contacts && self.blocks.about.contacts.length !== 0
       dl.member-about-text.dl-horizontal
         dt Contacts:
         dd
@@ -48,10 +47,8 @@
                 span.member-block__contacts-expand-value= contact.value
 
 
-    dl.member-about-text.dl-horizontal
-      dt Birthday:
-      dd 13 feb 1983
+      dt.member-about__dt Birthday:
+      dd.member-about__dd 13 feb 1983
 
-    dl.member-about-text.dl-horizontal
-      dt Interests:
-      dd Music, Books, Football, Tennis
+      dt.member-about__dt Interests:
+      dd.member-about__dd Music, Books, Football, Tennis

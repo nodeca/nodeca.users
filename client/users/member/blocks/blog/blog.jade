@@ -1,23 +1,23 @@
 .member-block
 
   .member-block__header
-    .member-block__header-title.h2
+    .member-block__header-title
       a.member-block__header-link.pull-xs-left(href='#')
         = self.t('title')
-        |  (5)
         span.icon.icon-right-open
+        small.member-block__header-counter 5
       a.member-block__header-collapser(href='#member-blog-info', data-toggle='collapse')
         .pull-xs-right.icon.icon-collapse
         .pull-xs-right.icon.icon-expand
 
   #member-blog-info.member-block__inner.collapse.in
-    ul.list-unstyled
-      li
-        | 20.05.2013  
+    ul.member-block__blog-info
+      li.member-block__blog-info-item
+        span.member-block__blog-info-item-time 20.05.2013
         a(href='#') Nullam ultricies, lacus eget consectetur ultrices
-      li
-        | 24.06.2013  
+      li.member-block__blog-info-item
+        span.member-block__blog-info-item-time 24.06.2013
         a(href='#') Nulla facilisi
-      li
-        | 13.08.2014  
+      li.member-block__blog-info-item
+        span.member-block__blog-info-item-time 13.08.2014
         a(href='#') Suspendisse consectetur molestie tortor sed vestibulum

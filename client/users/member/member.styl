@@ -1,12 +1,5 @@
 @import "nodeca.core/client/common/_variables"
 
-.member__last-visit
-  color grayLight
-
-.member__hb
-.member__penalty
-  color red
-
 //
 // Layout
 //
@@ -16,24 +9,23 @@
   float left
 
 .member-blocks
-  margin-left 170px
+  margin-left 178px
   overflow hidden
 
 .member-sidebar__menu
-  padding-left 0px
+  list-style none
+  font-size $font-size-sm
+  line-height 2.5rem
+  padding-left .7rem
+  padding-right .7rem
 
 .member-sidebar__menu-item
-  list-style none
-  font-size 16px
-  line-height 35px
-  border-radius 3px
-  transition .2s ease
-  &:hover
-    background-color grayLightest
 
+  & + .member-sidebar__menu-item
+    border-top 0.0625rem solid $decorator-color
 .member-sidebar__menu-link
   display block
-  padding 0 5px
+  color $body-color-secondary
   &:hover
     text-decoration none
 
@@ -47,11 +39,11 @@
 
 .member-avatar
   position relative
-  margin-bottom 15px
+  margin-bottom .5rem
 .member-avatar__image
   width 150px
-  border-radius 3px
-  box-shadow 0 0 2px grayLight
+  border-radius 0.1875rem
+  box-shadow 0 0 0.125rem $decorator-color
 .member-avatar__link
   display block
 .member-avatar__caption
@@ -62,15 +54,15 @@
   text-align center
   background-color rgba(grayDark, 0.6)
   color grayLighter
-  font-size 12px
+  font-size $font-size-xs
   transition background-color .2s ease
-  border-radius 0 0 3px 3px
+  border-radius 0 0 0.1875rem 0.1875rem
 
 .member-avatar__delete
   display none
   position absolute
-  top 5px
-  right 5px
+  top .25rem
+  right .25rem
   opacity .4
   transition opacity .2s ease
 
@@ -85,10 +77,12 @@
 //
 
 .member-block
-  margin-bottom 30px
+  margin-bottom 2rem
 
 .member-block__header
-  border-bottom 1px solid grayLightest
+  font-size $font-size-lg
+  border-bottom 0.0625rem solid $decorator-color
+  margin-bottom 1rem
 
 .member-block__header-link
   color inherit
@@ -96,20 +90,16 @@
   &:hover
     text-decoration none
 
-.member-block__header-title
-  font-size 20px
-  margin-top 0
-  margin-bottom 5px
+.member-block__header-counter
+  font-size $font-size-root * 0.625 // 10px
+  color $body-color-secondary
+  vertical-align text-bottom
 
 .member-block__header-collapser
   display block
   overflow hidden
   &:focus
     outline none
-
-.member-block__inner
-  margin-top 15px
-  margin-left 15px
 
 //
 // Collapse toggler states

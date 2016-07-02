@@ -1,6 +1,45 @@
 // Thumbnails generic classes
 //
 
+/*
+  Expected use
+  ============
+
+  Without grid (inline-block)
+  ---------------------------
+
+  ### image
+
+  a.thumb
+    img.thumb__image
+    .thumb-caption[.thumb-caption__m-secondary]
+      .thumb-caption__line
+
+  ### video
+
+  .thumb
+    a.thumb-inner
+      .thumb__icon.icon.icon-video
+      img.thumb__image
+      .thumb-caption[.thumb-caption__m-secondary]
+        .thumb-caption__line
+
+  ### binary
+
+  a.thumb
+    .thumb__icon.icon.icon-binary
+    .thumb__content
+    .thumb-caption[.thumb-caption__m-secondary]
+      .thumb-caption__line
+
+  With grid (flexbox)
+  -------------------
+
+  TBD
+
+*/
+
+
 @import "nodeca.core/client/common/_variables"
 
 thumbImageWidth  = '$$ N.config.users.uploads.resize.sm.max_width || N.config.users.uploads.resize.sm.width $$'px
@@ -106,7 +145,7 @@ gridIntervalTightXs = 10px //round(gridInterval / downScaleXs)
   text-align center
   position relative
   border-radius cornerRadius
-  box-shadow 0 0 2px grayLight
+  box-shadow 0 0 2px $decorator-color
 
   &:before
     content ''

@@ -4,16 +4,18 @@
 
   .member-block__header
     - var allPhotosLink = self.link_to('users.album', { 'user_hid': self.user.hid })
-    .member-block__header-title.h2
+    .member-block__header-title
       a.member-block__header-link.pull-xs-left(href=allPhotosLink)
-        | #{self.t('title')} (#{self.blocks.medias.count})
+        = self.t('title')
         span.icon.icon-right-open
+        small.member-block__header-counter= self.blocks.medias.count
+
       a.member-block__header-collapser(href='#member-medias-info', data-toggle='collapse')
         .pull-xs-right.icon.icon-collapse
         .pull-xs-right.icon.icon-expand
 
   #member-medias-info.member-block__inner.collapse.in
-    ul.thumb-grid.thumb-grid__m-sm.thumb-grid__m-responsive.thumb-grid__m-inline.thumb-grid__m-shadow-tail
+    ul.thumb-grid.thumb-grid__m-responsive.thumb-grid__m-inline.thumb-grid__m-shadow-tail
       each media in self.blocks.medias.list
         - var href = self.link_to('users.media', { user_hid: self.user.hid, media_id: media.media_id })
         li.thumb-grid__item

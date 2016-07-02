@@ -12,9 +12,9 @@
         | 
         != self.timetag(self.user.last_active_ts, 'compact')
       if self.user_is_hb
-        p.page-head__descr.member__hb(itemprop='description')=self.t('hellbaned')
+        p.page-head__descr.member__hb.text-danger(itemprop='description')=self.t('hellbaned')
       if self.penalty_expire
-        p.page-head__descr.member__penalty(itemprop='description')
+        p.page-head__descr.member__penalty.text-danger(itemprop='description')
           =self.t('blocked_until')
           | 
           !=self.timetag(self.penalty_expire, 'compact')
@@ -39,7 +39,7 @@
 
       .member-blocks
         if self.runtime.is_member
-          .page-actions
+          .page-actions.member-block
 
             if self.settings.can_add_mod_notes && self.mod_notes_count > 0
               a.btn.btn-secondary(
@@ -58,7 +58,7 @@
                     !=self.partial('@users.member.actions.' + item.name)
 
             if self.settings.can_use_messages && self.settings.can_send_messages && !own_page
-              button.btn.btn-secondary.btn-square.icon.icon-comment(
+              button.btn.btn-secondary.btn-square.icon.icon-mail(
                 type='button'
                 data-on-click='users.member:message'
                 data-to=self.users[self.user._id].nick
