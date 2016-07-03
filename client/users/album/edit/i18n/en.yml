@@ -1,6 +1,6 @@
 en-US:
   title_input_name: Album name
-  title_input_desc: Album name
+  title_input_desc: Enter album name here
   description_input_name: Album description
   description_input_desc: Description for album page (optional)
   cover_input_name: Cover

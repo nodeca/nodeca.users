@@ -44,6 +44,6 @@ module.exports = function (N, apiPath) {
   N.wire.after(apiPath, function* fill_breadcrumbs(env) {
     yield N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
 
-    env.res.breadcrumbs = env.data.breadcrumbs;
+    env.res.breadcrumbs = env.data.breadcrumbs.slice(0, -1);
   });
 };

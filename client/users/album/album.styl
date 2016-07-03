@@ -1,19 +1,18 @@
 @import "nodeca.core/client/common/_variables"
 
 
-.user-album-root .page-head__descr
-  font-size 14px
-  color gray
-  margin-left 0
-
-
 .user-album-upload
-  padding 10px 15px
+  padding 1rem
+  text-align center
+  background-color lighten($decorator-color, 60%)
+  margin-bottom 1.5rem
+  border-radius 3px
+  border 1px solid lighten($decorator-color, 60%)
+
+  shortable()
+
   &.active
     border 1px dashed black
-
-  .btn
-    margin-left 5px
 
 .user-album-upload__text
   padding-right 15px

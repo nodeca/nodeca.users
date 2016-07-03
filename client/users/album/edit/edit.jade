@@ -7,13 +7,12 @@
 
   .layout__container.container-fluid
     .row
-      .col-sm-8.col-sm-offset-2
-        .panel.panel-default
+      .col-sm-8.offset-sm-2
+        .card
 
-          .panel-heading
-            .panel-title= self.head.title
+          h1.card-header.h3= self.head.title
 
-          form.panel-body(data-on-submit='users.album.edit:save')
+          form.card-block(data-on-submit='users.album.edit:save')
             input(
               type='hidden'
               value=self.album._id
@@ -51,7 +50,7 @@
                     )
 
                 .album-edit__no-cover
-                  button.btn.btn-secondary.btn-link(
+                  button.btn.btn-secondary(
                     data-on-click='users.album.edit:select_cover'
                   )= self.t('cover_select')
                   p: small.text-muted= self.t('cover_input_desc')

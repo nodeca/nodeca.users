@@ -1,4 +1,5 @@
 en-US:
   title: Albums
   create_album: Create album
-  all_media: All
+  all_media: All files
+  drag_tip: You can drag files to album for upload.
