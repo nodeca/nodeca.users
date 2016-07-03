@@ -3,66 +3,67 @@ if (self.email)
 
 - self.add_raw_data('action', 'register')
 
-#content.row
-  .layout__container.container-fluid
-    .col-md-6.col-md-offset-3.col-sm-8.col-sm-offset-2
-      .panel.panel-default
+#content
+  .layout__container.container-fluid.space-top
+    .row
+      .col-md-6.offset-md-3.col-sm-8.offset-sm-2
+        .card
 
-        .panel-heading
-          h4.panel-title #{self.head.title}
-            .pull-xs-right: small: a(href=self.link_to('users.auth.login.show')) #{self.t('login')}
+          h1.card-header.h3
+            .auth-header-alt.pull-xs-right
+              a(href=self.link_to('users.auth.login.show'))= self.t('login')
+            =self.head.title
 
-
-        form.panel-body(data-on-submit='users.auth.register.exec')
-          if self.oauth && Object.keys(self.oauth).length
-            .form-group
-              != self.partial('@common.blocks.oauth_buttons')
-              small.text-muted
-                =self.t('oauth_info')
-          // ko with: email
-          .form-group(data-bind='css: { "has-danger": hasError }')
-            label(for='register_email')= self.t('email')
-            input.form-control(
-              id='register_email'
-              name='email'
-              type='email'
-              placeholder= self.t('email_desc')
-              data-bind='value: value'
-            )
-            // ko if: message
-            small(data-bind='text: message, css: hasError() ? "text-danger" : "text-muted"')
+          form.card-block(data-on-submit='users.auth.register.exec')
+            if self.oauth && Object.keys(self.oauth).length
+              .form-group
+                != self.partial('@common.blocks.oauth_buttons')
+                small.text-muted
+                  =self.t('oauth_info')
+            // ko with: email
+            .form-group(data-bind='css: { "has-danger": hasError }')
+              label(for='register_email')= self.t('email')
+              input.form-control(
+                id='register_email'
+                name='email'
+                type='email'
+                placeholder= self.t('email_desc')
+                data-bind='value: value'
+              )
+              // ko if: message
+              small(data-bind='text: message, css: hasError() ? "text-danger" : "text-muted"')
+              // /ko
             // /ko
-          // /ko
 
-          // ko with: pass
-          .form-group(data-bind='css: { "has-danger": hasError }')
-            label(for='register_pass')= self.t('pass')
-            input.form-control(
-              id='register_pass'
-              name='pass'
-              type='password'
-              placeholder= self.t('pass_desc')
-              data-bind='value: value')
-            small(data-bind='text: help, css: hasError() ? "text-danger" : "text-muted"')
-          // /ko
-
-
-          // ko with: nick
-          .form-group(data-bind='css: { "has-danger": hasError }')
-            label(for='register_nick') #{self.t('nick')}
-            input.form-control(
-              id='register_nick',
-              name='nick',
-              type='text',
-              placeholder= self.t('nick_desc')
-              data-bind='value: value, valueUpdate: "afterkeydown"')
-            // ko if: message
-            small(data-bind='text: message, css: hasError() ? "text-danger" : "text-muted"')
+            // ko with: pass
+            .form-group(data-bind='css: { "has-danger": hasError }')
+              label(for='register_pass')= self.t('pass')
+              input.form-control(
+                id='register_pass'
+                name='pass'
+                type='password'
+                placeholder= self.t('pass_desc')
+                data-bind='value: value')
+              small(data-bind='text: help, css: hasError() ? "text-danger" : "text-muted"')
             // /ko
-          // /ko
 
-          // ko with: recaptcha_response_field
-          != self.partial('@common.blocks.recaptcha')
-          // /ko
 
-          button.btn.btn-primary(type='submit') #{self.t('register')}
+            // ko with: nick
+            .form-group(data-bind='css: { "has-danger": hasError }')
+              label(for='register_nick') #{self.t('nick')}
+              input.form-control(
+                id='register_nick',
+                name='nick',
+                type='text',
+                placeholder= self.t('nick_desc')
+                data-bind='value: value, valueUpdate: "afterkeydown"')
+              // ko if: message
+              small(data-bind='text: message, css: hasError() ? "text-danger" : "text-muted"')
+              // /ko
+            // /ko
+
+            // ko with: recaptcha_response_field
+            != self.partial('@common.blocks.recaptcha')
+            // /ko
+
+            button.btn.btn-primary(type='submit') #{self.t('register')}

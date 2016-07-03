@@ -1,5 +1,6 @@
-#content.row
-  .col-sm-8.col-sm-offset-2.col-lg-6.col-lg-offset-3
-    .panel.panel-default
-      .panel-body
-        = self.t('err_uniq_email')
+#content
+  .layout__container.container-fluid.space-top
+    .row
+      .col-md-6.offset-md-3.col-sm-8.offset-sm-2
+        .card.card-block.text-danger
+          = self.t('err_uniq_email')

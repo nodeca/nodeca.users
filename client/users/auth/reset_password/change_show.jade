@@ -1,26 +1,29 @@
-#content.row
-  .layout__container.container-fluid
+#content
+  .layout__container.container-fluid.space-top
     unless self.valid_token
-      .col-md-6.col-md-offset-3.col-sm-8.col-sm-offset-2
-        .panel.panel-default
-          .panel-body= self.t('err_invalid_token')
+      .row
+        .col-md-6.offset-md-3.col-sm-8.offset-sm-2
+          .card.card-block.text-danger
+            = self.t('err_invalid_token')
     else
-      .col-md-6.col-md-offset-3.col-sm-8.col-sm-offset-2
-        .panel.panel-default
-          .panel-heading
-            .panel-title= self.head.title
+      .row
+        .col-md-6.offset-md-3.col-sm-8.offset-sm-2
+          .card
 
-          form.panel-body(data-on-submit='users.auth.reset_password.change_exec')
-            input(type='hidden' name='secret_key' value=self.secret_key)
+            h1.card-header.h3
+              = self.head.title
 
-            .form-group(data-bind='css: { "has-danger": hasError }')
-              label(for='password')= self.t('password')
-              input.form-control(
-                id='password'
-                name='password'
-                type='password'
-                placeholder=self.t('password_desc')
-              )
-              small(data-bind='css: hasError() ? "text-danger" : "text-muted"')=self.t('password_help')
+            form.card-block(data-on-submit='users.auth.reset_password.change_exec')
+              input(type='hidden' name='secret_key' value=self.secret_key)
 
-            button.btn.btn-primary(type='submit')= self.t('ok')
+              .form-group(data-bind='css: { "has-danger": hasError }')
+                label(for='password')= self.t('password')
+                input.form-control(
+                  id='password'
+                  name='password'
+                  type='password'
+                  placeholder=self.t('password_desc')
+                )
+                small(data-bind='css: hasError() ? "text-danger" : "text-muted"')=self.t('password_help')
+
+              button.btn.btn-primary(type='submit')= self.t('ok')
