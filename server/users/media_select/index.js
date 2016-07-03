@@ -3,7 +3,7 @@
 
 'use strict';
 
-var MEDIAS_PER_PAGE = 30;
+var MEDIAS_PER_PAGE = 24;
 
 
 module.exports = function (N, apiPath) {
