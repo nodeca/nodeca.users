@@ -13,7 +13,9 @@ each album in self.albums
       .thumb-caption
         .thumb-caption__line= albumTitle
         .thumb-caption__line.thumb-caption__m-secondary
-          if album.count > 0
-            .pull-xs-right.icon.icon-space-after.icon-camera #{album.count}
           .thumb-caption__line
-            != self.timetag(album.last_ts, 'relative')
+            span.thumb-caption__inline
+              != self.timetag(album.last_ts, 'relative')
+            if album.count > 0
+              span.thumb-caption__inline.icon.icon-space-after.icon-camera
+                = album.count

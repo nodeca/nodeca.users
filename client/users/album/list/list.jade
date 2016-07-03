@@ -12,10 +12,12 @@ each media in self.media
         img.thumb__image(src=imageUrl)
 
         .thumb-caption.thumb-caption__m-secondary
-          if media.comments_count > 0
-            .pull-xs-right.icon.icon-space-after.icon-comment= media.comments_count
           .thumb-caption__line
-            != self.timetag(media.ts, 'relative')
+            span.thumb-caption__inline
+              != self.timetag(media.ts, 'relative')
+            if media.comments_count > 0
+              span.thumb-caption__inline.icon.icon-space-after.icon-comment
+                = media.comments_count
 
     else if mType === mTypes.MEDIALINK
       .thumb
@@ -24,10 +26,11 @@ each media in self.media
           img.thumb__image(src=media.medialink_meta.thumb)
 
           .thumb-caption.thumb-caption__m-secondary
-            if media.comments_count > 0
-              .pull-xs-right.icon.icon-space-after.icon-comment= media.comments_count
-            .thumb-caption__line
+            span.thumb-caption__inline
               != self.timetag(media.ts, 'relative')
+            if media.comments_count > 0
+              span.thumb-caption__inline.icon.icon-space-after.icon-comment
+                = media.comments_count
 
     else if mType === mTypes.BINARY
       a.thumb(id='media' + media.media_id, data-media-id=media.media_id, href=href)
@@ -35,7 +38,8 @@ each media in self.media
         .thumb__content= media.file_name
 
         .thumb-caption.thumb-caption__m-secondary
-          if media.comments_count > 0
-            .pull-xs-right.icon.icon-space-after.icon-comment= media.comments_count
-          .thumb-caption__line
-            != self.timetag(media.ts, 'relative')
+            span.thumb-caption__inline
+              != self.timetag(media.ts, 'relative')
+            if media.comments_count > 0
+              span.thumb-caption__inline.icon.icon-space-after.icon-comment
+                = media.comments_count

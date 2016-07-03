@@ -16,7 +16,7 @@
       each album in self.blocks.albums.list
         - var href = self.link_to('users.album', { user_hid: self.user.hid, album_id: album._id })
         li.member-block__image-list-item
-          a.thumb.thumb__m-sm(href=href)
+          a.thumb.thumb__m-sm.thumb__m-responsive(href=href)
             if album.cover_id
               - var imageUrl = self.link_to('core.gridfs', { bucket: album.cover_id + '_sm' })
               img.thumb__image(src=imageUrl)

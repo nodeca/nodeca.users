@@ -14,6 +14,12 @@
   margin-left 178px - 2px
   overflow hidden
 
+@media (max-width: 580px - 1)
+  .member-sidebar
+    display none
+  .member-blocks
+    margin-left -2px
+
 .member-sidebar__menu
   list-style none
   font-size $font-size-sm
@@ -102,6 +108,9 @@
   overflow hidden
   &:focus
     outline none
+
+.member-block.page-actions
+  margin-bottom 1rem
 
 //
 // Collapse toggler states
