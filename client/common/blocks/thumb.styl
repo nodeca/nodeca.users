@@ -61,13 +61,13 @@ thumbImageHeightSm = round(thumbImageHeight / downScaleSm)
 thumbImageWidthXs  = round(thumbImageWidth / downScaleXs)
 thumbImageHeightXs = round(thumbImageHeight / downScaleXs)
 
-gridInterval   = 20px
-gridIntervalSm = 20px //round(gridInterval / downScaleSm)
-gridIntervalXs = 20px //round(gridInterval / downScaleXs)
+gridSpace   = 20px
+gridSpaceSm = 20px //round(gridSpace / downScaleSm)
+gridSpaceXs = 15px //round(gridSpace / downScaleXs)
 
-gridIntervalTight   = 10px
-gridIntervalTightSm = 10px //round(gridInterval / downScaleSm)
-gridIntervalTightXs = 10px //round(gridInterval / downScaleXs)
+gridSpaceTight   = 10px
+gridSpaceTightSm = 10px //round(gridSpace / downScaleSm)
+gridSpaceTightXs = 10px //round(gridSpace / downScaleXs)
 
 //
 // Grid to show thumbnails
@@ -75,64 +75,46 @@ gridIntervalTightXs = 10px //round(gridInterval / downScaleXs)
 
 .thumb-grid
   padding 0
-  margin-left 0px - gridInterval + selectionWidth
-  margin-right 0px - selectionWidth
-  margin-top 0px - selectionWidth
-  margin-bottom 0px - gridInterval + selectionWidth
+  margin 0 (-1 * gridSpace / 2)
 
 .thumb-grid__item
   display inline-block
-  margin-left gridInterval - (selectionWidth * 2)
-  margin-bottom gridInterval - (selectionWidth * 2)
-  border selectionWidth solid transparent
+  padding 0 (gridSpace / 2)
+  margin 0 0 gridSpace
   border-radius 3px
   &.active
   &.selected
-    border selectionWidth dotted grayDark !important
+    .thumb:after
+      content ''
+      position absolute
+      top (-1 * selectionWidth)
+      left (-1 * selectionWidth)
+      right (-1 * selectionWidth)
+      bottom (-1 * selectionWidth)
+      border selectionWidth dotted grayDark !important
+      border-radius 3px
     .thumb
       opacity .5 !important
 
 .thumb-grid__m-sm
   &.thumb-grid
-    margin-left 0px - gridIntervalSm + selectionWidth
-    margin-bottom 0px - gridIntervalSm + selectionWidth
+    margin 0 (-1 * gridSpaceSm / 2)
   .thumb-grid__item
-    margin-left gridIntervalSm - (selectionWidth * 2)
-    margin-bottom gridIntervalSm - (selectionWidth * 2)
+    padding 0 (gridSpaceSm / 2)
 
 
 .thumb-grid__m-tight
-  margin-left 0px - gridIntervalTight + selectionWidth
-  margin-bottom 0px - gridIntervalTight + selectionWidth
+  margin 0 (-1 * gridSpaceTight)
   .thumb-grid__item
-    margin-left gridIntervalTight - (selectionWidth * 2)
-    margin-bottom gridIntervalTight - (selectionWidth * 2)
+    padding 0 (gridSpaceTight / 2)
+    margin 0 0 gridSpaceTight
 
   &.thumb-grid__m-sm
     &.thumb-grid
-      margin-left 0px - gridIntervalTightSm + selectionWidth
-      margin-bottom 0px - gridIntervalTightSm + selectionWidth
+      margin 0 (-1 * gridSpaceTightSm / 2)
     .thumb-grid__item
-      margin-left gridIntervalTightSm - (selectionWidth * 2)
-      margin-bottom gridIntervalTightSm - (selectionWidth * 2)
-
-.thumb-grid__m-centered
-  text-align center
-
-.thumb-grid__m-inline
-  white-space nowrap
-
-.thumb-grid__m-shadow-tail
-  position relative
-  &:after
-    content ""
-    display block
-    position absolute
-    right 0
-    top 0
-    bottom 0
-    width 20px
-    background linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%)
+      padding 0 (gridSpaceTightSm / 2)
+      margin 0 0 gridSpaceTightSm
 
 //
 // Thumbnail container (link)
@@ -146,6 +128,7 @@ gridIntervalTightXs = 10px //round(gridInterval / downScaleXs)
   position relative
   border-radius cornerRadius
   box-shadow 0 0 2px $decorator-color
+  background-color $decorator-color
 
   &:before
     content ''
@@ -264,23 +247,18 @@ gridIntervalTightXs = 10px //round(gridInterval / downScaleXs)
 @media (max-width: screenSm - 1)
   .thumb-grid__m-responsive
     &.thumb-grid
-      padding 0
-      margin-left 0px - gridIntervalSm + selectionWidth
-      margin-bottom 0px - gridIntervalSm + selectionWidth
+      margin 0 (-1 * gridSpaceSm / 2)
 
     .thumb-grid__item
-      display inline-block
-      margin-left gridIntervalSm - (selectionWidth * 2)
-      margin-bottom gridIntervalSm - (selectionWidth * 2)
-      border selectionWidth solid transparent
+      padding 0 (gridSpaceSm / 2)
+      margin-bottom gridSpaceSm
       border-radius 3px
 
     &.thumb-grid__m-tight
-      margin-left 0px - gridIntervalTightSm + selectionWidth
-      margin-bottom 0px - gridIntervalTightSm + selectionWidth
+      margin 0 (-1 * gridSpaceTightSm / 2)
       .thumb-grid__item
-        margin-left gridIntervalTightSm - (selectionWidth * 2)
-        margin-bottom gridIntervalTightSm - (selectionWidth * 2)
+        padding 0 (gridSpaceTightSm / 2)
+        margin-bottom gridSpaceTightSm
 
   .thumb-grid__m-responsive
   .thumb__m-responsive
@@ -306,23 +284,18 @@ gridIntervalTightXs = 10px //round(gridInterval / downScaleXs)
 @media (max-width: screenXs - 1)
   .thumb-grid__m-responsive
     &.thumb-grid
-      padding 0
-      margin-left 0px - gridIntervalXs + selectionWidth
-      margin-bottom 0px - gridIntervalXs + selectionWidth
+      margin 0 (-1 * gridSpaceXs / 2)
 
     .thumb-grid__item
-      display inline-block
-      margin-left gridIntervalXs - (selectionWidth * 2)
-      margin-bottom gridIntervalXs - (selectionWidth * 2)
-      border selectionWidth solid transparent
+      padding 0 (gridSpaceXs / 2)
+      margin-bottom gridSpaceXs
       border-radius 3px
 
     &.thumb-grid__m-tight
-      margin-left 0px - gridIntervalTightXs + selectionWidth
-      margin-bottom 0px - gridIntervalTightXs + selectionWidth
+      margin 0 (-1 * gridSpaceTightXs / 2)
       .thumb-grid__item
-        margin-left gridIntervalTightXs - (selectionWidth * 2)
-        margin-bottom gridIntervalTightXs - (selectionWidth * 2)
+        padding 0 (gridSpaceTightXs / 2)
+        margin-bottom gridSpaceTightXs
 
   .thumb__m-responsive
   .thumb__m-responsive.thumb__m-sm
@@ -351,3 +324,7 @@ gridIntervalTightXs = 10px //round(gridInterval / downScaleXs)
     .thumb-caption.thumb-caption__m-secondary
     .thumb-caption__m-secondary
       font-size 9px
+
+////////////////////////////////////////////////////////////////////////////////
+
+// Fluid grid, take all possible width
