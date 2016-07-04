@@ -49,6 +49,10 @@
                     href=self.link_to('users.album.edit', { 'user_hid': self.user_hid, 'album_id': self.album._id })
                   )=self.t('edit')
 
+                  a.dropdown-item(href='#'
+                    data-on-click='users.album:delete'
+                  )=self.t('delete')
+
         = self.album ? self.album.title : self.t('title_all_files')
 
       if self.album && self.album.description

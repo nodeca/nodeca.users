@@ -62,8 +62,3 @@
                 )
 
             button.btn.btn-primary(type='submit')= self.t('save')
-            button.btn.btn-link.pull-xs-right(
-              type='button'
-              data-on-click='users.album.edit:delete'
-              data-album-id=self.album._id
-            )= self.t('delete')

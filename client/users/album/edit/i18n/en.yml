@@ -6,10 +6,5 @@ en-US:
   cover_input_name: Cover
   cover_input_desc: If cover not selected, last available image be used.
   cover_select: Select
-
   save: Save
-  delete: Delete album
-
-  delete_confirmation: Are you sure want to delete this album and all it's photos?
-
   err_empty_name: Album name should not be empty

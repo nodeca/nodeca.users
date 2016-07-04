@@ -30,19 +30,6 @@ N.wire.on(module.apiPath + ':save', function save_album(form) {
 });
 
 
-N.wire.before(module.apiPath + ':delete', function confirm_delete_album() {
-  return N.wire.emit('common.blocks.confirm', t('delete_confirmation'));
-});
-
-
-N.wire.on(module.apiPath + ':delete', function delete_album(data) {
-  let params = { user_hid: pageParams.user_hid };
-
-  return N.io.rpc('users.album.destroy', { album_id: data.$this.data('albumId') })
-    .then(() => N.wire.emit('navigate.to', { apiPath: 'users.albums_root', params }));
-});
-
-
 N.wire.on(module.apiPath + ':select_cover', function select_cover() {
   let  data = { user_hid: pageParams.user_hid, album_id: pageParams.album_id, cover_id: null };
 

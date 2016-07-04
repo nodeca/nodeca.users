@@ -4,6 +4,8 @@ en-US:
   select_files: Add files
   edit: Edit album
   add_medialink: Add video
+  delete: Delete album
+  delete_confirmation: Are you sure want to delete this album and all it's photos?
   no_files: No files
   next_page: Older
   prev_page: Newer

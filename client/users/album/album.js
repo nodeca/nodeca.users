@@ -162,11 +162,13 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Create medialink button handler
+// Dropdown menu buttons handlers
 //
 
 N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
+  // Create medialink
+  //
   N.wire.on(module.apiPath + ':add_medialink', function add_medialink(data) {
     let params = {
       album_id: mediaState.album_id,
@@ -183,6 +185,20 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         );
         $('.user-album-root').removeClass('no-files');
       });
+  });
+
+
+  // Delete
+  //
+  N.wire.before(module.apiPath + ':delete', function confirm_delete_album() {
+    return N.wire.emit('common.blocks.confirm', t('delete_confirmation'));
+  });
+
+  N.wire.on(module.apiPath + ':delete', function delete_album() {
+    let params = { user_hid: N.runtime.user_hid };
+
+    return N.io.rpc('users.album.destroy', { album_id: mediaState.album_id })
+      .then(() => N.wire.emit('navigate.to', { apiPath: 'users.albums_root', params }));
   });
 });
 
