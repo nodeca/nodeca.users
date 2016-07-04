@@ -39,6 +39,11 @@ module.exports = function (N, apiPath) {
 
     if (!album) throw N.io.NOT_FOUND;
 
+    if (env.user_info.user_hid !== env.data.user.hid && album.count === 0) {
+      // Non-owners can't access to empty albums
+      throw N.io.NOT_FOUND;
+    }
+
     album.title = album.title || env.t('default_name');
     env.data.album = album;
   });

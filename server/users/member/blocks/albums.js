@@ -3,23 +3,29 @@
 'use strict';
 
 
-var _ = require('lodash');
+const _ = require('lodash');
 
 
 module.exports = function (N) {
 
-  var ALBUMS_LIMIT = 7;
+  const ALBUMS_LIMIT = 7;
 
 
   // Fetch last user photos
   //
   N.wire.after('server:users.member', function* fetch_last_photos(env) {
+    let query = N.models.users.Album.find()
+                    .where('user').equals(env.data.user._id)
+                    .lean(true)
+                    .sort('-last_ts')
+                    .limit(ALBUMS_LIMIT + 1); // Remove default album later to optimize query
 
-    let albums = yield N.models.users.Album
-                          .find({ user: env.data.user._id })
-                          .lean(true)
-                          .sort('-last_ts')
-                          .limit(ALBUMS_LIMIT + 1); // Remove default album later to optimize query
+    if (env.user_info.user_hid !== env.data.user.hid) {
+      // Hide empty albums for non-owner
+      query.where('count').gt(0);
+    }
+
+    let albums = yield query;
 
     // Try to remove default album
     albums = albums.filter(album => album.default !== true);
@@ -42,10 +48,16 @@ module.exports = function (N) {
 
     if (!_.get(env.res, 'blocks.albums')) return;
 
-    let count = yield N.models.users.Album
-                          .find({ user: env.data.user._id })
-                          .count();
+    let query = N.models.users.Album.find()
+                    .where('user').equals(env.data.user._id)
+                    .where('default').equals(false) // don't count default album
+                    .count();
 
-    env.res.blocks.albums.count = count - 1; // Don't count default album
+    if (env.user_info.user_hid !== env.data.user.hid) {
+      // Hide empty albums for non-owner
+      query.where('count').gt(0);
+    }
+
+    env.res.blocks.albums.count = yield query;
   });
 };
