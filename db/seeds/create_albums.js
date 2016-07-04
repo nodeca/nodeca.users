@@ -97,11 +97,14 @@ let createAlbums = co.wrap(function* () {
 
   let SectionModeratorStore = settings.getStore('section_moderator');
 
-  let moderators = (yield SectionModeratorStore.getModeratorsInfo(sections[0]._id))
-                     .filter(moderator => moderator.visible)
-                     .map(moderator => moderator._id);
+  // sections might not exist if forum seed hasn't been loaded yet
+  if (sections.length) {
+    let moderators = (yield SectionModeratorStore.getModeratorsInfo(sections[0]._id))
+                       .filter(moderator => moderator.visible)
+                       .map(moderator => moderator._id);
 
-  user_ids = user_ids.concat(moderators);
+    user_ids = user_ids.concat(moderators);
+  }
 
   user_ids = _.uniq(user_ids.map(String));
 
