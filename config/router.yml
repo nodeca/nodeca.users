@@ -17,6 +17,9 @@ router:
     users.dialogs_root.unsubscribe.index:
       "/unsubscribe/messages": ~
 
+    users.dialogs_root.unsubscribe.done:
+      "/unsubscribe/messages/done": ~
+
     users.dialog:
       "/messages/{dialog_id}/{message_id}":
         dialog_id:
