@@ -8,11 +8,11 @@
 
   .layout__container.container-fluid
     header.page-head
-      ul.nav.nav-pills
-        li.active
-          a(href=self.link_to('users.settings.general'))= self.t('general')
-        li
-          a(href=self.link_to('users.settings.ignore'))= self.t('ignore')
+      ul.nav.nav-tabs
+        li.nav-item
+          a.nav-link.active(href=self.link_to('users.settings.general'))= self.t('general')
+        li.nav-item
+          a.nav-link(href=self.link_to('users.settings.ignore'))= self.t('ignore')
 
     form.form#user-settings-general(data-bind='submit: submit')
       // ko foreach: categories
