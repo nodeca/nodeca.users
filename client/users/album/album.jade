@@ -79,12 +79,11 @@
       }
     )!= self.partial('@users.album.list')
 
-    nav.user-album-root__page-links
-      .pager
-        - var link = self.link_to(self.apiPath, { user_hid: self.user_hid, album_id: self.album && self.album._id, media_id: self.prev_media });
-        li: a(href=link)= self.t('prev_page')
+    .pager
+      - var link = self.link_to(self.apiPath, { user_hid: self.user_hid, album_id: self.album && self.album._id, media_id: self.prev_media });
+      a.btn.btn-secondary(href=link)= self.t('prev_page')
 
-        - var link = self.link_to(self.apiPath, { user_hid: self.user_hid, album_id: self.album && self.album._id, media_id: self.next_media });
-        li: a(href=link)= self.t('next_page')
+      - var link = self.link_to(self.apiPath, { user_hid: self.user_hid, album_id: self.album && self.album._id, media_id: self.next_media });
+      a.btn.btn-secondary(href=link)= self.t('next_page')
 
     p.user-album-root__no-files= self.t('no_files')
