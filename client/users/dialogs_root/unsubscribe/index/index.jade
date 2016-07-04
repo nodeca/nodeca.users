@@ -1,20 +1,22 @@
 #content
-  .row
-    .col-sm-8.col-sm-offset-2
-      .panel.panel-default
+  .layout__container.container-fluid.space-top
+    .row
+      .col-md-6.offset-md-3.col-sm-8.offset-sm-2
+        .card
 
-        .panel-heading
-          .panel-title=self.head.title
+          h1.card-header.h3
+            =self.head.title
 
-        form.panel-body(data-on-submit='users.dialogs_root.unsubscribe.index:confirm')
+          form.card-block(data-on-submit='users.dialogs_root.unsubscribe.index:confirm')
 
-          .form-group
-            small.text-muted=self.t('confirmation')
+            .form-group
+              =self.t('confirmation')
 
-          .form-group
-            .checkbox
-              label
-                input(type='checkbox' name='confirm' data-on-change='users.dialogs_root.unsubscribe.index:change')
-                =self.t('label')
+            .form-group
+              .checkbox
+                label
+                  input(type='checkbox' name='confirm' data-on-change='users.dialogs_root.unsubscribe.index:change')
+                  | 
+                  =self.t('label')
 
-          button#dialogs-unsubscribe.btn.btn-primary(type='submit' disabled=true)=self.t('ok')
+            button#dialogs-unsubscribe.btn.btn-primary(type='submit' disabled=true)=self.t('ok')
