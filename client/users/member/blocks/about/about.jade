@@ -20,13 +20,14 @@
             =item.value
 
       each item in self.blocks.about.extra
-        dt.member-about__dt.member-about__dt-extra=self.t(item.name)
-        dd.member-about__dd.member-about__dd-extra
+        dt.member-about__dt.member-about__m-hidden=self.t(item.name)
+        dd.member-about__dd.member-about__m-hidden
           if item.link
             a(href=item.link)=item.value
           else
             =item.value
 
-    button.btn.btn-link.member-about__show-more(
-      data-on-click='users.member.blocks.about:show_more'
-    )=self.t('show_more')
+      dt.member-about__dt.member-about__expand
+      dd.member-about__dd.member-about__expand
+        a(href='#' data-on-click='users.member.blocks.about:expand')
+          =self.t('expand')

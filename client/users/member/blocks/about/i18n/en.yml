@@ -1,6 +1,5 @@
 en-US:
   title: About
-  show_more: Show more
   joined: Joined
   post_count: Post count
   location: Location
@@ -9,3 +8,4 @@ en-US:
   jabber: Jabber
   birthday: Birthday
   hobbies: Hobbies
+  expand: More...

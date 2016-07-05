@@ -3,13 +3,6 @@
 .member-about__dl
   font-size $font-size-sm
 
-.member-about__dt-extra, .member-about__dd-extra
-  display none
-
-.member-about-info__m-show-extra
-  .member-about__dt-extra, .member-about__dd-extra
-    display block
-
 .member-about__dt
   float left
   clear left
@@ -21,3 +14,18 @@
 .member-about__dd
   margin: 0 0 0 110px
   padding: 0 0 0.5em 0
+
+.member-about__m-hidden
+  display none
+
+@keyframes member-about-expand-animation {
+  from  { opacity: 0;  }
+  to    { opacity: 1; }
+}
+
+.member-about__m-expanded
+  .member-about__m-hidden
+    display block
+    animation member-about-expand-animation 1s
+  .member-about__expand
+    display none
