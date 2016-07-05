@@ -41,13 +41,8 @@
         if self.runtime.is_member
           .page-actions.member-block
 
-            if self.settings.can_add_mod_notes && self.mod_notes_count > 0
-              a.btn.btn-secondary(
-                href=self.link_to('users.mod_notes', { 'user_hid': self.user.hid })
-              )=self.t('mod_notes', self.mod_notes_count)
 
-
-            .page-actions__dropdown
+            .page-actions__item.page-actions__dropdown
               if self.actions_ordered.length
                 button.btn.btn-secondary.btn-square.icon.icon-dropdown.dropdown-toggle(
                   type='button'
@@ -57,13 +52,20 @@
                   each item in self.actions_ordered
                     !=self.partial('@users.member.actions.' + item.name)
 
+            if self.settings.can_add_mod_notes && self.mod_notes_count > 0
+              .page-actions__item
+                a.btn.btn-secondary(
+                  href=self.link_to('users.mod_notes', { 'user_hid': self.user.hid })
+                )=self.t('mod_notes', self.mod_notes_count)
+
             if self.settings.can_use_messages && self.settings.can_send_messages && !own_page
-              button.btn.btn-secondary.btn-square.icon.icon-mail(
-                type='button'
-                data-on-click='users.member:message'
-                data-to=self.users[self.user._id].nick
-                title=self.t('send_message_help')
-              )
+              .page-actions__item
+                button.btn.btn-secondary.btn-square.icon.icon-mail(
+                  type='button'
+                  data-on-click='users.member:message'
+                  data-to=self.users[self.user._id].nick
+                  title=self.t('send_message_help')
+                )
 
         each block in self.blocks_ordered
           if (self.blocks[block.name])

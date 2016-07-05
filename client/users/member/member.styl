@@ -14,11 +14,23 @@
   margin-left 178px - 2px
   overflow hidden
 
+.member-block.page-actions
+  margin-bottom 1rem
+
+
 @media (max-width: 580px - 1)
   .member-sidebar
     display none
   .member-blocks
     margin-left -2px
+
+  .member-block.page-actions
+    display flex
+    .page-actions__item
+      flex 1 1 100%
+    .btn
+      width 100%
+
 
 .member-sidebar__menu
   list-style none
@@ -108,9 +120,6 @@
   overflow hidden
   &:focus
     outline none
-
-.member-block.page-actions
-  margin-bottom 1rem
 
 //
 // Collapse toggler states
