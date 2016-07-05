@@ -11,9 +11,11 @@
         =self.t('title')
 
         if (points)
+          | 
           small.member-block__header-counter= self.t('counter', points)
 
         if self.blocks.infractions.settings.users_mod_can_add_infractions && !self.blocks.infractions.settings.cannot_receive_infractions
+          | 
           button.btn.btn-secondary.btn-xs.icon.icon-plus(
             title=self.t('add')
             data-on-click='users.member.blocks.infractions:add'
@@ -27,12 +29,12 @@
     if self.blocks.infractions.list.length
 
       .table-responsive
-        table.table.table-condensed.table-bordered
+        table.table.table-condensed.table-sm.member-infractions__table
           thead: tr
-            th=self.t('by')
             th=self.t('date')
+            th=self.t('by')
             th=self.t('reason')
-            th=self.t('points')
+            th.text-xs-center=self.t('points')
             th=self.t('expires')
 
           tbody
@@ -46,14 +48,14 @@
                 class=!infraction.exists ? 'member-infractions-item__m-deleted' : ''
               )
 
-                td.member-infractions-item__author
+                td.member-infractions-item__ts.text-nowrap
+                  !=self.timetag(infraction.ts, 'compact')
+
+                td.member-infractions-item__author.text-nowrap
                   if author
                     a.member-infractions-item__author-link(
                       href=self.link_to('users.member', { user_hid: author.hid })
                     )= author.nick
-
-                td.member-infractions-item__ts
-                  !=self.timetag(infraction.ts, 'compact')
 
                 td.member-infractions-item__reason
                     - var reason;
@@ -82,9 +84,17 @@
                       else
                         span(title=del_reason.join(' '))=reason
 
-                td.member-infractions-item__points=infraction.points
+                td.member-infractions-item__points.text-xs-center
+                  =infraction.points
 
-                td.member-infractions-item__expire
+                td.member-infractions-item__expire.text-nowrap
+                  if infraction.exists && !expired && (self.blocks.infractions.settings.can_delete_infractions || infraction.from === self.runtime.user_id)
+                    a(href='#'
+                      data-on-click='users.member.blocks.infractions:delete'
+                      data-infraction-id=infraction._id
+                      title=self.t('delete')
+                    ).member-infractions-item__remove.pull-xs-right: span.icon.icon-deleted
+
                   if !infraction.exists
                     =self.t('deleted')
                   else if expired
@@ -93,12 +103,5 @@
                     !=self.timetag(infraction.expire, 'compact')
                   else
                     =self.t('never')
-
-                  if infraction.exists && !expired && (self.blocks.infractions.settings.can_delete_infractions || infraction.from === self.runtime.user_id)
-                    a(href='#'
-                      data-on-click='users.member.blocks.infractions:delete'
-                      data-infraction-id=infraction._id
-                      title=self.t('delete')
-                    ).member-infractions-item__remove.pull-xs-right: span.icon.icon-deleted
 
     .clearfix
