@@ -9,46 +9,24 @@
         .pull-xs-right.icon.icon-expand
 
   #member-about-info.member-block__inner.collapse.in
+
     dl.member-about__dl
-      dt.member-about__dt Registered:
-      dd.member-about__dd 15 jun 2009
+      each item in self.blocks.about.list
+        dt.member-about__dt=self.t(item.name)
+        dd.member-about__dd
+          if item.link
+            a(href=item.link)=item.value
+          else
+            =item.value
 
-      dt.member-about__dt Posts:
-      dd.member-about__dd: a(href='#') 212
+      each item in self.blocks.about.extra
+        dt.member-about__dt.member-about__dt-extra=self.t(item.name)
+        dd.member-about__dd.member-about__dd-extra
+          if item.link
+            a(href=item.link)=item.value
+          else
+            =item.value
 
-      dt.member-about__dt Location:
-      dd.member-about__dd: a(href='#') New Urupinsk
-
-    //-
-      if self.blocks.about.contacts && self.blocks.about.contacts.length !== 0
-      dl.member-about-text.dl-horizontal
-        dt Contacts:
-        dd
-
-          ul.member-block__contacts-inline.collapse.in
-            each contact in self.blocks.about.contacts
-              - var messenger = self.blocks.about.messengers[contact.messenger]
-              li.member-block__contacts-inline-item
-                button.btn.btn-link(
-                  class=messenger.icon_class
-                  data-toggle='popover'
-                  data-trigger='click;focus'
-                  data-placement='top'
-                  data-content=contact.value
-                )
-            li
-              button.btn.btn-link.icon.icon-expand(href='.member-block__contacts-inline,.member-block__contacts-expand', data-toggle='collapse')
-
-          ul.member-block__contacts-expand.collapse.out
-            each contact in self.blocks.about.contacts
-              - var messenger = self.blocks.about.messengers[contact.messenger]
-              li.member-block__contacts-expand-item
-                span.member-block__contacts-expand-name= messenger.name
-                span.member-block__contacts-expand-value= contact.value
-
-
-      dt.member-about__dt Birthday:
-      dd.member-about__dd 13 feb 1983
-
-      dt.member-about__dt Interests:
-      dd.member-about__dd Music, Books, Football, Tennis
+    button.btn.btn-link.member-about__show-more(
+      data-on-click='users.member.blocks.about:show_more'
+    )=self.t('show_more')
