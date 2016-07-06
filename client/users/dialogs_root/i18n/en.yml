@@ -1,5 +1,5 @@
 en-US:
-  title: Messages
-  no_messages: No messages
-  new_message: New message
-  delete_confirmation: Are you sure want to delete whole conversation? This action is uncancalable.
+  title: Dialogs
+  no_messages: No dialogs
+  new_message: New dialog
+  delete_confirmation: Are you sure want to delete whole conversation? This action is non-cancelable.
