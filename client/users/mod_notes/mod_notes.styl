@@ -1,10 +1,15 @@
 @import "nodeca.core/client/common/_variables"
 
 .mod-notes-item
-  border-bottom 1px solid grayLightest
-  &:last-child
-    border-bottom none
-  margin-bottom baseLineHeight
+  margin-bottom 2rem
+
+.mod-notes-item__info
+  display flex
+  align-items flex-end
+  color $body-color-secondary
+  font-size $font-size-xs
+  line-height 1em
+  margin-bottom .5rem
 
 .mod-notes-item__info-aside
   float left
@@ -13,15 +18,33 @@
   width 40px
   height 40px
 
-.mod-notes-item__controls
-  float right
-
 .mod-notes-item__info-data
-  color gray
-  display inline-block
-  margin-left 10px
-  font-size 12px
+  flex 1 1 100%
+  border-bottom 1px solid $decorator-color
+  margin-left 0.5rem
 
-.mod-notes-item__content
-  margin-top (baseLineHeight / 2)
-  clear both
+.mod-notes-item__author
+  font-size $font-size-sm
+  line-height 1em
+  color darken($body-color-secondary, 10%)
+  shortable()
+  margin-bottom .375rem
+.mod-notes-item__author-link
+  color darken($body-color-secondary, 10%)
+
+.mod-notes-item__ts
+  margin-bottom .25rem
+
+.mod-notes-item__controls
+  border-bottom 1px solid $decorator-color
+.mod-notes-item__controls-inner
+  white-space nowrap
+  margin-right -.25rem
+
+.mod-notes-item__controls-btn
+  opacity .5
+  transition opacity .2s ease
+  margin-left 0 !important
+
+.mod-notes-item__info:hover .mod-notes-item__controls-btn
+  opacity 1
