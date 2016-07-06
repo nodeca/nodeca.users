@@ -14,7 +14,7 @@ users:
         priority: 50
 
     menu:
-      messages:
+      dialogs:
         to: users.dialogs_root
         priority: 20
       albums:

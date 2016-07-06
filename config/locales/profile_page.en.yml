@@ -1,0 +1,13 @@
+i18n:
+  en-US:
+    users:
+      profile_page:
+        menu:
+          dialogs: Dialogs
+          albums: Albums
+          blog: Blog
+          groups: Groups
+          bookmarks: Bookmarks
+          subscribtions: Subscriptions
+          drafts: Drafts
+          settings: Settings

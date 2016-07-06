@@ -11,12 +11,3 @@ en-US:
   send_message_help: Send message
   mod_notes: "Notes (#{count})"
   hellbaned: Hellbaned
-  menu:
-    messages: Messages
-    albums: Albums
-    blog: Blog
-    groups: Groups
-    bookmarks: Bookmarks
-    subscribtions: Subscriptions
-    drafts: Drafts
-    settings: Settings
