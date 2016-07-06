@@ -57,7 +57,7 @@ N.wire.on(module.apiPath + ':edit', function show_editor(data) {
   let $editor = N.MDEdit.show({
     text: String(orig_text || draft.text || ''),
     toolbar: 'usernote',
-    parse_options
+    parseOptions: parse_options
   });
 
   $editor

@@ -10,7 +10,8 @@
     if self.settings.can_use_messages && self.settings.can_send_messages && self.runtime.user_hid !== self.user.hid
       button.btn.btn-secondary.btn-xs.btn-block(
         data-on-click='common.usercard_popover:message'
-        data-to=self.user.nick
+        data-to-nick=self.user.nick
+        data-to-hid=self.user.hid
       )= self.t('send_message')
 
   .ucard-info

@@ -93,7 +93,12 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   // Create new dialog with user
   //
   N.wire.on(module.apiPath + ':message', function create_dialog(data) {
-    return N.wire.emit('users.dialog.create:begin', { to: data.$this.data('to') });
+    let params = {
+      nick: data.$this.data('to-nick'),
+      hid: data.$this.data('to-hid')
+    };
+
+    return N.wire.emit('users.dialog.create:begin', params);
   });
 
 

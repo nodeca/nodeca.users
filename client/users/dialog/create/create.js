@@ -76,26 +76,47 @@ N.wire.before(module.apiPath + ':begin', function check_draft_attachments() {
 
 // Show editor and add handlers for editor events
 //
-N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
+N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
   let $editor = N.MDEdit.show({
     text: draft.text,
     attachments: draft.attachments
   });
   let $inputs = $(N.runtime.render(module.apiPath + '.inputs', {
-    title: draft.title,
-    to: (data || {}).to || draft.to
+    title: draft.title || '',
+    to: to_user ? to_user.nick : (draft.to || '')
   }));
-  let $to = $inputs.find('.dialogs-create__to');
+
+  let $to = $inputs.find('.dialogs-create__user-nick-input');
   let $title = $inputs.find('.dialogs-create__title');
 
   updateOptions();
 
   $editor
     .on('show.nd.mdedit', () => {
-      $editor.find('.mdedit-header__caption').html(t('new_message'));
+      $editor.addClass('dialogs-create-editor');
+
+      if (to_user) {
+        // If to user is specified - show dialog without nick field
+        //
+        // - button in usercard
+        // - button on profile page
+        //
+        $editor.find('.mdedit-header__caption').html(t('title_with_nick', {
+          nick: to_user.nick,
+          url: N.router.linkTo('users.member', { user_hid: to_user.hid })
+        }));
+
+      } else {
+        // If to user is not specified - show dialog with nick field and modifier
+        //
+        // - button on dialogs root page
+        //
+        $editor.find('.mdedit-header__caption').html(t('title'));
+        $editor.addClass('dialogs-create-editor__m-with-nick');
+      }
+
       $editor.find('.mdedit-header').append($inputs);
       $editor.find('.mdedit-footer').append(N.runtime.render(module.apiPath + '.options_btn'));
-
 
       // If bloodhound not initialized - init
       //

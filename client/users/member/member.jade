@@ -63,7 +63,8 @@
                 button.btn.btn-secondary.btn-square.icon.icon-mail(
                   type='button'
                   data-on-click='users.member:message'
-                  data-to=self.users[self.user._id].nick
+                  data-to-nick=self.users[self.user._id].nick
+                  data-to-hid=self.users[self.user._id].hid
                   title=self.t('send_message_help')
                 )
 

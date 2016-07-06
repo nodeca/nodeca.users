@@ -1,10 +1,14 @@
 //- Focus on `to` field if it is not filled or focus on `title` (editor will search element with tabindex = 1)
 .mdedit-header__addon
-  input.dialogs-create__to.form-control(
-    placeholder=self.t('to')
-    value=self.to
-    tabindex=self.to ? -1 : 1
-  )
+  .dialogs-create__user-nick-group
+    .dialogs-create__user-nick-label
+      label=self.t('to_label')
+    .dialogs-create__user-nick-col
+      input.dialogs-create__user-nick-input.form-control(
+        placeholder=self.t('to_placeholder')
+        value=self.to
+        tabindex=self.to ? -1 : 1
+      )
 .mdedit-header__addon
   input.dialogs-create__title.form-control(
     placeholder=self.t('title')

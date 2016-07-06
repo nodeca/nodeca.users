@@ -1,7 +1,9 @@
 en-US:
-  new_message: New message
+  title: New dialog
+  title_with_nick: "New dialog with &quot;<a href='#{url}'>#{nick}</a>&quot;"
   inputs:
     title: Title
-    to: Send to (user nick)
+    to_label: New dialog with
+    to_placeholder: user nick
   options_btn:
     options: Options
