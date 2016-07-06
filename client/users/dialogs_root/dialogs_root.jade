@@ -8,14 +8,16 @@
     .layout__container.container-fluid
       !=self.partial('@users.blocks.breadcrumbs')
 
-      .breadcrumbs-controls
-        if self.settings.can_send_messages
-          button.btn.btn-secondary.btn-sm.icon.icon-plus(
-            title=self.t('new_message')
-            data-on-click='users.dialogs_root:create_message'
-          )
-
   .layout__container.container-fluid
+    header.page-head
+      .pull-xs-right
+        button.btn.btn-secondary.btn-square.icon.icon-plus(
+          type='button'
+          data-on-click='users.dialogs_root:create_message'
+          title=self.t('new_message')
+        )
+      h1.page-head__title(itemprop='name')= self.t('title')
+
     if self.dialogs.length === 0
       .user-dialog-list-no-items=self.t('no_messages')
 

@@ -94,14 +94,6 @@ N.wire.on('navigate.done:' + module.apiPath, function navbar_setup() {
 });
 
 
-N.wire.on('navigate.exit:' + module.apiPath, function navbar_teardown() {
-  $('.navbar-alt').empty();
-  $('.navbar').removeClass('navbar__m-secondary');
-});
-
-
-
-
 /////////////////////////////////////////////////////////////////////
 // Change URL when user scrolls the page
 //

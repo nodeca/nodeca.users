@@ -1,8 +1,9 @@
-.pull-xs-left
-  a.navbar__level-up.icon.icon-level-up(
+#navbar-progress-source.pull-xs-left
+  !=self.partial('@users.dialog.blocks.page_progress', self.page_progress)
+
+.navbar-nav.pull-xs-left
+  a.navbar__level-up.nav-link.icon.icon-level-up(
     href=self.link_to('users.dialogs_root', { dialog_id: self.dialog._id })
   )
-
-  !=self.partial('@users.dialog.blocks.page_progress', self.page_progress)
 
 .navbar-alt__title=self.dialog.title

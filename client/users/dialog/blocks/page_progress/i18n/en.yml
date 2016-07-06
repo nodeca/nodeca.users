@@ -1,5 +1,4 @@
 en-US:
-  label: '#{current} out of #{total}'
   jump_to: 'Jump to:'
   placeholder: Dialog
   go: Go!
