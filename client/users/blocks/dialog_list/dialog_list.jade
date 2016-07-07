@@ -42,7 +42,7 @@ each dialog in self.dialogs
           }))= dialog.title
 
           if to
-            .dialog-list-item__talk-with=to.nick
+            .dialog-list-item__talk-with=to.name
 
         .dialog-list-item__controls
           span.dialog-list-item__date!=self.timetag(dialog.cache.last_ts, 'relative')
