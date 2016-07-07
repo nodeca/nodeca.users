@@ -35,25 +35,24 @@
                 placeholder=self.t('description_input_desc')
               )= self.album.description
 
-            .form-group
-              label= self.t('cover_input_name')
-              - var state_class = self.album.cover_id ? 'has-cover' : '';
-              #album-edit__cover(class=state_class)
+            - var state_class = self.album.cover_id ? 'has-cover' : '';
+            #album-edit__cover(class=state_class)
 
-                .album-edit__cover
-                  a.thumb.thumb__m-sm(
-                    href='#'
-                    data-on-click='users.album.edit:select_cover'
+              .form-group.album-edit__no-cover
+                button.btn.btn-sm.btn-secondary(
+                  data-on-click='users.album.edit:select_cover'
+                )= self.t('cover_select')
+
+              .form-group.album-edit__cover
+                label= self.t('cover_input_name')
+
+                p: a.thumb.thumb__m-sm(
+                  href='#'
+                  data-on-click='users.album.edit:select_cover'
+                )
+                  img#album-edit__cover-img.thumb__image(
+                    src=self.album.cover_id ? self.link_to('core.gridfs', { 'bucket': self.album.cover_id + '_sm' }) : ''
                   )
-                    img#album-edit__cover-img.thumb__image(
-                      src=self.album.cover_id ? self.link_to('core.gridfs', { 'bucket': self.album.cover_id + '_sm' }) : ''
-                    )
-
-                .album-edit__no-cover
-                  button.btn.btn-secondary(
-                    data-on-click='users.album.edit:select_cover'
-                  )= self.t('cover_select')
-                  p: small.text-muted= self.t('cover_input_desc')
 
                 input(
                   type='hidden'
