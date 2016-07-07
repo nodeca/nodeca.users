@@ -1,43 +1,59 @@
 each dialog in self.dialogs
-  .user-dialog-list-item(
+  .dialog-list-item(
     id='dialog' + dialog._id
     data-dialog-id=dialog._id
-    class=dialog.unread > 0 ? 'user-dialog-list-item__m-unread' : ''
+    class=dialog.unread > 0 ? 'dialog-list-item__m-unread' : ''
+    class=dialog.cache.last_user !== N.runtime.user_id ? 'dialog-list-item__m-incoming' : ''
   )
     - var to = self.users[dialog.to];
 
-      .user-dialog-list-item__aside
+    .dialog-list-item__aside
+      a.dialog-list-item__aside-inner(
+        href=self.link_to('users.member', { user_hid: to.hid })
+      )
+
+        .dialog-list-item__avatar-image-aside-left.icon.icon-right-open
 
         if to
-          a.user-dialog-list-item__avatar._ucard-popover(
+          img.dialog-list-item__avatar-image(alt=to.name)&attributes(self.avatar(to, 'md'))
+
+        .dialog-list-item__avatar-image-aside-right.icon.icon-right-open
+
+    .dialog-list-item__content
+      .dialog-list-item__header
+
+        .dialog-list-item__aside-inline
+          a.dialog-list-item__aside-inner(
             href=self.link_to('users.member', { user_hid: to.hid })
-            data-user-id=to._id
-            title=to.name
           )
-            img.user-dialog-list-item__avatar-image.av-l(alt=to.name)&attributes(self.avatar(to, 'md'))
 
-      .user-dialog-list-item__content
+            .dialog-list-item__avatar-image-aside-left.icon.icon-right-open
 
-        a.user-dialog-list-item__link(href=self.link_to('users.dialog', {
-          dialog_id: dialog._id,
-          message_id: dialog.cache.last_message
-        }))
-
-          .user-dialog-list-item__title=dialog.title
-
-          .user-dialog-list-item__preview(
-            class=dialog.cache.last_user === N.runtime.user_id ? 'user-dialog-list-item__preview_m-own' : ''
-          )
             if to
-              span.user-dialog-list-item__preview-nick=to.nick
-            !=dialog.cache.preview
+              img.dialog-list-item__avatar-image(alt=to.name)&attributes(self.avatar(to, 'md'))
 
-        .user-dialog-list-item__info
-          .user-dialog-list-item__date!=self.timetag(dialog.cache.last_ts, 'relative')
-          button.user-dialog-list-item__delete.btn.btn-xs.btn-secondary.icon.icon-deleted(
+            .dialog-list-item__avatar-image-aside-right.icon.icon-right-open
+
+
+        .dialog-list-item__info
+          a.dialog-list-item__title(href=self.link_to('users.dialog', {
+            dialog_id: dialog._id,
+            message_id: dialog.cache.last_message
+          }))= dialog.title
+
+          if to
+            .dialog-list-item__talk-with=to.nick
+
+        .dialog-list-item__controls
+          span.dialog-list-item__date!=self.timetag(dialog.cache.last_ts, 'relative')
+          button.dialog-list-item__delete.btn.btn-sm.btn-link.icon.icon-deleted(
             title=self.t('delete')
             data-dialog-id=dialog._id
             data-on-click='users.dialogs_root:delete_dialog'
           )
 
-    .clearfix
+      a.dialog-list-item__preview(href=self.link_to('users.dialog', {
+        dialog_id: dialog._id,
+        message_id: dialog.cache.last_message
+      }))
+        !=dialog.cache.preview

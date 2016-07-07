@@ -38,7 +38,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
   dlgListState.first_message_id = N.runtime.page_data.first_message_id;
   dlgListState.last_message_id = N.runtime.page_data.last_message_id;
   dlgListState.reached_start = pagination.chunk_offset === 0 || !dlgListState.first_message_id;
-  dlgListState.reached_end = (dlgListState.last_dialog_id === $('.user-dialog-list-item:last-child').data('dialog-id'))
+  dlgListState.reached_end = (dlgListState.last_dialog_id === $('.dialog-list-item:last-child').data('dialog-id'))
                              || !dlgListState.last_message_id;
   dlgListState.prev_loading_start = 0;
   dlgListState.next_loading_start = 0;
@@ -59,7 +59,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
 
     if (el.length) {
       $window.scrollTop(el.offset().top - $('.navbar').height() - TOP_OFFSET);
-      el.addClass('user-dialog-list-item__m-highlight');
+      el.addClass('dialog-list-item__m-highlight');
       return;
     }
   }
@@ -67,8 +67,8 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
   // If we're on the first page, scroll to the top;
   // otherwise, scroll to the first dialog on that page
   //
-  if (pagination.chunk_offset > 1 && $('.user-dialog-list').length) {
-    $window.scrollTop($('.user-dialog-list').offset().top - navbar_height);
+  if (pagination.chunk_offset > 1 && $('.dialog-list').length) {
+    $window.scrollTop($('.dialog-list').offset().top - navbar_height);
 
   } else {
     $window.scrollTop(0);
@@ -106,10 +106,10 @@ let locationScrollHandler = null;
 
 
 N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
-  if ($('.user-dialog-list').length === 0) return;
+  if ($('.dialog-list').length === 0) return;
 
   locationScrollHandler = _.debounce(function update_location_on_scroll() {
-    let dialogs         = document.getElementsByClassName('user-dialog-list-item');
+    let dialogs         = document.getElementsByClassName('dialog-list-item');
     let dialogThreshold = $window.scrollTop() + navbar_height + TOP_OFFSET;
     let offset;
     let currentIdx;
@@ -176,7 +176,7 @@ let progressScrollHandler = null;
 
 
 N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
-  if ($('.user-dialog-list').length === 0) return;
+  if ($('.dialog-list').length === 0) return;
 
   progressScrollHandler = _.debounce(function update_progress_on_scroll() {
     let viewportStart = $window.scrollTop() + navbar_height;
@@ -184,7 +184,7 @@ N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
     // If we scroll below top border of the first topic,
     // show the secondary navbar
     //
-    if ($('.user-dialog-list').offset().top < viewportStart) {
+    if ($('.dialog-list').offset().top < viewportStart) {
       $('.navbar').addClass('navbar__m-secondary');
     } else {
       $('.navbar').removeClass('navbar__m-secondary');
@@ -192,7 +192,7 @@ N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
 
     // Update progress bar
     //
-    let dialogs         = document.getElementsByClassName('user-dialog-list-item');
+    let dialogs         = document.getElementsByClassName('dialog-list-item');
     let dialogThreshold = $window.scrollTop() + navbar_height + TOP_OFFSET;
     let offset;
     let currentIdx;
@@ -305,7 +305,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
       // remove duplicate topics
       res.dialogs.forEach(dlg => $(`#dialog${dlg._id}`).remove());
 
-      let $list = $('.user-dialog-list');
+      let $list = $('.dialog-list');
       let old_height = $list.height();
       // render & inject topics list
       let $result = $(N.runtime.render('users.blocks.dialog_list', res));
@@ -355,7 +355,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       if (res.dialogs.length === 0) return;
 
-      let $list = $('.user-dialog-list');
+      let $list = $('.dialog-list');
       let old_height = $list.height();
       // render & inject topics list
       let $result = $(N.runtime.render('users.blocks.dialog_list', res));
@@ -376,7 +376,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
       }
 
       dlgListState.last_message_id = res.dialogs[res.dialogs.length - 1].cache.last_message;
-      dlgListState.first_offset = res.pagination.chunk_offset - $('.user-dialog-list-item').length;
+      dlgListState.first_offset = res.pagination.chunk_offset - $('.dialog-list-item').length;
       dlgListState.topic_count = res.pagination.total;
 
 

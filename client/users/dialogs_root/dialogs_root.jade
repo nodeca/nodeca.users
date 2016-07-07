@@ -19,10 +19,10 @@
       h1.page-head__title(itemprop='name')= self.t('title')
 
     if self.dialogs.length === 0
-      .user-dialog-list-no-items=self.t('no_messages')
+      .dialog-list-no-items=self.t('no_messages')
 
     else
-      .user-dialog-list._affix(
+      .dialog-list._affix(
         data-affix-top={
           offset: 500,
           wire_above: 'users.dialogs_root:load_prev',
