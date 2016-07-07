@@ -1,15 +1,21 @@
-if self.votes.up.length !== 0
-  ul.votes-popover__list
-    li.votes-popover__list-title=self.t('voted_up')
-    each userId in self.votes.up
-      if self.users[userId]
-        li.votes-popover__vote
-          a(href=self.link_to('users.member', { user_hid: self.users[userId].hid })) #{self.users[userId].name}
+dl.votes-popover-content
 
-if self.votes.down.length !== 0
-  ul.votes-popover__list
-    li.votes-popover__list-title=self.t('voted_down')
-    each userId in self.votes.down
-      if self.users[userId]
-        li.votes-popover__vote
-          a(href=self.link_to('users.member', { user_hid: self.users[userId].hid })) #{self.users[userId].name}
+  if self.votes.up.length !== 0
+    dt.votes-popover__dt
+      span.icon.icon-vote-up.text-success
+    dd.votes-popover__dd
+      ul.votes-popover__list
+        each userId in self.votes.up
+          if self.users[userId]
+            li.votes-popover__list-item
+              a(href=self.link_to('users.member', { user_hid: self.users[userId].hid }))= self.users[userId].nick
+
+  if self.votes.down.length !== 0
+    dt.votes-popover__dt
+      span.icon.icon-vote-down.text-danger
+    dd.votes-popover__dd
+      ul.votes-popover__list
+        each userId in self.votes.down
+          if self.users[userId]
+            li.votes-popover__list-item
+              a(href=self.link_to('users.member', { user_hid: self.users[userId].hid }))= self.users[userId].nick

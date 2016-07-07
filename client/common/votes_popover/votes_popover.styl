@@ -1,21 +1,29 @@
+@import "nodeca.core/client/common/_variables"
+
+.votes-popover-content
+  margin 0
+
+.votes-popover__dt
+  float left
+  font-weight normal
+
+.votes-popover__dd
+  margin-left 2em
+  &:last-child
+    margin-bottom .125rem
+
 .votes-popover__list
   padding 0
+  margin 0
 
-.votes-popover__list-title
-  font-weight bold
-  margin-right 5px
-
-.votes-popover__vote, .votes-popover__list-title
+.votes-popover__list-item
   list-style none
   display inline-block
 
-.votes-popover__vote:after
-  margin-right 5px
-  content ","
+  &:after
+    margin-right .3em
+    content ","
 
-.votes-popover__vote:last-child:after
-  margin-right 0
-  content ""
-
-.votes-popover__list+.votes-popover__list
-  padding-top 14px
+  &:last-child:after
+    margin-right 0
+    content ""
