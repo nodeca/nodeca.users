@@ -4,13 +4,10 @@
 
 
 const _          = require('lodash');
-const bag        = require('bagjs')({ prefix: 'nodeca' });
 const Bloodhound = require('typeahead.js/dist/bloodhound.js');
 
 
 let options;
-let draft;
-let draftKey;
 let bloodhound;
 
 
@@ -47,43 +44,20 @@ N.wire.before(module.apiPath + ':begin', function fetch_options() {
 });
 
 
-// Fetch draft data
-//
-N.wire.before(module.apiPath + ':begin', function fetch_draft() {
-  draftKey = `dialog_create_${N.runtime.user_hid}`;
-  draft = {};
-
-  return bag.get(draftKey)
-    .then(data => {
-      draft = data || {};
-    })
-    .catch(() => {}); // Suppress storage errors
-});
-
-
-// Check draft attachments
-//
-N.wire.before(module.apiPath + ':begin', function check_draft_attachments() {
-  if (!draft.attachments || draft.attachments.length === 0) return;
-
-  let params = { media_ids: _.map(draft.attachments, 'media_id') };
-
-  return N.io.rpc('users.dialog.attachments_check', params).then(res => {
-    draft.attachments = draft.attachments.filter(attach => res.media_ids.indexOf(attach.media_id) !== -1);
-  });
-});
-
-
 // Show editor and add handlers for editor events
 //
 N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
   let $editor = N.MDEdit.show({
-    text: draft.text,
-    attachments: draft.attachments
+    draftKey: [ 'dialog_create', N.runtime.user_hid, to_user ? to_user.nick : '' ].join('_'),
+    draftCustomFields: {
+      '.dialogs-create__title': 'input',
+      // Add `:last` because typeahead create additional field copy
+      '.dialogs-create__user-nick-input:last': 'input'
+    }
   });
+
   let $inputs = $(N.runtime.render(module.apiPath + '.inputs', {
-    title: draft.title || '',
-    to: to_user ? to_user.nick : (draft.to || '')
+    to: to_user ? to_user.nick : ''
   }));
 
   let $to = $inputs.find('.dialogs-create__user-nick-input');
@@ -155,15 +129,6 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
         }
       });
     })
-    .on('change.nd.mdedit', () => {
-      // Expire after 7 days
-      bag.set(draftKey, {
-        to: $to.val(),
-        title: $title.val(),
-        text: N.MDEdit.text(),
-        attachments: N.MDEdit.attachments()
-      }, 7 * 24 * 60 * 60).catch(() => {}); // Suppress storage errors
-    })
     .on('submit.nd.mdedit', () => {
       let errors = false;
 
@@ -195,7 +160,7 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
 
       N.io.rpc('users.dialog.create', params)
         .then(res => {
-          N.MDEdit.hide();
+          N.MDEdit.hide({ removeDraft: true });
           N.wire.emit('navigate.to', {
             apiPath: 'users.dialog',
             params: {
@@ -204,7 +169,6 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
             }
           });
         })
-        .then(() => bag.remove(draftKey).catch(() => {})) // Suppress storage errors
         .catch(err => {
           if (err.type === 'BAD_NICK') {
             $to.parent().addClass('has-danger');

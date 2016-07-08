@@ -2,7 +2,6 @@
 
 
 const _   = require('lodash');
-const bag = require('bagjs')({ prefix: 'nodeca' });
 
 // if we're on profile page, it equals to the hid of the user
 // profile page belongs to; otherwise it's 0
@@ -21,9 +20,6 @@ N.wire.on('navigate.exit:users.member', function usernotes_teardown() {
 // Init user notes
 //
 N.wire.once('navigate.done:users.member', function init_usernotes() {
-  let draft;
-  let draftKey;
-
   let parseOptions = {
     code:           true,
     emoji:          true,
@@ -48,24 +44,6 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
   });
 
 
-  // Fetch draft data
-  //
-  N.wire.before(module.apiPath + ':edit', function fetch_draft(data) {
-    // current user
-    let from_hid = N.runtime.user_hid;
-
-    // user whose profile is being edited
-    let to_hid = data.$this.data('user-hid');
-
-    draftKey = [ 'usernote', from_hid, to_hid ].join('_');
-    draft = {};
-
-    return bag.get(draftKey)
-      .then(data => { draft = data || {}; })
-      .catch(() => {}); // Suppress storage errors
-  });
-
-
   // Show editor and add handlers for editor events
   //
   N.wire.on(module.apiPath + ':edit', function show_editor(data) {
@@ -75,7 +53,8 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
     let orig_version = data.$this.data('version');
 
     let $editor = N.MDEdit.show({
-      text: (draft.text && draft.version === orig_version) ? draft.text : orig_text,
+      draftKey: [ 'usernote', N.runtime.user_hid, user_hid, orig_version ].join('_'),
+      text: orig_text,
       toolbar: 'usernote',
       parseOptions
     });
@@ -89,13 +68,6 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
 
         $editor.find('.mdedit-header__caption').html(title);
       })
-      .on('change.nd.mdedit', () => {
-        // Expire after 7 days
-        bag.set(draftKey, {
-          text:    N.MDEdit.text(),
-          version: orig_version
-        }, 7 * 24 * 60 * 60);
-      })
       .on('submit.nd.mdedit', () => {
         let rpc_method, rpc_params, txt = N.MDEdit.text();
 
@@ -108,23 +80,17 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
           rpc_params = { user_hid };
         }
 
-        N.io.rpc(rpc_method, rpc_params)
-          .then(() => {
-            bag.remove(draftKey)
-              .catch(() => {}) // Suppress storage errors
-              .then(() => {
-                N.MDEdit.hide();
+        N.io.rpc(rpc_method, rpc_params).then(() => {
+          N.MDEdit.hide({ removeDraft: true });
 
-                if (profile_user_hid === user_hid) {
-                  // if we're still on the same page, update
-                  return N.wire.emit('navigate.reload');
-                }
+          if (profile_user_hid === user_hid) {
+            // if we're still on the same page, update
+            return N.wire.emit('navigate.reload');
+          }
 
-                // otherwise show a completion message to user
-                return N.wire.emit('notify', { type: 'info', message: t('update_notice') });
-              });
-          })
-          .catch(err => N.wire.emit('error', err));
+          // otherwise show a completion message to user
+          return N.wire.emit('notify', { type: 'info', message: t('update_notice') });
+        }).catch(err => N.wire.emit('error', err));
 
         return false;
       });

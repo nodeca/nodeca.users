@@ -4,12 +4,9 @@
 
 
 const _   = require('lodash');
-const bag = require('bagjs')({ prefix: 'nodeca' });
 
 
 let options;
-let draft;
-let draftKey;
 
 
 function updateOptions() {
@@ -45,41 +42,11 @@ N.wire.before(module.apiPath + ':begin', function fetch_options() {
 });
 
 
-// Fetch draft data
-//
-N.wire.before(module.apiPath + ':begin', function fetch_draft(data) {
-  let dlg_id = data.dialog_id;
-
-  draftKey = `dialog_create_${N.runtime.user_hid}_${dlg_id}`;
-  draft = {};
-
-  return bag.get(draftKey)
-    .then(data => {
-      draft = data || {};
-    })
-    .catch(() => {}); // Suppress storage errors
-});
-
-
-// Check draft attachments
-//
-N.wire.before(module.apiPath + ':begin', function check_draft_attachments() {
-  if (!draft.attachments || draft.attachments.length === 0) return;
-
-  let params = { media_ids: _.map(draft.attachments, 'media_id') };
-
-  return N.io.rpc('users.dialog.attachments_check', params).then(res => {
-    draft.attachments = draft.attachments.filter(attach => res.media_ids.indexOf(attach.media_id) !== -1);
-  });
-});
-
-
 // Show editor and add handlers for editor events
 //
 N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
   let $editor = N.MDEdit.show({
-    text: draft.text,
-    attachments: draft.attachments
+    draftKey: [ 'dialog_reply', N.runtime.user_hid, data.dialog_id ].join('_')
   });
 
   updateOptions();
@@ -96,13 +63,6 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
 
       $editor.find('.mdedit-footer').append(N.runtime.render(module.apiPath + '.options_btn'));
     })
-    .on('change.nd.mdedit', () => {
-      // Expire after 7 days
-      bag.set(draftKey, {
-        text: N.MDEdit.text(),
-        attachments: N.MDEdit.attachments()
-      }, 7 * 24 * 60 * 60).catch(() => {}); // Suppress storage errors
-    })
     .on('submit.nd.mdedit', () => {
       let params = {
         dialog_id:                data.dialog_id,
@@ -113,20 +73,17 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
         option_no_quote_collapse: options.user_settings.no_quote_collapse
       };
 
-      N.io.rpc('users.dialog.reply', params)
-        .then(res => {
-          N.MDEdit.hide();
-          N.wire.emit('navigate.to', {
-            apiPath: 'users.dialog',
-            params: {
-              dialog_id: res.dialog_id,
-              message_id: res.message_id
-            },
-            force: true
-          });
-        })
-        .then(() => bag.remove(draftKey).catch(() => {})) // Suppress storage errors
-        .catch(err => N.wire.emit('error', err));
+      N.io.rpc('users.dialog.reply', params).then(res => {
+        N.MDEdit.hide({ removeDraft: true });
+        N.wire.emit('navigate.to', {
+          apiPath: 'users.dialog',
+          params: {
+            dialog_id: res.dialog_id,
+            message_id: res.message_id
+          },
+          force: true
+        });
+      }).catch(err => N.wire.emit('error', err));
 
       return false;
     });

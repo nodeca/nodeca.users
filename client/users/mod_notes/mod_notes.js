@@ -3,45 +3,12 @@
 
 const parse_options = require('nodeca.users/server/users/mod_notes/_parse_options');
 const _             = require('lodash');
-const bag           = require('bagjs')({ prefix: 'nodeca' });
-
-
-let draft;
-let draftKey;
 
 
 // Load mdedit
 //
 N.wire.before(module.apiPath + ':edit', function load_mdedit(__, callback) {
   N.loader.loadAssets('mdedit', callback);
-});
-
-
-// Fetch draft data
-//
-N.wire.before(module.apiPath + ':edit', function fetch_draft(data) {
-  draft = {};
-  draftKey = '';
-
-  let note_id = data.$this.data('note-id');
-
-  // No drafts in edit mode
-  if (note_id) return;
-
-  // Current user
-  let from_hid = N.runtime.user_hid;
-
-  // User whose profile is being edited
-  let to_hid = data.$this.data('user-hid');
-
-  draftKey = [ 'mod_notes', from_hid, to_hid ].join('_');
-
-  return bag.get(draftKey)
-    .then(data => {
-      draft = data || {};
-    })
-    .catch(() => {
-    }); // Suppress storage errors
 });
 
 
@@ -53,9 +20,10 @@ N.wire.on(module.apiPath + ':edit', function show_editor(data) {
   let orig_text = data.$this.data('md');
   let note_id = data.$this.data('note-id');
 
-
   let $editor = N.MDEdit.show({
-    text: String(orig_text || draft.text || ''),
+    // Don't use drafts when edit
+    draftKey: note_id ? null : [ 'mod_notes', N.runtime.user_hid, user_hid ].join('_'),
+    text: orig_text,
     toolbar: 'usernote',
     parseOptions: parse_options
   });
@@ -68,14 +36,6 @@ N.wire.on(module.apiPath + ':edit', function show_editor(data) {
       });
 
       $editor.find('.mdedit-header__caption').html(title);
-    })
-    .on('change.nd.mdedit', () => {
-      if (draftKey) {
-        // Expire after 7 days
-        bag.set(draftKey, {
-          text: N.MDEdit.text()
-        }, 7 * 24 * 60 * 60);
-      }
     })
     .on('submit.nd.mdedit', () => {
       let rpc_method, rpc_params, txt = N.MDEdit.text();
@@ -100,13 +60,7 @@ N.wire.on(module.apiPath + ':edit', function show_editor(data) {
 
       N.io.rpc(rpc_method, rpc_params)
         .then(() => {
-          if (draftKey) {
-            return bag.remove(draftKey)
-              .catch(() => {}); // Suppress storage errors
-          }
-        })
-        .then(() => {
-          N.MDEdit.hide();
+          N.MDEdit.hide({ removeDraft: true });
 
           return N.wire.emit('navigate.to', {
             apiPath: 'users.mod_notes',
