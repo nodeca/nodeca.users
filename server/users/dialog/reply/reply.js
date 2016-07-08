@@ -194,7 +194,6 @@ module.exports = function (N, apiPath) {
       params:       env.data.parse_options,
       imports:      env.data.parse_result.imports,
       import_users: env.data.parse_result.import_users,
-      image_info:   env.data.parse_result.image_info,
       tail:         env.data.parse_result.tail
     };
 

@@ -20,7 +20,6 @@ module.exports = function (N, collectionName) {
       params_ref   : Schema.ObjectId,
       imports      : [ String ],
       import_users : [ Schema.ObjectId ],
-      image_info   : Schema.Types.Mixed,
       tail         : [ new Schema({ // explicit definition to remove `_id` field
         media_id: Schema.ObjectId,
         file_name: String,

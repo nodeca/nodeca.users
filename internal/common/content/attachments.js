@@ -4,7 +4,7 @@
 //  - data.ids (Array)
 //
 // Output:
-//  - data.result (Object)
+//  - data.attachments (Object)
 //    <ObjectId>:
 //      - type      (Number)
 //      - file_name (String)

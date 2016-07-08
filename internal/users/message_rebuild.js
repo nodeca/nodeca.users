@@ -19,8 +19,7 @@ module.exports = function (N, apiPath) {
       attachments:  post.attach,
       options:      params,
       imports:      post.imports,
-      import_users: post.import_users,
-      image_info:   post.image_info
+      import_users: post.import_users
     });
 
     let updateData = {
@@ -28,7 +27,7 @@ module.exports = function (N, apiPath) {
       html: result.html
     };
 
-    [ 'imports', 'import_users', 'image_info' ].forEach(field => {
+    [ 'imports', 'import_users' ].forEach(field => {
       if (!_.isEmpty(result[field])) {
         updateData[field] = result[field];
       } else {

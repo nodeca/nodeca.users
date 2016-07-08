@@ -154,7 +154,6 @@ module.exports = function (N, apiPath) {
       params:       options,
       imports:      parse_result.imports,
       import_users: parse_result.import_users,
-      image_info:   parse_result.image_info,
       tail:         parse_result.tail
     };
 
