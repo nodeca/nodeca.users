@@ -17,7 +17,7 @@ mixin breadcrumb_step(tail)
     //- text only
     li.breadcrumbs__item
       if item.show_avatar
-        img.breadcrumbs__icon()&attributes(self.avatar(item.user_id, item, 'sm'))
+        img.breadcrumbs__icon()&attributes(self.avatar(item.user_id, item, 'md'))
       = item.text
   if tail.length > 1
     //- next sublevel

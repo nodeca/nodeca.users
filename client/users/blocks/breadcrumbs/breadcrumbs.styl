@@ -1,4 +1,12 @@
+@import "nodeca.core/client/common/_variables"
+
+$avatar-size = 1.5rem
+
 .breadcrumbs__icon
-  height 30px
-  margin-right 10px
-  border-radius 3px
+  margin-right .6em
+  border-radius 2px
+
+  height $avatar-size
+  // center vertically
+  vertical-align top
+  margin-top (($breadcrumbs-height - $avatar-size) / 2)

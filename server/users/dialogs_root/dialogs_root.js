@@ -102,6 +102,6 @@ module.exports = function (N, apiPath) {
       route: 'users.dialogs_root'
     });
 
-    env.res.breadcrumbs = env.data.breadcrumbs;
+    env.res.breadcrumbs = env.data.breadcrumbs.slice(0, -1);
   });
 };
