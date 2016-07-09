@@ -4,6 +4,5 @@ en-US:
   description_input_name: Album description
   description_input_desc: Description for album page (optional)
   cover_input_name: Cover
-  cover_select: Select cover
   save: Save
   err_empty_name: Album name should not be empty

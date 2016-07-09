@@ -45,6 +45,8 @@
                 )= self.t('add_medialink')
 
                 if !self.album.default
+                  .dropdown-divider
+
                   a.dropdown-item(
                     href=self.link_to('users.album.edit', { 'user_hid': self.user_hid, 'album_id': self.album._id })
                   )=self.t('edit')

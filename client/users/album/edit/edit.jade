@@ -38,11 +38,6 @@
             - var state_class = self.album.cover_id ? 'has-cover' : '';
             #album-edit__cover(class=state_class)
 
-              .form-group.album-edit__no-cover
-                button.btn.btn-sm.btn-secondary(
-                  data-on-click='users.album.edit:select_cover'
-                )= self.t('cover_select')
-
               .form-group.album-edit__cover
                 label= self.t('cover_input_name')
 
