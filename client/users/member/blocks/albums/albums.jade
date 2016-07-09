@@ -5,7 +5,7 @@
     .member-block__header-title
       a.member-block__header-link.pull-xs-left(href=albumsLink)
         | #{self.t('title')}
-        span.icon.icon-right-open
+        span.member-block__header-arrow.icon.icon-right-open
         small.member-block__header-counter #{self.blocks.albums.count}
       a.member-block__header-collapser(href='#member-albums-info', data-toggle='collapse')
         .pull-xs-right.icon.icon-collapse
