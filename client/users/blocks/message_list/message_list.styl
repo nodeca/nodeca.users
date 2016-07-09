@@ -1,15 +1,75 @@
 @import "nodeca.core/client/common/_variables"
 
-.user-messages-list-item__content
-  margin-left 40px
+$sep-width    = .1875rem
+$avatar-size  = 1.875rem
+$space        = 1rem
+
+.user-messages-list-item
+  display table
+  table-layout fixed
+  width 100%
+  margin-bottom 1.5rem
 
 .user-messages-list-item__aside
-  float left
+  display table-cell
+  vertical-align top
+  padding ($space / 2) $space ($space / 2) 0
+  min-width $avatar-size + $space
+
+.user-messages-list-item__aside-inline
+  margin-bottom 1rem
+  display none
+
+.user-messages-list-item__separator
+  display table-cell
+  min-width $sep-width
+  border-radius 1rem
+  background-color $decorator-color
+
+.user-messages-list-item__content
+  display table-cell
+  width 100%
+  padding: ($space / 2) (($avatar-size + $space) * 2 + $sep-width) 0 $space
+
+.user-messages-list-item__message
+  //margin-top ($space / 4)
+  & > p:first-child
+    margin-top -.375rem // Compensate line-height 1.5 rem
+
+  & > p:last-child
+    margin-bottom .5rem // Compensate line-height 1.5 rem
 
 .user-messages-list-item__date
-  float right
+  font-size $font-size-xs
+  color $body-color-secondary
+  margin-bottom ($space / 4)
 
-.user-messages-list-item__author
-  font-size 14px
-  font-weight bold
-  display inline-block
+// Mirrored layout
+.user-messages-list-item__m-self
+  .user-messages-list-item__aside
+    padding-left $space
+    padding-right 0
+  .user-messages-list-item__content
+    padding: ($space / 2) $space 0 (($avatar-size + $space) * 2 + $sep-width)
+  .user-messages-list-item__date
+  .user-messages-list-item__aside-inline
+    text-align right
+
+.user-messages-list-item__m-self + .user-messages-list-item__m-self
+.user-messages-list-item__m-not-self + .user-messages-list-item__m-not-self
+  .user-messages-list-item__avatar
+  .user-messages-list-item__aside-inline
+    display none
+
+@media (max-width: screenXs - 1)
+  .user-messages-list-item__aside-inline
+    display block
+  .user-messages-list-item__aside
+    display none
+
+  .user-messages-list-item__content
+    padding-right $sep-width + $space
+
+  .user-messages-list-item__m-self
+    .user-messages-list-item__content
+      padding-left $sep-width + $space

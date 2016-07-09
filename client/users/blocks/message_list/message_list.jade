@@ -1,26 +1,64 @@
 each message in self.messages
   - var author = self.users[message.user];
 
-  .user-messages-list-item(
-    id='message' + message._id
-    data-message-id=message._id
-  )
-    .user-messages-list-item__aside
-      if author
-        a.user-messages-list-item__avatar._ucard-popover(
-          href=self.link_to('users.member', { user_hid: author.hid })
-          data-user-id=author._id
-          title=author.name
-        )
-          img.av-s(alt=author.name)&attributes(self.avatar(author, 'sm'))
+  if (author && author._id === N.runtime.user_id)
+    .user-messages-list-item.user-messages-list-item__m-self(
+      id='message' + message._id
+      data-message-id=message._id
+    )
+      .user-messages-list-item__inner
+        .user-messages-list-item__content
+          .user-messages-list-item__aside-inline
+            if author
+              a.user-messages-list-item__avatar(
+                href=self.link_to('users.member', { user_hid: author.hid })
+              )
+                img.av-s(alt=author.name)&attributes(self.avatar(author, 'sm'))
 
-    .user-messages-list-item__content
-      .user-messages-list-item__header
-        if author
-          .user-messages-list-item__author=author.name
+          .user-messages-list-item__message.message
+            !=message.html
 
-        .user-messages-list-item__date!=self.timetag(message.ts, 'relative')
+            if (message.tail && message.tail.length)
+              .user-messages-list-item__tail.markup-tail!=self.partial('@users.blocks.message_list.attachments', { message: message, author: author })
 
-      .user-messages-list-item__message
-        !=message.html
-        .user-messages-list-item__tail.markup-tail!=self.partial('@users.blocks.message_list.attachments', { message: message, author: author })
+          .user-messages-list-item__date!=self.timetag(message.ts, 'relative')
+
+        .user-messages-list-item__separator
+
+        .user-messages-list-item__aside
+          if author
+            a.user-messages-list-item__avatar(
+              href=self.link_to('users.member', { user_hid: author.hid })
+            )
+              img.av-s(alt=author.name)&attributes(self.avatar(author, 'sm'))
+
+  else
+    .user-messages-list-item.user-messages-list-item__m-not-self(
+      id='message' + message._id
+      data-message-id=message._id
+    )
+      .user-messages-list-item__inner
+        .user-messages-list-item__aside
+          if author
+            a.user-messages-list-item__avatar(
+              href=self.link_to('users.member', { user_hid: author.hid })
+            )
+              img.av-s(alt=author.name)&attributes(self.avatar(author, 'sm'))
+
+        .user-messages-list-item__separator
+
+        .user-messages-list-item__content
+          .user-messages-list-item__aside-inline
+            if author
+              a.user-messages-list-item__avatar(
+                href=self.link_to('users.member', { user_hid: author.hid })
+              )
+                img.av-s(alt=author.name)&attributes(self.avatar(author, 'sm'))
+
+          .user-messages-list-item__message.message
+            !=message.html
+
+            if (message.tail && message.tail.length)
+              .user-messages-list-item__tail.markup-tail!=self.partial('@users.blocks.message_list.attachments', { message: message, author: author })
+
+          .user-messages-list-item__date!=self.timetag(message.ts, 'relative')
