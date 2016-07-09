@@ -16,12 +16,17 @@ $avatar-aside-size-sm   = $avatar-size-sm / 2
   vertical-align top
   padding-bottom 2rem
 
+.dialog-list-item__aside-inner
+  display block
+  white-space nowrap
+
 .dialog-list-item__avatar-image
   box-sizing border-box
   border 1px solid $decorator-color
   width $avatar-size
   height $avatar-size
   border-radius 0 3px 3px 0
+  vertical-align top
 
 .dialog-list-item__avatar-image-aside-left
 .dialog-list-item__avatar-image-aside-right
@@ -32,14 +37,13 @@ $avatar-aside-size-sm   = $avatar-size-sm / 2
   color darken($decorator-color, 10%)
   border 1px solid $decorator-color
   text-align center
+  display inline-block
 
 .dialog-list-item__avatar-image-aside-left
-  float left
   border-right none
   border-radius 3px 0 0 3px
 
 .dialog-list-item__avatar-image-aside-right
-  float right
   position relative
   border-left none
   border-radius 0 3px 3px 0
@@ -65,7 +69,7 @@ $avatar-aside-size-sm   = $avatar-size-sm / 2
   .dialog-list-item__avatar-image-aside-left
     display none
   .dialog-list-item__avatar-image-aside-right
-    display block
+    display inline-block
   .dialog-list-item__avatar-image
     border-radius 3px 0 0 3px
 

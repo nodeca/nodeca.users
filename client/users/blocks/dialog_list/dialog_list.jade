@@ -12,12 +12,12 @@ each dialog in self.dialogs
         href=self.link_to('users.member', { user_hid: to.hid })
       )
 
-        .dialog-list-item__avatar-image-aside-left.icon.icon-right-open
+        span.dialog-list-item__avatar-image-aside-left.icon.icon-right-open
 
         if to
           img.dialog-list-item__avatar-image(alt=to.name)&attributes(self.avatar(to, 'md'))
 
-        .dialog-list-item__avatar-image-aside-right.icon.icon-right-open
+        span.dialog-list-item__avatar-image-aside-right.icon.icon-right-open
 
     .dialog-list-item__content
       .dialog-list-item__header
@@ -27,12 +27,12 @@ each dialog in self.dialogs
             href=self.link_to('users.member', { user_hid: to.hid })
           )
 
-            .dialog-list-item__avatar-image-aside-left.icon.icon-right-open
+            span.dialog-list-item__avatar-image-aside-left.icon.icon-right-open
 
             if to
               img.dialog-list-item__avatar-image(alt=to.name)&attributes(self.avatar(to, 'md'))
 
-            .dialog-list-item__avatar-image-aside-right.icon.icon-right-open
+            span.dialog-list-item__avatar-image-aside-right.icon.icon-right-open
 
 
         .dialog-list-item__info
