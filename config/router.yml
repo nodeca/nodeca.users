@@ -10,18 +10,18 @@ router:
           type: 'integer'
 
     users.dialogs_root:
-      "/messages(/{dialog_id})":
+      "/dialogs(/{dialog_id})":
         dialog_id:
           match: /[0-9a-f]{24}/
 
     users.dialogs_root.unsubscribe.index:
-      "/unsubscribe/messages": ~
+      "/unsubscribe/dialogs": ~
 
     users.dialogs_root.unsubscribe.done:
-      "/unsubscribe/messages/done": ~
+      "/unsubscribe/dialogs/done": ~
 
     users.dialog:
-      "/messages/{dialog_id}/{message_id}":
+      "/dialogs/{dialog_id}/{message_id}":
         dialog_id:
           match: /[0-9a-f]{24}/
         message_id:
