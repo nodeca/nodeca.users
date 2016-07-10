@@ -6,7 +6,12 @@
 
   .layout__container.container-fluid
     header.page-head
-      h1.page-head__title(itemprop='name')= self.users[self.user._id].name
+      h1.page-head__title(itemprop='name')
+        if self.user_is_ignored
+          span.member__ignored.icon.icon-ignore.icon-space-after(
+            title=self.t('ignored')
+          )
+        = self.users[self.user._id].name
       p.page-head__descr.member__last-visit(itemprop='description')
         =self.t('last_active')
         | 
