@@ -1,5 +1,3 @@
 en-US:
   add_ignore: Ignore this user
   remove_ignore: Remove from ignore list
-  ignore_added: User added to ignore list
-  ignore_removed: User removed from ignore list

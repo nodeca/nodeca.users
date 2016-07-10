@@ -7,7 +7,6 @@ N.wire.once('navigate.done:users.member', function page_once() {
   //
   N.wire.on('users.member:add_ignore', function add_ignore(data) {
     return N.wire.emit('users.blocks.ignore_user_dlg', data)
-      .then(() => N.wire.emit('notify', { type: 'info', message: t('ignore_added') }))
       .then(() => N.wire.emit('navigate.reload'));
   });
 
@@ -18,7 +17,6 @@ N.wire.once('navigate.done:users.member', function page_once() {
     let user = data.$this.data('user-id');
 
     return N.io.rpc('users.settings.ignore.remove', { user })
-      .then(() => N.wire.emit('notify', { type: 'info', message: t('ignore_removed') }))
       .then(() => N.wire.emit('navigate.reload'));
   });
 });
