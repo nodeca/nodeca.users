@@ -79,7 +79,7 @@ const createMessages = co.wrap(function* (dlg1, dlg2, msg_count) {
     yield [ msg1.save(), msg2.save() ];
   }
 
-  let preview_data = yield parser.md2preview({ text: md, limit: 500, link2text: true });
+  let preview_data = yield parser.md2preview({ text: md, limit: 250, link2text: true });
 
   dlg1.cache = {
     last_user: msg1.user,

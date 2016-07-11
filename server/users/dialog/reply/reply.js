@@ -137,7 +137,7 @@ module.exports = function (N, apiPath) {
   N.wire.after(apiPath, function* parse_to_preview(env) {
     let preview_data = yield N.parser.md2preview({
       text: env.params.txt,
-      limit: 500,
+      limit: 250,
       link2text: true
     });
 
