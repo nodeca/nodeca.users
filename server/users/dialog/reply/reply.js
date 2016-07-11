@@ -28,9 +28,9 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function* check_permissions(env) {
     if (env.user_info.is_guest) return N.io.NOT_FOUND;
 
-    let can_send_messages = yield env.extras.settings.fetch('can_send_messages');
+    let can_create_dialogs = yield env.extras.settings.fetch('can_create_dialogs');
 
-    if (!can_send_messages) throw N.io.FORBIDDEN;
+    if (!can_create_dialogs) throw N.io.FORBIDDEN;
   });
 
 
@@ -98,7 +98,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function* prepare_options(env) {
     let settings = yield N.settings.getByCategory(
-      'messages_markup',
+      'dialogs_markup',
       { usergroup_ids: env.user_info.usergroups },
       { alias: true }
     );

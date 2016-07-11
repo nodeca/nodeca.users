@@ -1,7 +1,7 @@
 setting_groups:
   users: ~
 
-  users_messages:
+  users_dialogs:
     parent: users
 
 setting_schemas:
@@ -15,12 +15,12 @@ setting_schemas:
 
     users_message_max_images:
       type: number
-      group_key: users_messages
-      category_key: messages_text
+      group_key: users_dialogs
+      category_key: dialogs_text
       default: 100
 
     users_message_max_emojis:
       type: number
-      group_key: users_messages
-      category_key: messages_text
+      group_key: users_dialogs
+      category_key: dialogs_text
       default: 20

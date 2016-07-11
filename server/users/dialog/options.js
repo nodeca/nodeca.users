@@ -1,4 +1,4 @@
-// Fill parse options for messages
+// Fill parse options for dialogs
 //
 'use strict';
 
@@ -20,7 +20,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, function* fill_parse_options(env) {
     env.res.parse_options = yield N.settings.getByCategory(
-      'messages_markup',
+      'dialogs_markup',
       { usergroup_ids: env.user_info.usergroups },
       { alias: true }
     );

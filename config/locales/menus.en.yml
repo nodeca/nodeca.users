@@ -10,8 +10,3 @@ i18n:
       menus:
         navbar:
           tracker: Tracker
-          profile.news: News
-          profile.messages: Messages
-          profile.albums: Albums
-          profile.clubs: Clubs
-          profile.bookmarks: Bookmarks

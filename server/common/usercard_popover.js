@@ -78,12 +78,12 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Fill permissions to use messages
+  // Fill permissions to use dialogs
   //
-  N.wire.before(apiPath, function* fill_messages_permissions(env) {
+  N.wire.before(apiPath, function* fill_dialogs_permissions(env) {
     env.res.settings = yield env.extras.settings.fetch([
-      'can_use_messages',
-      'can_send_messages'
+      'can_use_dialogs',
+      'can_create_dialogs'
     ]);
   });
 

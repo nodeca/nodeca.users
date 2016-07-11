@@ -7,7 +7,7 @@
       img.av-l(alt=self.user.name)&attributes(self.avatar(self.user))
 
     button.btn.btn-secondary.btn-xs.btn-block= self.t('find_posts')
-    if self.settings.can_use_messages && self.settings.can_send_messages && self.runtime.user_hid !== self.user.hid
+    if self.settings.can_use_dialogs && self.settings.can_create_dialogs && self.runtime.user_hid !== self.user.hid
       button.btn.btn-secondary.btn-xs.btn-block(
         data-on-click='common.usercard_popover:message'
         data-to-nick=self.user.nick

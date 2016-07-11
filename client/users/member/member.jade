@@ -70,7 +70,7 @@
                   href=self.link_to('users.mod_notes', { 'user_hid': self.user.hid })
                 )=self.t('mod_notes', self.mod_notes_count)
 
-            if self.settings.can_use_messages && self.settings.can_send_messages && !own_page
+            if self.settings.can_use_dialogs && self.settings.can_create_dialogs && !own_page
               .page-actions__item
                 button.btn.btn-secondary.btn-square.icon.icon-mail(
                   type='button'

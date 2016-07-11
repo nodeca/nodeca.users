@@ -4,11 +4,11 @@ i18n:
       core:
         group_names:
           users: Users
-          users_messages: Messages
+          users_dialogs: Dialogs
 
         category_names:
-          messages_text: Text
-          messages_markup: Markup
+          dialogs_text: Text
+          dialogs_markup: Markup
 
         setting_names:
           users_message_max_images: Max number of images in a message

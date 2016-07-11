@@ -29,8 +29,8 @@ module.exports.up = co.wrap(function* (N) {
     // same as members
     can_receive_email:      { value: true },
     can_report_abuse:       { value: true },
-    can_send_messages:      { value: true },
-    can_use_messages:       { value: true },
+    can_create_dialogs:     { value: true },
+    can_use_dialogs:        { value: true },
     can_vote:               { value: true },
     users_can_upload_media: { value: true }
   }, { usergroup_id: adminGroupId });
@@ -42,8 +42,8 @@ module.exports.up = co.wrap(function* (N) {
   yield usergroupStore.set({
     can_receive_email:      { value: true },
     can_report_abuse:       { value: true },
-    can_send_messages:      { value: true },
-    can_use_messages:       { value: true },
+    can_create_dialogs:     { value: true },
+    can_use_dialogs:        { value: true },
     can_vote:               { value: true },
     users_can_upload_media: { value: true }
   }, { usergroup_id: memberGroupId });

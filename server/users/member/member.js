@@ -147,17 +147,17 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Fill permissions to use messages
+  // Fill permissions to use dialogs
   //
-  N.wire.before(apiPath, function* fill_messages_permissions(env) {
+  N.wire.before(apiPath, function* fill_dialogs_permissions(env) {
     let settings = yield env.extras.settings.fetch([
-      'can_use_messages',
-      'can_send_messages'
+      'can_use_dialogs',
+      'can_create_dialogs'
     ]);
 
     env.res.settings = env.res.settings || {};
-    env.res.settings.can_use_messages = settings.can_use_messages;
-    env.res.settings.can_send_messages = settings.can_send_messages;
+    env.res.settings.can_use_dialogs = settings.can_use_dialogs;
+    env.res.settings.can_create_dialogs = settings.can_create_dialogs;
   });
 
 
@@ -171,11 +171,11 @@ module.exports = function (N, apiPath) {
 
     env.res.avatar_exists = env.data.user.avatar_id ? true : false;
 
-    let can_use_messages = yield env.extras.settings.fetch('can_use_messages');
+    let can_use_dialogs = yield env.extras.settings.fetch('can_use_dialogs');
 
     env.res.menu_ordered = menu.filter(item => {
       // Show "Messages" menu item only if permitted
-      if (item.to === 'users.dialogs_root') return can_use_messages;
+      if (item.to === 'users.dialogs_root') return can_use_dialogs;
       return true;
     });
     env.res.blocks_ordered = blocks;

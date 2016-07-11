@@ -66,7 +66,7 @@ module.exports = co.wrap(function* (N) {
   if (!users.length) return;
 
   markup_options = yield settings.getByCategory(
-    'messages_markup',
+    'dialogs_markup',
     { usergroup_ids: [ adm_group_id ] },
     { alias: true }
   );

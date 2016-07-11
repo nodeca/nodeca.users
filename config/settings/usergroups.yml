@@ -42,13 +42,13 @@ setting_schemas:
       type: boolean
       default: false
 
-    can_use_messages:
+    can_use_dialogs:
       priority: 1090
       category_key: perm_users
       type: boolean
       default: false
 
-    can_send_messages:
+    can_create_dialogs:
       priority: 1100
       category_key: perm_users
       type: boolean
