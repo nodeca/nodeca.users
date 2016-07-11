@@ -55,6 +55,12 @@
                   data-toggle='dropdown'
                 )
                 .dropdown-menu.dropdown-menu-left
+
+                  if own_page
+                    each item in self.menu_ordered
+                      a.dropdown-item.hidden-sm-up(href=self.link_to(item.to, { user_hid: self.user.hid }))
+                        = self.t('@users.profile_page.menu.' + item.name)
+
                   each item in self.actions_ordered
                     !=self.partial('@users.member.actions.' + item.name)
 
