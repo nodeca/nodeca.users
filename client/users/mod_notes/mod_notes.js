@@ -38,6 +38,8 @@ N.wire.on(module.apiPath + ':edit', function show_editor(data) {
       $editor.find('.mdedit-header__caption').html(title);
     })
     .on('submit.nd.mdedit', () => {
+      $editor.find('.mdedit__submit').addClass('disabled');
+
       let rpc_method, rpc_params, txt = N.MDEdit.text();
 
       if (note_id) {
@@ -71,7 +73,10 @@ N.wire.on(module.apiPath + ':edit', function show_editor(data) {
           });
         })
         .then(() => N.wire.emit('notify', { type: 'info', message: t('updated_notice') }))
-        .catch(err => N.wire.emit('error', err));
+        .catch(err => {
+          $editor.find('.mdedit__submit').removeClass('disabled');
+          N.wire.emit('error', err);
+        });
 
       return false;
     });

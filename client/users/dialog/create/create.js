@@ -130,6 +130,8 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
       });
     })
     .on('submit.nd.mdedit', () => {
+      $editor.find('.mdedit__submit').addClass('disabled');
+
       let errors = false;
 
       if (!$.trim($to.val())) {
@@ -146,7 +148,10 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
         $title.parent().removeClass('has-danger');
       }
 
-      if (errors) return false;
+      if (errors) {
+        $editor.find('.mdedit__submit').removeClass('disabled');
+        return false;
+      }
 
       let params = {
         to:                       $to.val(),
@@ -170,6 +175,8 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
           });
         })
         .catch(err => {
+          $editor.find('.mdedit__submit').removeClass('disabled');
+
           if (err.type === 'BAD_NICK') {
             $to.parent().addClass('has-danger');
           }

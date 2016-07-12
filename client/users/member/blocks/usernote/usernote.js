@@ -69,6 +69,8 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
         $editor.find('.mdedit-header__caption').html(title);
       })
       .on('submit.nd.mdedit', () => {
+        $editor.find('.mdedit__submit').addClass('disabled');
+
         let rpc_method, rpc_params, txt = N.MDEdit.text();
 
         if (txt.trim()) {
@@ -90,7 +92,10 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
 
           // otherwise show a completion message to user
           return N.wire.emit('notify', { type: 'info', message: t('update_notice') });
-        }).catch(err => N.wire.emit('error', err));
+        }).catch(err => {
+          $editor.find('.mdedit__submit').removeClass('disabled');
+          N.wire.emit('error', err);
+        });
 
         return false;
       });
