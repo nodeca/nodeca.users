@@ -109,19 +109,13 @@ N.wire.once(module.apiPath, function init_handlers() {
     $reason
       .prop('disabled', true)
       .val(t('@users.infractions.types.' + type_name));
+
     $('.add-infraction-points__input').val(types[type_name].points);
-    $('.add-infraction-expire__input').val(types[type_name].expire_days);
-    $('.add-infraction-points__checkbox').prop('checked', types[type_name].points === 0);
+    $('.add-infraction-expire__input')
+      .prop('disabled', types[type_name].expire_days === -1)
+      .val(types[type_name].expire_days);
+
     $('.add-infraction-expire__checkbox').prop('checked', types[type_name].expire_days === -1);
-  });
-
-
-  // Set points none
-  //
-  N.wire.on(module.apiPath + ':set_points_none', function set_points_none(data) {
-    if (data.$this.is(':checked')) {
-      $('.add-infraction-points__input').val(0);
-    }
   });
 
 
@@ -129,22 +123,14 @@ N.wire.once(module.apiPath, function init_handlers() {
   //
   N.wire.on(module.apiPath + ':set_expire_never', function set_expire_never(data) {
     if (data.$this.is(':checked')) {
-      $('.add-infraction-expire__input').val(-1);
+      $('.add-infraction-expire__input')
+        .prop('disabled', true)
+        .val(-1);
+    } else {
+      $('.add-infraction-expire__input')
+        .prop('disabled', false)
+        .val(30);
     }
-  });
-
-
-  // Uncheck points checkbox
-  //
-  N.wire.on(module.apiPath + ':change_points', function change_points(data) {
-    $('.add-infraction-points__checkbox').prop('checked', +data.$this.val() === 0);
-  });
-
-
-  // Uncheck expire checkbox
-  //
-  N.wire.on(module.apiPath + ':change_expire', function change_expire(data) {
-    $('.add-infraction-expire__checkbox').prop('checked', +data.$this.val() === -1);
   });
 
 
