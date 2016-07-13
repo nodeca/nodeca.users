@@ -246,7 +246,7 @@ gridSpaceTightXs = 10px //round(gridSpace / downScaleXs)
 // Responsive rules (reduce size)
 //
 
-@media (max-width: screenSm - 1)
+@media (max-width: $grid-breakpoints.md - 1)
   .thumb-grid__m-responsive
     &.thumb-grid
       margin 0 (-1 * gridSpaceSm / 2)
@@ -283,7 +283,7 @@ gridSpaceTightXs = 10px //round(gridSpace / downScaleXs)
       border-radius cornerRadiusSm
 
 // For portrait mobile
-@media (max-width: screenXs - 1)
+@media (max-width: $grid-breakpoints.sm - 1)
   .thumb-grid__m-responsive
     &.thumb-grid
       margin 0 (-1 * gridSpaceXs / 2)
