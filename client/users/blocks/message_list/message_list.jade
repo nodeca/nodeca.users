@@ -13,7 +13,9 @@ each message in self.messages
               a.user-messages-list-item__avatar(
                 href=self.link_to('users.member', { user_hid: author.hid })
               )
-                img.av-s(alt=author.name)&attributes(self.avatar(author, 'sm'))
+                img.user-messages-list-item__avatar-image(alt=author.name)&attributes(self.avatar(author, 'sm'))
+            else
+              span.user-messages-list-item__avatar-image.av-anon
 
           .user-messages-list-item__message.message
             !=message.html
@@ -30,7 +32,9 @@ each message in self.messages
             a.user-messages-list-item__avatar(
               href=self.link_to('users.member', { user_hid: author.hid })
             )
-              img.av-s(alt=author.name)&attributes(self.avatar(author, 'sm'))
+              img.user-messages-list-item__avatar-image(alt=author.name)&attributes(self.avatar(author, 'sm'))
+          else
+            span.user-messages-list-item__avatar-image.av-anon
 
   else
     .user-messages-list-item.user-messages-list-item__m-not-self(
@@ -43,7 +47,9 @@ each message in self.messages
             a.user-messages-list-item__avatar(
               href=self.link_to('users.member', { user_hid: author.hid })
             )
-              img.av-s(alt=author.name)&attributes(self.avatar(author, 'sm'))
+              img.user-messages-list-item__avatar-image(alt=author.name)&attributes(self.avatar(author, 'sm'))
+          else
+            span.user-messages-list-item__avatar-image.av-anon
 
         .user-messages-list-item__separator
 
@@ -53,7 +59,9 @@ each message in self.messages
               a.user-messages-list-item__avatar(
                 href=self.link_to('users.member', { user_hid: author.hid })
               )
-                img.av-s(alt=author.name)&attributes(self.avatar(author, 'sm'))
+                img.user-messages-list-item__avatar-image(alt=author.name)&attributes(self.avatar(author, 'sm'))
+            else
+              span.user-messages-list-item__avatar-image.av-anon
 
           .user-messages-list-item__message.message
             !=message.html

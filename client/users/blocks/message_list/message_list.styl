@@ -20,6 +20,13 @@ $space        = 1rem
   margin-bottom 1rem
   display none
 
+.user-messages-list-item__avatar-image
+  display inline-block
+  width  $avatar-size
+  height $avatar-size
+  border-radius 2px
+  box-shadow: 0 0 1px $body-color-secondary
+
 .user-messages-list-item__separator
   display table-cell
   min-width $sep-width
@@ -58,6 +65,8 @@ $space        = 1rem
 .user-messages-list-item__m-self + .user-messages-list-item__m-self
 .user-messages-list-item__m-not-self + .user-messages-list-item__m-not-self
   .user-messages-list-item__avatar
+  .user-messages-list-item__avatar-image
+    visibility hidden
   .user-messages-list-item__aside-inline
     display none
 

@@ -26,17 +26,21 @@
         .mod-notes-item
           .mod-notes-item__info
             .mod-notes-item__info-aside
-              a.mod-notes-item__avatar(
-                href=self.link_to('users.member', { user_hid: user_from.hid })
-                title=user_from.name
-              )
-                img.mod-notes-item__avatar-image.av-l(alt=user_from.name)&attributes(self.avatar(user_from, 'md'))
+              if user_from
+                a.mod-notes-item__avatar(
+                  href=self.link_to('users.member', { user_hid: user_from.hid })
+                  title=user_from.name
+                )
+                  img.mod-notes-item__avatar-image(alt=user_from.name)&attributes(self.avatar(user_from, 'md'))
+              else
+                span.mod-notes-item__avatar-image.av-anon
 
             .mod-notes-item__info-data
               .mod-notes-item__author
-                a.mod-notes-item__author-link(
-                  href=self.link_to('users.member', { user_hid: user_from.hid })
-                )= user_from.nick
+                if user_from
+                  a.mod-notes-item__author-link(
+                    href=self.link_to('users.member', { user_hid: user_from.hid })
+                  )= user_from.nick
 
               .mod-notes-item__ts!=self.timetag(note.ts, 'compact')
 

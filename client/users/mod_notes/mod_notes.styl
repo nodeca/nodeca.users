@@ -1,5 +1,7 @@
 @import "nodeca.core/client/common/_variables"
 
+$avatar-size  = 2.375rem
+
 .mod-notes-item
   margin-bottom 2rem
 
@@ -15,8 +17,10 @@
   float left
 
 .mod-notes-item__avatar-image
-  width 38px
-  height 38px
+  width $avatar-size
+  height $avatar-size
+  border-radius 2px
+  box-shadow: 0 0 1px $body-color-secondary
 
 .mod-notes-item__info-data
   flex 1 1 100%
