@@ -2,7 +2,7 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
   fieldset
     legend= self.t('group.options')
 
-    .form-group
+    .form-group.row
       label.form-control-label.col-xs-3= self.t('group.short_name')
       .col-xs-3
         input.form-control(type="text", data-bind="value: currentGroup.name, disable: currentGroup.isProtected")
@@ -10,12 +10,12 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
         div(data-bind="text: currentGroup.localizedName")
         // /ko
 
-    .form-group
+    .form-group.row
       label.form-control-label.col-xs-3= self.t('group.inherit')
       .col-xs-3
         select.form-control(data-bind="options: otherGroups, optionsText: 'name', optionsCaption: '#{self.t('group.inherit_none')}', value: currentGroup.parentGroup")
 
-    .form-group
+    .form-group.row
       label.form-control-label.col-xs-3= self.t('filter')
       .col-xs-9
         label.radio-inline
@@ -39,7 +39,7 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
     legend(data-bind="text: localizedName")
 
     // ko foreach: settings
-    .form-group.form-group-hover(data-bind="visible: visible, css: { overriden: overriden, inherited: inherited, forced: forced }")
+    .form-group.form-group-hover.row(data-bind="visible: visible, css: { overriden: overriden, inherited: inherited, forced: forced }")
 
       label.form-control-label.col-xs-3(data-bind="text: localizedName, attr: { 'for': elementId }")
 
@@ -74,7 +74,7 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
     // /ko
   // /ko
 
-  .form-group
+  .form-group.row
     .col-xs-9.col-xs-offset-3
       button.btn.btn-primary(type="submit", data-bind="enable: currentGroup.isDirty")
         = self.t('submit')
