@@ -26,8 +26,14 @@
     ul.nav.nav-tabs(role='tablist')
       - var i = 0;
       each tab in self.tabs
-        li.user-subscriptions-tab(role='presentation' class=(i === 0) ? 'active' : '')
-          a(href=('#' + tab.block_name) aria-controls='forum-topics' role='tab' data-toggle='tab')
+        li.user-subscriptions-tab.nav-item(role='presentation')
+          a.nav-link(
+            href=('#' + tab.block_name)
+            aria-controls='forum-topics'
+            role='tab'
+            data-toggle='tab'
+            class=(i === 0) ? 'active' : ''
+          )
             =self.t('@users.subscriptions.' + tab.block_name)
             | 
             span.user-subscriptions-tab__badge.badge(
