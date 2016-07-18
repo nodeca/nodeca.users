@@ -245,8 +245,17 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
     return Promise.resolve()
       .then(() => N.wire.emit('common.blocks.confirm', t('delete_confirmation')))
       .then(() => N.io.rpc('users.dialog.destroy', { dialog_id }))
-      .then(() => {
+      .then(res => {
         $dialog.fadeOut(() => $dialog.remove());
+
+        //
+        // Update progress bar
+        //
+        dlgListState.dialog_count = res.dialog_count;
+
+        return N.wire.emit('forum.topic.blocks.page_progress:update', {
+          max: res.dialog_count
+        });
       });
   });
 

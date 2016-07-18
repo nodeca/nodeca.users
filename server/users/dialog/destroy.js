@@ -39,4 +39,14 @@ module.exports = function (N, apiPath) {
     // Remove messages
     yield N.models.users.DlgMessage.update({ parent: env.data.dialog._id }, { exists: false }, { multi: true });
   });
+
+
+  // Fill pagination (progress)
+  //
+  N.wire.after(apiPath, function* fill_pagination(env) {
+    env.res.dialog_count = yield N.models.users.Dialog
+                                    .where('user').equals(env.user_info.user_id)
+                                    .where('exists').equals(true)
+                                    .count();
+  });
 };

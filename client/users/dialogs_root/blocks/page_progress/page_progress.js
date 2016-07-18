@@ -16,6 +16,8 @@ N.wire.on(module.apiPath + ':update', function update_progress(data) {
     total = $('.page-progress').data('total');
   }
 
+  $('.page-progress').data('current', current).data('total', total);
+
   // ensure that current is in [1..total] range, except for 0/0
   current = total > 0 ? Math.max(1, Math.min(current, total)) : 0;
 
@@ -25,6 +27,4 @@ N.wire.on(module.apiPath + ':update', function update_progress(data) {
   $('.page-progress__bar-fill').css({
     width: (current / total * 100).toFixed(2) + '%'
   });
-
-  $('.page-progress').data('current', current).data('total', total);
 });
