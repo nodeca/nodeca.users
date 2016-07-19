@@ -1,40 +1,49 @@
 #ucard-popover
-  .ucard-head.cleafix
-    a(href=self.link_to('users.member', { user_hid: self.user.hid }))= self.user.name
-  
   aside.ucard-sidebar
     a.ucard-avatar(href=self.link_to('users.member', { user_hid: self.user.hid }))
-      img.av-l(alt=self.user.name)&attributes(self.avatar(self.user))
+      img.ucard-avatar__image(alt=self.user.name)&attributes(self.avatar(self.user))
 
-    button.btn.btn-secondary.btn-xs.btn-block= self.t('find_posts')
-    if self.settings.can_use_dialogs && self.settings.can_create_dialogs && self.runtime.user_hid !== self.user.hid
-      button.btn.btn-secondary.btn-xs.btn-block(
-        data-on-click='common.usercard_popover:message'
-        data-to-nick=self.user.nick
-        data-to-hid=self.user.hid
-      )= self.t('send_message')
+    ul.ucard__controls
+      if self.settings.can_use_dialogs && self.settings.can_create_dialogs && self.runtime.user_hid !== self.user.hid
+        li.ucard__controls-item
+          button.btn.btn-secondary.btn-xs.btn-block.icon.icon-mail(
+            data-on-click='common.usercard_popover:message'
+            data-to-nick=self.user.nick
+            data-to-hid=self.user.hid
+            title=self.t('send_message')
+          )
+
+      //- li.ucard__controls-item
+        button.btn.btn-secondary.btn-xs.btn-block.icon.icon-search(
+          title=self.t('find_posts')
+        )
 
   .ucard-info
-    dl.dl-horizontal
+    .ucard-info__head
+      a.ucard-info__head-link(
+        href=self.link_to('users.member', { user_hid: self.user.hid })
+      )= self.user.name
+
+    dl.ucard-info__dl
       if self.penalty_expire
-        dt=self.t('penalty_title')
-        dd!=self.timetag(self.penalty_expire, 'compact')
+        dt.ucard-info__dt= self.t('penalty_title')
+        dd.ucard-info__dd!= self.timetag(self.penalty_expire, 'compact')
 
       if self.infractions_points && self.infractions_points > 0
-        dt=self.t('infractions_title')
-        dd=self.t('infractions_text', self.infractions_points)
+        dt.ucard-info__dt= self.t('infractions_title')
+        dd.ucard-info__dd= self.t('infractions_text', self.infractions_points)
 
-      dt Age
-      dd 32
+      dt.ucard-info__dt Posts
+      dd.ucard-info__dd: a(href='#') 678
 
-      dt City
-      dd Honolulu
+      dt.ucard-info__dt Age
+      dd.ucard-info__dd 32
 
-      dt Member since
-      dd #{self.date(self.user.joined_ts, 'relative')}
+      dt.ucard-info__dt Location
+      dd.ucard-info__dd Honolulu
 
-      dt Total posts
-      dd 678
+      dt.ucard-info__dt Joined
+      dd.ucard-info__dd= self.date(self.user.joined_ts, 'relative')
 
-      dt Last active
-      dd Now
+      dt.ucard-info__dt Last active
+      dd.ucard-info__dd Now

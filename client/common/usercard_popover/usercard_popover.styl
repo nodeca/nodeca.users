@@ -1,5 +1,7 @@
 @import "nodeca.core/client/common/_variables"
 
+$sidebar-width = 102px // 100 + border
+
 #ucard-popover
   cursor default
   background-color white
@@ -9,52 +11,70 @@
 
   width 400px
   min-height 180px
-  border 6px solid grayDark
+  border 1px solid $decorator-color
   border-radius 4px
-  box-shadow 0 0 20px 5px #888
+  box-shadow 0 0 20px 5px $decorator-color
 
-  margin-left 10px
+  margin-left .5rem
+  padding 1rem
 
   &.ucard-popover__m-bottom
-    margin-top 10px
+    margin-top .5rem
     margin-left 0
-
-.ucard-head
-  a
-    color grayLighter
-    font-size 16px
-    line-height 20px
-    shortable()
-  background-color grayDark
-  padding 6px 0 12px 130px
 
 .ucard-sidebar
   float left
-  display inline // IE7 hack
-  margin -28px 20px 10px 10px
-  width 100px // Fixes IE when hover on buttons
+  width $sidebar-width
 
 .ucard-avatar
-  border 1px solid white
-  box-shadow 0 0 2px 1px grayLightest
-  margin-bottom 9px
-  background grayLighter
-  border-radius 4px
   display block
-  height 100px
-  width 100px
+  border 1px solid $decorator-color
+  border-radius 4px
+
+.ucard-avatar__image
+  width 100%
+  border-radius 4px
+
+.ucard__controls
+  padding 0
+  margin .5rem 0 0 0
+
+.ucard__controls-item
+  list-style none
+  margin-top .4rem
 
 .ucard-info
   overflow hidden
-  margin 10px 10px 0 20px
+  padding-left 1rem
 
-  > dl
-    margin-top 0
-    margin-bottom (baseLineHeight/2)
+.ucard-info__head
+  shortable()
 
-  dt
-    opacity .7
-    font-weight normal
-    width 100px
-  dd
-    margin-left 120px
+  font-size 1.5rem
+  line-height 1.2em
+  margin-top -.2rem
+  margin-bottom .5rem
+
+.ucard-info__head-link
+  &:hover
+    text-decoration none
+
+
+.ucard-info__dl
+  font-size $font-size-sm
+  line-height 1.1em
+  margin 0
+
+.ucard-info__dt
+  float left
+  clear left
+  width 100px
+  font-weight normal
+  color $body-color-secondary
+  &:after
+    content ':'
+
+.ucard-info__dd
+  margin: 0 0 .5rem 110px
+  &:last-child
+    margin-bottom 0
