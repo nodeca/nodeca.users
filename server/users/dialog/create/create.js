@@ -237,6 +237,7 @@ module.exports = function (N, apiPath) {
     }, message_data));
 
     own_dialog.cache.last_message = own_msg._id;
+    own_dialog.cache.last_user    = String(own_msg.user) === String(message_data.user);
 
     models_to_save = models_to_save.concat([ own_dialog, own_msg ]);
 
@@ -258,6 +259,7 @@ module.exports = function (N, apiPath) {
       }, message_data));
 
       opponent_dialog.cache.last_message = opponent_msg._id;
+      opponent_dialog.cache.last_user    = String(opponent_msg.user) === String(message_data.user);
 
       models_to_save = models_to_save.concat([ opponent_dialog, opponent_msg ]);
 

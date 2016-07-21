@@ -39,6 +39,21 @@ module.exports = function (N, apiPath) {
   }
 
 
+  // Fetch "hide answered dialogs" setting
+  //
+  N.wire.on(apiPath, function* fetch_filter_setting(env) {
+    let store = N.settings.getStore('user');
+
+    let setting = yield store.get(
+      'dialogs_hide_answered',
+      { user_id: env.user_info.user_id }
+    );
+
+    env.data.dialogs_hide_answered = !!setting.value;
+    env.res.dialogs_hide_answered  = !!setting.value;
+  });
+
+
   // Subcall users.dialog_list
   //
   N.wire.on(apiPath, function subcall_dialogs_list(env) {
@@ -51,20 +66,26 @@ module.exports = function (N, apiPath) {
   // Fill pagination (progress)
   //
   N.wire.after(apiPath, function* fill_pagination(env) {
-    let dialogs_total = yield N.models.users.Dialog
-                                  .where('user').equals(env.user_info.user_id)
-                                  .where('exists').equals(true)
-                                  .count();
+    let query = N.models.users.Dialog
+                    .where('user').equals(env.user_info.user_id)
+                    .where('exists').equals(true);
+
+    if (env.data.dialogs_hide_answered) query = query.where('cache.is_reply').equals(false);
+
+    let dialogs_total = yield query.count();
 
     let dialog_offset = 0;
 
     // Count an amount of visible dialogs before the first one
     if (env.data.dialogs.length) {
-      dialog_offset = yield N.models.users.Dialog
-                                .where('user').equals(env.user_info.user_id)
-                                .where('exists').equals(true)
-                                .where('cache.last_message').gt(env.data.dialogs[0].cache.last_message)
-                                .count();
+      let query = N.models.users.Dialog
+                      .where('user').equals(env.user_info.user_id)
+                      .where('exists').equals(true)
+                      .where('cache.last_message').gt(env.data.dialogs[0].cache.last_message);
+
+      if (env.data.dialogs_hide_answered) query = query.where('cache.is_reply').equals(false);
+
+      dialog_offset = yield query.count();
     }
 
     env.res.pagination = {

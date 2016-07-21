@@ -216,7 +216,10 @@ module.exports = function (N, apiPath) {
       own_msg.save(),
       N.models.users.Dialog.update({ _id: own_msg.parent }, _.merge({
         unread: 0,
-        cache: { last_message: own_msg._id }
+        cache: {
+          last_message: own_msg._id,
+          is_reply:     String(own_msg.user) === String(message_data.user)
+        }
       }, dlg_update_data))
     ];
 
@@ -245,7 +248,10 @@ module.exports = function (N, apiPath) {
         N.models.users.Dialog.update({ _id: opponent_msg.parent }, _.merge({
           exists:       true, // force undelete
           $inc:         { unread: 1 }, // increment unread count
-          cache:        { last_message: opponent_msg._id }
+          cache:        {
+            last_message: opponent_msg._id,
+            is_reply:     String(opponent_msg.user) === String(message_data.user)
+          }
         }, dlg_update_data))
       ];
 

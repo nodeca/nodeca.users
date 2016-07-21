@@ -11,6 +11,7 @@ module.exports = function (N, collectionName) {
     last_message : Schema.Types.ObjectId,
     last_user    : Schema.Types.ObjectId,
     last_ts      : Date,
+    is_reply     : Boolean, // true if last message is sent by dialog owner
     preview      : String
   };
 
@@ -36,6 +37,7 @@ module.exports = function (N, collectionName) {
 
   // Used in dialogs list page
   Dialog.index({ user: 1, exists: 1, 'cache.last_message': -1, _id: 1 });
+  Dialog.index({ user: 1, exists: 1, 'cache.is_reply': 1, 'cache.last_message': -1, _id: 1 });
 
   // Used to find opponent's dialog copy in:
   //

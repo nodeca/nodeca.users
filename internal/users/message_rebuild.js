@@ -54,9 +54,10 @@ module.exports = function (N, apiPath) {
         $set: {
           cache: {
             last_message: post._id,
-            last_user: post.user,
-            last_ts: post.ts,
-            preview: preview_data.preview
+            last_user:    post.user,
+            last_ts:      post.ts,
+            is_reply:     String(post.user) === String(dialog.user),
+            preview:      preview_data.preview
           }
         }
       });

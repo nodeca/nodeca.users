@@ -9,6 +9,7 @@
 // - env.data.select_dialogs_before
 // - env.data.select_dialogs_after
 // - env.data.select_dialogs_start
+// - env.data.dialogs_hide_answered
 //
 // Out:
 //
@@ -37,15 +38,22 @@ module.exports = function (N) {
       // first page, don't need to fetch anything
       if (!env.data.select_dialogs_start) return Promise.resolve([]);
 
-      return N.models.users.Dialog.find()
-                .where('user').equals(env.user_info.user_id)
-                .where('exists').equals(true)
-                .where('cache.last_message').gt(env.data.select_dialogs_start)
-                .sort('cache.last_message')
-                .select('_id')
-                .limit(env.data.select_dialogs_before)
-                .lean(true)
-                .then(dlgs => _.map(dlgs, '_id').reverse());
+
+      let query = N.models.users.Dialog.find();
+
+      if (env.data.dialogs_hide_answered) {
+        query = query.where('cache.is_reply').equals(false);
+      }
+
+      return query
+              .where('user').equals(env.user_info.user_id)
+              .where('exists').equals(true)
+              .where('cache.last_message').gt(env.data.select_dialogs_start)
+              .sort('cache.last_message')
+              .select('_id')
+              .limit(env.data.select_dialogs_before)
+              .lean(true)
+              .then(dlgs => _.map(dlgs, '_id').reverse());
     }
 
 
@@ -65,6 +73,10 @@ module.exports = function (N) {
         } else {
           query = query.where('cache.last_message').lt(env.data.select_dialogs_start);
         }
+      }
+
+      if (env.data.dialogs_hide_answered) {
+        query = query.where('cache.is_reply').equals(false);
       }
 
       return query

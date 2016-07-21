@@ -180,6 +180,7 @@ module.exports = function (N, apiPath) {
     }, message_data));
 
     from_dialog.cache.last_message = from_msg._id;
+    from_dialog.cache.is_reply     = String(from_msg.user) === String(message_data.user);
 
 
     // Create violator dialog and message
@@ -195,6 +196,7 @@ module.exports = function (N, apiPath) {
     }, message_data));
 
     to_dialog.cache.last_message = to_msg._id;
+    to_dialog.cache.is_reply     = String(to_msg.user) === String(message_data.user);
 
 
     // Save dialogs and messages

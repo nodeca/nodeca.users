@@ -14,3 +14,9 @@ setting_schemas:
       category_key: dialogs
       type: boolean
       default: true
+
+    dialogs_hide_answered:
+      priority: 30
+      category_key: dialogs
+      type: boolean
+      default: false

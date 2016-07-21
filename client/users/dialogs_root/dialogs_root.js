@@ -93,6 +93,19 @@ N.wire.on('navigate.done:' + module.apiPath, function navbar_setup() {
 });
 
 
+//////////////////////////////////////////////////////////////////////////
+// Toggle "hide answered messages" flag
+
+N.wire.on(module.apiPath + ':toggle_answered', function toggle_answered(data) {
+  // toggle target is a label, trying to find an actual checkbox inside
+  let checkbox = data.$this.find('input[type=checkbox]');
+
+  return Promise.resolve()
+    .then(() => N.io.rpc('users.dialogs_root.save_filter', { hide_answered: checkbox.prop('checked') }))
+    .then(() => N.wire.emit('navigate.reload'));
+});
+
+
 /////////////////////////////////////////////////////////////////////
 // Change URL when user scrolls the page
 //
@@ -114,16 +127,13 @@ N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
     let offset;
     let currentIdx;
 
-    // Get offset of the first topic in the viewport
+    // Get a 0-based number of the first dialog in the viewport,
+    // where "-1" means user sees navigation above all dialogs
     //
     currentIdx = _.sortedIndexBy(dialogs, null, dlg => {
       if (!dlg) { return dialogThreshold; }
       return dlg.offsetTop;
-    });
-
-    if (currentIdx >= dialogs.length) {
-      currentIdx = dialogs.length - 1;
-    }
+    }) - 1;
 
     let href = null;
     let state = null;
@@ -301,7 +311,8 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
     N.io.rpc('users.dialogs_root.list.by_range', {
       last_message_id: dlgListState.first_message_id,
       before: LOAD_DLGS_COUNT,
-      after: 0
+      after: 0,
+      hide_answered: N.runtime.page_data.dialogs_hide_answered
     }).then(function (res) {
       if (!res.dialogs) return;
 
@@ -354,7 +365,8 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
     N.io.rpc('users.dialogs_root.list.by_range', {
       last_message_id: dlgListState.last_message_id,
       before: 0,
-      after: LOAD_DLGS_COUNT
+      after: LOAD_DLGS_COUNT,
+      hide_answered: N.runtime.page_data.dialogs_hide_answered
     }).then(function (res) {
       if (!res.dialogs) return;
 

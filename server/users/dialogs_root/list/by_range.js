@@ -11,6 +11,7 @@ module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
     last_message_id: { format: 'mongo', required: true },
+    hide_answered:   { type: 'boolean', required: true },
     before:          { type: 'integer', minimum: 0, maximum: LIMIT, required: true },
     after:           { type: 'integer', minimum: 0, maximum: LIMIT, required: true }
   });
@@ -25,7 +26,8 @@ module.exports = function (N, apiPath) {
     env.data.select_dialogs_start  = env.params.last_message_id;
     env.data.select_dialogs_before = env.params.before;
     env.data.select_dialogs_after  = env.params.after;
-    env.data.build_dialogs_ids = buildDialogsIds;
+    env.data.dialogs_hide_answered = env.params.hide_answered;
+    env.data.build_dialogs_ids     = buildDialogsIds;
 
     return N.wire.emit('internal:users.dialog_list', env);
   });
@@ -34,20 +36,26 @@ module.exports = function (N, apiPath) {
   // Fill pagination (progress)
   //
   N.wire.after(apiPath, function* fill_pagination(env) {
-    let dialogs_total = yield N.models.users.Dialog
-                                  .where('user').equals(env.user_info.user_id)
-                                  .where('exists').equals(true)
-                                  .count();
+    let query = N.models.users.Dialog
+                    .where('user').equals(env.user_info.user_id)
+                    .where('exists').equals(true);
+
+    if (env.data.dialogs_hide_answered) query = query.where('cache.is_reply').equals(false);
+
+    let dialogs_total = yield query.count();
 
     let dialog_offset = 0;
 
     // Count an amount of visible dialogs before the first one
     if (env.data.dialogs.length) {
-      dialog_offset = yield N.models.users.Dialog
-                                .where('user').equals(env.user_info.user_id)
-                                .where('exists').equals(true)
-                                .where('cache.last_message').gt(env.data.dialogs[0].cache.last_message)
-                                .count();
+      let query = N.models.users.Dialog
+                      .where('user').equals(env.user_info.user_id)
+                      .where('exists').equals(true)
+                      .where('cache.last_message').gt(env.data.dialogs[0].cache.last_message);
+
+      if (env.data.dialogs_hide_answered) query = query.where('cache.is_reply').equals(false);
+
+      dialog_offset = yield query.count();
     }
 
     env.res.pagination = {
