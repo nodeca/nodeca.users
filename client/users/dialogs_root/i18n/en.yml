@@ -1,6 +1,6 @@
 en-US:
   title: Dialogs
-  hide_answered_dialogs: Hide answered
+  hide_answered_dialogs: Unanswered only
   no_messages: No dialogs
   new_message: New dialog
   delete_confirmation: Are you sure want to delete whole conversation? This action is non-cancelable.
