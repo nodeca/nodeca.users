@@ -5,6 +5,8 @@
   //- != self.partial('@users.blocks.breadcrumbs')
 
   .layout__container.container-fluid
+    != self.partial('@users.blocks.announces')
+
     header.page-head
       h1.page-head__title(itemprop='name')
         if self.user_is_ignored

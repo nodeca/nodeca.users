@@ -15,6 +15,8 @@
           )
 
   .layout__container.container-fluid
+    != self.partial('@users.blocks.announces')
+
     //-header.page-head.albums-head
       p.page-head__descr.hidden-xs-down(itemprop='description')
 

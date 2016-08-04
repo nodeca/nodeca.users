@@ -1,0 +1,8 @@
+each announce in self.announces || []
+  .alert.alert-warning(
+    data-announce-id=announce.id
+    class=announce.can_dismiss ? 'alert-dismissible fade in' : ''
+  )
+    if announce.can_dismiss
+      button.close.icon.icon-x(data-dismiss='alert', aria-label='close')
+    != self.t('@common.announces.' + announce.id)
