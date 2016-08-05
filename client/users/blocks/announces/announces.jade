@@ -1,8 +1,14 @@
 each announce in self.announces || []
+  - var can_hide = !!announce.hide_days
+
   .alert.alert-warning(
-    data-announce-id=announce.id
-    class=announce.can_dismiss ? 'alert-dismissible fade in' : ''
+    class=can_hide ? 'alert-dismissible fade in' : ''
   )
-    if announce.can_dismiss
-      button.close.icon.icon-x(data-dismiss='alert', aria-label='close')
+    if can_hide
+      button.close.icon.icon-x(
+        data-dismiss='alert'
+        aria-label='close'
+        data-on-click='users.blocks.announces:hide'
+        data-announce-id=announce.id
+      )
     != self.t('@common.announces.' + announce.id)
