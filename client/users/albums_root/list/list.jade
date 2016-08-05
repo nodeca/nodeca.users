@@ -1,21 +1,22 @@
 each album in self.albums
-  li.user-albumlist__item.thumb-grid__item(data-on-dragdrop='users.albums_root.list:dragdrop', data-album-id=album._id, data-user-hid=self.user_hid): .thumb-grid__item-inner
-    - var albumLink = self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id });
-    - var albumTitle = !album.default ? album.title : self.t('default_name')
+  li.user-albumlist__item.thumb-grid__item(data-on-dragdrop='users.albums_root.list:dragdrop', data-album-id=album._id, data-user-hid=self.user_hid)
+    .thumb-grid__item-inner
+      - var albumLink = self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id });
+      - var albumTitle = !album.default ? album.title : self.t('default_name')
 
-    a.thumb(href=albumLink)
-      if album.cover_id
-        - var imageUrl = self.link_to('core.gridfs', { 'bucket': album.cover_id + '_sm' })
-        img.thumb__image(src=imageUrl)
-      else
-        .thumb__content= self.t('empty')
+      a.thumb(href=albumLink)
+        if album.cover_id
+          - var imageUrl = self.link_to('core.gridfs', { 'bucket': album.cover_id + '_sm' })
+          img.thumb__image(src=imageUrl)
+        else
+          .thumb__content= self.t('empty')
 
-      .thumb-caption
-        .thumb-caption__line= albumTitle
-        .thumb-caption__line.thumb-caption__m-secondary
-          .thumb-caption__line
-            span.thumb-caption__inline
-              != self.timetag(album.last_ts, 'relative')
-            if album.count > 0
-              span.thumb-caption__inline.icon.icon-space-after.icon-camera
-                = album.count
+        .thumb-caption
+          .thumb-caption__line= albumTitle
+          .thumb-caption__line.thumb-caption__m-secondary
+            .thumb-caption__line
+              span.thumb-caption__inline
+                != self.timetag(album.last_ts, 'relative')
+              if album.count > 0
+                span.thumb-caption__inline.icon.icon-space-after.icon-camera
+                  = album.count
