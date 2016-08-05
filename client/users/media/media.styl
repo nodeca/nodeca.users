@@ -1,17 +1,145 @@
 @import "nodeca.core/client/common/_variables"
 
-.user-media
-  text-align center
+$default-margin = 4rem
+
+.user-media__wrapper
+  display flex
+  align-items center
+  justify-content center
+  min-height 200px
+  position relative
+
+  margin 0 $default-margin
+  background-color $body-bg-secondary
+  border-radius 2px
+
+.user-media__wrapper.user-media__m-binary
+  min-height 250px
+
+.user-media__image-container
+  flex 0 1 auto
+  border-radius inherit
+  overflow hidden
+.user-media__image
+  max-width 100%
 
 .user-media__video
-  max-width 800px
-  margin 0 auto
+  flex 1 1 auto
+  border-radius inherit
+  overflow hidden
 
 .user-media__binary
-  font-size 18px
+  flex 0 1 auto
+  margin 0 3rem
+  font-size $font-size-sm
+  text-align center
+  shortable()
+
+.user-media__binary-icon
+  display block
+  font-size 6rem
+  line-height 1.1em
+  color $link-color + 70%
+
+.user-media__prev
+.user-media__next
+  position absolute
+  top 0
+  bottom 0
+  width 20%
+  min-width $default-margin
+  color $body-color-secondary
+  &:hover
+    text-decoration none
+    color $body-color-secondary - 20%
+  &:focus
+    outline none
+.user-media__prev
+  left -($default-margin)
+.user-media__next
+  right -($default-margin)
+
+// Should not overlap video
+.user-media__m-video
+  .user-media__prev
+  .user-media__next
+    max-width $default-margin
+    top 50px
+    bottom 50px
+
+.user-media__prev-icon
+.user-media__next-icon
+  position absolute
+  top 50%
+  font-size 2rem
+  margin-top -1rem
+  line-height 1em
+.user-media__prev-icon
+  left 0
+.user-media__next-icon
+  right 0
+
+.user-media__m-disabled
+  opacity .4
+  &.user-media__prev:hover
+  &.user-media__next:hover
+    color $body-color-secondary
+
+@media (max-width: $grid-breakpoints.sm - 1)
+  .user-media__wrapper
+    margin 0
+    min-height 150px
+  .user-media__wrapper.user-media__m-binary
+    min-height 200px
+
+  .user-media__prev
+  .user-media__next
+    left 0
+    color $body-color-secondary + 20%
+    text-shadow 0 0 1px ($body-color-secondary - 60%)
+    &:hover
+      color $body-color-secondary + 40%
+  .user-media__next
+    left auto
+    right 0
+
+  .user-media__prev-icon
+    left .7rem
+  .user-media__next-icon
+    right .7rem
+
+  .user-media__m-binary
+    .user-media__prev
+    .user-media__next
+      text-shadow none
+
+  .user-media__binary-icon
+    font-size 4rem
+
+.user-media__controls
+  position absolute
+  right .5rem
+  left auto
+  bottom .5rem
+
+.user-media__control-item.btn-link
+.user-media__control-item > .btn-link
+  color $body-color-secondary + 20%
+  text-shadow 0 0 1px ($body-color-secondary - 60%)
+  &:hover
+    color $body-color-secondary + 40%
+
+.user-media__m-binary
+  .user-media__control-item.btn-link
+  .user-media__control-item > .btn-link
+    text-shadow none
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Comments
 
 .user-media__comments
-  list-style: none;
+  list-style none
   margin: 0
   padding: 0
 

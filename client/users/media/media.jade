@@ -7,50 +7,85 @@
     .layout__container.container-fluid
       != self.partial('@users.blocks.breadcrumbs')
 
-      .breadcrumbs-controls.hidden-deleted
-        if own_page
-          a.btn.btn-secondary.btn-sm.icon.icon-edit(
-            data-on-click='users.media:edit'
-            title=self.t('edit')
-          )
-
   .layout__container.container-fluid
     != self.partial('@users.blocks.announces')
 
-    //-header.page-head.albums-head
-      p.page-head__descr.hidden-xs-down(itemprop='description')
+    -
+      var mType = self.media.type & ~mTypes.MASK_DELETED;
+      var isImage = mType === mTypes.IMAGE;
+      var isVideo = mType === mTypes.MEDIALINK;
+      var isBinary = mType === mTypes.BINARY
 
-    .user-media
-      - var mType = self.media.type & ~mTypes.MASK_DELETED
+    .user-media__wrapper(
+      class= isVideo ? 'user-media__m-video' : ''
+      class= isBinary ? 'user-media__m-binary' : ''
+    )
 
-      if mType === mTypes.IMAGE
+      if isImage
         - var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.media_id })
-          img.img-responsive(src=imageUrl)
+        .user-media__image-container
+          img.user-media__image(src=imageUrl)
 
-      else if mType === mTypes.MEDIALINK
+      else if isVideo
         .user-media__video
           != self.media.medialink_html
 
-      else if mType === mTypes.BINARY
+      else if isBinary
         .user-media__binary
-          a(href=self.link_to('core.gridfs', { bucket: self.media.media_id }))
+          a.user-media__binary-link(
+            href=self.link_to('core.gridfs', { bucket: self.media.media_id })
+          )
+            span.user-media__binary-icon.icon.icon-binary
             = self.media.file_name
 
-    if self.previous
-      a.user-media-root__prev.btn.btn-secondary(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.previous }))= self.t('prev')
-    if self.next
-      a.user-media-root__next.btn.btn-secondary(href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.next }))= self.t('next')
+      //- Prev / Next navigation
+      if self.previous
+        a.user-media__prev(
+          href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.previous })
+          title=self.t('prev')
+        )
+          span.user-media__prev-icon.icon.icon-chevron-big-left
+      else
+        .user-media__prev.user-media__m-disabled
+          span.user-media__prev-icon.icon.icon-chevron-big-left
+
+      if self.next
+        a.user-media__next(
+          href=self.link_to('users.media', { user_hid: self.user_hid, media_id: self.next })
+          title=self.t('next')
+        )
+          span.user-media__next-icon.icon.icon-chevron-big-right
+      else
+        .user-media__next.user-media__m-disabled
+          span.user-media__next-icon.icon.icon-chevron-big-right
+
+
+      .user-media__controls.hidden-deleted
+        .user-media__control-item.dropdown.dropup
+          - var menu_rnd_id = 'rnd' + String(Math.random()).slice(2, 10)
+
+          button.btn.btn-link.btn-square.icon.icon-dropdown.dropdown-toggle(
+            type='button'
+            id=menu_rnd_id
+            aria-haspopup='true'
+            aria-expanded='false'
+            data-toggle='dropdown'
+          )
+
+          .dropdown-menu.dropdown-menu-right(aria-labelledby=menu_rnd_id)
+            if own_page
+              button.dropdown-item(
+                data-on-click='users.media:edit'
+              )= self.t('move')
+
+              button.dropdown-item(
+                data-on-click='users.media:delete'
+              )= self.t('delete')
 
     .hidden-deleted
-      if own_page
-        a(
-          href='#'
-          data-on-click='users.media:delete'
-        )= self.t('delete')
 
-
-      p= self.media.description
-      p= self.date(self.media.ts, 'relative')
+      //-p= self.media.description
+      //-p= self.date(self.media.ts, 'relative')
 
       .row
         .col-md-8.col-md-offset-2
