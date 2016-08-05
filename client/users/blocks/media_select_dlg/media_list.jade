@@ -2,7 +2,7 @@
 
 each media in self.medias
 
-  li.thumb-grid__item(id='media-select-dlg__media-' + media.media_id)
+  li.thumb-grid__item(id='media-select-dlg__media-' + media.media_id): .thumb-grid__item-inner
 
     a.thumb(
       href=self.link_to('users.media', { user_hid: self.user_hid, media_id: media.media_id })

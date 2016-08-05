@@ -1,7 +1,7 @@
 if self.medias.length > 0
   ul.thumb-grid.thumb-grid__m-fluid-md
     each media in self.medias
-      li.thumb-grid__item
+      li.thumb-grid__item: .thumb-grid__item-inner
         a.thumb(
           href=self.link_to('users.media', { user_hid: self.user_hid, media_id: media.media_id })
           data-on-click='users.album.edit.select_cover:select'

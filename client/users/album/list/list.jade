@@ -3,7 +3,7 @@
 each media in self.media
   - var href = self.link_to('users.media', { user_hid: self.user_hid, media_id: media.media_id })
 
-  li.thumb-grid__item
+  li.thumb-grid__item: .thumb-grid__item-inner
     - var mType = media.type & ~mTypes.MASK_DELETED
 
     if mType === mTypes.IMAGE
