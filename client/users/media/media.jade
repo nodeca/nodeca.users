@@ -87,19 +87,60 @@
       //-p= self.media.description
       //-p= self.date(self.media.ts, 'relative')
 
-      .row
-        .col-md-8.col-md-offset-2
-          ul.user-media__comments
-            each comment in self.comments
-              - var user = self.users[comment.user]
-                li
-                  div= comment.text
-                  div
-                    a= user.name
-                    span= self.date(comment.ts, 'relative')
-                    a Edit
-                    a Delte
-                    a Complain
+      .user-media__footer
+        .user-media-comment__placeholder
+          .user-media-comment__aside
+            .user-media-comment__userpic-img.av-anon
+          .user-media-comment__inner
+            a.user-media-comment__placeholder-link(href='#')
+              = self.t('add_comment')
+
+        .user-media-comments
+          each comment in self.comments
+            - var user = self.users[comment.user]
+
+            article.user-media-comment
+              .user-media-comment__aside
+                if user
+                  a.user-media-comment__userpic(href=self.link_to('users.member', { user_hid: user.hid }))
+                    img.user-media-comment__userpic-img(alt=user.name)&attributes(self.avatar(user, 'md'))
+                else if post.legacy_nick
+                  span.user-media-comment__userpic
+                    img.user-media-comment__userpic-img(alt=post.legacy_nick)&attributes(self.avatar(post.legacy_nick, 'md'))
+                else
+                  .user-media-comment__userpic-img.av-anon
+
+              .user-media-comment__inner
+                footer.user-media-comment__meta
+                  .user-media-comment__author
+                    if user
+                      a.user-media-comment__author-link._ucard-popover(
+                        href=self.link_to('users.member', { user_hid: user.hid })
+                        data-user-id=user.id
+                      )= user.name
+
+                  .user-media-comment__ts
+                    = self.date(comment.ts, 'relative')
+
+                  .user-media-comment__controls.dropdown
+                    - var local_menu_rnd_id = 'rnd' + String(Math.random()).slice(2, 10)
+
+                    a.user-media-comment__dropdown.icon.icon-dropdown-local.dropdown-toggle(
+                      href='#'
+                      type='button'
+                      id=local_menu_rnd_id
+                      aria-haspopup='true'
+                      aria-expanded='false'
+                      data-toggle='dropdown'
+                    )
+
+                    .dropdown-menu.dropdown-menu-right(
+                      aria-labelledby=local_menu_rnd_id
+                    )
+                      button.dropdown-item Report
+                      button.dropdown-item Remove
+
+                .user-media-comment__content= comment.text
 
     if own_page
       .restore-notice.visible-deleted-block

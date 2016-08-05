@@ -9,7 +9,7 @@ $default-margin = 4rem
   min-height 200px
   position relative
 
-  margin 0 $default-margin
+  margin 0 $default-margin 1.5rem
   background-color $body-bg-secondary
   border-radius 2px
 
@@ -87,7 +87,8 @@ $default-margin = 4rem
 
 @media (max-width: $grid-breakpoints.sm - 1)
   .user-media__wrapper
-    margin 0
+    margin-left 0
+    margin-right 0
     min-height 150px
   .user-media__wrapper.user-media__m-binary
     min-height 200px
@@ -136,16 +137,6 @@ $default-margin = 4rem
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Comments
-
-.user-media__comments
-  list-style none
-  margin: 0
-  padding: 0
-
-.user-media-root.deleted
-  .user-media-root__delete
-    display none
 
 .user-media-root__restore
   margin 0 auto
@@ -156,3 +147,67 @@ $default-margin = 4rem
   background #ffffff
   z-index 30
   border 1px solid #000000
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Comments
+
+.user-media__footer
+  list-style none
+  margin 0 auto
+  padding 0
+  max-width 500px
+
+$avatar-size = 30px
+
+.user-media-comment
+.user-media-comment__placeholder
+  min-height $avatar-size
+  margin-bottom 1.5rem
+
+.user-media-comment__placeholder-link
+  display inline-block
+  height $avatar-size
+  line-height $avatar-size
+
+.user-media-comment__aside
+  float left
+  margin-top .125rem
+
+.user-media-comment__userpic-img
+  display inline-block
+  width $avatar-size
+  height $avatar-size
+  border-radius 2px
+  box-shadow 0 0 1px $body-color-secondary
+
+.user-media-comment__inner
+  margin-right 0px
+  margin-left $avatar-size + 16px
+
+.user-media-comment__meta
+  display flex
+  font-size $font-size-sm
+  line-height 1.1em
+  color $body-color-secondary
+  margin-bottom .1rem
+
+.user-media-comment__author
+  flex 1 1 auto
+  width 100%
+  shortable()
+.user-media-comment__author-link
+  color $body-color-secondary
+
+.user-media-comment__ts
+  flex 1 1 auto
+  white-space nowrap
+  margin-left 1rem
+.user-media-comment__controls
+  flex 1 1 auto
+.user-media-comment__dropdown
+  padding-left 1rem
+  color $body-color-secondary
+
+.user-media-comment__content
+  line-height 1.25em
