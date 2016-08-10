@@ -1,0 +1,35 @@
+- self.add_raw_data('about', self.about)
+
+#content.user-settings-about
+  nav.breadcrumbs-container
+    .layout__container.container-fluid
+      != self.partial('@users.blocks.breadcrumbs')
+
+  .layout__container.container-fluid
+    != self.partial('@users.blocks.announces')
+
+    header.page-head
+      ul.nav.nav-tabs
+        li.nav-item
+          a.nav-link(href=self.link_to('users.settings.general'))= self.t('general')
+        li.nav-item
+          a.nav-link.active(href=self.link_to('users.settings.about'))= self.t('about')
+        li.nav-item
+          a.nav-link(href=self.link_to('users.settings.ignore'))= self.t('ignore')
+
+    form.form#user-settings-about(data-bind='submit: submit')
+
+      // ko foreach: about
+
+      .form-group.form-group-hover
+
+        label(data-bind='text: name')
+        input.form-control(type='text', data-bind='value: value, valueUpdate: "keyup"')
+
+        // ko if: help
+        small.text-muted(data-bind="text: help")
+        // /ko
+      // /ko
+
+      br
+      button.btn.btn-primary(type='submit', data-bind='enable: isDirty')= self.t('submit')

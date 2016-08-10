@@ -1,33 +1,40 @@
+- var own_page = (self.runtime.user_hid === self.user.hid)
+
 .member-block
 
   .member-block__header
     .member-block__header-title
       .member-block__header-text.pull-xs-left
         = self.t('title')
+        if own_page
+          | 
+          a.btn.btn-secondary.btn-xs.icon.icon-edit(
+            href=self.link_to('users.settings.about')
+          )
       a.member-block__header-collapser(href='#member-about-info', data-toggle='collapse')
         .pull-xs-right.icon.icon-collapse
         .pull-xs-right.icon.icon-expand
 
   #member-about-info.member-block__inner.collapse.in
-
     dl.member-about__dl
       each item in self.blocks.about.list
-        dt.member-about__dt=self.t(item.name)
+        dt.member-about__dt=item.title || self.t(item.name)
         dd.member-about__dd
-          if item.link
-            a(href=item.link)=item.value
+          if self.partial_exists('blocks.' + item.name)
+            != self.partial('blocks.' + item.name, item)
           else
-            =item.value
+            = item.value
 
-      each item in self.blocks.about.extra
-        dt.member-about__dt.member-about__m-hidden=self.t(item.name)
-        dd.member-about__dd.member-about__m-hidden
-          if item.link
-            a(href=item.link)=item.value
-          else
-            =item.value
+      if self.blocks.about.extra.length
+        each item in self.blocks.about.extra
+          dt.member-about__dt.member-about__m-hidden=item.title || self.t(item.name)
+          dd.member-about__dd.member-about__m-hidden
+            if self.partial_exists('blocks.' + item.name)
+              != self.partial('blocks.' + item.name, item)
+            else
+              = item.value
 
-      dt.member-about__dt.member-about__expand
-      dd.member-about__dd.member-about__expand
-        a(href='#' data-on-click='users.member.blocks.about:expand')
-          =self.t('expand')
+        dt.member-about__dt.member-about__expand
+        dd.member-about__dd.member-about__expand
+          a(href='#' data-on-click='users.member.blocks.about:expand')
+            =self.t('expand')

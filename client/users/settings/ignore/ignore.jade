@@ -1,6 +1,3 @@
-- self.add_raw_data('setting_schemas', self.setting_schemas)
-- self.add_raw_data('settings', self.settings)
-
 #content.user-settings-ignore-root
   nav.breadcrumbs-container
     .layout__container.container-fluid
@@ -13,6 +10,8 @@
       ul.nav.nav-tabs
         li.nav-item
           a.nav-link(href=self.link_to('users.settings.general'))= self.t('general')
+        li.nav-item
+          a.nav-link(href=self.link_to('users.settings.about'))= self.t('about')
         li.nav-item
           a.nav-link.active(href=self.link_to('users.settings.ignore'))= self.t('ignore')
 

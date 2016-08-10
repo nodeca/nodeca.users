@@ -31,7 +31,19 @@ module.exports = function (N, collectionName) {
     name           : String,
     post_count     : { type: Number, 'default': 0 },
 
-    avatar_id      : Schema.Types.ObjectId
+    avatar_id      : Schema.Types.ObjectId,
+
+    // Profile data (contacts, location, etc.)
+    //
+    // Format is like this:
+    // {
+    //   jabber:       String,
+    //   icq:          String,
+    //   location:     [ Number, Number ],
+    //   ... etc ...
+    // }
+    //
+    about          : Schema.Types.Mixed
   },
   {
     versionKey : false
@@ -40,14 +52,39 @@ module.exports = function (N, collectionName) {
   // Indexes
   //////////////////////////////////////////////////////////////////////////////
 
-  // Needed to fetch profile page
-  User.index({ usergroups: 1 });
-
-  // Needed to count users in group
+  // Needed to:
+  //  - fetch profile page
+  //  - count users in group
   User.index({ usergroups: 1 });
 
   // Needed for nick search
+  // TODO: make case-insensitive index instead maybe?
   User.index({ nick: 1 });
+
+  // Search by registration date
+  User.index({ joined_ts: 1 });
+
+  // For searching by custom fields
+  if (N.config.users && N.config.users.about) {
+    Object.keys(N.config.users.about).forEach(name => {
+      let index = N.config.users.about[name].index;
+
+      if (!index) return;
+
+      switch (index) {
+        case 'sparse':
+          User.index({ ['about.' + name]: 1 }, { sparse: true });
+          break;
+
+        case true:
+          User.index({ ['about.' + name]: 1 });
+          break;
+
+        default:
+          throw `Unknown index value for users.about.${name}: "${index}", expected true or "sparse"`;
+      }
+    });
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 

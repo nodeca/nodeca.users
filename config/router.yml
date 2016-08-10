@@ -30,6 +30,9 @@ router:
     users.settings.general:
       "/settings": ~
 
+    users.settings.about:
+      "/settings/about": ~
+
     users.settings.ignore:
       "/settings/ignore": ~
 

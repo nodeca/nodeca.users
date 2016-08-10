@@ -106,7 +106,7 @@ Form.prototype.submit = function submit() {
       setting._value = setting.value();
     });
     self.isDirty(false);
-  });
+  }).catch(err => N.wire.emit('error', err));
 };
 
 

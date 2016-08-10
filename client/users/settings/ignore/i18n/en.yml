@@ -1,6 +1,7 @@
 en-US:
   ignore: Ignore
   general: General
+  about: About
   ignored_till: 'till #{date}'
   ignored_forever: forever
   remove: remove
