@@ -33,17 +33,19 @@
         dt.ucard-info__dt= self.t('infractions_title')
         dd.ucard-info__dd= self.t('infractions_text', self.infractions_points)
 
-      dt.ucard-info__dt Posts
-      dd.ucard-info__dd: a(href='#') 678
+      dt.ucard-info__dt= self.t('post_count')
+      dd.ucard-info__dd: a(href='#')= self.user.post_count
 
-      dt.ucard-info__dt Age
-      dd.ucard-info__dd 32
+      if self.age
+        dt.ucard-info__dt= self.t('age')
+        dd.ucard-info__dd= self.age
 
-      dt.ucard-info__dt Location
-      dd.ucard-info__dd Honolulu
+      if self.location
+        dt.ucard-info__dt= self.t('location')
+        dd.ucard-info__dd= self.location.name
 
-      dt.ucard-info__dt Joined
+      dt.ucard-info__dt= self.t('joined')
       dd.ucard-info__dd= self.date(self.user.joined_ts, 'relative')
 
-      dt.ucard-info__dt Last active
-      dd.ucard-info__dd Now
+      dt.ucard-info__dt= self.t('last_active')
+      dd.ucard-info__dd= self.date(self.user.last_active_ts, 'relative')

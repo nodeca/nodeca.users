@@ -10,6 +10,7 @@ const user_fields = [
   'name',
   'nick',
   'post_count',
+  'last_active_ts',
   'avatar_id'
 ];
 
@@ -100,5 +101,11 @@ module.exports = function (N, apiPath) {
     }
 
     env.res.user = user;
+
+    env.res.age = 123;
+    env.res.location = {
+      point: [ 0, 0 ],
+      name: 'Null Island'
+    };
   });
 };

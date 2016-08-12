@@ -5,3 +5,8 @@ en-US:
   infractions_title: Infractions
   infractions_text: "#{count} ((point|points))"
   penalty_title: Blocked until
+  age: Age
+  location: Location
+  post_count: Posts
+  joined: Joined
+  last_active: Last active
