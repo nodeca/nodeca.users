@@ -29,6 +29,25 @@ module.exports = function (N) {
       priority: 20
     });
 
+    env.res.blocks.about.list.push({
+      name:     'location',
+      value:    { point: [ 0, 0 ], name: 'Null Island' },
+      priority: 30
+    });
+
+    let birthday = new Date();
+    let now = new Date();
+    let age = now.getFullYear() - birthday.getFullYear();
+
+    if (now.getMonth() < birthday.getMonth()) age--;
+    if (now.getMonth() === birthday.getMonth() && now.getDate() < birthday.getDate()) age--;
+
+    env.res.blocks.about.extra.push({
+      name:     'age',
+      value:    age,
+      priority: 190
+    });
+
     if (N.config.users && N.config.users.about) {
       for (let name of Object.keys(N.config.users.about)) {
         if (!about[name]) continue;

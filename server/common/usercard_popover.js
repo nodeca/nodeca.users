@@ -102,7 +102,15 @@ module.exports = function (N, apiPath) {
 
     env.res.user = user;
 
-    env.res.age = 123;
+    let birthday = new Date();
+    let now = new Date();
+    let age = now.getFullYear() - birthday.getFullYear();
+
+    if (now.getMonth() < birthday.getMonth()) age--;
+    if (now.getMonth() === birthday.getMonth() && now.getDate() < birthday.getDate()) age--;
+
+    env.res.age = age;
+
     env.res.location = {
       point: [ 0, 0 ],
       name: 'Null Island'
