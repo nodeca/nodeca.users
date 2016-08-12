@@ -13,8 +13,6 @@ module.exports = function (N, collectionName) {
     // user-friendly id (autoincremented)
     hid            : Number,
 
-    first_name     : String,
-    last_name      : String,
     nick           : String,
     email          : String,
     usergroups     : [ Schema.Types.ObjectId ],
@@ -124,24 +122,28 @@ module.exports = function (N, collectionName) {
   };
 
 
-  // FIXME: make denormalisation customizeable
-  //
-  // Update full name, on dependencies change (nick /first name / last name)
+  // Set `name` equal to `nick` by default,
+  // you can override it by adding a custom hook with altered behavior
   //
   User.pre('save', function (callback) {
-
-    // skip, if nothing changed
-    if (this.isModified('nick') || this.isModified('first_name') || this.isModified('last_name')) {
-      if (!!this.first_name && !!this.last_name) {
-        this.name = this.first_name + ' (' + this.nick + ') ' + this.last_name;
-      } else {
-        this.name = this.nick;
-      }
+    if (this.isModified('nick')) {
+      this.name = this.nick;
     }
 
     callback();
   });
 
+  // Here's an example how to change name formatting:
+  //
+  //N.wire.before('init:models.users.User', function init_extend_user_model(User) {
+  //  User.add({ first_name: String, last_name: String });
+  //
+  //  User.pre('save', function (callback) {
+  //    this.name = this.first_name + ' (' + this.nick + ') ' + this.last_name;
+  //  });
+  //
+  //  callback();
+  //});
 
   // Set `usergroups` for the new user if not defined
   //
