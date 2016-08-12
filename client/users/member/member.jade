@@ -17,7 +17,7 @@
       p.page-head__descr.member__last-visit(itemprop='description')
         =self.t('last_active')
         | 
-        != self.timetag(self.user.last_active_ts, 'compact')
+        != self.timetag(self.user.last_active_ts, 'relative_full')
       if self.user_is_hb
         p.page-head__descr.member__hb.text-danger(itemprop='description')=self.t('hellbaned')
       if self.penalty_expire
