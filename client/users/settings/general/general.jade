@@ -9,7 +9,7 @@
   .layout__container.container-fluid
     != self.partial('@users.blocks.announces')
 
-    header.page-head
+    .user-settings__tabs
       ul.nav.nav-tabs
         li.nav-item
           a.nav-link.active(href=self.link_to('users.settings.general'))= self.t('general')
@@ -18,7 +18,7 @@
         li.nav-item
           a.nav-link(href=self.link_to('users.settings.ignore'))= self.t('ignore')
 
-    form.form#user-settings-general(data-bind='submit: submit')
+    form.form.user-settings__tab-content.user-settings__m-narrow#user-settings-general(data-bind='submit: submit')
       // ko foreach: categories
 
       fieldset
