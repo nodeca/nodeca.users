@@ -15,17 +15,21 @@
 
     form.form.user-settings__tab-content.user-settings__m-narrow#user-settings-about(data-bind='submit: submit')
 
-      // ko foreach: about
+      each item in self.about
+        - var name = item.name;
 
-      .form-group.form-group-hover
+        .form-group.form-group-hover
 
-        label(data-bind='text: name')
-        input.form-control(type='text', data-bind='value: value, valueUpdate: "keyup"')
+          if self.partial_exists('blocks.' + name)
+            != self.partial('blocks.' + name, item)
+          else
+            label
+              = self.t.exists(name) ? self.t(name) : self.t('@users.about.' + name)
+            input.form-control(type='text', data-bind='value: about.#{name}.value, valueUpdate: "keyup"')
 
-        // ko if: help
-        small.text-muted(data-bind="text: help")
-        // /ko
-      // /ko
+          <!-- ko if: about.#{name}.help -->
+          small.text-muted(data-bind='text: about.#{name}.help')
+          <!-- /ko -->
 
       br
       button.btn.btn-primary(type='submit', data-bind='enable: isDirty')= self.t('submit')

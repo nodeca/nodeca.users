@@ -34,6 +34,13 @@ module.exports = function (N, apiPath) {
 
     env.res.about = [];
 
+    env.res.about.push({
+      name:     'birthday',
+      value:    about.birthday,
+      type:     'date',
+      priority: 10
+    });
+
     if (N.config.users && N.config.users.about) {
       for (let name of Object.keys(N.config.users.about)) {
         env.res.about.push({

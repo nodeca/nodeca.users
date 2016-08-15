@@ -42,7 +42,7 @@
 
       if self.location
         dt.ucard-info__dt= self.t('location')
-        dd.ucard-info__dd= self.location.name
+        dd.ucard-info__dd: a(href='#')= self.location.name
 
       dt.ucard-info__dt= self.t('joined')
       dd.ucard-info__dd= self.date(self.user.joined_ts, 'relative_full')

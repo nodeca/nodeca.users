@@ -18,16 +18,26 @@ module.exports = function (N) {
     _.set(env.res, 'blocks.about.extra', _.get(env.res, 'blocks.about.extra') || []);
 
     env.res.blocks.about.list.push({
-      name:     'joined',
-      value:    env.helpers.date(env.data.user.joined_ts, 'date'),
+      name:     'post_count',
+      value:    env.data.user.post_count,
       priority: 10
     });
 
-    env.res.blocks.about.list.push({
-      name:     'post_count',
-      value:    env.data.user.post_count,
-      priority: 20
-    });
+    let birthday = env.data.user.about && env.data.user.about.birthday;
+
+    if (birthday) {
+      let now = new Date();
+      let age = now.getFullYear() - birthday.getFullYear();
+
+      if (now.getMonth() < birthday.getMonth()) age--;
+      if (now.getMonth() === birthday.getMonth() && now.getDate() < birthday.getDate()) age--;
+
+      env.res.blocks.about.extra.push({
+        name:     'age',
+        value:    age,
+        priority: 20
+      });
+    }
 
     env.res.blocks.about.list.push({
       name:     'location',
@@ -35,17 +45,10 @@ module.exports = function (N) {
       priority: 30
     });
 
-    let birthday = new Date();
-    let now = new Date();
-    let age = now.getFullYear() - birthday.getFullYear();
-
-    if (now.getMonth() < birthday.getMonth()) age--;
-    if (now.getMonth() === birthday.getMonth() && now.getDate() < birthday.getDate()) age--;
-
-    env.res.blocks.about.extra.push({
-      name:     'age',
-      value:    age,
-      priority: 190
+    env.res.blocks.about.list.push({
+      name:     'joined',
+      value:    env.helpers.date(env.data.user.joined_ts, 'date'),
+      priority: 40
     });
 
     if (N.config.users && N.config.users.about) {

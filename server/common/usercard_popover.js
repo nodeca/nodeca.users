@@ -2,17 +2,7 @@
 //
 'use strict';
 
-
-const user_fields = [
-  '_id',
-  'hid',
-  'joined_ts',
-  'name',
-  'nick',
-  'post_count',
-  'last_active_ts',
-  'avatar_id'
-];
+const _ = require('lodash');
 
 
 module.exports = function (N, apiPath) {
@@ -21,25 +11,10 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Fetch user
+  // Fetch member by 'user_hid'
   //
-  N.wire.before(apiPath, function* fetch_user(env) {
-
-    // Fetch permission to see deleted users
-    let can_see_deleted_users = yield env.extras.settings.fetch('can_see_deleted_users');
-
-    let params = { hid: env.params.user_hid };
-
-    if (!can_see_deleted_users) {
-      params.exists = true;
-    }
-
-    // Fetch user
-    let res = yield N.models.users.User.findOne(params).select(user_fields.join(' ')).lean(true);
-
-    if (!res) throw N.io.NOT_FOUND;
-
-    env.data.user = res;
+  N.wire.before(apiPath, function fetch_user_by_hid(env) {
+    return N.wire.emit('internal:users.fetch_user_by_hid', env);
   });
 
 
@@ -92,24 +67,34 @@ module.exports = function (N, apiPath) {
   // Fill user
   //
   N.wire.on(apiPath, function fill_user(env) {
-    let user = env.data.user;
+    env.res.user = _.pick(env.data.user, [
+      'hid',
+      'joined_ts',
+      'nick',
+      'post_count',
+      'last_active_ts'
+    ]);
 
     // only registered users can see full name and avatar
-    if (!env.user_info.is_member) {
-      user.name = user.nick;
-      user.avatar_id = null;
+    if (env.user_info.is_member) {
+      env.res.user.name = env.data.user.name;
+      env.res.user.avatar_id = env.data.user.avatar_id;
+    } else {
+      env.res.user.name = env.data.user.nick;
+      env.res.user.avatar_id = null;
     }
 
-    env.res.user = user;
+    let birthday = env.data.user.about && env.data.user.about.birthday;
 
-    let birthday = new Date();
-    let now = new Date();
-    let age = now.getFullYear() - birthday.getFullYear();
+    if (birthday) {
+      let now = new Date();
+      let age = now.getFullYear() - birthday.getFullYear();
 
-    if (now.getMonth() < birthday.getMonth()) age--;
-    if (now.getMonth() === birthday.getMonth() && now.getDate() < birthday.getDate()) age--;
+      if (now.getMonth() < birthday.getMonth()) age--;
+      if (now.getMonth() === birthday.getMonth() && now.getDate() < birthday.getDate()) age--;
 
-    env.res.age = age;
+      env.res.age = age;
+    }
 
     env.res.location = {
       point: [ 0, 0 ],

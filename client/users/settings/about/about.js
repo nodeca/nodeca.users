@@ -9,15 +9,26 @@ function Setting(field) {
   var tHelp = 'users.settings.about.' + field.name + '__help';
 
   this.settingName = field.name;
-  this.name = N.runtime.t('users.about.' + field.name);
   this.help = N.runtime.t.exists(tHelp) ? N.runtime.t(tHelp) : '';
 
-  this._value = field.value;
+  if (field.type === 'date' && field.value) {
+    let date = new Date(field.value);
+
+    if (!isNaN(date)) {
+      // serialize into XXXX-XX-XX format accepted by input[type=date]
+      this._value = date.toISOString().slice(0, 10);
+    } else {
+      this._value = '';
+    }
+  } else {
+    this._value = field.value;
+  }
 
   this.value = ko.observable(this._value);
 
   this.modified = ko.computed(function () {
-    return self._value !== self.value();
+    return (self._value !== self.value()) ||
+           (!self._value && !self.value()); // assume '' is equal to null
   });
 }
 
@@ -25,26 +36,26 @@ function Setting(field) {
 function Form(page_data) {
   let self = this;
 
-  this.about = [];
+  this.about = {};
   this.isDirty = ko.observable(false);
 
   function checkDirty() {
-    for (let i = 0; i < self.about.length; i++) {
+    let dirty = Object.keys(self.about).reduce((acc, name) => {
+      if (acc) return acc;
 
-      if (self.about[i].modified()) {
-        self.isDirty(true);
-        return;
+      if (self.about[name].modified()) {
+        return true;
       }
-    }
+    }, false);
 
-    self.isDirty(false);
+    self.isDirty(dirty);
   }
 
   page_data.about.forEach(function (field) {
     let setting = new Setting(field);
 
     setting.value.subscribe(checkDirty);
-    self.about.push(setting);
+    self.about[setting.settingName] = setting;
   });
 }
 
@@ -54,11 +65,11 @@ Form.prototype.submit = function submit() {
 
   let data = {};
 
-  this.about.forEach(function (setting) {
-    data[setting.settingName] = setting.value();
+  Object.keys(this.about).forEach(function (name) {
+    data[name] = self.about[name].value();
 
-    if (typeof data[setting.settingName] === 'undefined') {
-      data[setting.settingName] = null;
+    if (typeof data[name] === 'undefined') {
+      data[name] = null;
     }
   });
 
@@ -68,8 +79,8 @@ Form.prototype.submit = function submit() {
       message: t('saved')
     });
 
-    self.about.forEach(function (setting) {
-      setting._value = setting.value();
+    Object.keys(self.about).forEach(function (name) {
+      self.about[name]._value = self.about[name].value();
     });
     self.isDirty(false);
   }).catch(err => N.wire.emit('error', err));
