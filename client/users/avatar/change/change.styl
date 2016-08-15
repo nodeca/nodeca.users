@@ -7,34 +7,37 @@
 
 
 .avatar-change__info
-  padding 30px
+  padding 2rem
   text-align center
-  display block
   cursor pointer
-  border 2px dashed grayLighter
+  background-color $decorator-color + 60%
+  border 1px solid transparent
+  border-radius 3px
+  shortable()
 
 .avatar-change__canvas
   display none
   max-width 100%
   margin 0 auto
+  border-radius 3px
 
 
 .avatar-change.active
   .avatar-change__info
-    background-color grayLightest
+    border 1px dashed black
   .avatar-change__canvas
-    border 2px dashed grayLighter
+    border 1px dashed black
 
 
 .avatar-preview
   position absolute
-  right 10px
-  top 10px
+  right .5rem
+  top .5rem
   width '$$ N.config.users.avatars.resize.md.width $$'px
   height '$$ N.config.users.avatars.resize.md.height $$'px
   display none
   box-shadow 0 0 0 1px white, 0 0 2px 1px black
-  border-radius 4px
+  border-radius 2px
 
 // Toggle visibility when image loaded
 
