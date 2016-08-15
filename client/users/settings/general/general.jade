@@ -31,7 +31,7 @@
 
           // ko if: type === 'dropdown'
           label(data-bind='text: name')
-          select.form-control(data-bind="options: valueOptions, optionsText: 'title', optionsValue: 'value', value: value")
+          select.form-control.custom-select(data-bind="options: valueOptions, optionsText: 'title', optionsValue: 'value', value: value")
           // /ko
 
           // ko if: type === 'number'

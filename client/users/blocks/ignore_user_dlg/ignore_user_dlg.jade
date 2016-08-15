@@ -17,7 +17,7 @@
             input.form-control(type='text', name='reason', placeholder=self.t('input_reason_placeholder'), tabindex='2')
 
           .form-group
-            select.form-control(name='period', tabindex='1')
+            select.form-control.custom-select(name='period', tabindex='1')
               option(value='0')=self.t('period_forever')
               option(value='7')=self.t('period_7d')
               option(value='30')=self.t('period_30d')

@@ -8,7 +8,7 @@
         .modal-body
           .form-group.add-infraction-type
             label=self.t('type')
-            select.form-control(name='type' tabindex='1' data-on-change=self.apiPath + ':select_type')
+            select.form-control.custom-select(name='type' tabindex='1' data-on-change=self.apiPath + ':select_type')
               option(value='custom')=self.t('custom')
               each category in self.categories
                 if category.name
