@@ -6,14 +6,10 @@
   .layout__container.container-fluid
     != self.partial('@users.blocks.announces')
 
-    .user-settings__tabs
-      ul.nav.nav-tabs
-        li.nav-item
-          a.nav-link(href=self.link_to('users.settings.general'))= self.t('general')
-        li.nav-item
-          a.nav-link(href=self.link_to('users.settings.about'))= self.t('about')
-        li.nav-item
-          a.nav-link.active(href=self.link_to('users.settings.ignore'))= self.t('ignore')
+    .user-settings__tabs.nav.nav-tabs-underlined
+      a.nav-link(href=self.link_to('users.settings.general'))= self.t('general')
+      a.nav-link(href=self.link_to('users.settings.about'))= self.t('about')
+      a.nav-link.active(href=self.link_to('users.settings.ignore'))= self.t('ignore')
 
     table.table.table-condensed.user-settings-ignore.user-settings__tab-content
       tbody
