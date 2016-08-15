@@ -5,8 +5,8 @@
   padding 0
 
 .user-subscriptions-item
-  border-top 1px solid grayLightest
-  padding 10px 0
+  border-top 1px solid $decorator-color
+  padding 1rem 0
   &:first-child
     border-top none
 
@@ -14,8 +14,8 @@
   font-family sansWideFontFamily
   position relative
   font-weight normal
-  font-size 16px
-  line-height inherit
+  font-size $font-size-base
+  line-height 1.3
   margin-top 0
   margin-bottom 0
 
@@ -23,14 +23,14 @@
   margin-left 10px
 
 .user-subscriptions-item__title-link
-  color grayDark
+  color $body-color
   &:hover
     color linkColorHover
 
 .user-subscriptions-item__desc
-  font-size 11px
-  margin 0 0 0 .7em
-  color grayLight
+  color $body-color-secondary
+  font-size $font-size-xs
+  shortable()
 
 .user-subscriptions-item__desc-link
   color inherit
@@ -38,6 +38,7 @@
     color linkColorHover
 
 .user-subscriptions-tab__badge
+  font-size $font-size-xs
   &:empty
     display inline-block
   &::after

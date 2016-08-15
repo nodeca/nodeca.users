@@ -25,7 +25,7 @@
       h1.page-head__title(itemprop='name')= self.t('title')
       p.page-head__descr.hidden-xs-down(itemprop='description')
 
-    ul.nav.nav-tabs(role='tablist')
+    ul.nav.nav-tabs-underlined(role='tablist')
       - var i = 0;
       each tab in self.tabs
         li.user-subscriptions-tab.nav-item(role='presentation')
@@ -38,7 +38,7 @@
           )
             =self.t('@users.subscriptions.' + tab.block_name)
             | 
-            span.user-subscriptions-tab__badge.badge(
+            span.user-subscriptions-tab__badge.text-muted(
               data-count=tab.items.length
               class='user-subscriptions-tab__badge-' + tab.block_name
             )
