@@ -20,18 +20,22 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
       .col-xs-9
         label.radio-inline
           input(type="radio", name="filter", value="", data-bind="checked: filter")
+          | 
           = self.t('filter_options.show_all')
-        |  
+        | 
         label.radio-inline
           input(type="radio", name="filter", value="overriden", data-bind="checked: filter")
+          | 
           = self.t('filter_options.show_overriden')
-        |  
+        | 
         label.radio-inline
           input(type="radio", name="filter", value="forced", data-bind="checked: filter")
+          | 
           = self.t('filter_options.show_forced')
-        |  
+        | 
         label.radio-inline
           input(type="radio", name="filter", value="inherited", data-bind="checked: filter")
+          | 
           = self.t('filter_options.show_inherited')
 
   // ko foreach: currentGroup.categories
@@ -65,10 +69,12 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
       .col-xs-4
         label.checkbox-inline(data-bind="visible: parentSetting")
           input(type="checkbox", data-bind="checked: overriden")
+          | 
           = self.t('setting.override')
 
         label.checkbox-inline(data-bind="visible: overriden")
           input(type="checkbox", data-bind="checked: forced")
+          | 
           = self.t('setting.force')
 
     // /ko
