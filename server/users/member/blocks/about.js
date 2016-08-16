@@ -32,7 +32,7 @@ module.exports = function (N) {
       if (now.getMonth() < birthday.getMonth()) age--;
       if (now.getMonth() === birthday.getMonth() && now.getDate() < birthday.getDate()) age--;
 
-      env.res.blocks.about.extra.push({
+      env.res.blocks.about.list.push({
         name:     'age',
         value:    age,
         priority: 20
