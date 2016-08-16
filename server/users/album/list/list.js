@@ -55,7 +55,7 @@ module.exports = function (N, apiPath) {
                                              .limit(env.params.before + 1);
 
       if (result.length > env.params.before) {
-        let prev_media = result.shift();
+        let prev_media = result.pop();
 
         env.res.prev_media = prev_media.media_id;
         env.res.head = env.res.head || {};
