@@ -54,6 +54,29 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Update activity info with fresh data if available
+  //
+  N.wire.before(apiPath, function* fetch_activity_info(env) {
+    if (String(env.data.user._id) === env.user_info.user_id) {
+      // User is viewing her own profile. Since redis last_active_ts is not
+      // yet updated, just show her the current redis time.
+      //
+      let time = yield N.redis.timeAsync();
+
+      env.data.user.last_active_ts = new Date(Math.floor(time[0] * 1000 + time[1] / 1000));
+      return;
+    }
+
+    let score = yield N.redis.zscoreAsync('users:last_active', String(env.data.user._id));
+
+    // Score not found, use `last_active_ts` from mongodb
+    if (!score) return;
+
+    // Use fresh `last_active_ts` from redis
+    env.data.user.last_active_ts = new Date(parseInt(score, 10));
+  });
+
+
   // Fill permissions to use dialogs
   //
   N.wire.before(apiPath, function* fill_dialogs_permissions(env) {
