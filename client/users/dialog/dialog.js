@@ -111,7 +111,7 @@ N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
 
   locationScrollHandler = _.debounce(function update_location_on_scroll() {
     let messages         = document.getElementsByClassName('user-messages-list-item');
-    let messageThreshold = $window.scrollTop() + navbar_height + TOP_OFFSET;
+    let messageThreshold = navbar_height + TOP_OFFSET;
     let offset;
     let currentIdx;
 
@@ -119,7 +119,7 @@ N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
     //
     currentIdx = _.sortedIndexBy(messages, null, msg => {
       if (!msg) { return messageThreshold; }
-      return msg.offsetTop;
+      return msg.getBoundingClientRect().top;
     });
 
     if (currentIdx >= messages.length) {
@@ -134,7 +134,7 @@ N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
     if (currentIdx >= 0 && messages.length) {
       state = {
         message_id: $(messages[currentIdx]).data('message-id'),
-        offset: messageThreshold - messages[currentIdx].offsetTop
+        offset: messageThreshold - messages[currentIdx].getBoundingClientRect().top
       };
     }
 
@@ -195,7 +195,7 @@ N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
     // Update progress bar
     //
     let messages         = document.getElementsByClassName('user-messages-list-item');
-    let messageThreshold = $window.scrollTop() + navbar_height + TOP_OFFSET;
+    let messageThreshold = navbar_height + TOP_OFFSET;
     let offset;
     let currentIdx;
 
@@ -203,10 +203,8 @@ N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
     //
     currentIdx = _.sortedIndexBy(messages, null, msg => {
       if (!msg) { return messageThreshold; }
-      return msg.offsetTop;
-    });
-
-    currentIdx--;
+      return msg.getBoundingClientRect().top;
+    }) - 1;
 
     offset = currentIdx + dlgState.first_offset;
 

@@ -123,7 +123,7 @@ N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
 
   locationScrollHandler = _.debounce(function update_location_on_scroll() {
     let dialogs         = document.getElementsByClassName('dialog-list-item');
-    let dialogThreshold = $window.scrollTop() + navbar_height + TOP_OFFSET;
+    let dialogThreshold = navbar_height + TOP_OFFSET;
     let offset;
     let currentIdx;
 
@@ -132,7 +132,7 @@ N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
     //
     currentIdx = _.sortedIndexBy(dialogs, null, dlg => {
       if (!dlg) { return dialogThreshold; }
-      return dlg.offsetTop;
+      return dlg.getBoundingClientRect().top;
     }) - 1;
 
     let href = null;
@@ -143,7 +143,7 @@ N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
     if (currentIdx >= 0 && dialogs.length) {
       state = {
         dialog_id: $(dialogs[currentIdx]).data('dialog-id'),
-        offset: dialogThreshold - dialogs[currentIdx].offsetTop
+        offset: dialogThreshold - dialogs[currentIdx].getBoundingClientRect().top
       };
     }
 
@@ -203,7 +203,7 @@ N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
     // Update progress bar
     //
     let dialogs         = document.getElementsByClassName('dialog-list-item');
-    let dialogThreshold = $window.scrollTop() + navbar_height + TOP_OFFSET;
+    let dialogThreshold = navbar_height + TOP_OFFSET;
     let offset;
     let currentIdx;
 
@@ -211,10 +211,8 @@ N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
     //
     currentIdx = _.sortedIndexBy(dialogs, null, dlg => {
       if (!dlg) { return dialogThreshold; }
-      return dlg.offsetTop;
-    });
-
-    currentIdx--;
+      return dlg.getBoundingClientRect().top;
+    }) - 1;
 
     offset = currentIdx + dlgListState.first_offset;
 
