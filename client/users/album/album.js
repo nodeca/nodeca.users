@@ -210,7 +210,7 @@ let locationScrollHandler = null;
 
 N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
   locationScrollHandler = _.debounce(function update_location_on_scroll() {
-    let media          = document.getElementById('users-media-list').getElementsByClassName('thumb'),
+    let media          = document.getElementById('users-media-list').getElementsByClassName('thumb-grid__item'),
         mediaThreshold = navbarHeight + TOP_OFFSET,
         currentIdx;
 
@@ -316,7 +316,7 @@ N.wire.once('navigate.done:' + module.apiPath, function prefetch_handler_setup()
 
     mediaState.prev_loading_start = now;
 
-    let media = document.getElementById('users-media-list').getElementsByClassName('thumb');
+    let media = document.getElementById('users-media-list').getElementsByClassName('thumb-grid__item');
     let first_offset = media[0].getBoundingClientRect().top;
     let i;
 
@@ -334,7 +334,7 @@ N.wire.once('navigate.done:' + module.apiPath, function prefetch_handler_setup()
     N.io.rpc('users.album.list', {
       user_hid: mediaState.user_hid,
       album_id: mediaState.album_id,
-      media_id: $('#users-media-list .thumb:first').data('media-id'),
+      media_id: $('#users-media-list .thumb-grid__item:first').data('media-id'),
       before:   load_count,
       after:    0
     }).then(function (res) {
@@ -385,7 +385,7 @@ N.wire.once('navigate.done:' + module.apiPath, function prefetch_handler_setup()
 
     mediaState.next_loading_start = now;
 
-    let media = document.getElementById('users-media-list').getElementsByClassName('thumb');
+    let media = document.getElementById('users-media-list').getElementsByClassName('thumb-grid__item');
     let first_offset = media[0].getBoundingClientRect().top;
     let i;
 
@@ -403,7 +403,7 @@ N.wire.once('navigate.done:' + module.apiPath, function prefetch_handler_setup()
     N.io.rpc('users.album.list', {
       user_hid: mediaState.user_hid,
       album_id: mediaState.album_id,
-      media_id: $('#users-media-list .thumb:last').data('media-id'),
+      media_id: $('#users-media-list .thumb-grid__item:last').data('media-id'),
       before:   0,
       after:    load_count
     }).then(function (res) {
