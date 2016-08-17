@@ -2,6 +2,8 @@
 //
 'use strict';
 
+const _ = require('lodash');
+
 
 module.exports = function (N, apiPath) {
 
@@ -27,10 +29,12 @@ module.exports = function (N, apiPath) {
   // Fill response
   //
   N.wire.on(apiPath, function* fill_response(env) {
-    let settings = yield N.models.users.UserSettings.findOne({ user: env.user_info.user_id });
+    let settings = (yield N.models.users.UserSettings.findOne({ user: env.user_info.user_id }).lean(true)) || {};
 
-    env.res.setting_schemas = N.config.setting_schemas.user || {};
-    env.res.settings = settings || {};
+    let setting_schemas = N.config.setting_schemas.user || {};
+
+    env.res.setting_schemas = _.pickBy(setting_schemas, setting => !setting.hidden);
+    env.res.settings = _.pickBy(settings, (setting, name) => setting_schemas[name] && !setting_schemas[name].hidden);
   });
 
 
