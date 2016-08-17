@@ -1,3 +1,4 @@
 en-US:
   title: "#{album} - #{username}"
   default_name: Unsorted
+  breadcrumbs_progress: "#{current} of #{total}"

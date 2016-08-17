@@ -212,6 +212,18 @@ module.exports = function (N, apiPath) {
       params : { user_hid: env.data.user.hid, album_id: env.data.album._id }
     });
 
+    let mTypes = N.models.users.MediaInfo.types;
+    let current = yield N.models.users.MediaInfo.count()
+                           .where('album').equals(env.data.media.album)
+                           .where('type').in(mTypes.LIST_VISIBLE)
+                           .where('media_id').gte(env.data.media.media_id);
+
+    env.data.breadcrumbs.push({
+      text   : env.t('breadcrumbs_progress', { current, total: env.data.album.count }),
+      route  : 'users.media',
+      params : { media_id: env.data.media._id }
+    });
+
     env.res.breadcrumbs = env.data.breadcrumbs;
   });
 };

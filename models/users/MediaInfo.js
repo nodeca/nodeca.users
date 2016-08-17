@@ -77,6 +77,7 @@ module.exports = function (N, collectionName) {
 
   // - Album page, fetch medias
   // - Media page, fetch next and prev _id's
+  // - Media page, count current media number in album
   MediaInfo.index({ album: 1, type: 1, media_id: 1 });
 
   // - "All medias" page, medias list, sorted by date
