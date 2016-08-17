@@ -211,17 +211,17 @@ let locationScrollHandler = null;
 N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
   locationScrollHandler = _.debounce(function update_location_on_scroll() {
     let media          = document.getElementById('users-media-list').getElementsByClassName('thumb'),
-        mediaThreshold = $window.scrollTop() + navbarHeight + TOP_OFFSET,
+        mediaThreshold = navbarHeight + TOP_OFFSET,
         currentIdx;
 
     // Get offset of the first media in the viewport
     //
     currentIdx = _.sortedIndexBy(media, null, medium => {
       if (!medium) { return mediaThreshold; }
-      return medium.offsetTop + $(medium).height();
+      return medium.getBoundingClientRect().bottom;
     });
 
-    if (currentIdx === 0 && media[currentIdx].offsetTop > mediaThreshold) {
+    if (currentIdx === 0 && media[currentIdx].getBoundingClientRect().top > mediaThreshold) {
       currentIdx--;
     }
 
@@ -233,7 +233,7 @@ N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
     if (currentIdx >= 0 && media.length) {
       state = {
         media:  $(media[currentIdx]).data('media-id'),
-        offset: mediaThreshold - media[currentIdx].offsetTop
+        offset: mediaThreshold - media[currentIdx].getBoundingClientRect().top
       };
     }
 
@@ -317,11 +317,11 @@ N.wire.once('navigate.done:' + module.apiPath, function prefetch_handler_setup()
     mediaState.prev_loading_start = now;
 
     let media = document.getElementById('users-media-list').getElementsByClassName('thumb');
-    let first_offset = media[0].offsetTop;
+    let first_offset = media[0].getBoundingClientRect().top;
     let i;
 
     for (i = 1; i < media.length; i++) {
-      if (media[i].offsetTop !== first_offset) break;
+      if (media[i].getBoundingClientRect().top !== first_offset) break;
     }
 
     let columns    = i;
@@ -386,11 +386,11 @@ N.wire.once('navigate.done:' + module.apiPath, function prefetch_handler_setup()
     mediaState.next_loading_start = now;
 
     let media = document.getElementById('users-media-list').getElementsByClassName('thumb');
-    let first_offset = media[0].offsetTop;
+    let first_offset = media[0].getBoundingClientRect().top;
     let i;
 
     for (i = 1; i < media.length; i++) {
-      if (media[i].offsetTop !== first_offset) break;
+      if (media[i].getBoundingClientRect().top !== first_offset) break;
     }
 
     let columns    = i;
