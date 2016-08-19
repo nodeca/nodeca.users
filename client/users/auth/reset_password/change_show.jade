@@ -1,4 +1,6 @@
 #content
+  != self.partial('@common.blocks.navbar')
+
   .layout__container.container-fluid.space-top
     unless self.valid_token
       .row

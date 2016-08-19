@@ -1,6 +1,8 @@
 - var user_to = self.users[self.user_id];
 
 #content
+  != self.partial('@common.blocks.navbar')
+
   nav.breadcrumbs-container
     .layout__container.container-fluid
       !=self.partial('@users.blocks.breadcrumbs')

@@ -17,7 +17,7 @@ if self.runtime.is_member
 
       a.dropdown-item(href=self.link_to('users.dialogs_root'))=self.t('dialogs')
 
-      if self.settings.can_access_acp
+      if self.runtime.settings.can_access_acp
         .dropdown-divider
 
         a.dropdown-item(href=self.link_to('admin.core.dashboard'), target='_blank')= self.t('admin')

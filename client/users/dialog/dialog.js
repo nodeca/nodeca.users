@@ -7,7 +7,6 @@ const _ = require('lodash');
 // Offset between navbar and the first dialog
 const TOP_OFFSET = 50;
 
-let navbar_height = $('.navbar').height();
 let $window = $(window);
 // State
 //
@@ -107,11 +106,13 @@ let locationScrollHandler = null;
 
 
 N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
+  let navbarHeight = $('.navbar').height();
+
   if ($('.user-messages-list').length === 0) return;
 
   locationScrollHandler = _.debounce(function update_location_on_scroll() {
     let messages         = document.getElementsByClassName('user-messages-list-item');
-    let messageThreshold = navbar_height + TOP_OFFSET;
+    let messageThreshold = navbarHeight + TOP_OFFSET;
     let offset;
     let currentIdx;
 
@@ -178,10 +179,12 @@ let progressScrollHandler = null;
 
 
 N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
+  let navbarHeight = $('.navbar').height();
+
   if ($('.user-messages-list').length === 0) return;
 
   progressScrollHandler = _.debounce(function update_progress_on_scroll() {
-    let viewportStart = $window.scrollTop() + navbar_height;
+    let viewportStart = $window.scrollTop() + navbarHeight;
 
     // If we scroll below top border of the first topic,
     // show the secondary navbar
@@ -195,7 +198,7 @@ N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
     // Update progress bar
     //
     let messages         = document.getElementsByClassName('user-messages-list-item');
-    let messageThreshold = navbar_height + TOP_OFFSET;
+    let messageThreshold = navbarHeight + TOP_OFFSET;
     let offset;
     let currentIdx;
 

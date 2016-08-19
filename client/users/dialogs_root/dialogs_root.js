@@ -7,7 +7,6 @@ const _ = require('lodash');
 // Offset between navbar and the first dialog
 const TOP_OFFSET = 32;
 
-let navbar_height = $('.navbar').height();
 let $window = $(window);
 // State
 //
@@ -68,7 +67,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
   // otherwise, scroll to the first dialog on that page
   //
   if (pagination.chunk_offset > 1 && $('.dialog-list').length) {
-    $window.scrollTop($('.dialog-list').offset().top - navbar_height);
+    $window.scrollTop($('.dialog-list').offset().top - $('.navbar').height());
 
   } else {
     $window.scrollTop(0);
@@ -119,11 +118,13 @@ let locationScrollHandler = null;
 
 
 N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
+  let navbarHeight = $('.navbar').height();
+
   if ($('.dialog-list').length === 0) return;
 
   locationScrollHandler = _.debounce(function update_location_on_scroll() {
     let dialogs         = document.getElementsByClassName('dialog-list-item');
-    let dialogThreshold = navbar_height + TOP_OFFSET;
+    let dialogThreshold = navbarHeight + TOP_OFFSET;
     let offset;
     let currentIdx;
 
@@ -186,10 +187,12 @@ let progressScrollHandler = null;
 
 
 N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
+  let navbarHeight = $('.navbar').height();
+
   if ($('.dialog-list').length === 0) return;
 
   progressScrollHandler = _.debounce(function update_progress_on_scroll() {
-    let viewportStart = $window.scrollTop() + navbar_height;
+    let viewportStart = $window.scrollTop() + navbarHeight;
 
     // If we scroll below top border of the first topic,
     // show the secondary navbar
@@ -203,7 +206,7 @@ N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
     // Update progress bar
     //
     let dialogs         = document.getElementsByClassName('dialog-list-item');
-    let dialogThreshold = navbar_height + TOP_OFFSET;
+    let dialogThreshold = navbarHeight + TOP_OFFSET;
     let offset;
     let currentIdx;
 

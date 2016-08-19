@@ -14,6 +14,8 @@
 - }
 
 #content.user-subscriptions-root
+  != self.partial('@common.blocks.navbar')
+
   nav.breadcrumbs-container
     .layout__container.container-fluid
       != self.partial('@users.blocks.breadcrumbs')

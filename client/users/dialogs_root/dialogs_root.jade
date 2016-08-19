@@ -5,6 +5,8 @@
 - self.add_raw_data('dialogs_hide_answered', self.dialogs_hide_answered)
 
 #content
+  != self.partial('@common.blocks.navbar')
+
   nav.breadcrumbs-container
     .layout__container.container-fluid
       !=self.partial('@users.blocks.breadcrumbs')

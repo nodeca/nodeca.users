@@ -4,6 +4,8 @@ if (self.email)
 - self.add_raw_data('action', 'register')
 
 #content
+  != self.partial('@common.blocks.navbar')
+
   .layout__container.container-fluid.space-top
     .row
       .col-md-6.offset-md-3.col-sm-8.offset-sm-2

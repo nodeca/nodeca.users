@@ -3,6 +3,8 @@
 - self.add_raw_data('profile_tab', own_page)
 
 #content.user-media-root(class=self.media.type & mTypes.MASK_DELETED ? 'deleted' : '')
+  != self.partial('@common.blocks.navbar')
+
   nav.breadcrumbs-container
     .layout__container.container-fluid
       != self.partial('@users.blocks.breadcrumbs')
