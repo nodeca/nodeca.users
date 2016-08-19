@@ -4,7 +4,20 @@
 - self.add_raw_data('first_message_id', self.first_message_id);
 
 #content
-  != self.partial('@common.blocks.navbar')
+  -
+    var navbar_args = {
+      title:    self.dialog.title,
+      level_up: self.link_to('users.dialogs_root', { dialog_id: self.dialog._id }),
+      progress: {
+        link_top:    self.link_to('users.dialog', { dialog_id: self.dialog_id, message_id: self.first_message_id }),
+        link_bottom: self.link_to('users.dialog', { dialog_id: self.dialog_id, message_id: self.last_message_id }),
+        current:     self.pagination.chunk_offset,
+        total:       self.pagination.total
+      }
+    };
+
+  != self.partial('@common.blocks.navbar.levelup_progress_apps', navbar_args)
+  != self.partial('@common.blocks.navbar.alt_levelup_progress_title_toolbar', navbar_args)
 
   nav.breadcrumbs-container
     .layout__container.container-fluid

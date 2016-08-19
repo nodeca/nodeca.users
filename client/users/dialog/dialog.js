@@ -72,27 +72,6 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
 });
 
 
-//////////////////////////////////////////////////////////////////////////
-// Replace primary navbar with alt navbar specific to this page
-
-N.wire.on('navigate.done:' + module.apiPath, function navbar_setup() {
-  $('.navbar-alt')
-    .empty()
-    .append(N.runtime.render(module.apiPath + '.navbar_alt', {
-      dialog:        N.runtime.page_data.dialog,
-
-      page_progress: {
-        current:          dlgState.current_offset,
-        max:              dlgState.message_count,
-        per_page:         N.runtime.page_data.pagination.per_page,
-        last_message_id:  dlgState.last_message_id,
-        first_message_id: dlgState.first_message_id,
-        dialog_id:        dlgState.dialog_id
-      }
-    }));
-});
-
-
 /////////////////////////////////////////////////////////////////////
 // Change URL when user scrolls the page
 //
@@ -211,7 +190,7 @@ N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
 
     offset = currentIdx + dlgState.first_offset;
 
-    N.wire.emit(module.apiPath + '.blocks.page_progress:update', {
+    N.wire.emit('common.blocks.navbar.blocks.progress:update', {
       current:  offset + 1, // `+1` because offset is zero based
       max:      dlgState.message_count
     }).catch(err => N.wire.emit('error', err));
@@ -313,7 +292,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       dlgState.prev_loading_start = 0;
 
-      return N.wire.emit(module.apiPath + '.blocks.page_progress:update', {
+      return N.wire.emit('common.blocks.navbar.blocks.progress:update', {
         max: dlgState.topic_count
       });
     }).catch(err => N.wire.emit('error', err));
@@ -389,7 +368,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       dlgState.next_loading_start = 0;
 
-      return N.wire.emit(module.apiPath + '.blocks.page_progress:update', {
+      return N.wire.emit('common.blocks.navbar.blocks.progress:update', {
         max: dlgState.message_count
       });
     }).catch(err => N.wire.emit('error', err));

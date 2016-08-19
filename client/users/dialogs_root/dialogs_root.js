@@ -76,23 +76,6 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
 
 
 //////////////////////////////////////////////////////////////////////////
-// Replace primary navbar with alt navbar specific to this page
-
-N.wire.on('navigate.done:' + module.apiPath, function navbar_setup() {
-  $('.navbar-alt')
-    .empty()
-    .append(N.runtime.render(module.apiPath + '.navbar_alt', {
-      page_progress: {
-        current:        dlgListState.current_offset,
-        max:            dlgListState.dialog_count,
-        per_page:       N.runtime.page_data.pagination.per_page,
-        last_dialog_id: dlgListState.last_dialog_id
-      }
-    }));
-});
-
-
-//////////////////////////////////////////////////////////////////////////
 // Toggle "hide answered messages" flag
 
 N.wire.on(module.apiPath + ':toggle_answered', function toggle_answered(data) {
@@ -219,7 +202,7 @@ N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
 
     offset = currentIdx + dlgListState.first_offset;
 
-    N.wire.emit(module.apiPath + '.blocks.page_progress:update', {
+    N.wire.emit('common.blocks.navbar.blocks.progress:update', {
       current:  offset + 1, // `+1` because offset is zero based
       max:      dlgListState.dialog_count
     }).catch(err => N.wire.emit('error', err));
@@ -264,7 +247,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
         //
         dlgListState.dialog_count = res.dialog_count;
 
-        return N.wire.emit('forum.topic.blocks.page_progress:update', {
+        return N.wire.emit('common.blocks.navbar.blocks.progress:update', {
           max: res.dialog_count
         });
       });
@@ -342,7 +325,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       dlgListState.prev_loading_start = 0;
 
-      return N.wire.emit(module.apiPath + '.blocks.page_progress:update', {
+      return N.wire.emit('common.blocks.navbar.blocks.progress:update', {
         max: dlgListState.topic_count
       });
     }).catch(err => N.wire.emit('error', err));
@@ -419,7 +402,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       dlgListState.next_loading_start = 0;
 
-      return N.wire.emit(module.apiPath + '.blocks.page_progress:update', {
+      return N.wire.emit('common.blocks.navbar.blocks.progress:update', {
         max: dlgListState.topic_count
       });
     }).catch(err => N.wire.emit('error', err));

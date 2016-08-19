@@ -1,7 +1,8 @@
 - var user_to = self.users[self.user_id];
 
 #content
-  != self.partial('@common.blocks.navbar')
+  - var navbar_args = { level_up: self.link_to('users.member', { user_hid: user_to.hid }) };
+  != self.partial('@common.blocks.navbar.levelup_apps', navbar_args)
 
   nav.breadcrumbs-container
     .layout__container.container-fluid
