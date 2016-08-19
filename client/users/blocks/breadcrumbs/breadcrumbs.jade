@@ -15,7 +15,7 @@ mixin breadcrumb_step(tail)
         = item.text
   else
     //- text only
-    li.breadcrumbs__item
+    li.breadcrumbs__item.breadcrumbs__m-nolink
       if item.show_avatar
         img.breadcrumbs__icon()&attributes(self.avatar(item.user_id, item, 'md'))
       = item.text

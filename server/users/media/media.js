@@ -219,9 +219,7 @@ module.exports = function (N, apiPath) {
                            .where('media_id').gte(env.data.media.media_id);
 
     env.data.breadcrumbs.push({
-      text   : env.t('breadcrumbs_progress', { current, total: env.data.album.count }),
-      route  : 'users.media',
-      params : { media_id: env.data.media._id }
+      text   : env.t('breadcrumbs_progress', { current, total: env.data.album.count })
     });
 
     env.res.breadcrumbs = env.data.breadcrumbs;
