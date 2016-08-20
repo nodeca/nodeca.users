@@ -190,7 +190,7 @@ N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
 
     offset = currentIdx + dlgState.first_offset;
 
-    N.wire.emit('common.blocks.navbar.blocks.progress:update', {
+    N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
       current:  offset + 1, // `+1` because offset is zero based
       max:      dlgState.message_count
     }).catch(err => N.wire.emit('error', err));
@@ -292,7 +292,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       dlgState.prev_loading_start = 0;
 
-      return N.wire.emit('common.blocks.navbar.blocks.progress:update', {
+      return N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
         max: dlgState.topic_count
       });
     }).catch(err => N.wire.emit('error', err));
@@ -368,7 +368,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       dlgState.next_loading_start = 0;
 
-      return N.wire.emit('common.blocks.navbar.blocks.progress:update', {
+      return N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
         max: dlgState.message_count
       });
     }).catch(err => N.wire.emit('error', err));

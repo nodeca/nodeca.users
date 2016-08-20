@@ -202,7 +202,7 @@ N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
 
     offset = currentIdx + dlgListState.first_offset;
 
-    N.wire.emit('common.blocks.navbar.blocks.progress:update', {
+    N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
       current:  offset + 1, // `+1` because offset is zero based
       max:      dlgListState.dialog_count
     }).catch(err => N.wire.emit('error', err));
@@ -247,7 +247,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
         //
         dlgListState.dialog_count = res.dialog_count;
 
-        return N.wire.emit('common.blocks.navbar.blocks.progress:update', {
+        return N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
           max: res.dialog_count
         });
       });
@@ -325,7 +325,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       dlgListState.prev_loading_start = 0;
 
-      return N.wire.emit('common.blocks.navbar.blocks.progress:update', {
+      return N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
         max: dlgListState.topic_count
       });
     }).catch(err => N.wire.emit('error', err));
@@ -402,7 +402,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       dlgListState.next_loading_start = 0;
 
-      return N.wire.emit('common.blocks.navbar.blocks.progress:update', {
+      return N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
         max: dlgListState.topic_count
       });
     }).catch(err => N.wire.emit('error', err));
