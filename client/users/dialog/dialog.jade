@@ -9,8 +9,8 @@
       title:    self.dialog.title,
       level_up: self.link_to('users.dialogs_root', { dialog_id: self.dialog._id }),
       progress: {
-        link_top:    self.link_to('users.dialog', { dialog_id: self.dialog_id, message_id: self.first_message_id }),
-        link_bottom: self.link_to('users.dialog', { dialog_id: self.dialog_id, message_id: self.last_message_id }),
+        link_top:    self.link_to('users.dialog', { dialog_id: self.dialog._id, message_id: self.first_message_id }),
+        link_bottom: self.link_to('users.dialog', { dialog_id: self.dialog._id, message_id: self.last_message_id }),
         current:     self.pagination.chunk_offset,
         total:       self.pagination.total
       }

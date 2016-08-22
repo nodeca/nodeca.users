@@ -29,16 +29,17 @@ let dlgListState = {};
 
 N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
   let pagination = N.runtime.page_data.pagination;
+  let last_visible_dialog_id = $('.dialog-list-item:last-child').data('dialog-id');
 
-  dlgListState.first_offset = pagination.chunk_offset;
-  dlgListState.current_offset = -1;
-  dlgListState.dialog_count = pagination.total;
-  dlgListState.last_dialog_id = N.runtime.page_data.last_dialog_id;
-  dlgListState.first_message_id = N.runtime.page_data.first_message_id;
-  dlgListState.last_message_id = N.runtime.page_data.last_message_id;
-  dlgListState.reached_start = pagination.chunk_offset === 0 || !dlgListState.first_message_id;
-  dlgListState.reached_end = (dlgListState.last_dialog_id === $('.dialog-list-item:last-child').data('dialog-id'))
-                             || !dlgListState.last_message_id;
+  dlgListState.first_offset       = pagination.chunk_offset;
+  dlgListState.current_offset     = -1;
+  dlgListState.dialog_count       = pagination.total;
+  dlgListState.last_dialog_id     = N.runtime.page_data.last_dialog_id;
+  dlgListState.first_message_id   = N.runtime.page_data.first_message_id;
+  dlgListState.last_message_id    = N.runtime.page_data.last_message_id;
+  dlgListState.reached_start      = pagination.chunk_offset === 0 || !dlgListState.first_message_id;
+  dlgListState.reached_end        = (dlgListState.last_dialog_id === last_visible_dialog_id)
+                                    || !dlgListState.last_message_id;
   dlgListState.prev_loading_start = 0;
   dlgListState.next_loading_start = 0;
 
@@ -203,8 +204,7 @@ N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
     offset = currentIdx + dlgListState.first_offset;
 
     N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
-      current:  offset + 1, // `+1` because offset is zero based
-      max:      dlgListState.dialog_count
+      current: offset + 1 // `+1` because offset is zero based
     }).catch(err => N.wire.emit('error', err));
   }, 100, { maxWait: 100 });
 
