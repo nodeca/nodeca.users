@@ -166,13 +166,16 @@
 .member__ignored
   color $body-color-secondary
 
+// Force blocks expand on wide screens
+@media (min-width: $grid-breakpoints.md)
+  .member-block__inner
+    display block !important
+    height auto !important
+  .member-block__header-collapser
+    display none
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Rework
-
-.member-block.page-actions
-  margin-bottom 1rem
-
 
 @media (max-width: 600px - 1)
   .member-block.page-actions
