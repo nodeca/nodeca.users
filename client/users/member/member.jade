@@ -44,7 +44,7 @@
 
         //- Buttons
         if self.runtime.is_member
-          .page-actions.member-block
+          .page-actions
 
             .page-actions__item.page-actions__dropdown
               if self.actions_ordered.length
@@ -78,32 +78,35 @@
                   title=self.t('send_message_help')
                 )
 
-        //- Nav menu
-        if own_page
-          ul.member-menu
-            each item in self.menu_ordered
-              li.member-menu__item
-                a.member-menu__link(href=self.link_to(item.to, { user_hid: self.user.hid }))
-                  =self.t('@users.profile_page.menu.' + item.name)
+    //- Nav menu
+    if own_page
+      ul.member-menu
+        each item in self.menu_ordered
+          li.member-menu__item
+            a.member-menu__link(href=self.link_to(item.to, { user_hid: self.user.hid }))
+              =self.t('@users.profile_page.menu.' + item.name)
 
     .member-blocks
       if self.blocks['usernote']
         != self.partial('@users.member.blocks.usernote')
 
+      -
+        var col1 = self.blocks_ordered.filter(function (b) { return b.priority < 100; });
+        var col2 = self.blocks_ordered.filter(function (b) { return b.priority >= 100; });
+        var has_col2 = col2.filter(function(b) { return self.blocks[b.name]; }).length;
+
       .row
-        .col-md-6
-          - var col1 = self.blocks_ordered.filter(function (b) { return b.priority < 100; })
+        div(class= has_col2 ? 'col-md-6' : 'col-md-12')
 
           each block in col1
             if (self.blocks[block.name])
               != self.partial('@users.member.blocks.' + block.name)
 
-          - var col2 = self.blocks_ordered.filter(function (b) { return b.priority >= 100; })
-
-        .col-md-6
-          each block in col2
-            if (self.blocks[block.name])
-              != self.partial('@users.member.blocks.' + block.name)
+        if has_col2
+          .col-md-6
+            each block in col2
+              if (self.blocks[block.name])
+                != self.partial('@users.member.blocks.' + block.name)
 
       if self.blocks['infractions']
         != self.partial('@users.member.blocks.infractions')

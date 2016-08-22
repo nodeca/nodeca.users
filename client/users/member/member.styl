@@ -9,14 +9,14 @@
   margin-bottom 1.5rem
   .page-head
     margin-top 0
-    margin-bottom 1rem
+    margin-bottom .7rem
 
 .member-head__aside
-  width 150px
+  width 100px
   float left
 
 .member-head__content
-  padding-left 150px + 20px
+  padding-left 100px + 20px
 
 .member-blocks
   // To show shadows in { overflow: hidden }
@@ -26,14 +26,15 @@
 
 @media (max-width: 600px - 1)
   .member-head__aside
-    width 50px
+    width 70px
   .member-head__content
-    padding-left 50px + 16px
+    padding-left 70px + 16px
 
 .member-menu
   list-style none
   padding 0
-  margin 0
+  margin 0 0 1.5rem
+  font-size $font-size-sm
 
 .member-menu__item
   display inline-block
@@ -181,5 +182,5 @@
     .btn
       width 100%
 
-  .member-menu
-    display none
+  //.member-menu
+  //  display none
