@@ -59,6 +59,7 @@ module.exports = function (N, apiPath) {
     env.res.album = env.data.album;
     env.res.head = env.res.head || {};
     env.res.head.title = env.t('title');
+    env.res.user_hid = env.data.user.hid;
   });
 
   // Fill breadcrumbs

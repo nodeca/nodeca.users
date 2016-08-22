@@ -2,7 +2,7 @@
 - self.add_raw_data('settings', self.settings)
 
 #content.user-settings-general-root
-  - var navbar_args = { level_up: self.link_to('users.member', { user_hid: self.user_hid }) };
+  - var navbar_args = { level_up: self.link_to('users.member', { user_hid: self.runtime.user_hid }) };
   != self.partial('@common.blocks.navbar.levelup_apps', navbar_args)
 
   nav.breadcrumbs-container
