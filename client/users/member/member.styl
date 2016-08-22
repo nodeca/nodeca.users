@@ -4,64 +4,54 @@
 // Layout
 //
 
-.member-sidebar
+.member-head
+  margin-top 1.5rem
+  margin-bottom 1.5rem
+  .page-head
+    margin-top 0
+    margin-bottom 1rem
+
+.member-head__aside
   width 150px
   float left
+
+.member-head__content
+  padding-left 150px + 20px
 
 .member-blocks
   // To show shadows in { overflow: hidden }
   padding-left 2px
-  margin-left 178px - 2px
+  margin-left -2px
   overflow hidden
 
-.member-block.page-actions
-  margin-bottom 1rem
+@media (max-width: 600px - 1)
+  .member-head__aside
+    width 50px
+  .member-head__content
+    padding-left 50px + 16px
 
-
-@media (max-width: 580px - 1)
-  .member-sidebar
-    display none
-  .member-blocks
-    margin-left -2px
-
-  .member-block.page-actions
-    display flex
-    .page-actions__item
-      flex 1 1 100%
-    .btn
-      width 100%
-
-
-.member-sidebar__menu
+.member-menu
   list-style none
-  font-size $font-size-sm
-  line-height 2.5rem
-  padding-left .7rem
-  padding-right .7rem
+  padding 0
+  margin 0
 
-.member-sidebar__menu-item
+.member-menu__item
+  display inline-block
+  margin-right 1.5rem
 
-  & + .member-sidebar__menu-item
-    border-top 0.0625rem solid $decorator-color
-.member-sidebar__menu-link
-  display block
-  color $body-color-secondary
-  &:hover
-    text-decoration none
 
 //
 // Avatar styles
 //
 
-.member-layout.member-layout__m-avatar-exists
+.member-head__m-avatar-exists
   .member-avatar__delete
     display block
 
 .member-avatar
   position relative
-  margin-bottom .5rem
 .member-avatar__image
-  width 150px
+  width 100%
   border-radius 0.1875rem
   box-shadow 0 0 0.125rem $decorator-color
 .member-avatar__link
@@ -77,6 +67,8 @@
   font-size $font-size-xs
   transition background-color .2s ease
   border-radius 0 0 0.1875rem 0.1875rem
+  padding 0 .5em
+  shortable()
 
 .member-avatar__delete
   display none
@@ -172,3 +164,22 @@
 
 .member__ignored
   color $body-color-secondary
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// Rework
+
+.member-block.page-actions
+  margin-bottom 1rem
+
+
+@media (max-width: 600px - 1)
+  .member-block.page-actions
+    display flex
+    .page-actions__item
+      flex 1 1 100%
+    .btn
+      width 100%
+
+  .member-menu
+    display none

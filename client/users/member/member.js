@@ -60,7 +60,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
     return N.wire.emit('users.avatar.change', data).then(() => {
       $('.member-avatar__image').attr('src', N.router.linkTo('core.gridfs', { bucket: data.avatar_id }));
-      $('.member-layout').addClass('member-layout__m-avatar-exists');
+      $('.member-head').addClass('member-head__m-avatar-exists');
 
       // Update avatar in navbar
       N.live.emit('local.users.avatar.change', data.avatar_id, true);
@@ -82,7 +82,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
       let $img = $('.member-avatar__image');
 
       $img.attr('src', identicon(N.runtime.user_id, avatarWidth));
-      $('.member-layout').removeClass('member-layout__m-avatar-exists');
+      $('.member-head').removeClass('member-head__m-avatar-exists');
 
       // Update avatar in navbar
       return N.live.emit('local.users.avatar.change', null, true);

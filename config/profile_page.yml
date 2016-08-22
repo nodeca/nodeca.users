@@ -32,28 +32,24 @@ users:
       subscribtions:
         to: users.subscriptions.index
         priority: 70
-      drafts:
-        to: users.drafts
-        priority: 80
+      #drafts:
+      #  to: users.drafts
+      #  priority: 80
       settings:
         to: users.settings.general
         priority: 100
 
     # Blocks will be in users.member.blocks
     blocks:
-      usernote:
-        priority: 10
       about:
         priority: 20
-      albums:
-        priority: 30
-      medias:
-        priority: 40
       blog:
-        priority: 50
-      friends:
-        priority: 60
+        priority: 30
       bookmarks:
-        priority: 70
-      infractions:
-        priority: 80
+        priority: 40
+
+      # Second column (priority > 100)
+      albums:
+        priority: 110
+      medias:
+        priority: 120

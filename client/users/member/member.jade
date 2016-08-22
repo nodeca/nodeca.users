@@ -9,28 +9,10 @@
   .layout__container.container-fluid
     != self.partial('@users.blocks.announces')
 
-    header.page-head
-      h1.page-head__title(itemprop='name')
-        if self.user_is_ignored
-          span.member__ignored.icon.icon-ignore.icon-space-after(
-            title=self.t('ignored')
-          )
-        = self.users[self.user._id].name
-      p.page-head__descr.member__last-visit(itemprop='description')
-        =self.t('last_active')
-        | 
-        != self.timetag(self.user.last_active_ts, 'relative_full')
-      if self.user_is_hb
-        p.page-head__descr.member__hb.text-danger(itemprop='description')=self.t('hellbaned')
-      if self.penalty_expire
-        p.page-head__descr.member__penalty.text-danger(itemprop='description')
-          =self.t('blocked_until')
-          | 
-          !=self.timetag(self.penalty_expire, 'compact')
+    - var modifier = self.avatar_exists ? 'member-head__m-avatar-exists' : '';
 
-    - var modifier = self.avatar_exists ? 'member-layout__m-avatar-exists' : '';
-    .member-layout(class=modifier)
-      .member-sidebar
+    header.member-head(class=modifier).clearfix
+      .member-head__aside
         .member-avatar
           if own_page
             a.member-avatar__delete.btn.btn-sm.btn-square.btn-secondary(href='#' data-on-click='users.member:delete_avatar').icon.icon-x
@@ -40,17 +22,29 @@
           else
             img.member-avatar__image()&attributes(self.avatar(self.user._id, self.users[self.user._id]))
 
-        if own_page
-          ul.member-sidebar__menu
-            each item in self.menu_ordered
-              li.member-sidebar__menu-item
-                a.member-sidebar__menu-link(href=self.link_to(item.to, { user_hid: self.user.hid }))
-                  =self.t('@users.profile_page.menu.' + item.name)
+      .member-head__content
+        .page-head
+          h1.page-head__title(itemprop='name')
+            if self.user_is_ignored
+              span.member__ignored.icon.icon-ignore.icon-space-after(
+                title=self.t('ignored')
+              )
+            = self.users[self.user._id].name
+          p.page-head__descr.member__last-visit(itemprop='description')
+            =self.t('last_active')
+            | 
+            != self.timetag(self.user.last_active_ts, 'relative_full')
+          if self.user_is_hb
+            p.page-head__descr.member__hb.text-danger(itemprop='description')=self.t('hellbaned')
+          if self.penalty_expire
+            p.page-head__descr.member__penalty.text-danger(itemprop='description')
+              =self.t('blocked_until')
+              | 
+              !=self.timetag(self.penalty_expire, 'compact')
 
-      .member-blocks
+        //- Buttons
         if self.runtime.is_member
           .page-actions.member-block
-
 
             .page-actions__item.page-actions__dropdown
               if self.actions_ordered.length
@@ -84,6 +78,32 @@
                   title=self.t('send_message_help')
                 )
 
-        each block in self.blocks_ordered
-          if (self.blocks[block.name])
-            != self.partial('@users.member.blocks.' + block.name)
+        //- Nav menu
+        if own_page
+          ul.member-menu
+            each item in self.menu_ordered
+              li.member-menu__item
+                a.member-menu__link(href=self.link_to(item.to, { user_hid: self.user.hid }))
+                  =self.t('@users.profile_page.menu.' + item.name)
+
+    .member-blocks
+      if self.blocks['usernote']
+        != self.partial('@users.member.blocks.usernote')
+
+      .row
+        .col-md-6
+          - var col1 = self.blocks_ordered.filter(function (b) { return b.priority < 100; })
+
+          each block in col1
+            if (self.blocks[block.name])
+              != self.partial('@users.member.blocks.' + block.name)
+
+          - var col2 = self.blocks_ordered.filter(function (b) { return b.priority >= 100; })
+
+        .col-md-6
+          each block in col2
+            if (self.blocks[block.name])
+              != self.partial('@users.member.blocks.' + block.name)
+
+      if self.blocks['infractions']
+        != self.partial('@users.member.blocks.infractions')
