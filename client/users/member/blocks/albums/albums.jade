@@ -3,13 +3,14 @@
   .member-block__header
     - var albumsLink = self.link_to('users.albums_root', { 'user_hid': self.user.hid })
     .member-block__header-title
-      a.member-block__header-link.pull-xs-left(href=albumsLink)
+      a.member-block__header-collapser(href='#member-albums-info', data-toggle='collapse')
+        .icon.icon-collapse
+        .icon.icon-expand
+
+      a.member-block__header-link(href=albumsLink)
         | #{self.t('title')}
         span.member-block__header-arrow.icon.icon-right-open
         small.member-block__header-counter #{self.blocks.albums.count}
-      a.member-block__header-collapser(href='#member-albums-info', data-toggle='collapse')
-        .pull-xs-right.icon.icon-collapse
-        .pull-xs-right.icon.icon-expand
 
   #member-albums-info.member-block__inner.collapse.in
     ul.member-block__image-list
