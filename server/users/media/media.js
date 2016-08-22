@@ -19,6 +19,7 @@ module.exports = function (N, apiPath) {
 
   // shortcuts
   let Comment = N.models.users.Comment;
+  let MediaInfo = N.models.users.MediaInfo;
 
 
   // Fetch owner by hid
@@ -31,8 +32,7 @@ module.exports = function (N, apiPath) {
   // Fetch media
   //
   N.wire.before(apiPath, function* fetch_media(env) {
-    let deletedTypes = N.models.users.MediaInfo.types.LIST_DELETED;
-    let result = yield  N.models.users.MediaInfo
+    let result = yield MediaInfo
                             .findOne({ media_id: env.params.media_id })
                             .where({ user: env.data.user._id }) // Make sure that user is real owner
                             .lean(true);
@@ -40,6 +40,8 @@ module.exports = function (N, apiPath) {
     if (!result) {
       throw N.io.NOT_FOUND;
     }
+
+    let deletedTypes = MediaInfo.types.LIST_DELETED;
 
     if (deletedTypes.indexOf(result.type) !== -1 && env.user_info.user_id !== String(result.user)) {
       throw N.io.NOT_FOUND;
@@ -137,12 +139,11 @@ module.exports = function (N, apiPath) {
   // Fill previous media _id
   //
   N.wire.after(apiPath, function* fill_previous(env) {
-    let mTypes = N.models.users.MediaInfo.types;
     let media = env.data.media;
-    let result = yield N.models.users.MediaInfo
+    let result = yield MediaInfo
                           .findOne({
                             album: media.album,
-                            type: { $in: mTypes.LIST_VISIBLE },
+                            type: { $in: MediaInfo.types.LIST_VISIBLE },
                             media_id: { $gt: media.media_id }
                           })
                           .select('media_id')
@@ -165,12 +166,11 @@ module.exports = function (N, apiPath) {
   // Fill next media _id
   //
   N.wire.after(apiPath, function* fill_next(env) {
-    let mTypes = N.models.users.MediaInfo.types;
     let media = env.data.media;
-    let result = yield N.models.users.MediaInfo
+    let result = yield MediaInfo
                           .findOne({
                             album: media.album,
-                            type: { $in: mTypes.LIST_VISIBLE },
+                            type: { $in: MediaInfo.types.LIST_VISIBLE },
                             media_id: { $lt: media.media_id }
                           })
                           .select('media_id')
@@ -206,20 +206,19 @@ module.exports = function (N, apiPath) {
   N.wire.after(apiPath, function* fill_breadcrumbs(env) {
     yield N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
 
-    env.data.breadcrumbs.push({
-      text   : env.data.album.title,
-      route  : 'users.album',
-      params : { user_hid: env.data.user.hid, album_id: env.data.album._id }
-    });
-
-    let mTypes = N.models.users.MediaInfo.types;
     let current = yield N.models.users.MediaInfo.count()
                            .where('album').equals(env.data.media.album)
-                           .where('type').in(mTypes.LIST_VISIBLE)
+                           .where('type').in(MediaInfo.types.LIST_VISIBLE)
                            .where('media_id').gte(env.data.media.media_id);
 
     env.data.breadcrumbs.push({
-      text   : env.t('breadcrumbs_progress', { current, total: env.data.album.count })
+      text:   env.t('breadcrumbs_progress', {
+        title: env.data.album.title,
+        current,
+        total: env.data.album.count
+      }),
+      route:  'users.album',
+      params: { user_hid: env.data.user.hid, album_id: env.data.album._id }
     });
 
     env.res.breadcrumbs = env.data.breadcrumbs;
