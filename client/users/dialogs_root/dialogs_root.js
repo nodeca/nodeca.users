@@ -7,6 +7,8 @@ const _ = require('lodash');
 // Offset between navbar and the first dialog
 const TOP_OFFSET = 32;
 
+const navbarHeight = parseInt($('body').css('margin-top'), 10) + parseInt($('body').css('padding-top'), 10);
+
 let $window = $(window);
 // State
 //
@@ -102,8 +104,6 @@ let locationScrollHandler = null;
 
 
 N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
-  let navbarHeight = $('.navbar').height();
-
   if ($('.dialog-list').length === 0) return;
 
   locationScrollHandler = _.debounce(function update_location_on_scroll() {
@@ -171,8 +171,6 @@ let progressScrollHandler = null;
 
 
 N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
-  let navbarHeight = $('.navbar').height();
-
   if ($('.dialog-list').length === 0) return;
 
   progressScrollHandler = _.debounce(function update_progress_on_scroll() {

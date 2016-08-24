@@ -17,7 +17,7 @@ let mediaState = {};
 
 let $window = $(window);
 
-let navbarHeight;
+const navbarHeight = parseInt($('body').css('margin-top'), 10) + parseInt($('body').css('padding-top'), 10);
 
 
 // offset between navbar and the first media
@@ -28,8 +28,6 @@ const TOP_OFFSET = 50;
 // init on page load
 //
 N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
-  let navbarHeight = $('.navbar').height();
-
   mediaState.user_hid           = data.params.user_hid;
   mediaState.album_id           = data.params.album_id;
 
