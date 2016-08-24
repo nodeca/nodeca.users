@@ -176,15 +176,14 @@ N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
   if ($('.dialog-list').length === 0) return;
 
   progressScrollHandler = _.debounce(function update_progress_on_scroll() {
-    let viewportStart = $window.scrollTop() + navbarHeight;
-
-    // If we scroll below top border of the first topic,
-    // show the secondary navbar
+    // If we scroll below page title, show the secondary navbar
     //
-    if ($('.dialog-list').offset().top < viewportStart) {
-      $('.navbar').addClass('navbar__m-secondary');
-    } else {
+    let title = document.getElementsByClassName('page-head__title');
+
+    if (title.length && title[0].getBoundingClientRect().bottom > navbarHeight) {
       $('.navbar').removeClass('navbar__m-secondary');
+    } else {
+      $('.navbar').addClass('navbar__m-secondary');
     }
 
     // Update progress bar
