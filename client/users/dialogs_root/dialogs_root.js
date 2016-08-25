@@ -22,6 +22,7 @@ let $window = $(window);
 // - last_message_id:    id of the last message in the last loaded dialog
 // - prev_loading_start: time when current xhr request for the previous page is started
 // - next_loading_start: time when current xhr request for the next page is started
+// - user_hid:           hid of the user that owns those dialogs
 //
 let dlgListState = {};
 
@@ -42,6 +43,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
   dlgListState.reached_start      = pagination.chunk_offset === 0 || !dlgListState.first_message_id;
   dlgListState.reached_end        = (dlgListState.last_dialog_id === last_visible_dialog_id)
                                     || !dlgListState.last_message_id;
+  dlgListState.user_hid           = data.params.user_hid;
   dlgListState.prev_loading_start = 0;
   dlgListState.next_loading_start = 0;
 
@@ -137,6 +139,7 @@ N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
     if (dlgListState.current_offset !== offset) {
       /* eslint-disable no-undefined */
       href = N.router.linkTo('users.dialogs_root', {
+        user_hid:  dlgListState.user_hid,
         dialog_id: state ? state.dialog_id : undefined
       });
 
@@ -291,6 +294,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
     N.io.rpc('users.dialogs_root.list.by_range', {
       last_message_id: dlgListState.first_message_id,
+      user_hid: dlgListState.user_hid,
       before: LOAD_DLGS_COUNT,
       after: 0,
       hide_answered: N.runtime.page_data.dialogs_hide_answered
@@ -346,6 +350,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
     N.io.rpc('users.dialogs_root.list.by_range', {
       last_message_id: dlgListState.last_message_id,
+      user_hid: dlgListState.user_hid,
       before: 0,
       after: LOAD_DLGS_COUNT,
       hide_answered: N.runtime.page_data.dialogs_hide_answered

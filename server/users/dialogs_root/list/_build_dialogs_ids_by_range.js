@@ -5,7 +5,7 @@
 //
 // In:
 //
-// - env.user_info.user_id
+// - env.data.user
 // - env.data.select_dialogs_before
 // - env.data.select_dialogs_after
 // - env.data.select_dialogs_start
@@ -46,7 +46,7 @@ module.exports = function (N) {
       }
 
       return query
-              .where('user').equals(env.user_info.user_id)
+              .where('user').equals(env.data.user._id)
               .where('exists').equals(true)
               .where('cache.last_message').gt(env.data.select_dialogs_start)
               .sort('cache.last_message')
@@ -80,7 +80,7 @@ module.exports = function (N) {
       }
 
       return query
-              .where('user').equals(env.user_info.user_id)
+              .where('user').equals(env.data.user._id)
               .where('exists').equals(true)
               .sort('-cache.last_message')
               .select('_id')

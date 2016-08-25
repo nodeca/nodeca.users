@@ -112,10 +112,10 @@ N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
 
     offset = currentIdx + dlgState.first_offset;
 
-    if (currentIdx >= 0 && messages.length) {
+    if (currentIdx > 0 && messages.length) {
       state = {
-        message_id: $(messages[currentIdx]).data('message-id'),
-        offset: messageThreshold - messages[currentIdx].getBoundingClientRect().top
+        message_id: $(messages[currentIdx + 1]).data('message-id'),
+        offset: messageThreshold - messages[currentIdx + 1].getBoundingClientRect().top
       };
     }
 

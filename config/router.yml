@@ -10,7 +10,10 @@ router:
           type: 'integer'
 
     users.dialogs_root:
-      "/dialogs(/{dialog_id})":
+      "/member{user_hid}/dialogs(/{dialog_id})":
+        user_hid:
+          match: /\d+/
+          type: 'integer'
         dialog_id:
           match: /[0-9a-f]{24}/
 
@@ -21,7 +24,7 @@ router:
       "/unsubscribe/dialogs/done": ~
 
     users.dialog:
-      "/dialogs/{dialog_id}/{message_id}":
+      "/dialog/{dialog_id}(/{message_id})":
         dialog_id:
           match: /[0-9a-f]{24}/
         message_id:

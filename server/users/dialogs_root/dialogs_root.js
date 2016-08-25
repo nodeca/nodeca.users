@@ -9,6 +9,7 @@ const DIALOGS_PER_PAGE = 50;
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
+    user_hid:  { type: 'integer', minimum: 1, required: true },
     dialog_id: { format: 'mongo', required: false }
   });
 
@@ -23,7 +24,7 @@ module.exports = function (N, apiPath) {
     if (env.params.dialog_id) {
       return N.models.users.Dialog.findOne()
                 .where('_id').equals(env.params.dialog_id)
-                .where('user').equals(env.user_info.user_id)
+                .where('user').equals(env.data.user._id)
                 .where('exists').equals(true)
                 .select('cache.last_message')
                 .lean(true)
@@ -37,6 +38,22 @@ module.exports = function (N, apiPath) {
 
     return buildDialogsIds(env);
   }
+
+
+  // Fetch member by 'user_hid'
+  //
+  N.wire.before(apiPath, function fetch_user_by_hid(env) {
+    return N.wire.emit('internal:users.fetch_user_by_hid', env);
+  });
+
+
+  // Check permissions
+  //
+  N.wire.before(apiPath, function check_permissions(env) {
+    if (env.user_info.user_id !== String(env.data.user._id)) {
+      return N.io.FORBIDDEN;
+    }
+  });
 
 
   // Fetch "hide answered dialogs" setting
@@ -67,7 +84,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function* fill_pagination(env) {
     let query = N.models.users.Dialog
-                    .where('user').equals(env.user_info.user_id)
+                    .where('user').equals(env.data.user._id)
                     .where('exists').equals(true);
 
     if (env.data.dialogs_hide_answered) query = query.where('cache.is_reply').equals(false);
@@ -79,7 +96,7 @@ module.exports = function (N, apiPath) {
     // Count an amount of visible dialogs before the first one
     if (env.data.dialogs.length) {
       let query = N.models.users.Dialog
-                      .where('user').equals(env.user_info.user_id)
+                      .where('user').equals(env.data.user._id)
                       .where('exists').equals(true)
                       .where('cache.last_message').gt(env.data.dialogs[0].cache.last_message);
 
@@ -100,7 +117,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function fill_head(env) {
     env.res.head = env.res.head || {};
-    env.res.head.title = env.t('title', { user: env.user_info.user_name });
+    env.res.head.title = env.t('title', { user: env.data.user.name });
   });
 
 
@@ -110,19 +127,27 @@ module.exports = function (N, apiPath) {
     env.data.breadcrumbs = env.data.breadcrumbs || [];
 
     env.data.breadcrumbs.push({
-      text: env.user_info.user_name,
+      text: env.data.user.name,
       route: 'users.member',
-      params: { user_hid: env.user_info.user_hid },
-      user_id: env.user_info.user_id,
-      avatar_id: env.user_info.user_avatar,
+      params: { user_hid: env.data.user.hid },
+      user_id: env.data.user._id,
+      avatar_id: env.data.user.avatar_id,
       show_avatar: true
     });
 
     env.data.breadcrumbs.push({
       text: env.t('breadcrumbs_title'),
-      route: 'users.dialogs_root'
+      route: 'users.dialogs_root',
+      params: { user_hid: env.data.user.hid }
     });
 
     env.res.breadcrumbs = env.data.breadcrumbs.slice(0, -1);
+  });
+
+
+  // Fill response
+  //
+  N.wire.after(apiPath, function fill_response(env) {
+    env.res.user_hid = env.data.user.hid;
   });
 };

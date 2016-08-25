@@ -12,12 +12,29 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     last_message_id: { format: 'mongo', required: true },
     hide_answered:   { type: 'boolean', required: true },
+    user_hid:        { type: 'integer', minimum: 1, required: true },
     before:          { type: 'integer', minimum: 0, maximum: LIMIT, required: true },
     after:           { type: 'integer', minimum: 0, maximum: LIMIT, required: true }
   });
 
 
   let buildDialogsIds = require('./_build_dialogs_ids_by_range')(N);
+
+
+  // Fetch member by 'user_hid'
+  //
+  N.wire.before(apiPath, function fetch_user_by_hid(env) {
+    return N.wire.emit('internal:users.fetch_user_by_hid', env);
+  });
+
+
+  // Check permissions
+  //
+  N.wire.before(apiPath, function check_permissions(env) {
+    if (env.user_info.user_id !== String(env.data.user._id)) {
+      return N.io.FORBIDDEN;
+    }
+  });
 
 
   // Subcall users.dialog_list

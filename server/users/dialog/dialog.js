@@ -10,7 +10,7 @@ module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
     dialog_id:  { format: 'mongo', required: true },
-    message_id: { format: 'mongo', required: true }
+    message_id: { format: 'mongo', required: false }
   });
 
 
@@ -91,7 +91,8 @@ module.exports = function (N, apiPath) {
 
     env.data.breadcrumbs.push({
       text: env.t('breadcrumbs_title'),
-      route: 'users.dialogs_root'
+      route: 'users.dialogs_root',
+      params: { user_hid: env.user_info.user_hid }
     });
 
     env.res.breadcrumbs = env.data.breadcrumbs;
