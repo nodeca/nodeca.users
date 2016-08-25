@@ -1,8 +1,23 @@
 {
-  "name"            : "nodeca.users",
-  "description"     : "Nodeca users app",
-  "version"         : "0.0.1",
-  "keywords"        : ["nodeca", "users"],
-  "license"         : "MIT",
-  "repository"      : "nodeca/nodeca.users"
+  "name": "nodeca.users",
+  "description": "Nodeca users app",
+  "version": "0.0.1",
+  "keywords": [
+    "nodeca",
+    "users"
+  ],
+  "license": "MIT",
+  "repository": "nodeca/nodeca.users",
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
+  }
 }
