@@ -299,6 +299,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       if (res.dialogs.length !== LOAD_DLGS_COUNT) {
         dlgListState.reached_start = true;
+        $('.dialog-list__loading-prev').addClass('hidden-xs-up');
       }
 
       if (res.dialogs.length === 0) return;
@@ -353,6 +354,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       if (res.dialogs.length !== LOAD_DLGS_COUNT) {
         dlgListState.reached_end = true;
+        $('.dialog-list__loading-next').addClass('hidden-xs-up');
       }
 
       if (res.dialogs.length === 0) return;

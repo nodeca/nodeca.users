@@ -342,6 +342,7 @@ N.wire.once('navigate.done:' + module.apiPath, function prefetch_handler_setup()
 
       if (!res.prev_media) {
         mediaState.reached_start = true;
+        $('.user-album-root__loading-prev').addClass('hidden-xs-up');
       }
 
       if (res.media.length === 0) return;
@@ -411,6 +412,7 @@ N.wire.once('navigate.done:' + module.apiPath, function prefetch_handler_setup()
 
       if (!res.next_media) {
         mediaState.reached_end = true;
+        $('.user-album-root__loading-next').addClass('hidden-xs-up');
       }
 
       if (res.media.length === 0) return;

@@ -31,15 +31,16 @@ let dlgState = {};
 
 N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
   let pagination = N.runtime.page_data.pagination;
+  let last_visible_message_id = $('.user-messages-list-item:last-child').data('message-id');
 
-  dlgState.dialog_id = N.runtime.page_data.dialog._id;
-  dlgState.first_offset = pagination.chunk_offset;
-  dlgState.current_offset = -1;
-  dlgState.message_count = pagination.total;
-  dlgState.first_message_id = N.runtime.page_data.first_message_id;
-  dlgState.last_message_id = N.runtime.page_data.last_message_id;
-  dlgState.reached_start = pagination.chunk_offset === 0;
-  dlgState.reached_end = (dlgState.last_message_id === $('.user-messages-list-item:last-child').data('message-id'));
+  dlgState.dialog_id          = N.runtime.page_data.dialog._id;
+  dlgState.first_offset       = pagination.chunk_offset;
+  dlgState.current_offset     = -1;
+  dlgState.message_count      = pagination.total;
+  dlgState.first_message_id   = N.runtime.page_data.first_message_id;
+  dlgState.last_message_id    = N.runtime.page_data.last_message_id;
+  dlgState.reached_start      = pagination.chunk_offset === 0;
+  dlgState.reached_end        = dlgState.last_message_id === last_visible_message_id;
   dlgState.prev_loading_start = 0;
   dlgState.next_loading_start = 0;
 
@@ -266,6 +267,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       if (res.messages.length !== LOAD_MSGS_COUNT) {
         dlgState.reached_start = true;
+        $('.user-messages-list__loading-prev').addClass('hidden-xs-up');
       }
 
       if (res.messages.length === 0) return;
@@ -319,6 +321,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       if (res.messages.length !== LOAD_MSGS_COUNT) {
         dlgState.reached_end = true;
+        $('.user-messages-list__loading-next').addClass('hidden-xs-up');
       }
 
       if (res.messages.length === 0) return;

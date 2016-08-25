@@ -1,7 +1,10 @@
+- var first_message_id = self.dialogs.length ? self.dialogs[0].cache.last_message : null;
+- var last_message_id = self.dialogs.length ? self.dialogs[self.dialogs.length - 1].cache.last_message : null;
+
 - self.add_raw_data('pagination', self.pagination);
 - self.add_raw_data('last_dialog_id', self.last_dialog_id);
-- self.add_raw_data('first_message_id', self.dialogs.length ? self.dialogs[0].cache.last_message : null);
-- self.add_raw_data('last_message_id', self.dialogs.length ? self.dialogs[self.dialogs.length - 1].cache.last_message : null);
+- self.add_raw_data('first_message_id', first_message_id);
+- self.add_raw_data('last_message_id', last_message_id);
 - self.add_raw_data('dialogs_hide_answered', self.dialogs_hide_answered)
 
 #content
@@ -51,6 +54,11 @@
       .dialog-list-no-items=self.t('no_messages')
 
     else
+      .dialog-list__loading-prev(
+        class=(self.pagination.chunk_offset === 0 || !first_message_id ? 'hidden-xs-up' : '')
+      )
+        span.icon.icon-dropdown
+
       .dialog-list._affix(
         data-affix-top={
           offset: 500,
@@ -63,3 +71,8 @@
           throttle: 100
         }
       )!=self.partial('@users.blocks.dialog_list')
+
+      .dialog-list__loading-next(
+        class=(!self.dialogs || self.dialogs.length === 0 || String(self.dialogs[self.dialogs.length - 1]._id) === String(self.last_dialog_id) || !last_message_id ? 'hidden-xs-up' : '')
+      )
+        span.icon.icon-dropdown

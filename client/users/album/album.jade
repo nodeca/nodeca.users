@@ -73,6 +73,12 @@
 
     - self.add_raw_data('prev_media', self.prev_media)
     - self.add_raw_data('next_media', self.next_media)
+
+    .user-album-root__loading-prev(
+      class=(!self.prev_media ? 'hidden-xs-up' : '')
+    )
+      span.icon.icon-dropdown
+
     ul#users-media-list.user-medialist.thumb-grid.thumb-grid__m-fluid._affix(
       data-affix-top={
         offset:     160,
@@ -85,6 +91,11 @@
         throttle:   100
       }
     )!= self.partial('@users.album.list')
+
+    .user-album-root__loading-next(
+      class=(!self.next_media ? 'hidden-xs-up' : '')
+    )
+      span.icon.icon-dropdown
 
     .pager
       - var link = self.link_to(self.apiPath, { user_hid: self.user_hid, album_id: self.album && self.album._id, media_id: self.prev_media });
