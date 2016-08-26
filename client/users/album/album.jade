@@ -77,7 +77,7 @@
     .user-album-root__loading-prev(
       class=(!self.prev_media ? 'hidden-xs-up' : '')
     )
-      span.icon.icon-dropdown
+      span.icon.icon-loading-placeholder
 
     ul#users-media-list.user-medialist.thumb-grid.thumb-grid__m-fluid._affix(
       data-affix-top={
@@ -95,7 +95,7 @@
     .user-album-root__loading-next(
       class=(!self.next_media ? 'hidden-xs-up' : '')
     )
-      span.icon.icon-dropdown
+      span.icon.icon-loading-placeholder
 
     .pager
       - var link = self.link_to(self.apiPath, { user_hid: self.user_hid, album_id: self.album && self.album._id, media_id: self.prev_media });

@@ -47,7 +47,7 @@
       .user-messages-list__loading-prev(
         class=(self.pagination.chunk_offset === 0 ? 'hidden-xs-up' : '')
       )
-        span.icon.icon-dropdown
+        span.icon.icon-loading-placeholder
 
       .user-messages-list._affix(
         data-affix-top={
@@ -65,4 +65,4 @@
       .user-messages-list__loading-next(
         class=(!self.messages || self.messages.length === 0 || String(self.messages[self.messages.length - 1]._id) === String(self.last_message_id) ? 'hidden-xs-up': '')
       )
-        span.icon.icon-dropdown
+        span.icon.icon-loading-placeholder
