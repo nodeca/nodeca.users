@@ -90,6 +90,26 @@ module.exports = function (N, collectionName) {
 
 
   /**
+   * models.users.AuthLink#providers.AuthProvider#setPassHash(password) -> void
+   * - password(String):  user password hash
+   *
+   * Set user password
+   **/
+  AuthLink.methods.setPassHash = function (hash) {
+    if (this.type !== 'plain') {
+      return Promise.reject(new Error("Can't set password for non plain provider"));
+    }
+
+    _.set(this, 'meta.pass', hash);
+
+    // Notify mongoose about changes in nested object
+    this.markModified('meta');
+
+    return Promise.resolve();
+  };
+
+
+  /**
    * models.users.AuthLink#providers.AuthProvider#checkPass(password) -> Boolean
    * - password(String):  checked word
    *

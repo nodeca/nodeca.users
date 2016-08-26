@@ -4,7 +4,7 @@
 //   reg_info:
 //     nick
 //     email
-//     pass
+//     pass_hash
 //   oauth_info:
 //     ... # If oauth used, the same hash as AuthLink schema
 //
@@ -31,7 +31,7 @@ module.exports = function (N, apiPath) {
 
   // Create plain auth record (nick + password record)
   //
-  N.wire.after(apiPath, function* create_user_privider(env) {
+  N.wire.after(apiPath, function* create_user_provider(env) {
     let user = env.data.user;
     let authLink = new N.models.users.AuthLink({
       user:    user._id,
@@ -42,7 +42,7 @@ module.exports = function (N, apiPath) {
     });
 
     try {
-      yield authLink.setPass(env.data.reg_info.pass);
+      yield authLink.setPassHash(env.data.reg_info.pass_hash);
       yield authLink.save();
     } catch (__) {
       yield N.models.users.User.remove({ _id: user._id });
@@ -53,7 +53,7 @@ module.exports = function (N, apiPath) {
 
   // Create oauth provider record, if data filled
   //
-  N.wire.after(apiPath, function* create_oauth_privider(env) {
+  N.wire.after(apiPath, function* create_oauth_provider(env) {
     if (!env.data.oauth_info) return;
 
     let user = env.data.user;

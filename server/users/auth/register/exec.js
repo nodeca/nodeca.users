@@ -9,6 +9,7 @@ const co          = require('bluebird-co').co;
 const _           = require('lodash');
 const validator   = require('is-my-json-valid');
 const recaptcha   = require('nodeca.core/lib/app/recaptcha');
+const password    = require('nodeca.users/models/users/_lib/password');
 
 
 module.exports = function (N, apiPath) {
@@ -213,9 +214,9 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function* finish_registration(env) {
 
     env.data.reg_info = {
-      nick: env.params.nick,
-      email: env.params.email,
-      pass: env.params.pass
+      nick:      env.params.nick,
+      email:     env.params.email,
+      pass_hash: yield password.hash(env.params.pass)
     };
 
     env.data.oauth_info = (env.session.oauth || {}).info;
