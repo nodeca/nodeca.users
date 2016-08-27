@@ -12,7 +12,11 @@
         = self.t('title')
         if own_page
           | 
-          a.btn.btn-secondary.btn-sm.icon.icon-edit(
+          a.btn.btn-outline-secondary.btn-sm.hidden-xs-down.icon.icon-edit(
+            href=self.link_to('users.settings.about')
+          )
+          span
+          a.btn.btn-outline-secondary.btn-xs.hidden-sm-up.icon.icon-edit(
             href=self.link_to('users.settings.about')
           )
 

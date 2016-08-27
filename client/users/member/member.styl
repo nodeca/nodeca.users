@@ -41,17 +41,16 @@ $avatar-narrow = 70px
 //
 
 .member-menu
-  list-style none
-  padding 0
-  margin 0
-  color $body-color-secondary - 30%
+  .btn
+    margin-left 0
+    margin-right .4rem
+  .btn-sm
+    margin-left 0
+    margin-right .3rem
 
-.member-menu__item
+.member-menu__dropdown
   display inline-block
-  margin-right 1.5rem
-
-.member-menu__link
-  color unset
+  position relative
 
 //
 // Avatar styles
@@ -108,7 +107,7 @@ $avatar-narrow = 70px
   font-size 1.5rem
   border-bottom 0.0625rem solid $decorator-color
   margin-bottom 1rem
-  color $body-color + 30%
+  color $body-color + 20%
 
 .member-block__header-text > .btn
   vertical-align text-bottom
@@ -221,11 +220,6 @@ $avatar-narrow = 70px
 
   .member-block__header
     font-size 1.25rem
-    .btn
-      padding .2rem 0
-      font-size .75rem
-      min-width 1.917em
-      border-radius .15rem
   .member-block__header-counter
     font-size 0.625rem // 10px
 

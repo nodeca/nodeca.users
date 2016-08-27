@@ -20,7 +20,13 @@
 
         if self.blocks.infractions.settings.users_mod_can_add_infractions && !self.blocks.infractions.settings.cannot_receive_infractions
           | 
-          button.btn.btn-secondary.btn-sm.icon.icon-plus(
+          button.btn.btn-outline-secondary.btn-sm.hidden-xs-down.icon.icon-plus(
+            title=self.t('add')
+            data-on-click='users.member.blocks.infractions:add'
+            data-user-id=self.user._id
+          )
+          span
+          button.btn.btn-outline-secondary.btn-xs.hidden-sm-up.icon.icon-plus(
             title=self.t('add')
             data-on-click='users.member.blocks.infractions:add'
             data-user-id=self.user._id

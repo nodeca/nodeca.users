@@ -2,23 +2,28 @@ users:
   profile_page:
 
     actions:
-      usernote:
+      settings:
         priority: 10
-      ignore:
+      usernote:
         priority: 20
-      mod_divider:
+      ignore:
         priority: 30
-      hellban:
+      mod_divider:
         priority: 40
-      add_mod_note:
+      hellban:
         priority: 50
+      add_mod_note:
+        priority: 60
 
     menu:
-      dialogs:
-        to: users.dialogs_root
-        priority: 20
+      bookmarks:
+        to: users.bookmarks
+        priority: 10
       subscribtions:
         to: users.subscriptions.index
+        priority: 20
+      dialogs:
+        to: users.dialogs_root
         priority: 30
       #albums:
       #  to: users.albums_root
@@ -29,15 +34,6 @@ users:
       #blog:
       #  to: blogs.member
       #  priority: 60
-      bookmarks:
-        to: users.bookmarks
-        priority: 70
-      #drafts:
-      #  to: users.drafts
-      #  priority: 80
-      settings:
-        to: users.settings.general
-        priority: 100
 
     # Blocks will be in users.member.blocks
     blocks:

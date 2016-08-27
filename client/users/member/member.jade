@@ -27,26 +27,6 @@
 
       .member-head__content
         .page-head
-          //- Buttons
-          if self.runtime.is_member && own_page
-            .page-actions.pull-xs-right.hidden-xs-down
-
-              .page-actions__item.page-actions__dropdown
-                if self.actions_ordered.length
-                  button.btn.btn-secondary.btn-square.icon.icon-dropdown.dropdown-toggle(
-                    type='button'
-                    data-toggle='dropdown'
-                  )
-                  .dropdown-menu.dropdown-menu-right
-
-                    if own_page
-                      each item in self.menu_ordered
-                        a.dropdown-item.hidden-sm-up(href=self.link_to(item.to, { user_hid: self.user.hid }))
-                          = self.t('@users.profile_page.menu.' + item.name)
-
-                    each item in self.actions_ordered
-                      !=self.partial('@users.member.actions.' + item.name)
-
           h1.page-head__title(itemprop='name')
             if self.user_is_ignored
               span.member__ignored.icon.icon-ignore.icon-space-after(
@@ -74,39 +54,43 @@
 
         //- Nav menu (wide screens)
         if own_page
-          ul.member-menu.hidden-xs-down
-            each item in self.menu_ordered
-              li.member-menu__item
-                a.member-menu__link(href=self.link_to(item.to, { user_hid: self.user.hid }))
-                  =self.t('@users.profile_page.menu.' + item.name)
-        else
-          .page-actions.hidden-xs-down
+          .member-menu.hidden-xs-down
+            if self.actions_ordered.length
+              .member-menu__dropdown
+                button.btn.btn-sm.btn-outline-primary.btn-square.icon.icon-dropdown.dropdown-toggle(
+                  type='button'
+                  data-toggle='dropdown'
+                )
+                .dropdown-menu.dropdown-menu-left
+                  each item in self.actions_ordered
+                    !=self.partial('@users.member.actions.' + item.name)
 
-            .page-actions__item.page-actions__dropdown
+            each item in self.menu_ordered
+              a.btn.btn-sm.btn-outline-primary(
+                href=self.link_to(item.to, { user_hid: self.user.hid })
+              )
+                =self.t('@users.profile_page.menu.' + item.name)
+        else
+          .member-menu.hidden-xs-down
+
+            .member-menu__dropdown
               if self.actions_ordered.length
                 button.btn.btn-secondary.btn-square.icon.icon-dropdown.dropdown-toggle(
                   type='button'
                   data-toggle='dropdown'
                 )
                 .dropdown-menu.dropdown-menu-left
-
-                  if own_page
-                    each item in self.menu_ordered
-                      a.dropdown-item.hidden-sm-up(href=self.link_to(item.to, { user_hid: self.user.hid }))
-                        = self.t('@users.profile_page.menu.' + item.name)
-
                   each item in self.actions_ordered
                     !=self.partial('@users.member.actions.' + item.name)
 
             if self.settings.can_use_dialogs && self.settings.can_create_dialogs && !own_page
-              .page-actions__item
-                button.btn.btn-secondary.btn-square.icon.icon-mail(
-                  type='button'
-                  data-on-click='users.member:message'
-                  data-to-nick=self.users[self.user._id].nick
-                  data-to-hid=self.users[self.user._id].hid
-                  title=self.t('send_message_help')
-                )
+              button.btn.btn-secondary.btn-square.icon.icon-mail(
+                type='button'
+                data-on-click='users.member:message'
+                data-to-nick=self.users[self.user._id].nick
+                data-to-hid=self.users[self.user._id].hid
+                title=self.t('send_message_help')
+              )
 
     //- Buttons
     if self.runtime.is_member
