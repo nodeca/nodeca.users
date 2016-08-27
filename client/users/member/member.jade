@@ -13,7 +13,7 @@
 
     - var modifier = self.avatar_exists ? 'member-head__m-avatar-exists' : '';
 
-    header.member-head(class=modifier).clearfix
+    header.member-head(class=modifier)
       .member-head__aside
         .member-avatar
           if own_page
@@ -80,9 +80,17 @@
                   title=self.t('send_message_help')
                 )
 
-    //- Nav menu
+        //- Nav menu 1 (wide screens)
+        if own_page
+          ul.member-menu.member-menu__m-wide
+            each item in self.menu_ordered
+              li.member-menu__item
+                a.member-menu__link(href=self.link_to(item.to, { user_hid: self.user.hid }))
+                  =self.t('@users.profile_page.menu.' + item.name)
+
+    //- Nav menu 2 (narrow screens)
     if own_page
-      ul.member-menu
+      ul.member-menu.member-menu__m-narrow
         each item in self.menu_ordered
           li.member-menu__item
             a.member-menu__link(href=self.link_to(item.to, { user_hid: self.user.hid }))

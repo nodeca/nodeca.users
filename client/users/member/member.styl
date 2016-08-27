@@ -4,30 +4,28 @@
 // Layout
 //
 
+$avatar-wide = 150px
+$avatar-narrow = 70px
+
 .member-head
   margin-bottom 1.5rem
   .page-head
     margin-top 0
-    margin-bottom .7rem
+    margin-bottom 1rem
 
 .member-head__aside
-  width 100px
+  width $avatar-wide
   float left
 
 .member-head__content
-  padding-left 100px + 20px
+  min-height $avatar-wide
+  padding-left $avatar-wide + 20px
 
 .member-blocks
   // To show shadows in { overflow: hidden }
   padding-left 2px
   margin-left -2px
   overflow hidden
-
-@media (max-width: 600px - 1)
-  .member-head__aside
-    width 70px
-  .member-head__content
-    padding-left 70px + 16px
 
 .member-menu
   list-style none
@@ -38,6 +36,23 @@
 .member-menu__item
   display inline-block
   margin-right 1.5rem
+
+.member-menu__m-wide
+  margin-top 1rem
+
+.member-menu__m-narrow
+  display none
+
+@media (max-width: 600px - 1)
+  .member-head__aside
+    width $avatar-narrow
+  .member-head__content
+    min-height $avatar-narrow
+    padding-left $avatar-narrow + 16px
+  .member-menu__m-wide
+    display none
+  .member-menu__m-narrow
+    display block
 
 
 //
