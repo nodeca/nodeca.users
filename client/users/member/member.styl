@@ -5,21 +5,30 @@
 //
 
 $avatar-wide = 150px
+$avatar-medium = 100px
 $avatar-narrow = 70px
 
 .member-head
-  margin-bottom 1.5rem
+  margin-top 2rem
+  margin-bottom 2rem
   .page-head
     margin-top 0
-    margin-bottom 1rem
+    margin-bottom .5rem
 
 .member-head__aside
   width $avatar-wide
   float left
-
 .member-head__content
   min-height $avatar-wide
   padding-left $avatar-wide + 20px
+
+.member-head__m-guest
+  .member-head__aside
+    width $avatar-medium
+  .member-head__content
+    min-height $avatar-medium
+    padding-left $avatar-medium + 20px
+
 
 .member-blocks
   // To show shadows in { overflow: hidden }
@@ -27,33 +36,22 @@ $avatar-narrow = 70px
   margin-left -2px
   overflow hidden
 
+//
+//
+//
+
 .member-menu
   list-style none
   padding 0
-  margin 0 0 1.5rem
-  font-size $font-size-sm
+  margin 0
+  color $body-color-secondary - 30%
 
 .member-menu__item
   display inline-block
   margin-right 1.5rem
 
-.member-menu__m-wide
-  margin-top 1rem
-
-.member-menu__m-narrow
-  display none
-
-@media (max-width: 600px - 1)
-  .member-head__aside
-    width $avatar-narrow
-  .member-head__content
-    min-height $avatar-narrow
-    padding-left $avatar-narrow + 16px
-  .member-menu__m-wide
-    display none
-  .member-menu__m-narrow
-    display block
-
+.member-menu__link
+  color unset
 
 //
 // Avatar styles
@@ -107,9 +105,10 @@ $avatar-narrow = 70px
   margin-bottom 2rem
 
 .member-block__header
-  font-size $font-size-lg
+  font-size 1.5rem
   border-bottom 0.0625rem solid $decorator-color
   margin-bottom 1rem
+  color $body-color + 30%
 
 .member-block__header-text > .btn
   vertical-align text-bottom
@@ -124,7 +123,7 @@ $avatar-narrow = 70px
     text-decoration none
 
 .member-block__header-counter
-  font-size $font-size-base * 0.625 // 10px
+  font-size 0.75rem // 12px
   color $body-color-secondary
   vertical-align text-bottom
 
@@ -134,6 +133,18 @@ $avatar-narrow = 70px
   margin-right .2em
   &:focus
     outline none
+
+
+.member-blocks__col-left .member-block
+  padding-right .5rem
+.member-blocks__col-right .member-block
+  padding-left .5rem
+
+@media (max-width: $grid-breakpoints.md - 1)
+  .member-blocks__col-left .member-block
+    padding-right 0
+  .member-blocks__col-right .member-block
+    padding-left 0
 
 //
 // Collapse toggler states
@@ -188,16 +199,43 @@ $avatar-narrow = 70px
   .member-block__header-collapser
     display none
 
-////////////////////////////////////////////////////////////////////////////////
-/// Rework
 
-@media (max-width: 600px - 1)
-  .member-block.page-actions
-    display flex
-    .page-actions__item
-      flex 1 1 100%
+@media (max-width: 650px - 1)
+  .member-head
+    .member-head__aside
+      width $avatar-medium
+    .member-head__content
+      min-height $avatar-medium
+      padding-left $avatar-medium + 16px
+
+
+@media (max-width: $grid-breakpoints.sm - 1)
+  .member-head
+    .member-head__aside
+      width $avatar-narrow
+    .member-head__content
+      min-height $avatar-narrow
+      padding-left $avatar-narrow + 16px
+    .page-head__title
+      font-size 1.25rem
+
+  .member-block__header
+    font-size 1.25rem
     .btn
-      width 100%
+      padding .2rem 0
+      font-size .75rem
+      min-width 1.917em
+      border-radius .15rem
+  .member-block__header-counter
+    font-size 0.625rem // 10px
 
-  //.member-menu
-  //  display none
+
+.member-actions-xs
+  display flex
+  margin-bottom 2rem
+  .page-actions__item
+    flex 1 1 100%
+  .btn
+    width 100%
+  .dropdown-menu
+    min-width 100%

@@ -11,9 +11,10 @@
   .layout__container.container-fluid
     != self.partial('@users.blocks.announces')
 
-    - var modifier = self.avatar_exists ? 'member-head__m-avatar-exists' : '';
-
-    header.member-head(class=modifier)
+    header.member-head(
+      class= self.avatar_exists ? 'member-head__m-avatar-exists' : ''
+      class= self.runtime.is_guest ? 'member-head__m-guest' : ''
+    )
       .member-head__aside
         .member-avatar
           if own_page
@@ -26,6 +27,26 @@
 
       .member-head__content
         .page-head
+          //- Buttons
+          if self.runtime.is_member && own_page
+            .page-actions.pull-xs-right.hidden-xs-down
+
+              .page-actions__item.page-actions__dropdown
+                if self.actions_ordered.length
+                  button.btn.btn-secondary.btn-square.icon.icon-dropdown.dropdown-toggle(
+                    type='button'
+                    data-toggle='dropdown'
+                  )
+                  .dropdown-menu.dropdown-menu-right
+
+                    if own_page
+                      each item in self.menu_ordered
+                        a.dropdown-item.hidden-sm-up(href=self.link_to(item.to, { user_hid: self.user.hid }))
+                          = self.t('@users.profile_page.menu.' + item.name)
+
+                    each item in self.actions_ordered
+                      !=self.partial('@users.member.actions.' + item.name)
+
           h1.page-head__title(itemprop='name')
             if self.user_is_ignored
               span.member__ignored.icon.icon-ignore.icon-space-after(
@@ -36,17 +57,30 @@
             =self.t('last_active')
             | 
             != self.timetag(self.user.last_active_ts, 'relative_full')
+
           if self.user_is_hb
             p.page-head__descr.member__hb.text-danger(itemprop='description')=self.t('hellbaned')
+
+          if self.settings.can_add_mod_notes && self.mod_notes_count > 0
+            p.page-head__descr
+              a(href=self.link_to('users.mod_notes', { 'user_hid': self.user.hid }))
+                =self.t('mod_notes', self.mod_notes_count)
+
           if self.penalty_expire
             p.page-head__descr.member__penalty.text-danger(itemprop='description')
               =self.t('blocked_until')
               | 
               !=self.timetag(self.penalty_expire, 'compact')
 
-        //- Buttons
-        if self.runtime.is_member
-          .page-actions
+        //- Nav menu (wide screens)
+        if own_page
+          ul.member-menu.hidden-xs-down
+            each item in self.menu_ordered
+              li.member-menu__item
+                a.member-menu__link(href=self.link_to(item.to, { user_hid: self.user.hid }))
+                  =self.t('@users.profile_page.menu.' + item.name)
+        else
+          .page-actions.hidden-xs-down
 
             .page-actions__item.page-actions__dropdown
               if self.actions_ordered.length
@@ -64,12 +98,6 @@
                   each item in self.actions_ordered
                     !=self.partial('@users.member.actions.' + item.name)
 
-            if self.settings.can_add_mod_notes && self.mod_notes_count > 0
-              .page-actions__item
-                a.btn.btn-secondary(
-                  href=self.link_to('users.mod_notes', { 'user_hid': self.user.hid })
-                )=self.t('mod_notes', self.mod_notes_count)
-
             if self.settings.can_use_dialogs && self.settings.can_create_dialogs && !own_page
               .page-actions__item
                 button.btn.btn-secondary.btn-square.icon.icon-mail(
@@ -80,21 +108,34 @@
                   title=self.t('send_message_help')
                 )
 
-        //- Nav menu 1 (wide screens)
-        if own_page
-          ul.member-menu.member-menu__m-wide
-            each item in self.menu_ordered
-              li.member-menu__item
-                a.member-menu__link(href=self.link_to(item.to, { user_hid: self.user.hid }))
-                  =self.t('@users.profile_page.menu.' + item.name)
+    //- Buttons
+    if self.runtime.is_member
+      .member-actions-xs.page-actions.hidden-sm-up
+        .page-actions__item.page-actions__dropdown
+          if self.actions_ordered.length
+            button.btn.btn-secondary.btn-square.icon.icon-dropdown.dropdown-toggle(
+              type='button'
+              data-toggle='dropdown'
+            )
+            .dropdown-menu.dropdown-menu-left
 
-    //- Nav menu 2 (narrow screens)
-    if own_page
-      ul.member-menu.member-menu__m-narrow
-        each item in self.menu_ordered
-          li.member-menu__item
-            a.member-menu__link(href=self.link_to(item.to, { user_hid: self.user.hid }))
-              =self.t('@users.profile_page.menu.' + item.name)
+              if own_page
+                each item in self.menu_ordered
+                  a.dropdown-item.hidden-sm-up(href=self.link_to(item.to, { user_hid: self.user.hid }))
+                    = self.t('@users.profile_page.menu.' + item.name)
+
+              each item in self.actions_ordered
+                !=self.partial('@users.member.actions.' + item.name)
+
+        if self.settings.can_use_dialogs && self.settings.can_create_dialogs && !own_page
+          .page-actions__item
+            button.btn.btn-secondary.btn-square.icon.icon-mail(
+              type='button'
+              data-on-click='users.member:message'
+              data-to-nick=self.users[self.user._id].nick
+              data-to-hid=self.users[self.user._id].hid
+              title=self.t('send_message_help')
+            )
 
     .member-blocks
       if self.blocks['usernote']
@@ -106,14 +147,17 @@
         var has_col2 = col2.filter(function(b) { return self.blocks[b.name]; }).length;
 
       .row
-        div(class= has_col2 ? 'col-md-6' : 'col-md-12')
+        div(
+          class= has_col2 ? 'col-md-6' : 'col-md-12'
+          class= has_col2 ? 'member-blocks__col-left' : ''
+        )
 
           each block in col1
             if (self.blocks[block.name])
               != self.partial('@users.member.blocks.' + block.name)
 
         if has_col2
-          .col-md-6
+          .col-md-6.member-blocks__col-right
             each block in col2
               if (self.blocks[block.name])
                 != self.partial('@users.member.blocks.' + block.name)
