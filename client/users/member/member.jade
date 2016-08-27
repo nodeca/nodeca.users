@@ -4,7 +4,9 @@
 #content.user-member-page
   != self.partial('@common.blocks.navbar.logo_apps')
 
-  //- != self.partial('@users.blocks.breadcrumbs')
+  nav.breadcrumbs-container
+    .layout__container.container-fluid
+      != self.partial('@users.blocks.breadcrumbs')
 
   .layout__container.container-fluid
     != self.partial('@users.blocks.announces')
