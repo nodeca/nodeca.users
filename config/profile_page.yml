@@ -17,15 +17,15 @@ users:
       dialogs:
         to: users.dialogs_root
         priority: 20
-      albums:
-        to: users.albums_root
-        priority: 30
-      groups:
-        to: groups
-        priority: 40
-      blog:
-        to: blogs.member
-        priority: 50
+      #albums:
+      #  to: users.albums_root
+      #  priority: 30
+      #groups:
+      #  to: groups
+      #  priority: 40
+      #blog:
+      #  to: blogs.member
+      #  priority: 50
       bookmarks:
         to: users.bookmarks
         priority: 60
