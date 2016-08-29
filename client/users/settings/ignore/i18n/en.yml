@@ -5,4 +5,6 @@ en-US:
   ignored_till: 'till #{date}'
   ignored_forever: forever
   remove: remove
-  no_ignored_users: No users are ignored
+  no_ignored_users: >
+    To ignore someone - go to user's profile
+    and select "ignore" in dropdown menu.

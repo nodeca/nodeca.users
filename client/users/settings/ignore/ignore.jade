@@ -14,27 +14,28 @@
       a.nav-link(href=self.link_to('users.settings.about'))= self.t('about')
       a.nav-link.active(href=self.link_to('users.settings.ignore'))= self.t('ignore')
 
-    table.table.table-condensed.user-settings-ignore.user-settings__tab-content
-      tbody
-        each row in self.ignore_list
-          - var user = self.users[row.user_id]
+    .user-settings__tab-content
+      table.table.table-condensed.user-settings-ignore
+        tbody
+          each row in self.ignore_list
+            - var user = self.users[row.user_id]
 
-          if self.users
-          tr
-            td.user-settings-ignore__user
-              a(
-                href=self.link_to('users.member', { user_hid: user.hid })
-                title=row.expire ? self.date(row.ts, 'date') : undefined
-              )
-                img.user-settings-ignore__avatar(alt=user.name)&attributes(self.avatar(user, 'sm'))
-                = user.name
-            td.user-settings-ignore__reason= row.reason
-            td.user-settings-ignore__expire
-              = row.expire ? self.t('ignored_till', { date: self.date(row.expire, 'date') }) : self.t('ignored_forever')
-            td.user-settings-ignore__controls
-              button.pull-xs-right.btn.btn-xs.btn-secondary.icon.icon-x(
-                data-on-click='users.settings.ignore:remove'
-                data-user-id=user._id
-              )
-        else
-          td(colspan=4)= self.t('no_ignored_users')
+            if self.user
+            tr
+              td.user-settings-ignore__user
+                a(
+                  href=self.link_to('users.member', { user_hid: user.hid })
+                  title=row.expire ? self.date(row.ts, 'date') : undefined
+                )
+                  img.user-settings-ignore__avatar(alt=user.name)&attributes(self.avatar(user, 'sm'))
+                  = user.name
+              td.user-settings-ignore__reason= row.reason
+              td.user-settings-ignore__expire.text-nowrap
+                = row.expire ? self.t('ignored_till', { date: self.date(row.expire, 'date') }) : self.t('ignored_forever')
+              td.user-settings-ignore__controls
+                button.pull-xs-right.btn.btn-xs.btn-link.icon.icon-x(
+                  data-on-click='users.settings.ignore:remove'
+                  data-user-id=user._id
+                )
+          else
+            tr: td= self.t('no_ignored_users')
