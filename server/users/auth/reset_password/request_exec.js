@@ -78,7 +78,7 @@ module.exports = function (N, apiPath) {
     yield N.mailer.send({
       to:         env.data.user.email,
       subject:    env.t('email_subject', { project_name: general_project_name }),
-      text:       env.t('email_text',    { link }),
+      text:       env.t('email_text',    { link, ip: env.req.ip }),
       safe_error: true
     });
   });

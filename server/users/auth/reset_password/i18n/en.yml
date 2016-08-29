@@ -8,6 +8,8 @@ en-US:
 
     email_subject: '#{project_name}: password change confirmation.'
     email_text: |
+      Password change was requested from IP #{ip}
+
       Follow this link to change your password:
 
       #{link}
@@ -26,9 +28,11 @@ en-US:
     err_broken_token: Invalid security token.
     email_subject: '#{project_name}: password has been changed.'
     email_text: |
-      Password for account #{nick} at #{project_name} was changed.
+      md:
+        Password for account #{nick} at #{project_name} was changed.
 
-      Time: #{time}, IP: #{ip}
+        - Time: #{time}
+        - IP: #{ip}
 
   change_done_show:
     title: Change password

@@ -59,7 +59,7 @@ module.exports = function (N) {
 
     let text = render(N, 'users.notify.users_message', { message_html: message.html, link: url }, helpers);
 
-    let unsubscribe = N.router.linkTo('users.dialogs_root.unsubscribe');
+    let unsubscribe = N.router.linkTo('users.dialogs_root.unsubscribe.index');
 
     local_env.messages[to.user_id] = { subject, text, url, unsubscribe };
   });

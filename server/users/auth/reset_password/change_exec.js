@@ -118,7 +118,7 @@ module.exports = function (N, apiPath) {
     yield N.mailer.send({
       to: env.data.user.email,
       subject: env.t('email_subject', { project_name: general_project_name }),
-      text: env.t('email_text', {
+      html: env.t('email_text', {
         nick: env.data.user.nick,
         project_name: general_project_name,
         time: env.helpers.date(Date.now(), 'datetime'),
