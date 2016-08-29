@@ -21,21 +21,10 @@ describe('User', function () {
   });
 
   describe('.validatePassword()', function () {
-    it('password must have least 8 chars', function () {
-      assert.equal(User.validatePassword('abcd123'), false);
-      assert.equal(User.validatePassword('abcd1234'), true);
-    });
-
-    it('password must have at least one digit and one letter', function () {
-      assert.equal(User.validatePassword('abcdefgh'), false);
-      assert.equal(User.validatePassword('abcdefg8'), true);
-
-      assert.equal(User.validatePassword('12345678'), false);
-      assert.equal(User.validatePassword('1234567h'), true);
-    });
-
-    it('password must allow international chars', function () {
-      assert.equal(User.validatePassword('фыва1234'), true);
+    it('should not accept weak passwords', function () {
+      assert.equal(User.validatePassword('password'), false);
+      assert.equal(User.validatePassword('1234567890'), false);
+      assert.equal(User.validatePassword('W3tjMcLf3i'), true);
     });
   });
 

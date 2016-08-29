@@ -14,8 +14,8 @@ en-US:
     password: New password
     password_desc: New password
     password_help: >
-      Must contain both digits and letters (other symbols also possible).
-      Also should have > 8 symbols.
+      Weak passwords are not accepted. We suggest to use >= 10 characters
+      with both digits and letters, or a passphrase with multiple words.
 
     ok: Ok
 

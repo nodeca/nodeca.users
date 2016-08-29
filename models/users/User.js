@@ -1,10 +1,11 @@
 'use strict';
 
 
-var Mongoose      = require('mongoose');
-var Schema        = Mongoose.Schema;
-var xregexp       = require('xregexp');
-var configReader  = require('../../server/_lib/resize_parse');
+const Mongoose      = require('mongoose');
+const Schema        = Mongoose.Schema;
+const xregexp       = require('xregexp');
+const zxcvbn        = require('zxcvbn');
+const configReader  = require('../../server/_lib/resize_parse');
 
 
 module.exports = function (N, collectionName) {
@@ -104,21 +105,14 @@ module.exports = function (N, collectionName) {
   };
 
 
-  var PASSWORD_RE = xregexp('\\p{L}');
-
-
   /**
    *  models.users.User.validatePassword(str) -> Boolean
    *  - str (String): String to validate.
    *
-   *  Returns whenever or not `str` is a valid password:
-   *
-   *  - length equals or greater than 8
-   *  - has at least one number
-   *  - has at least one letter
+   *  Returns whether or not `str` is a strong enough password
    **/
   User.statics.validatePassword = function validatePassword(str) {
-    return str.length >= 8 && /\d/.test(str) && PASSWORD_RE.test(str);
+    return zxcvbn(str).score >= 3;
   };
 
 
