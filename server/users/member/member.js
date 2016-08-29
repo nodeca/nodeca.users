@@ -195,7 +195,7 @@ module.exports = function (N, apiPath) {
     env.res.head.title = name;
 
 
-    yield N.wire.emit('internal:users.breadcrumbs.fill_user', env);
+    yield N.wire.emit('internal:users.breadcrumbs.fill_root', env);
 
     // Doesn't show avatar in breadcrumbs on member page
     env.data.breadcrumbs[0].show_avatar = false;

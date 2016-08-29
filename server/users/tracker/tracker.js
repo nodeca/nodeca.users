@@ -23,6 +23,13 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Fetch user
+  //
+  N.wire.before(apiPath, function* fetch_user(env) {
+    env.data.user = yield N.models.users.User.findOne({ _id: env.user_info.user_id });
+  });
+
+
   // Fetch subscriptions for user
   //
   N.wire.before(apiPath, function* fetch_subscriptions(env) {
@@ -66,17 +73,10 @@ module.exports = function (N, apiPath) {
 
   // Fill breadcrumbs
   //
-  N.wire.after(apiPath, function fill_breadcrumbs(env) {
+  N.wire.after(apiPath, function* fill_breadcrumbs(env) {
     env.data.breadcrumbs = env.data.breadcrumbs || [];
 
-    env.data.breadcrumbs.push({
-      text        : env.user_info.user_name,
-      route       : 'users.member',
-      params      : { user_hid: env.user_info.user_hid },
-      user_id     : env.user_info.user_id,
-      avatar_id   : env.user_info.user_avatar,
-      show_avatar : true
-    });
+    yield N.wire.emit('internal:users.breadcrumbs.fill_root', env);
 
     env.data.breadcrumbs.push({
       text   : env.t('@users.tracker.breadcrumbs_title'),

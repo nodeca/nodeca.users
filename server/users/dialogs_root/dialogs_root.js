@@ -123,17 +123,10 @@ module.exports = function (N, apiPath) {
 
   // Fill breadcrumbs
   //
-  N.wire.after(apiPath, function fill_breadcrumbs(env) {
+  N.wire.after(apiPath, function* fill_breadcrumbs(env) {
     env.data.breadcrumbs = env.data.breadcrumbs || [];
 
-    env.data.breadcrumbs.push({
-      text: env.data.user.name,
-      route: 'users.member',
-      params: { user_hid: env.data.user.hid },
-      user_id: env.data.user._id,
-      avatar_id: env.data.user.avatar_id,
-      show_avatar: true
-    });
+    yield N.wire.emit('internal:users.breadcrumbs.fill_root', env);
 
     env.data.breadcrumbs.push({
       text: env.t('breadcrumbs_title'),

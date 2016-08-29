@@ -6,7 +6,7 @@ module.exports = function (N, apiPath) {
   // Fill user name
   //
   N.wire.on(apiPath, function fill_user_name(env) {
-    return N.wire.emit('internal:users.breadcrumbs.fill_user', env);
+    return N.wire.emit('internal:users.breadcrumbs.fill_root', env);
   });
 
 

@@ -66,7 +66,7 @@ module.exports = function (N, apiPath) {
   // Fill breadcrumbs
   //
   N.wire.after(apiPath, function* fill_breadcrumbs(env) {
-    yield N.wire.emit('internal:users.breadcrumbs.fill_user', env);
+    yield N.wire.emit('internal:users.breadcrumbs.fill_root', env);
 
     let user = env.data.user;
 

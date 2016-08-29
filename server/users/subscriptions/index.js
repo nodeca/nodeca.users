@@ -91,7 +91,7 @@ module.exports = function (N, apiPath) {
     env.res.head = env.res.head || {};
     env.res.head.title = env.t('title');
 
-    yield N.wire.emit('internal:users.breadcrumbs.fill_user', env);
+    yield N.wire.emit('internal:users.breadcrumbs.fill_root', env);
 
     env.res.breadcrumbs = env.data.breadcrumbs;
   });
