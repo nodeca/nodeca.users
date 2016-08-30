@@ -3,3 +3,5 @@ en-US:
     title: Subscriptions
     delete_confirmation: Are you sure you wish to cancel this subscription?
     no_subscriptions: No subscriptions
+    tracker: New
+    subscriptions: All subscriptions

@@ -216,9 +216,7 @@ module.exports = function (N, apiPath) {
         title: env.data.album.title,
         current,
         total: env.data.album.count
-      }),
-      route:  'users.album',
-      params: { user_hid: env.data.user.hid, album_id: env.data.album._id }
+      })
     });
 
     env.res.breadcrumbs = env.data.breadcrumbs;

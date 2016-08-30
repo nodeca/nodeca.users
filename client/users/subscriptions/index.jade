@@ -14,8 +14,7 @@
 - }
 
 #content.user-subscriptions-root
-  - var navbar_args = { level_up: self.link_to('users.member', { user_hid: self.runtime.user_hid }) };
-  != self.partial('@common.blocks.navbar.levelup_apps', navbar_args)
+  != self.partial('@common.blocks.navbar.logo_apps')
 
   nav.breadcrumbs-container
     .layout__container.container-fluid
@@ -24,9 +23,9 @@
   .layout__container.container-fluid
     != self.partial('@users.blocks.announces')
 
-    header.page-head
-      h1.page-head__title(itemprop='name')= self.t('title')
-      p.page-head__descr.hidden-xs-down(itemprop='description')
+    .user-tracker__filter.nav
+      a.nav-link.btn.btn-sm.btn-outline-secondary(href=self.link_to('users.tracker'))= self.t('tracker')
+      a.nav-link.btn.btn-sm.btn-outline-success(href=self.link_to('users.subscriptions.index'))= self.t('subscriptions')
 
     ul.nav.nav-tabs-underlined(role='tablist')
       - var i = 0;

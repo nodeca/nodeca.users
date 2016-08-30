@@ -87,11 +87,21 @@ module.exports = function (N, apiPath) {
 
   // Fill head and breadcrumbs
   //
-  N.wire.after(apiPath, function* fill_head_and_breadcrumbs(env) {
+  N.wire.after(apiPath, function fill_head_and_breadcrumbs(env) {
     env.res.head = env.res.head || {};
     env.res.head.title = env.t('title');
 
-    yield N.wire.emit('internal:users.breadcrumbs.fill_root', env);
+    env.data.breadcrumbs = env.data.breadcrumbs || [];
+
+    env.data.breadcrumbs.push({
+      text   : env.t('@users.tracker.breadcrumbs_title'),
+      route  : 'users.tracker',
+      params : { user_hid: env.user_info.user_hid }
+    });
+
+    env.data.breadcrumbs.push({
+      text   : env.t('@users.subscriptions.breadcrumbs_title')
+    });
 
     env.res.breadcrumbs = env.data.breadcrumbs;
   });

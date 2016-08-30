@@ -63,20 +63,13 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Fill head meta
+  // Fill head and breadcrumbs
   //
-  N.wire.after(apiPath, function fill_head(env) {
+  N.wire.after(apiPath, function fill_head_and_breadcrumbs(env) {
     env.res.head = env.res.head || {};
-    env.res.head.title = env.t('title_with_user', { user: env.user_info.user_name });
-  });
+    env.res.head.title = env.t('title');
 
-
-  // Fill breadcrumbs
-  //
-  N.wire.after(apiPath, function* fill_breadcrumbs(env) {
     env.data.breadcrumbs = env.data.breadcrumbs || [];
-
-    yield N.wire.emit('internal:users.breadcrumbs.fill_root', env);
 
     env.data.breadcrumbs.push({
       text   : env.t('@users.tracker.breadcrumbs_title'),
