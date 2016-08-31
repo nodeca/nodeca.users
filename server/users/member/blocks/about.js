@@ -13,6 +13,9 @@ module.exports = function (N) {
   N.wire.after('server:users.member', function fill_about(env) {
     let about = env.data.user.about || {};
 
+    // only show contacts to registered users
+    let show_contacts = env.user_info.is_member;
+
     // initialize list and extra unless they exist already
     _.set(env.res, 'blocks.about.list',  _.get(env.res, 'blocks.about.list') || []);
     _.set(env.res, 'blocks.about.extra', _.get(env.res, 'blocks.about.extra') || []);
@@ -25,7 +28,7 @@ module.exports = function (N) {
 
     let birthday = env.data.user.about && env.data.user.about.birthday;
 
-    if (birthday) {
+    if (birthday && show_contacts) {
       let now = new Date();
       let age = now.getFullYear() - birthday.getFullYear();
 
@@ -39,11 +42,13 @@ module.exports = function (N) {
       });
     }
 
-    env.res.blocks.about.list.push({
-      name:     'location',
-      value:    { point: [ 0, 0 ], name: 'Null Island' },
-      priority: 30
-    });
+    if (show_contacts) {
+      env.res.blocks.about.list.push({
+        name:     'location',
+        value:    { point: [ 0, 0 ], name: 'Null Island' },
+        priority: 30
+      });
+    }
 
     env.res.blocks.about.list.push({
       name:     'joined',
@@ -51,7 +56,7 @@ module.exports = function (N) {
       priority: 40
     });
 
-    if (N.config.users && N.config.users.about) {
+    if (N.config.users && N.config.users.about && show_contacts) {
       for (let name of Object.keys(N.config.users.about)) {
         if (!about[name]) continue;
 
