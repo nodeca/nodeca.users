@@ -91,6 +91,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, function fill_user(env) {
     env.res.user = _.pick(env.data.user, [
+      '_id',
       'hid',
       'joined_ts',
       'nick',

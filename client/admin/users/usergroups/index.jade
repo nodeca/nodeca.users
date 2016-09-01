@@ -23,7 +23,7 @@
               title=self.t('edit')
             )= group.short_name
           td
-            a(href=self.link_to('admin.users.members.search'))= self.members_count[group._id]
+            a(href=self.link_to('admin.users.members.search') + '?usergroup=' + group._id)= self.members_count[group._id]
           td
             unless group.is_protected
               a.pull-xs-right(

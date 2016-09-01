@@ -1,0 +1,11 @@
+#content
+  != self.partial('@admin.core.blocks.sidebar_menu')
+
+  .main
+    != self.partial('@admin.core.blocks.breadcrumbs')
+
+    .page-head
+      h1.page-head__title(itemprop='name')
+        img(alt=self.user.name)&attributes(self.avatar(self.user, 'sm'))
+        = ' '
+        = self.user.name

@@ -122,6 +122,20 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Hide "edit user" link unless user has access to ACP
+  //
+  N.wire.before(apiPath, function* fill_edit_user_acp_link(env) {
+    env.res.settings = env.res.settings || {};
+
+    let can_access_acp = env.res.settings.can_access_acp = yield env.extras.settings.fetch('can_access_acp');
+
+    if (!can_access_acp) {
+      // Remove `edit_user` action if user can't access ACP
+      env.data.actions = env.data.actions.filter(action => action.name !== 'edit_user');
+    }
+  });
+
+
   // Update activity info with fresh data if available
   //
   N.wire.before(apiPath, function* fetch_activity_info(env) {

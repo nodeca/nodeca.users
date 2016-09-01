@@ -14,6 +14,8 @@ users:
         priority: 50
       add_mod_note:
         priority: 60
+      edit_user:
+        priority: 70
 
     menu:
       bookmarks:

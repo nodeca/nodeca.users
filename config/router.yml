@@ -137,6 +137,12 @@ router:
     admin.users.members.search:
       "/members/search": ~
 
+    admin.users.members.edit:
+      "/members/edit/{user_hid}":
+        user_hid:
+          match: /\d+/
+          type: 'integer'
+
   http.post:
     users.avatar.upload:
       "/upload_avatar": ~
