@@ -25,11 +25,17 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, validate_params);
 
 
-  // Check auth
+  // Check permissions
   //
-  N.wire.before(apiPath, function check_auth(env) {
+  N.wire.before(apiPath, function* check_permissions(env) {
     if (env.user_info.is_guest) {
-      return N.io.FORBIDDEN;
+      throw N.io.FORBIDDEN;
+    }
+
+    let can_edit_profile = yield env.extras.settings.fetch('can_edit_profile');
+
+    if (!can_edit_profile) {
+      throw N.io.FORBIDDEN;
     }
   });
 

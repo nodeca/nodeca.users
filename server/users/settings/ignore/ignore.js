@@ -24,6 +24,16 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Fetch permissions
+  //
+  N.wire.before(apiPath, function* fetch_permissions(env) {
+    let can_edit_profile = yield env.extras.settings.fetch('can_edit_profile');
+
+    env.res.settings = env.res.settings || {};
+    env.res.settings.can_edit_profile = can_edit_profile;
+  });
+
+
   // Fill response
   //
   N.wire.on(apiPath, function* fill_response(env) {

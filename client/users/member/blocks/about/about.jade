@@ -10,7 +10,7 @@
 
       .member-block__header-text
         = self.t('title')
-        if own_page
+        if own_page && self.settings.can_edit_profile
           | 
           a.btn.btn-outline-secondary.btn-sm.hidden-xs-down.icon.icon-edit(
             href=self.link_to('users.settings.about')

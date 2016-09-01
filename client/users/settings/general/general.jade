@@ -1,5 +1,5 @@
 - self.add_raw_data('setting_schemas', self.setting_schemas)
-- self.add_raw_data('settings', self.settings)
+- self.add_raw_data('settings', self.setting_values)
 
 #content.user-settings-general-root
   - var navbar_args = { level_up: self.link_to('users.member', { user_hid: self.runtime.user_hid }) };
@@ -14,7 +14,8 @@
 
     .user-settings__tabs.nav.nav-tabs-underlined
       a.nav-link.active(href=self.link_to('users.settings.general'))= self.t('general')
-      a.nav-link(href=self.link_to('users.settings.about'))= self.t('about')
+      if self.settings.can_edit_profile
+        a.nav-link(href=self.link_to('users.settings.about'))= self.t('about')
       a.nav-link(href=self.link_to('users.settings.ignore'))= self.t('ignore')
 
     form.form.user-settings__tab-content.user-settings__m-narrow#user-settings-general(data-bind='submit: submit')

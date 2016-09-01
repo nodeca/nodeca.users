@@ -27,6 +27,7 @@ module.exports.up = co.wrap(function* (N) {
     users_mod_can_add_infractions: { value: true },
 
     // same as members
+    can_edit_profile:       { value: true },
     can_receive_email:      { value: true },
     can_report_abuse:       { value: true },
     can_create_dialogs:     { value: true },
@@ -40,6 +41,7 @@ module.exports.up = co.wrap(function* (N) {
   let memberGroupId = yield N.models.users.UserGroup.findIdByName('members');
 
   yield usergroupStore.set({
+    can_edit_profile:       { value: true },
     can_receive_email:      { value: true },
     can_report_abuse:       { value: true },
     can_create_dialogs:     { value: true },
@@ -56,6 +58,7 @@ module.exports.up = co.wrap(function* (N) {
   let violatorsGroupId = yield N.models.users.UserGroup.findIdByName('violators');
 
   yield usergroupStore.set({
+    can_edit_profile:       { value: false, force: true },
     can_report_abuse:       { value: false, force: true },
     can_vote:               { value: false, force: true },
     users_can_upload_media: { value: false, force: true }

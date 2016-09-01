@@ -8,6 +8,15 @@ const _ = require('lodash');
 
 module.exports = function (N) {
 
+  // Fetch permissions
+  //
+  N.wire.after('server:users.member', function* fetch_permissions(env) {
+    let can_edit_profile = yield env.extras.settings.fetch('can_edit_profile');
+
+    env.res.settings = env.res.settings || {};
+    env.res.settings.can_edit_profile = can_edit_profile;
+  });
+
   // Fill contacts
   //
   N.wire.after('server:users.member', function fill_about(env) {
