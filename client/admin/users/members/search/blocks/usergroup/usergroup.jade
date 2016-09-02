@@ -1,0 +1,10 @@
+.form-group.row
+  label.form-control-label.col-xs-3= self.t('title')
+  .col-xs-3
+    select.form-control(name=self.name)
+      option
+      each value in self.values || []
+        option(
+          value= value.value
+          selected= value.value===self.value
+        )= value.name

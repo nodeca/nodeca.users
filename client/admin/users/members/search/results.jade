@@ -1,0 +1,10 @@
+each user in self.search_results
+  tr
+    td
+      a(href=self.link_to('admin.users.members.edit', { user_hid: user.hid }))
+        = user.name
+    td= user.email
+    td= self.date(user.joined_ts, 'date')
+    td= self.date(user.last_active_ts, 'date')
+    td
+      a(href='#')= user.post_count

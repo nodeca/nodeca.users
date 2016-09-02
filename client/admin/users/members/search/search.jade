@@ -6,3 +6,46 @@
 
     .page-head
       h1.page-head__title= self.head.title
+
+    form.form-horizontal
+
+      each item in self.fields
+
+        if self.partial_exists('blocks.' + item.name)
+          != self.partial('blocks.' + item.name, item)
+        else
+          .form-group.row
+            label.form-control-label.col-xs-3= self.t(item.name)
+            .col-xs-3
+              input.form-control(type='text', name=item.name, value=item.value)
+
+      .form-group.row
+        .col-xs-9
+          button.btn.btn-primary(type='submit')
+            = self.t('search')
+
+    if self.search_results
+      table.table.table-hover.table-striped
+        thead
+          tr
+            th= self.t('name')
+            th= self.t('email')
+            th= self.t('registered')
+            th= self.t('last_active')
+            th= self.t('post_count')
+
+        tbody.member-search-results._affix(
+          data-affix-bottom={
+            offset:     500,
+            wire_below: 'admin.users.members.search:load_next',
+            throttle:   100
+          }
+          data-search-query= self.search_query
+          data-reached-end=  self.reached_end
+          data-result-count= self.search_results.length
+        )
+          if self.search_results.length > 0
+            != self.partial('results')
+          else
+            tr
+              td(colspan=5)= self.t('no_results')
