@@ -16,7 +16,7 @@
         else
           .form-group.row
             label.form-control-label.col-xs-3= self.t(item.name)
-            .col-xs-3
+            .col-xs-4
               input.form-control(type='text', name=item.name, value=item.value)
 
       .form-group.row
@@ -40,9 +40,9 @@
             wire_below: 'admin.users.members.search:load_next',
             throttle:   100
           }
-          data-search-query= self.search_query
-          data-reached-end=  self.reached_end
-          data-result-count= self.search_results.length
+          data-search-query=   self.search_query
+          data-prefetch-start= self.prefetch_start
+          data-result-count=   self.search_results.length
         )
           if self.search_results.length > 0
             != self.partial('results')

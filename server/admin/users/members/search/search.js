@@ -6,6 +6,9 @@
 
 const _ = require('lodash');
 
+// an amount of rows to fetch in each query
+const LOAD_COUNT = 100;
+
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
@@ -21,7 +24,9 @@ module.exports = function (N, apiPath) {
     let search_query = env.data.search_query || {};
 
     if (env.params.nick) {
-      search_query.nick = env.params.nick;
+      search_query.nick = search_query.nick || {};
+      search_query.nick.$regex = '^' + _.escapeRegExp(env.params.nick);
+      search_query.nick.$options = 'i';
     }
 
     if (env.params.email) {
@@ -53,11 +58,19 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function* members_search(env) {
     if (!env.data.search_query) return;
 
-    let search_results = yield N.models.users.User.find(env.data.search_query).limit(51).lean(true);
+    let search_results = yield N.models.users.User
+                                   .find(env.data.search_query)
+                                   .sort('nick')
+                                   .limit(LOAD_COUNT + 1)
+                                   .lean(true);
 
-    env.res.search_results = search_results.slice(0, 50);
-    env.res.search_query = env.params;
-    env.res.reached_end = env.res.search_results.length >= search_results.length;
+    let next_result = search_results[LOAD_COUNT];
+
+    env.res.search_results = search_results;
+    env.res.search_query   = env.params;
+    env.res.prefetch_start = next_result ?
+                             search_results[search_results.length - 1].nick :
+                             null;
   });
 
 

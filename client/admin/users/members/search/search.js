@@ -3,16 +3,14 @@
 
 const _ = require('lodash');
 
-let reached_end;
+let prefetch_start;
 let next_loading_start;
 let search_query;
-let result_count;
 
 
 N.wire.on('navigate.done:' + module.apiPath, function init_handlers() {
-  reached_end        = $('.member-search-results').data('reached-end');
+  prefetch_start     = $('.member-search-results').data('prefetch-start');
   search_query       = $('.member-search-results').data('search-query');
-  result_count       = $('.member-search-results').data('result-count');
   next_loading_start = 0;
 });
 
@@ -27,10 +25,10 @@ N.wire.once('navigate.done:' + module.apiPath, function init_handlers() {
 
   // An amount of rows to fetch in each query
   //
-  const LOAD_COUNT = 50;
+  const LOAD_COUNT = 100;
 
   N.wire.on(module.apiPath + ':load_next', function load_next_page() {
-    if (reached_end) return;
+    if (!prefetch_start) return;
 
     let now = Date.now();
 
@@ -44,18 +42,18 @@ N.wire.once('navigate.done:' + module.apiPath, function init_handlers() {
     next_loading_start = now;
 
     N.io.rpc('admin.users.members.search.list', _.assign({
-      skip:   result_count,
+      start:  prefetch_start,
       limit:  LOAD_COUNT
     }, search_query)).then(function (res) {
       if (!res.search_results) return;
 
       if (res.search_results.length !== LOAD_COUNT) {
-        reached_end = true;
+        prefetch_start = null;
+      } else {
+        prefetch_start = res.search_results[res.search_results.length - 1].nick;
       }
 
       if (res.search_results.length === 0) return;
-
-      result_count += res.search_results.length;
 
       // render & inject topics list
       let $result = $(N.runtime.render('admin.users.members.search.results', res));
