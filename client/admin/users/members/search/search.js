@@ -9,7 +9,9 @@ let search_query;
 
 
 N.wire.on('navigate.done:' + module.apiPath, function init_handlers() {
-  prefetch_start     = $('.member-search-results').data('prefetch-start');
+  // cast to string to avoid auto-converting string to number by jquery
+  prefetch_start     = String($('.member-search-results').data('prefetch-start'));
+
   search_query       = $('.member-search-results').data('search-query');
   next_loading_start = 0;
 });
