@@ -1,0 +1,6 @@
+.form-group.row
+  label.form-control-label.col-xs-3= self.t('title')
+  .col-xs-2
+    input.form-control(type='number', min=0, name='post_count_from', value=self.value && self.value[0])
+  .col-xs-2
+    input.form-control(type='number', min=0, name='post_count_to', value=self.value && self.value[1])

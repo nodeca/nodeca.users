@@ -10,7 +10,7 @@ let search_query;
 
 N.wire.on('navigate.done:' + module.apiPath, function init_handlers() {
   // cast to string to avoid auto-converting string to number by jquery
-  prefetch_start     = String($('.member-search-results').data('prefetch-start'));
+  prefetch_start     = String($('.member-search-results').data('prefetch-start') || '');
 
   search_query       = $('.member-search-results').data('search-query');
   next_loading_start = 0;
@@ -49,11 +49,7 @@ N.wire.once('navigate.done:' + module.apiPath, function init_handlers() {
     }, search_query)).then(function (res) {
       if (!res.search_results) return;
 
-      if (res.search_results.length !== LOAD_COUNT) {
-        prefetch_start = null;
-      } else {
-        prefetch_start = res.search_results[res.search_results.length - 1].nick;
-      }
+      prefetch_start = res.prefetch_start;
 
       if (res.search_results.length === 0) return;
 

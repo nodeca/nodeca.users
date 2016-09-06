@@ -6,77 +6,37 @@
 
 const _ = require('lodash');
 
-// an amount of rows to fetch in each query
-const LOAD_COUNT = 100;
-
 
 module.exports = function (N, apiPath) {
-  N.validate(apiPath, {
-    nick:          { type: 'string' },
-    usergroup:     { anyOf: [ { format: 'mongo' }, { type: 'string', pattern: '^$' } ] },
-    email:         { type: 'string' },
-    reg_date_from: { type: 'string', pattern: '^(\\d{4}-\\d{2}-\\d{2})?$' },
-    reg_date_to:   { type: 'string', pattern: '^(\\d{4}-\\d{2}-\\d{2})?$' }
-  });
+  let validate_params = {
+    nick:            { type: 'string' },
+    usergroup:       { anyOf: [ { format: 'mongo' }, { type: 'string', pattern: '^$' } ] },
+    email:           { type: 'string' },
+    reg_date_from:   { type: 'string', pattern: '^(\\d{4}-\\d{2}-\\d{2})?$' },
+    reg_date_to:     { type: 'string', pattern: '^(\\d{4}-\\d{2}-\\d{2})?$' },
+    post_count_from: { type: 'string', pattern: '^(\\d+)?$' },
+    post_count_to:   { type: 'string', pattern: '^(\\d+)?$' }
+  };
 
-
-  N.wire.before(apiPath, function create_search_query(env) {
-    let search_query = env.data.search_query || {};
-
-    if (env.params.nick) {
-      search_query.nick = search_query.nick || {};
-      search_query.nick.$regex = '^' + _.escapeRegExp(env.params.nick);
-      search_query.nick.$options = 'i';
+  if (N.config.users && N.config.users.about) {
+    for (let name of Object.keys(N.config.users.about)) {
+      validate_params[name] = { type: 'string' };
     }
+  }
 
-    if (env.params.email) {
-      search_query.email = env.params.email;
-    }
-
-    if (env.params.usergroup) {
-      search_query.usergroups = env.params.usergroup;
-    }
-
-    if (env.params.reg_date_from) {
-      search_query.joined_ts = search_query.joined_ts || {};
-      search_query.joined_ts.$gte = new Date(env.params.reg_date_from);
-    }
-
-    if (env.params.reg_date_to) {
-      search_query.joined_ts = search_query.joined_ts || {};
-      search_query.joined_ts.$lte = new Date(env.params.reg_date_to);
-    }
-
-    if (Object.keys(search_query).length > 0) {
-      env.data.search_query = search_query;
-    }
-  });
+  N.validate(apiPath, validate_params);
 
 
-  // Do the actual search
+  // Call search method
   //
-  N.wire.on(apiPath, function* members_search(env) {
-    if (!env.data.search_query) return;
-
-    let search_results = yield N.models.users.User
-                                   .find(env.data.search_query)
-                                   .sort('nick')
-                                   .limit(LOAD_COUNT + 1)
-                                   .lean(true);
-
-    let next_result = search_results[LOAD_COUNT];
-
-    env.res.search_results = search_results;
-    env.res.search_query   = env.params;
-    env.res.prefetch_start = next_result ?
-                             search_results[search_results.length - 1].nick :
-                             null;
+  N.wire.before(apiPath, function call_search(env) {
+    return N.wire.emit('server:admin.users.members.search.list', env);
   });
 
 
   // Fill head
   //
-  N.wire.after(apiPath, function fill_head(env) {
+  N.wire.on(apiPath, function fill_head(env) {
     env.res.head = env.res.head || {};
     env.res.head.title = env.t('title');
   });
@@ -111,6 +71,22 @@ module.exports = function (N, apiPath) {
       value:    [ env.params.reg_date_from, env.params.reg_date_to ],
       priority: 40
     });
+
+    env.res.fields.push({
+      name:     'post_count',
+      value:    [ env.params.post_count_from, env.params.post_count_to ],
+      priority: 50
+    });
+
+    if (N.config.users && N.config.users.about) {
+      for (let name of Object.keys(N.config.users.about)) {
+        env.res.fields.push({
+          name,
+          value:    env.params[name],
+          priority: N.config.users.about[name].priority
+        });
+      }
+    }
 
     env.res.fields = _.sortBy(env.res.fields, _.property('priority'));
   });
