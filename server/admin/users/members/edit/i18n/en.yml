@@ -1,0 +1,4 @@
+en-US:
+  registered_date_ip: '#{date} (IP: #{ip})'
+  edit:
+    registered_date_ip: '#{date} (IP: #{ip})'

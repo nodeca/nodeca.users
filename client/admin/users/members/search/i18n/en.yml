@@ -7,3 +7,4 @@ en-US:
   name: Name
   post_count: Posts
   no_results: No users found
+  loading: Loading...

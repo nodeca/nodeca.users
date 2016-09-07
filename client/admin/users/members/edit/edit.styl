@@ -1,0 +1,36 @@
+@import "nodeca.core/client/common/_variables"
+
+.user-edit-avatar
+  display inline-block
+  position relative
+  margin-bottom 1rem
+
+.user-edit-avatar__image
+  width 100%
+  border-radius 0.1875rem
+
+.user-edit-avatar__link
+  display block
+
+.user-edit-avatar__delete
+  display none
+  position absolute
+  top .25rem
+  right .25rem
+  opacity .4
+  transition opacity .2s ease
+
+.user-edit-avatar__m-exists
+  .user-edit-avatar__delete
+    display block
+
+.user-edit-avatar:hover
+  .user-edit-avatar__delete
+    opacity 1
+
+.user-edit-profile-link
+  color $body-color-secondary
+
+  &:hover
+  &:focus
+    color $gray-light

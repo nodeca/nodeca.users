@@ -83,10 +83,6 @@ module.exports = function (N, apiPath) {
       search_query.nick = search_query.nick || {};
       search_query.nick.$gt = env.params.start;
     }
-
-    if (Object.keys(search_query).length > 0) {
-      env.data.search_query = search_query;
-    }
   });
 
 

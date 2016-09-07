@@ -10,20 +10,7 @@ function Setting(field) {
 
   this.settingName = field.name;
   this.help = N.runtime.t.exists(tHelp) ? N.runtime.t(tHelp) : '';
-
-  if (field.type === 'date' && field.value) {
-    let date = new Date(field.value);
-
-    if (!isNaN(date)) {
-      // serialize into XXXX-XX-XX format accepted by input[type=date]
-      this._value = date.toISOString().slice(0, 10);
-    } else {
-      this._value = '';
-    }
-  } else {
-    this._value = field.value;
-  }
-
+  this._value = field.value;
   this.value = ko.observable(this._value);
 
   this.modified = ko.computed(function () {

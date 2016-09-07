@@ -42,8 +42,9 @@ module.exports = function (N, apiPath) {
 
     env.res.about.push({
       name:     'birthday',
-      value:    about.birthday,
-      type:     'date',
+      value:    about.birthday && !isNaN(about.birthday) ?
+                about.birthday.toISOString().slice(0, 10) :
+                null,
       priority: 10
     });
 

@@ -1,0 +1,14 @@
+en-US:
+  profile: Profile
+  avatar: Avatar
+  email: E-mail
+  nick: Nickname
+  registered: Registered
+  last_visited: Last visited
+  post_count: Posts
+  button_save: Save
+  saved: Saved
+  delete_avatar_confirm: Are you sure you want to delete this avatar?
+  delete_dialogs: Remove all dialogs
+  show_ips: Show IP addresses
+  delete_account: Delete account
