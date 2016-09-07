@@ -26,11 +26,14 @@ module.exports = function (N, apiPath) {
     }
   }
 
-  N.validate(apiPath, validate_params);
+  N.validate(apiPath, {
+    properties: validate_params,
+    additionalProperties: true
+  });
 
 
   N.wire.before(apiPath, function create_search_query(env) {
-    let search_query = env.data.search_query || {};
+    let search_query = env.data.search_query = env.data.search_query || {};
 
     if (env.params.nick) {
       // use extended syntax for regexps for nick because
@@ -107,6 +110,7 @@ module.exports = function (N, apiPath) {
     }
 
     env.res.search_results = search_results.map(user => ({
+      hid:            user.hid,
       name:           user.name,
       email:          user.email,
       last_active_ts: user.last_active_ts,

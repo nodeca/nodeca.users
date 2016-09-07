@@ -24,7 +24,10 @@ module.exports = function (N, apiPath) {
     }
   }
 
-  N.validate(apiPath, validate_params);
+  N.validate(apiPath, {
+    properties: validate_params,
+    additionalProperties: true
+  });
 
 
   // Call search method

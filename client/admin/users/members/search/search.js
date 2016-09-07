@@ -10,9 +10,9 @@ let search_query;
 
 N.wire.on('navigate.done:' + module.apiPath, function init_handlers() {
   // cast to string to avoid auto-converting string to number by jquery
-  prefetch_start     = String($('.member-search-results').data('prefetch-start') || '');
+  prefetch_start     = String($('.members-search__results').data('prefetch-start') || '');
 
-  search_query       = $('.member-search-results').data('search-query');
+  search_query       = $('.members-search__results').data('search-query');
   next_loading_start = 0;
 });
 
@@ -51,11 +51,13 @@ N.wire.once('navigate.done:' + module.apiPath, function init_handlers() {
 
       prefetch_start = res.prefetch_start;
 
+      if (!prefetch_start) $('.members-search__loading-next').addClass('hidden-xs-up');
+
       if (res.search_results.length === 0) return;
 
       // render & inject topics list
       let $result = $(N.runtime.render('admin.users.members.search.results', res));
-      $('.member-search-results').append($result);
+      $('.members-search__results').append($result);
 
       // Workaround for FF bug, possibly this one:
       // https://github.com/nodeca/nodeca.core/issues/2
