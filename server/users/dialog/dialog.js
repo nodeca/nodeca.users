@@ -37,6 +37,37 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Fetch recipient
+  //
+  N.wire.after(apiPath, function* fetch_recipient(env) {
+    env.data.to = yield N.models.users.User.findOne()
+                            .where('_id').equals(env.data.dialog.to)
+                            .lean(true);
+  });
+
+
+  // Check if we can send a message to that user
+  //
+  N.wire.after(apiPath, function* fill_dialog_permissions(env) {
+    let settings = yield env.extras.settings.fetch([
+      'can_use_dialogs',
+      'can_create_dialogs'
+    ]);
+
+    let recipient_can_use_dialogs = yield N.settings.get('can_use_dialogs', {
+      user_id: env.data.to._id,
+      usergroup_ids: env.data.to.usergroups
+    }, {});
+
+    if (settings.can_use_dialogs &&
+        settings.can_create_dialogs &&
+        recipient_can_use_dialogs) {
+
+      env.res.can_create_dialog_with_user = true;
+    }
+  });
+
+
   // Fill pagination (progress)
   //
   N.wire.after(apiPath, function* fill_pagination(env) {

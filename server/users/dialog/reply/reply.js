@@ -55,6 +55,23 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Check if recipient is able to use dialogs
+  //
+  N.wire.before(apiPath, function* check_recipient_permissions(env) {
+    let can_use_dialogs = yield N.settings.get('can_use_dialogs', {
+      user_id: env.data.to._id,
+      usergroup_ids: env.data.to.usergroups
+    }, {});
+
+    if (!can_use_dialogs) {
+      throw {
+        code: N.io.CLIENT_ERROR,
+        message: env.t('err_recipient_cant_use_dialogs')
+      };
+    }
+  });
+
+
   // Check if people are ignoring each other
   //
   N.wire.before(apiPath, function* check_ignore(env) {

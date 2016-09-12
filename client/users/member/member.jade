@@ -74,7 +74,7 @@
                 )
                   =self.t('@users.profile_page.menu.' + item.name)
             else
-              if self.settings.can_use_dialogs && self.settings.can_create_dialogs && !own_page
+              if self.can_create_dialog_with_user
                 button.btn.btn-square.icon.icon-mail(
                   class= own_page ? 'btn-sm btn-outline-primary' : 'btn-secondary'
                   type='button'

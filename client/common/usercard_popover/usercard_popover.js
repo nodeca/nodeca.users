@@ -8,7 +8,6 @@ const _ = require('lodash');
 
 N.wire.once('navigate.done', function init_usercard_click() {
   let $body = $('body');
-  let $container = $('.layout__container');
   let $fake_popover = $('<div id="ucard-popover"></div>').appendTo($body);
   let POPOVER_WIDTH = $fake_popover.outerWidth(true);
   let POPOVER_HEIGHT = $fake_popover.outerHeight(true);
@@ -19,6 +18,7 @@ N.wire.once('navigate.done', function init_usercard_click() {
   // Add click handler to `._ucard-popover`.
   //
   $body.on('click', '._ucard-popover', function (event) {
+    let $container = $('.layout__container');
     let $link = $(this);
 
     // Skip for devices with small screens (navigate profile page).

@@ -161,17 +161,28 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Fill permissions to use dialogs
+  // Check if we can send a message to that user
   //
-  N.wire.before(apiPath, function* fill_dialogs_permissions(env) {
+  N.wire.before(apiPath, function* fill_dialog_permissions(env) {
+    if (env.user_info.is_guest) return;
+    if (String(env.data.user._id) === String(env.user_info.user_id)) return;
+
     let settings = yield env.extras.settings.fetch([
       'can_use_dialogs',
       'can_create_dialogs'
     ]);
 
-    env.res.settings = env.res.settings || {};
-    env.res.settings.can_use_dialogs = settings.can_use_dialogs;
-    env.res.settings.can_create_dialogs = settings.can_create_dialogs;
+    let recipient_can_use_dialogs = yield N.settings.get('can_use_dialogs', {
+      user_id: env.data.user._id,
+      usergroup_ids: env.data.user.usergroups
+    }, {});
+
+    if (settings.can_use_dialogs &&
+        settings.can_create_dialogs &&
+        recipient_can_use_dialogs) {
+
+      env.res.can_create_dialog_with_user = true;
+    }
   });
 
 

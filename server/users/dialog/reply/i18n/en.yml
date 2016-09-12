@@ -3,3 +3,4 @@ en-US:
   err_too_many_emojis: "Message can not have no more than #{count} ((emoticon|emoticons))"
   err_sender_is_ignored: You cannot send this message, because that user is ignoring you
   err_recipient_is_ignored: You cannot send this message, because you are ignoring that user
+  err_recipient_cant_use_dialogs: Target user is unable to receive messages
