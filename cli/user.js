@@ -107,7 +107,8 @@ module.exports.run = function (N, args) {
 
       user = new User({
         nick: args.user,
-        joined_ts: new Date()
+        joined_ts: new Date(),
+        joined_ip: '127.0.0.1'
       });
     } else {
       if (!doc) throw 'User not found, check name or use `add`';
@@ -145,7 +146,7 @@ module.exports.run = function (N, args) {
     if (args.email) {
       doc = yield User.findOne({ email: args.email });
 
-      if (String(doc._id) !== String(user._id)) throw 'User with that email already exists';
+      if (doc && String(doc._id) !== String(user._id)) throw 'User with that email already exists';
 
       user.email = args.email;
     }
