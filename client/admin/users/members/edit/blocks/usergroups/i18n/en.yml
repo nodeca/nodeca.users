@@ -1,2 +1,5 @@
 en-US:
-  usergroups: Usergroups
+  usergroups:    Usergroups
+  none_selected: None selected
+  selected:      selected
+  all_selected:  All selected
