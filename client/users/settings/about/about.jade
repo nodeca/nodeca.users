@@ -21,7 +21,7 @@
       each item in self.about
         - var name = item.name;
 
-        .form-group.form-group-hover
+        .form-group.form-group-hover(data-bind='css: { "has-danger": about.#{name}.hasError }')
 
           if self.partial_exists('blocks.' + name)
             != self.partial('blocks.' + name, item)

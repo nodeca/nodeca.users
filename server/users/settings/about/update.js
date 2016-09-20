@@ -42,8 +42,9 @@ module.exports = function (N, apiPath) {
 
   // Validate profile fields and copy valid ones to env.data.about
   //
-  N.wire.before(apiPath, function validate_profile(env) {
-    env.data.about = env.data.about || {};
+  N.wire.before(apiPath, function* validate_profile(env) {
+    env.data.about  = env.data.about || {};
+    env.data.errors = env.data.errors || {};
 
     if (env.params.birthday) {
       let date = new Date(env.params.birthday);
@@ -53,7 +54,37 @@ module.exports = function (N, apiPath) {
 
     if (N.config.users && N.config.users.about) {
       for (let name of Object.keys(N.config.users.about)) {
-        env.data.about[name] = env.params[name];
+        let value = (env.params[name] || '').trim();
+
+        if (!value) continue;
+
+        // try to validate it using regexp
+        if (N.config.users.about[name].validate_re) {
+          if (!new RegExp(N.config.users.about[name].validate_re).test(value)) {
+            env.data.errors[name] = true;
+            continue;
+          }
+        }
+
+        // try to validate it using custom wire method
+        if (N.config.users.about[name].validate) {
+          let data = { value };
+
+          yield N.wire.emit(N.config.users.about[name].validate, data);
+
+          if (!data.is_valid) {
+            env.data.errors[name] = true;
+            continue;
+          }
+
+          // override it with formatted value if available
+          if (data.formatted) {
+            env.data.about[name] = data.formatted;
+            continue;
+          }
+        }
+
+        env.data.about[name] = value;
       }
     }
   });
@@ -62,9 +93,26 @@ module.exports = function (N, apiPath) {
   // Save profile
   //
   N.wire.on(apiPath, function* save_profile(env) {
+    if (!_.isEmpty(env.data.errors)) {
+      throw {
+        code: N.io.CLIENT_ERROR,
+        data: env.data.errors
+      };
+    }
+
+    let updateData;
+
+    if (!_.isEmpty(env.data.about)) {
+      updateData = { $set: { about: env.data.about } };
+    } else {
+      updateData = { $unset: { about: true } };
+    }
+
     yield N.models.users.User.update(
       { _id: env.user_info.user_id },
-      { $set: { about: _.omitBy(env.data.about, _.isNull) } }
+      updateData
     );
+
+    env.res.about = env.data.about;
   });
 };

@@ -1,6 +1,7 @@
 'use strict';
 
 
+const _  = require('lodash');
 const ko = require('knockout');
 
 
@@ -9,9 +10,10 @@ function Setting(field) {
   var tHelp = 'users.settings.about.' + field.name + '__help';
 
   this.settingName = field.name;
-  this.help = N.runtime.t.exists(tHelp) ? N.runtime.t(tHelp) : '';
-  this._value = field.value;
-  this.value = ko.observable(this._value);
+  this.hasError    = ko.observable(false);
+  this.help        = N.runtime.t.exists(tHelp) ? N.runtime.t(tHelp) : '';
+  this._value      = field.value;
+  this.value       = ko.observable(this._value);
 
   this.modified = ko.computed(function () {
     return (self._value !== self.value()) ||
@@ -60,17 +62,27 @@ Form.prototype.submit = function submit() {
     }
   });
 
-  N.io.rpc('users.settings.about.update', data).then(function () {
+  N.io.rpc('users.settings.about.update', data).then(res => {
     N.wire.emit('notify', {
       type: 'info',
       message: t('saved')
     });
 
     Object.keys(self.about).forEach(function (name) {
+      self.about[name].value(res.about[name]);
       self.about[name]._value = self.about[name].value();
+      self.about[name].hasError(false);
     });
     self.isDirty(false);
-  }).catch(err => N.wire.emit('error', err));
+  }).catch(err => {
+    // Non client error will be processed with default error handler
+    if (err.code !== N.io.CLIENT_ERROR) return N.wire.emit('error', err);
+
+    // Update classes and messages on all input fields.
+    Object.keys(self.about).forEach(function (name) {
+      self.about[name].hasError(_.has(err.data, name));
+    });
+  });
 };
 
 
