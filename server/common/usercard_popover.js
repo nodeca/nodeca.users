@@ -132,7 +132,7 @@ module.exports = function (N, apiPath) {
       if (now.getMonth() < birthday.getMonth()) age--;
       if (now.getMonth() === birthday.getMonth() && now.getDate() < birthday.getDate()) age--;
 
-      env.res.age = age;
+      env.res.age = Math.max(age, 0);
     }
 
     env.res.location = {

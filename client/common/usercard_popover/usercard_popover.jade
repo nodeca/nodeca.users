@@ -36,7 +36,7 @@
       dt.ucard-info__dt= self.t('post_count')
       dd.ucard-info__dd: a(href='#')= self.user.post_count
 
-      if self.age
+      if self.age != null
         dt.ucard-info__dt= self.t('age')
         dd.ucard-info__dd= self.age
 

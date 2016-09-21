@@ -9,12 +9,7 @@ module.exports = function (N, apiPath) {
 
   let validate_params = {};
 
-  validate_params.birthday = {
-    anyOf: [
-      { type: 'string', pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
-      { type: 'null' }
-    ]
-  };
+  validate_params.birthday = { type: [ 'string', 'null' ], required: true };
 
   if (N.config.users && N.config.users.about) {
     for (let name of Object.keys(N.config.users.about)) {
@@ -47,9 +42,22 @@ module.exports = function (N, apiPath) {
     env.data.errors = env.data.errors || {};
 
     if (env.params.birthday) {
-      let date = new Date(env.params.birthday);
+      let birthday_is_valid = false;
 
-      if (!isNaN(date)) env.data.about.birthday = date;
+      if (env.params.birthday.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        let date = new Date(env.params.birthday);
+
+        if (!isNaN(date)) {
+          let year = date.getFullYear();
+
+          if (year >= 1900 && year <= new Date().getFullYear()) {
+            env.data.about.birthday = date;
+            birthday_is_valid = true;
+          }
+        }
+      }
+
+      if (!birthday_is_valid) env.data.errors.birthday = true;
     }
 
     if (N.config.users && N.config.users.about) {
@@ -113,6 +121,15 @@ module.exports = function (N, apiPath) {
       updateData
     );
 
-    env.res.about = env.data.about;
+    // update all fields on the client with normalized values
+    env.res.about = {};
+
+    Object.keys(env.data.about).forEach(name => {
+      if (_.isDate(env.data.about[name])) {
+        env.res.about[name] = env.data.about[name].toISOString().slice(0, 10);
+      } else {
+        env.res.about[name] = env.data.about[name];
+      }
+    });
   });
 };

@@ -46,7 +46,7 @@ module.exports = function (N) {
 
       env.res.blocks.about.list.push({
         name:     'age',
-        value:    age,
+        value:    Math.max(age, 0),
         priority: 20
       });
     }
