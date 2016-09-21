@@ -37,6 +37,7 @@ module.exports = function (N, apiPath) {
 
   // Validate profile fields and copy valid ones to env.data.about
   //
+  /* eslint-disable max-depth */
   N.wire.before(apiPath, function* validate_profile(env) {
     env.data.about  = env.data.about || {};
     env.data.errors = env.data.errors || {};
