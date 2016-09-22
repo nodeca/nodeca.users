@@ -11,6 +11,7 @@ function Setting(field) {
 
   this.settingName = field.name;
   this.hasError    = ko.observable(false);
+  this.readonly    = ko.observable(field.readonly);
   this.help        = N.runtime.t.exists(tHelp) ? N.runtime.t(tHelp) : '';
   this._value      = field.value;
   this.value       = ko.observable(this._value);
@@ -72,8 +73,11 @@ Form.prototype.submit = function submit() {
     });
 
     Object.keys(self.about).forEach(function (name) {
-      self.about[name].value(res.fields[name]);
-      self.about[name]._value = self.about[name].value();
+      if (res.fields[name]) {
+        self.about[name].value(res.fields[name].value);
+        self.about[name]._value = self.about[name].value();
+        self.about[name].readonly(res.fields[name].readonly);
+      }
       self.about[name].hasError(false);
     });
 

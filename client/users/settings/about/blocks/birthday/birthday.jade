@@ -1,5 +1,21 @@
+<!-- ko with: about.#{self.name} -->
 label=self.t('birthday')
-input.user-settings-about-birthday.form-control(
-  type='text',
-  data-bind='value: about.#{self.name}.value, valueUpdate: "keyup"'
-)
+.form-group
+  // ko if: readonly
+  input.form-control(
+    type='text',
+    data-bind='value: value, valueUpdate: "keyup"',
+    disabled
+  )
+  // /ko
+
+  // ko ifnot: readonly
+  .input-group.user-settings-about-birthday
+    input.form-control(
+      type='text',
+      data-bind='value: value, valueUpdate: "keyup"',
+      readonly
+    )
+    span.btn.input-group-addon.icon.icon-dropdown
+  // /ko
+// /ko

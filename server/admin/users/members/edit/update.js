@@ -41,6 +41,10 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function* update_user(env) {
     // change profile fields
+    env.data.user.about = {};
+
+    env.data.user.markModified('about');
+
     if (env.params.birthday) {
       let date = new Date(env.params.birthday);
 
@@ -54,8 +58,6 @@ module.exports = function (N, apiPath) {
         }
       }
     }
-
-    env.data.user.markModified('about');
 
     // validate usergroups
     let all_usergroups = _.keyBy(yield N.models.users.UserGroup.find().select('_id').lean(true), '_id');
@@ -90,6 +92,11 @@ module.exports = function (N, apiPath) {
   // Save user
   //
   N.wire.on(apiPath, function save_user(env) {
+    if (_.isEmpty(env.data.user.about)) {
+      /* eslint-disable no-undefined */
+      env.data.user.about = undefined;
+    }
+
     return env.data.user.save();
   });
 };

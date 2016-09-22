@@ -8,6 +8,10 @@ let picker;
 
 
 N.wire.on('navigate.done:users.settings.about', function initialize_datepicker() {
+  let container = $('.user-settings-about-birthday');
+
+  if (!container.length) return;
+
   let cldr          = N.runtime.t('l10n.cldr').dates.calendars.gregorian;
   let months        = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ].map(key =>
                         cldr.months['stand-alone'].wide[key]);
@@ -17,9 +21,13 @@ N.wire.on('navigate.done:users.settings.about', function initialize_datepicker()
                         cldr.days['stand-alone'].abbreviated[key]);
 
   picker = new Pikaday({
-    field:     $('.user-settings-about-birthday')[0],
+    field:     container[0],
     yearRange: [ 1900, new Date().getFullYear() ],
-    i18n:      { months, weekdays, weekdaysShort }
+    i18n:      { months, weekdays, weekdaysShort },
+    onSelect:  date => {
+      container.find('input').val(date.toISOString().slice(0, 10));
+      container.find('input').trigger('change');
+    }
   });
 });
 

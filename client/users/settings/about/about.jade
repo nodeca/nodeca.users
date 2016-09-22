@@ -28,7 +28,7 @@
           else
             label
               = self.t.exists(name) ? self.t(name) : self.t('@users.about.' + name)
-            input.form-control(type='text', data-bind='value: about.#{name}.value, valueUpdate: "keyup"')
+            input.form-control(type='text', data-bind='value: about.#{name}.value, valueUpdate: "keyup", disable: about.#{name}.readonly')
 
           <!-- ko if: about.#{name}.help -->
           small.text-muted(data-bind='text: about.#{name}.help')

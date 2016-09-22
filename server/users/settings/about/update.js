@@ -25,7 +25,7 @@ module.exports = function (N, apiPath) {
 
   // Check permissions
   //
-  N.wire.before(apiPath, function* check_permissions(env) {
+  N.wire.before(apiPath, { priority: -30 }, function* check_permissions(env) {
     if (env.user_info.is_guest) {
       throw N.io.FORBIDDEN;
     }
@@ -40,7 +40,7 @@ module.exports = function (N, apiPath) {
 
   // Fetch current user
   //
-  N.wire.before(apiPath, function* fetch_user(env) {
+  N.wire.before(apiPath, { priority: -30 }, function* fetch_user(env) {
     env.data.user = yield N.models.users.User.findById(env.user_info.user_id).lean(false);
 
     if (!env.data.user) throw N.io.NOT_FOUND;
@@ -53,6 +53,9 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function* validate_profile(env) {
     env.data.user.about = env.data.user.about || {};
     env.data.errors     = env.data.errors || {};
+
+    // object "setting_name" => { value, readonly },
+    // used to update form on the client after save
     env.res.fields      = env.res.fields || {};
 
     if (env.params.birthday) {
@@ -66,7 +69,7 @@ module.exports = function (N, apiPath) {
 
           if (year >= 1900 && year <= new Date().getFullYear()) {
             env.data.user.about.birthday = date;
-            env.res.fields.birthday = date.toISOString().slice(0, 10);
+            env.res.fields.birthday = { value: date.toISOString().slice(0, 10) };
             birthday_is_valid = true;
           }
         }
@@ -103,13 +106,13 @@ module.exports = function (N, apiPath) {
           // override it with formatted value if available
           if (data.formatted) {
             env.data.user.about[name] = data.formatted;
-            env.res.fields[name]      = data.formatted;
+            env.res.fields[name]      = { value: data.formatted };
             continue;
           }
         }
 
         env.data.user.about[name] = value;
-        env.res.fields[name]      = value;
+        env.res.fields[name]      = { value };
       }
     }
 
@@ -128,7 +131,8 @@ module.exports = function (N, apiPath) {
     }
 
     if (_.isEmpty(env.data.user.about)) {
-      delete env.data.user.about;
+      /* eslint-disable no-undefined */
+      env.data.user.about = undefined;
     }
 
     yield env.data.user.save();
