@@ -57,7 +57,12 @@ module.exports = function (N, apiPath) {
         });
       }
     }
+  });
 
+
+  // Sort fields based on priority
+  //
+  N.wire.after(apiPath, function sort_fields(env) {
     env.res.about = _.sortBy(env.res.about, _.property('priority'));
   });
 

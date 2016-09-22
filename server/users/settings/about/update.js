@@ -17,7 +17,10 @@ module.exports = function (N, apiPath) {
     }
   }
 
-  N.validate(apiPath, validate_params);
+  N.validate(apiPath, {
+    properties: validate_params,
+    additionalProperties: true
+  });
 
 
   // Check permissions
@@ -35,12 +38,22 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Fetch current user
+  //
+  N.wire.before(apiPath, function* fetch_user(env) {
+    env.data.user = yield N.models.users.User.findById(env.user_info.user_id).lean(false);
+
+    if (!env.data.user) throw N.io.NOT_FOUND;
+  });
+
+
   // Validate profile fields and copy valid ones to env.data.about
   //
   /* eslint-disable max-depth */
   N.wire.before(apiPath, function* validate_profile(env) {
-    env.data.about  = env.data.about || {};
-    env.data.errors = env.data.errors || {};
+    env.data.user.about = env.data.user.about || {};
+    env.data.errors     = env.data.errors || {};
+    env.res.fields      = env.res.fields || {};
 
     if (env.params.birthday) {
       let birthday_is_valid = false;
@@ -52,7 +65,8 @@ module.exports = function (N, apiPath) {
           let year = date.getFullYear();
 
           if (year >= 1900 && year <= new Date().getFullYear()) {
-            env.data.about.birthday = date;
+            env.data.user.about.birthday = date;
+            env.res.fields.birthday = date.toISOString().slice(0, 10);
             birthday_is_valid = true;
           }
         }
@@ -88,14 +102,18 @@ module.exports = function (N, apiPath) {
 
           // override it with formatted value if available
           if (data.formatted) {
-            env.data.about[name] = data.formatted;
+            env.data.user.about[name] = data.formatted;
+            env.res.fields[name]      = data.formatted;
             continue;
           }
         }
 
-        env.data.about[name] = value;
+        env.data.user.about[name] = value;
+        env.res.fields[name]      = value;
       }
     }
+
+    env.data.user.markModified('about');
   });
 
 
@@ -109,28 +127,10 @@ module.exports = function (N, apiPath) {
       };
     }
 
-    let updateData;
-
-    if (!_.isEmpty(env.data.about)) {
-      updateData = { $set: { about: env.data.about } };
-    } else {
-      updateData = { $unset: { about: true } };
+    if (_.isEmpty(env.data.user.about)) {
+      delete env.data.user.about;
     }
 
-    yield N.models.users.User.update(
-      { _id: env.user_info.user_id },
-      updateData
-    );
-
-    // update all fields on the client with normalized values
-    env.res.about = {};
-
-    Object.keys(env.data.about).forEach(name => {
-      if (_.isDate(env.data.about[name])) {
-        env.res.about[name] = env.data.about[name].toISOString().slice(0, 10);
-      } else {
-        env.res.about[name] = env.data.about[name];
-      }
-    });
+    yield env.data.user.save();
   });
 };

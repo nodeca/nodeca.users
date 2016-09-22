@@ -27,6 +27,7 @@ function Form(page_data) {
 
   this.about = {};
   this.isDirty = ko.observable(false);
+  this.isSubmitting = ko.observable(false);
 
   function checkDirty() {
     let dirty = Object.keys(self.about).reduce((acc, name) => {
@@ -62,6 +63,8 @@ Form.prototype.submit = function submit() {
     }
   });
 
+  self.isSubmitting(true);
+
   N.io.rpc('users.settings.about.update', data).then(res => {
     N.wire.emit('notify', {
       type: 'info',
@@ -69,11 +72,13 @@ Form.prototype.submit = function submit() {
     });
 
     Object.keys(self.about).forEach(function (name) {
-      self.about[name].value(res.about[name]);
+      self.about[name].value(res.fields[name]);
       self.about[name]._value = self.about[name].value();
       self.about[name].hasError(false);
     });
+
     self.isDirty(false);
+    self.isSubmitting(false);
   }).catch(err => {
     // Non client error will be processed with default error handler
     if (err.code !== N.io.CLIENT_ERROR) return N.wire.emit('error', err);
@@ -82,6 +87,8 @@ Form.prototype.submit = function submit() {
     Object.keys(self.about).forEach(function (name) {
       self.about[name].hasError(_.has(err.data, name));
     });
+
+    self.isSubmitting(false);
   });
 };
 

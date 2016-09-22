@@ -35,4 +35,4 @@
           <!-- /ko -->
 
       br
-      button.btn.btn-primary(type='submit', data-bind='enable: isDirty')= self.t('submit')
+      button.btn.btn-primary(type='submit', data-bind='enable: isDirty() && !isSubmitting()')= self.t('submit')
