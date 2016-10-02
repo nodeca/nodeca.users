@@ -13,7 +13,7 @@
             name='media_url'
             tabindex='1'
             placeholder=self.t('input_url_desc'))
-          small.text-muted= self.t('input_url_help')
+          small.form-text.text-muted= self.t('input_url_help')
             | 
             each provider, index in self.providers
               a(href=provider.home target='_blank')= provider.name

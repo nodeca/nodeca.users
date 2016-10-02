@@ -33,7 +33,7 @@ if (self.email)
                 data-bind='value: value'
               )
               // ko if: message
-              small(data-bind='text: message, css: hasError() ? "text-danger" : "text-muted"')
+              small.form-text(data-bind='text: message, css: hasError() ? "text-danger" : "text-muted"')
               // /ko
             // /ko
 
@@ -46,7 +46,7 @@ if (self.email)
                 type='password'
                 placeholder= self.t('pass_desc')
                 data-bind='value: value')
-              small(data-bind='text: help, css: hasError() ? "text-danger" : "text-muted"')
+              small.form-text(data-bind='text: help, css: hasError() ? "text-danger" : "text-muted"')
             // /ko
 
 
@@ -60,7 +60,7 @@ if (self.email)
                 placeholder= self.t('nick_desc')
                 data-bind='value: value, valueUpdate: "afterkeydown"')
               // ko if: message
-              small(data-bind='text: message, css: hasError() ? "text-danger" : "text-muted"')
+              small.form-text(data-bind='text: message, css: hasError() ? "text-danger" : "text-muted"')
               // /ko
             // /ko
 

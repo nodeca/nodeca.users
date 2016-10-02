@@ -21,7 +21,7 @@
             if self.oauth && Object.keys(self.oauth).length
               .form-group
                 != self.partial('@common.blocks.oauth_buttons')
-                small.text-muted
+                small.form-text.text-muted
                   =self.t('oauth_info')
 
             .form-group
