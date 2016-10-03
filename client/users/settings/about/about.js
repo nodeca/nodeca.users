@@ -67,6 +67,9 @@ Form.prototype.submit = function submit() {
   self.isSubmitting(true);
 
   N.io.rpc('users.settings.about.update', data).then(res => {
+    self.isDirty(false);
+    self.isSubmitting(false);
+
     N.wire.emit('notify', {
       type: 'info',
       message: t('saved')
@@ -80,10 +83,9 @@ Form.prototype.submit = function submit() {
       }
       self.about[name].hasError(false);
     });
-
-    self.isDirty(false);
-    self.isSubmitting(false);
   }).catch(err => {
+    self.isSubmitting(false);
+
     // Non client error will be processed with default error handler
     if (err.code !== N.io.CLIENT_ERROR) return N.wire.emit('error', err);
 
@@ -91,8 +93,6 @@ Form.prototype.submit = function submit() {
     Object.keys(self.about).forEach(function (name) {
       self.about[name].hasError(_.has(err.data, name));
     });
-
-    self.isSubmitting(false);
   });
 };
 
