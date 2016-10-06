@@ -6,11 +6,11 @@
 'use strict';
 
 
-const _  = require('lodash');
-const co = require('bluebird-co').co;
+const _       = require('lodash');
+const Promise = require('bluebird');
 
 
-module.exports = co.wrap(function* detectCircular(N, groupId, parentId) {
+module.exports = Promise.coroutine(function* detectCircular(N, groupId, parentId) {
   // No parent - skip.
   if (!parentId) return null;
 

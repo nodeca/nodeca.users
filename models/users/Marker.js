@@ -18,7 +18,6 @@
 
 const Promise = require('bluebird');
 const _       = require('lodash');
-const co      = require('bluebird-co').co;
 
 
 module.exports = function (N, collectionName) {
@@ -37,7 +36,7 @@ module.exports = function (N, collectionName) {
   // - categoryId (ObjectId)
   // - currentCut (Number)
   //
-  Marker.gc = co.wrap(function* (type, userId, categoryId, currentCut) {
+  Marker.gc = Promise.coroutine(function* (type, userId, categoryId, currentCut) {
     if (!gcHandlers[type]) return;
 
     let contentInfo = yield gcHandlers[type](userId, categoryId, currentCut);
@@ -92,7 +91,7 @@ module.exports = function (N, collectionName) {
   // - categoryId (ObjectId)
   // - type (String) - content type
   //
-  Marker.mark = co.wrap(function* (userId, contentId, categoryId, type) {
+  Marker.mark = Promise.coroutine(function* (userId, contentId, categoryId, type) {
     if (!userId || String(userId) === '000000000000000000000000') {
       return;
     }
@@ -102,10 +101,10 @@ module.exports = function (N, collectionName) {
     // Don't mark old content
     if (contentId.getTimestamp() < res[categoryId]) return;
 
-    yield [
+    yield Promise.all([
       N.redis.saddAsync('marker_marks_items', String(userId)),
       N.redis.zaddAsync('marker_marks:' + userId, +contentId.getTimestamp(), String(contentId))
-    ];
+    ]);
     yield Marker.gc(type, userId, categoryId, res[categoryId]);
   });
 
@@ -116,7 +115,7 @@ module.exports = function (N, collectionName) {
   // - categoryId (ObjectId)
   // - ts (Number) - optional, cut off timestamp, `Date.now()` by default
   //
-  Marker.markAll = co.wrap(function* (userId, categoryId, ts) {
+  Marker.markAll = Promise.coroutine(function* (userId, categoryId, ts) {
     if (!userId || String(userId) === '000000000000000000000000') {
       return;
     }
@@ -137,7 +136,7 @@ module.exports = function (N, collectionName) {
 
   // Remove extra position markers if user have more than limit
   //
-  const limitPositionMarkers = co.wrap(function* (userId) {
+  const limitPositionMarkers = Promise.coroutine(function* (userId) {
     let maxItems = 1000;
     let gcThreshold = maxItems + Math.round(maxItems * 0.10) + 1;
 
@@ -184,7 +183,7 @@ module.exports = function (N, collectionName) {
   // - categoryId (ObjectId)
   // - type (String) - content type
   //
-  Marker.setPos = co.wrap(function* (userId, contentId, position, max, categoryId, type) {
+  Marker.setPos = Promise.coroutine(function* (userId, contentId, position, max, categoryId, type) {
     if (!userId || String(userId) === '000000000000000000000000') {
       return;
     }
@@ -229,7 +228,7 @@ module.exports = function (N, collectionName) {
   //
   // returns (Hash) - key is `categoryId` value is number
   //
-  Marker.cuts = co.wrap(function* (userId, categoriesIds) {
+  Marker.cuts = Promise.coroutine(function* (userId, categoriesIds) {
     if (categoriesIds.length === 0) {
       return [];
     }
@@ -278,7 +277,7 @@ module.exports = function (N, collectionName) {
   // - next (Number) - hid of first unread post in topic or `-1` if not set
   // - position (Number) - last read post position or `-1` if not set
   //
-  Marker.info = co.wrap(function* (userId, contentInfo) {
+  Marker.info = Promise.coroutine(function* (userId, contentInfo) {
     let result = {};
 
     contentInfo.forEach(item => {
@@ -363,7 +362,7 @@ module.exports = function (N, collectionName) {
   //
   // - callback (Function) - `function (err)`
   //
-  Marker.cleanup = co.wrap(function* () {
+  Marker.cleanup = Promise.coroutine(function* () {
     let content_read_marks_expire = yield N.settings.get('content_read_marks_expire');
     let lastTs = Date.now() - (content_read_marks_expire * 24 * 60 * 60 * 1000);
 

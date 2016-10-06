@@ -3,7 +3,6 @@
 
 const assert      = require('assert');
 const Promise     = require('bluebird');
-const co          = require('bluebird-co').co;
 const randomBytes = require('crypto').randomBytes;
 const simplesmtp  = require('simplesmtp');
 
@@ -17,7 +16,7 @@ describe('Reset password', function () {
   let smtp;
 
 
-  before(co.wrap(function* () {
+  before(Promise.coroutine(function* () {
     user = new TEST.N.models.users.User({
       nick: login,
       email
@@ -45,7 +44,7 @@ describe('Reset password', function () {
   }));
 
 
-  it('should send email with password reset link', co.wrap(function* () {
+  it('should send email with password reset link', Promise.coroutine(function* () {
     let get_email = new Promise(resolve => {
       smtp.once('dataReady', (connection, cb) => {
         cb();
@@ -77,7 +76,7 @@ describe('Reset password', function () {
   }));
 
 
-  it('should send email after password reset', co.wrap(function* () {
+  it('should send email after password reset', Promise.coroutine(function* () {
     let token = yield TEST.N.models.users.TokenResetPassword.create({
       user: user._id,
       ip:   '127.0.0.1'

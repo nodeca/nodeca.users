@@ -30,7 +30,6 @@
 'use strict';
 
 const _           = require('lodash');
-const co          = require('bluebird-co').co;
 const from2       = require('from2');
 const fs          = require('mz/fs');
 const mime        = require('mime-types').lookup;
@@ -84,7 +83,7 @@ function filter_jpeg_stream(options) {
 //
 // - callback - function (err, { path, type })
 //
-const createPreview = co.wrap(function* (image, resizeConfig, imageType) {
+const createPreview = Promise.coroutine(function* (image, resizeConfig, imageType) {
   // To scale image, we calculate new width and height,
   // resize image by height, and crop by width
   let scaledHeight, scaledWidth, saveAsIs = false;
@@ -236,7 +235,7 @@ const createPreview = co.wrap(function* (image, resizeConfig, imageType) {
 //
 // - callback - function (err, originalFileId)
 //
-const saveImages = co.wrap(function* (previews, options) {
+const saveImages = Promise.coroutine(function* (previews, options) {
   let keys = Object.keys(previews);
 
   //
@@ -287,7 +286,7 @@ const saveImages = co.wrap(function* (previews, options) {
 });
 
 
-module.exports = co.wrap(function* (src, options) {
+module.exports = Promise.coroutine(function* (src, options) {
   File = options.store;
 
   let previews = {};

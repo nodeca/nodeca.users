@@ -4,7 +4,6 @@
 
 
 const Promise   = require('bluebird');
-const co        = require('bluebird-co').co;
 const Charlatan = require('charlatan');
 const path      = require('path');
 const glob      = require('glob').sync;
@@ -41,7 +40,7 @@ function createMedia(userId, album) {
 
 // Creates one album
 //
-let createAlbum = co.wrap(function* (userId) {
+let createAlbum = Promise.coroutine(function* (userId) {
   var album = new models.users.Album();
 
   album.user = userId;
@@ -62,14 +61,14 @@ let createAlbum = co.wrap(function* (userId) {
 //
 // userId - albums owner
 //
-let createMultipleAlbums = co.wrap(function* (userId) {
+let createMultipleAlbums = Promise.coroutine(function* (userId) {
   for (let i = 0; i < ALBUMS_COUNT; i++) {
     yield createAlbum(userId);
   }
 });
 
 
-let createAlbums = co.wrap(function* () {
+let createAlbums = Promise.coroutine(function* () {
 
   let user_ids = [];
 
@@ -130,7 +129,7 @@ function createComment(mediaId, userId) {
 
 // Creates multiple comments
 //
-let createMultipleComments = co.wrap(function* (mediaId, usersId) {
+let createMultipleComments = Promise.coroutine(function* (mediaId, usersId) {
   var commentsCount = Charlatan.Helpers.rand(MIN_COMMENTS, MAX_COMMENTS);
 
   for (let i = 0; i < commentsCount; i++) {
@@ -144,7 +143,7 @@ let createMultipleComments = co.wrap(function* (mediaId, usersId) {
 });
 
 
-let createComments = co.wrap(function* () {
+let createComments = Promise.coroutine(function* () {
 
   let results = yield models.users.MediaInfo.find().lean(true);
 
@@ -160,7 +159,7 @@ let createComments = co.wrap(function* () {
 });
 
 
-module.exports = co.wrap(function* (N) {
+module.exports = Promise.coroutine(function* (N) {
   models   = N.models;
   settings = N.settings;
 

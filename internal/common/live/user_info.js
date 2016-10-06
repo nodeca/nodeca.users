@@ -7,13 +7,13 @@
 'use strict';
 
 
-const co       = require('bluebird-co').co;
+const Promise  = require('bluebird');
 const userInfo = require('nodeca.users/lib/user_info');
 
 
 module.exports = function (N) {
   N.wire.before('internal.live.*', { priority: -100 }, function add_user_loader(data) {
-    data.getUserInfo = co.wrap(function* () {
+    data.getUserInfo = Promise.coroutine(function* () {
       // If `user_info` already loaded - skip
       if (data.__user_info__ || data.__user_info__ === null) {
         return data.__user_info__;

@@ -2,7 +2,7 @@
 
 
 const _        = require('lodash');
-const co       = require('bluebird-co').co;
+const Promise  = require('bluebird');
 const memoize  = require('promise-memoize');
 
 
@@ -52,7 +52,7 @@ module.exports = function (N) {
   // - usergroup_ids (Array)
   //
   let UsergroupStore = N.settings.createStore({
-    get: co.wrap(function* get(keys, params, options) {
+    get: Promise.coroutine(function* get(keys, params, options) {
       let fetch = options.skipCache ? fetchUsrGrpSettings : fetchUsrGrpSettingsCached;
 
       if (!_.isArray(params.usergroup_ids) || _.isEmpty(params.usergroup_ids)) {

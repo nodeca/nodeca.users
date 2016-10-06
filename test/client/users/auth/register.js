@@ -2,7 +2,7 @@
 
 
 const assert      = require('assert');
-const co          = require('bluebird-co').co;
+const Promise     = require('bluebird');
 const randomBytes = require('crypto').randomBytes;
 const simplesmtp  = require('simplesmtp');
 const password    = require('nodeca.users/models/users/_lib/password');
@@ -21,7 +21,7 @@ describe('Register', function () {
     smtp.listen(2525, done);
   });
 
-  it('should send confirmation link via email', co.wrap(function* () {
+  it('should send confirmation link via email', Promise.coroutine(function* () {
     let login    = randomBytes(10).toString('hex');
     let email    = login + '@example.com';
     let pass     = randomBytes(10).toString('hex') + 'Abc123';
@@ -61,7 +61,7 @@ describe('Register', function () {
   }));
 
 
-  it('should authorize via confirmation link', co.wrap(function* () {
+  it('should authorize via confirmation link', Promise.coroutine(function* () {
     let login = randomBytes(10).toString('hex');
     let pass  = randomBytes(10).toString('hex') + 'Abc123';
     let token = yield TEST.N.models.users.TokenActivationEmail.create({

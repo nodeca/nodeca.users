@@ -201,12 +201,12 @@ module.exports = function (N, apiPath) {
 
     // Save dialogs and messages
     //
-    yield [
+    yield Promise.all([
       from_dialog.save(),
       from_msg.save(),
       to_dialog.save(),
       to_msg.save()
-    ];
+    ]);
 
 
     // Notify user

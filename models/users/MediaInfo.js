@@ -3,8 +3,8 @@
 /* eslint no-bitwise: 0 */
 'use strict';
 
+const Promise     = require('bluebird');
 const fs          = require('mz/fs');
-const co          = require('bluebird-co').co;
 const extname     = require('path').extname;
 const Mongoose    = require('mongoose');
 const Schema      = Mongoose.Schema;
@@ -96,7 +96,7 @@ module.exports = function (N, collectionName) {
   // - revert - revert deleted media (default false)
   // - callback
   //
-  MediaInfo.statics.markDeleted = co.wrap(function* (media_id, revert) {
+  MediaInfo.statics.markDeleted = Promise.coroutine(function* (media_id, revert) {
     let media = yield N.models.users.MediaInfo
                           .findOneAndUpdate(
                             {
@@ -130,7 +130,7 @@ module.exports = function (N, collectionName) {
   });
 
 
-  const saveFile = co.wrap(function* (path, name, maxSize) {
+  const saveFile = Promise.coroutine(function* (path, name, maxSize) {
     let stats = yield fs.stat(path);
 
     if (stats.size > maxSize) {
@@ -160,7 +160,7 @@ module.exports = function (N, collectionName) {
   //
   // - callback(err, media)
   //
-  MediaInfo.statics.createFile = co.wrap(function* (options) {
+  MediaInfo.statics.createFile = Promise.coroutine(function* (options) {
     let media = new N.models.users.MediaInfo();
     media._id = new Mongoose.Types.ObjectId();
     media.user = options.user_id;

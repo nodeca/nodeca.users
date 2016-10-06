@@ -4,12 +4,11 @@
 const _        = require('lodash');
 const assert   = require('assert');
 const Promise  = require('bluebird');
-const co       = require('bluebird-co').co;
 const ObjectId = require('mongoose').Types.ObjectId;
 
 
 describe('Ignore', function () {
-  it('should expire ignore entries', co.wrap(function* () {
+  it('should expire ignore entries', Promise.coroutine(function* () {
     let id1 = new ObjectId();
     let id2 = new ObjectId();
     let id3 = new ObjectId();

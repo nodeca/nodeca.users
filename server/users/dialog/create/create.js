@@ -296,7 +296,7 @@ module.exports = function (N, apiPath) {
 
     // Save models
     //
-    yield models_to_save.map(m => m.save());
+    yield Promise.all(models_to_save.map(m => m.save()));
 
 
     // Fill response

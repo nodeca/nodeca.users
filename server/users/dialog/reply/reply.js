@@ -229,7 +229,7 @@ module.exports = function (N, apiPath) {
       parent: env.data.dialog._id
     }, message_data));
 
-    yield [
+    yield Promise.all([
       own_msg.save(),
       N.models.users.Dialog.update({ _id: own_msg.parent }, _.merge({
         unread: 0,
@@ -238,7 +238,7 @@ module.exports = function (N, apiPath) {
           is_reply:     String(own_msg.user) === String(message_data.user)
         }
       }, dlg_update_data))
-    ];
+    ]);
 
 
     // Fetch related dialog
@@ -260,7 +260,7 @@ module.exports = function (N, apiPath) {
         parent: related_dialog._id
       }, message_data));
 
-      yield [
+      yield Promise.all([
         opponent_msg.save(),
         N.models.users.Dialog.update({ _id: opponent_msg.parent }, _.merge({
           exists:       true, // force undelete
@@ -270,7 +270,7 @@ module.exports = function (N, apiPath) {
             is_reply:     String(opponent_msg.user) === String(message_data.user)
           }
         }, dlg_update_data))
-      ];
+      ]);
 
       let dialogs_notify = yield N.settings.get('dialogs_notify', { user_id: related_dialog.user });
 

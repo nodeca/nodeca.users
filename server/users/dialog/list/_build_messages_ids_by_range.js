@@ -23,9 +23,8 @@
 'use strict';
 
 
-const Promise = require('bluebird');
 const _       = require('lodash');
-const co      = require('bluebird-co').co;
+const Promise = require('bluebird');
 
 
 module.exports = function (N) {
@@ -77,10 +76,10 @@ module.exports = function (N) {
   }
 
 
-  return co.wrap(function* buildDialogsIds(env) {
+  return Promise.coroutine(function* buildDialogsIds(env) {
     // Run both functions in parallel and concatenate results
     //
-    let results = yield [ select_visible_before(env), select_visible_after(env) ];
+    let results = yield Promise.all([ select_visible_before(env), select_visible_after(env) ]);
 
     env.data.messages_ids = Array.prototype.concat.apply([], results);
   });

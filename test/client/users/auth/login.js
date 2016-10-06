@@ -2,7 +2,7 @@
 
 
 const randomBytes = require('crypto').randomBytes;
-const co          = require('bluebird-co').co;
+const Promise     = require('bluebird');
 
 
 describe('Login', function () {
@@ -14,7 +14,7 @@ describe('Login', function () {
 
   // Create new user
   //
-  before(co.wrap(function* () {
+  before(Promise.coroutine(function* () {
     user = new TEST.N.models.users.User({
       nick: login
     });

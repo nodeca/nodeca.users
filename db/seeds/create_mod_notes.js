@@ -3,7 +3,7 @@
 'use strict';
 
 
-const co        = require('bluebird-co').co;
+const Promise   = require('bluebird');
 const charlatan = require('charlatan');
 
 
@@ -16,7 +16,7 @@ let parser;
 let markup_options;
 
 
-const createNotes = co.wrap(function* (to) {
+const createNotes = Promise.coroutine(function* (to) {
   for (let i = 0; i < NOTES_COUNT; i++) {
     let from = new models.users.User({
       first_name: charlatan.Name.firstName(),
@@ -50,7 +50,7 @@ const createNotes = co.wrap(function* (to) {
 });
 
 
-module.exports = co.wrap(function* (N) {
+module.exports = Promise.coroutine(function* (N) {
   models   = N.models;
   settings = N.settings;
   parser   = N.parser;
@@ -71,5 +71,5 @@ module.exports = co.wrap(function* (N) {
     { alias: true }
   );
 
-  yield users.map(u => createNotes(u));
+  yield Promise.all(users.map(u => createNotes(u)));
 });

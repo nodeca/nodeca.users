@@ -3,8 +3,8 @@
 'use strict';
 
 
-const co        = require('bluebird-co').co;
 const _         = require('lodash');
+const Promise   = require('bluebird');
 const charlatan = require('charlatan');
 const ObjectId  = require('mongoose').Types.ObjectId;
 
@@ -26,7 +26,7 @@ let msg_day = 0;
 let markup_options;
 
 
-const createDemoUsers = co.wrap(function* () {
+const createDemoUsers = Promise.coroutine(function* () {
   for (let i = 0; i < USER_COUNT; i++) {
     let user = new models.users.User({
       first_name: charlatan.Name.firstName(),
@@ -44,7 +44,7 @@ const createDemoUsers = co.wrap(function* () {
 });
 
 
-const createMessages = co.wrap(function* (dlg1, dlg2, msg_count) {
+const createMessages = Promise.coroutine(function* (dlg1, dlg2, msg_count) {
   if (msg_count <= 0) return;
 
   let msg1, msg2, md;
@@ -76,7 +76,7 @@ const createMessages = co.wrap(function* (dlg1, dlg2, msg_count) {
       parent: dlg2._id
     }, msg_data));
 
-    yield [ msg1.save(), msg2.save() ];
+    yield Promise.all([ msg1.save(), msg2.save() ]);
   }
 
   let preview_data = yield parser.md2preview({ text: md, limit: 250, link2text: true });
@@ -99,7 +99,7 @@ const createMessages = co.wrap(function* (dlg1, dlg2, msg_count) {
 });
 
 
-const createDialogs = co.wrap(function* (owner) {
+const createDialogs = Promise.coroutine(function* (owner) {
   for (let i = 0; i < DLG_COUNT; i++) {
     let dlg_data = {
       common_id: new ObjectId(),
@@ -121,12 +121,12 @@ const createDialogs = co.wrap(function* (owner) {
     let msg_count = (i === DLG_COUNT - 1) ? MSG_COUNT_IN_BIG_DLG : charlatan.Helpers.rand(MIN_MSG_COUNT, MAX_MSG_COUNT);
 
     yield createMessages(own, opp, msg_count);
-    yield [ own.save(), opp.save() ];
+    yield Promise.all([ own.save(), opp.save() ]);
   }
 });
 
 
-module.exports = co.wrap(function* (N) {
+module.exports = Promise.coroutine(function* (N) {
   models   = N.models;
   settings = N.settings;
   parser   = N.parser;
@@ -148,5 +148,5 @@ module.exports = co.wrap(function* (N) {
   );
 
   yield createDemoUsers();
-  yield users.map(u => createDialogs(u));
+  yield Promise.all(users.map(u => createDialogs(u)));
 });

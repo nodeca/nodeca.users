@@ -1,10 +1,9 @@
 'use strict';
 
 
-const Promise = require('bluebird');
-const assert  = require('assert');
-const co      = require('bluebird-co').co;
 const _       = require('lodash');
+const assert  = require('assert');
+const Promise = require('bluebird');
 
 
 describe('UserPenalty', function () {
@@ -21,7 +20,7 @@ describe('UserPenalty', function () {
   });
 
 
-  it('should add user to violators', co.wrap(function* () {
+  it('should add user to violators', Promise.coroutine(function* () {
     let violators_group_id = yield TEST.N.models.users.UserGroup.findIdByName('violators');
     let user = new TEST.N.models.users.User({
       nick: 'userpenalty_test1',
@@ -75,7 +74,7 @@ describe('UserPenalty', function () {
   }));
 
 
-  it('should move to banned after 100 points', co.wrap(function* () {
+  it('should move to banned after 100 points', Promise.coroutine(function* () {
     let banned_group_id = yield TEST.N.models.users.UserGroup.findIdByName('banned');
     let user = new TEST.N.models.users.User({
       nick: 'userpenalty_test2',
@@ -101,7 +100,7 @@ describe('UserPenalty', function () {
   }));
 
 
-  it('should expire penalty', co.wrap(function* () {
+  it('should expire penalty', Promise.coroutine(function* () {
     let violators_group_id = yield TEST.N.models.users.UserGroup.findIdByName('violators');
     let user = new TEST.N.models.users.User({
       nick: 'userpenalty_test3',
@@ -139,7 +138,7 @@ describe('UserPenalty', function () {
   }));
 
 
-  it('should remove penalty when move from violators to banned', co.wrap(function* () {
+  it('should remove penalty when move from violators to banned', Promise.coroutine(function* () {
     let user = new TEST.N.models.users.User({
       nick: 'userpenalty_test4',
       joined_ts: new Date()

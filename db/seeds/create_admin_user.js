@@ -2,9 +2,9 @@
 
 const prompt  = require('prompt');
 const Promise = require('bluebird');
-const co      = require('bluebird-co').co;
 
-module.exports = co.wrap(function* (N) {
+
+module.exports = Promise.coroutine(function* (N) {
 
   let user     = new N.models.users.User();
   let authLink = new N.models.users.AuthLink();

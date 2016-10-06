@@ -1,10 +1,10 @@
 'use strict';
 
 
-const assert    = require('assert');
 const _         = require('lodash');
+const assert    = require('assert');
+const Promise   = require('bluebird');
 const ObjectId  = require('mongoose').Types.ObjectId;
-const co        = require('bluebird-co').co;
 const Marker    = TEST.N.models.users.Marker;
 const redis     = TEST.N.redis;
 
@@ -36,7 +36,7 @@ describe('Marker', function () {
 
   describe('.mark()', function () {
 
-    it('should mark', co.wrap(function* () {
+    it('should mark', Promise.coroutine(function* () {
       let uid = new ObjectId();
       let cat = new ObjectId();
       let cid = new ObjectId();
@@ -53,7 +53,7 @@ describe('Marker', function () {
     }));
 
 
-    it('should skip old', co.wrap(function* () {
+    it('should skip old', Promise.coroutine(function* () {
       let uid = new ObjectId();
       let cid = randObjectIdByTimestamp(Date.now() - expire - 1000);
       let cat = new ObjectId();
@@ -67,7 +67,7 @@ describe('Marker', function () {
   });
 
 
-  it('.markAll() should update cut', co.wrap(function* () {
+  it('.markAll() should update cut', Promise.coroutine(function* () {
     let uid = new ObjectId();
     let sid = new ObjectId();
     let now = Date.now();
@@ -84,7 +84,7 @@ describe('Marker', function () {
   }));
 
 
-  it('.setPos()', co.wrap(function* () {
+  it('.setPos()', Promise.coroutine(function* () {
     let uid = new ObjectId();
     let cid = new ObjectId();
     let cat = new ObjectId();
@@ -106,7 +106,7 @@ describe('Marker', function () {
   }));
 
 
-  it('.setPos() - limit position markers', co.wrap(function* () {
+  it('.setPos() - limit position markers', Promise.coroutine(function* () {
     let uid = randObjectIdByTimestamp(Date.now());
     let cat = new ObjectId();
     let query = redis.multi();
@@ -127,7 +127,7 @@ describe('Marker', function () {
 
   describe('.info()', function () {
 
-    it('should set `isNew` flag correctly', co.wrap(function* () {
+    it('should set `isNew` flag correctly', Promise.coroutine(function* () {
       let uid = new ObjectId();
       let now = Date.now();
       let cat = new ObjectId();
@@ -156,7 +156,7 @@ describe('Marker', function () {
     }));
 
 
-    it('should set correct position info', co.wrap(function* () {
+    it('should set correct position info', Promise.coroutine(function* () {
       let uid = new ObjectId();
       let now = Date.now();
       let cat = new ObjectId();
@@ -191,7 +191,7 @@ describe('Marker', function () {
   });
 
 
-  it('.cleanup()', co.wrap(function* () {
+  it('.cleanup()', Promise.coroutine(function* () {
     let now = Date.now();
     let uid = new ObjectId();
     let query = redis.multi();

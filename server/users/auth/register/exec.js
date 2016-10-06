@@ -5,8 +5,8 @@
 'use strict';
 
 
-const co          = require('bluebird-co').co;
 const _           = require('lodash');
+const Promise     = require('bluebird');
 const validator   = require('is-my-json-valid');
 const recaptcha   = require('nodeca.core/lib/app/recaptcha');
 const password    = require('nodeca.users/models/users/_lib/password');
@@ -164,7 +164,7 @@ module.exports = function (N, apiPath) {
 
   // Create user record and login
   //
-  let create_user = co.wrap(function* create_user(env) {
+  let create_user = Promise.coroutine(function* create_user(env) {
     yield N.wire.emit('internal:users.user_create', env);
 
     // authLink info is needed to create TokenLogin
@@ -182,7 +182,7 @@ module.exports = function (N, apiPath) {
 
   // If the user have to confirm email, create token and send it by email.
   //
-  let send_activation = co.wrap(function* send_activation(env) {
+  let send_activation = Promise.coroutine(function* send_activation(env) {
     let token = yield N.models.users.TokenActivationEmail.create({
       ip: env.req.ip,
       reg_info: env.data.reg_info,

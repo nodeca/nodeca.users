@@ -1,9 +1,9 @@
 'use strict';
 
 
-const assert = require('assert');
-const co     = require('bluebird-co').co;
-const User   = TEST.N.models.users.User;
+const assert  = require('assert');
+const Promise = require('bluebird');
+const User    = TEST.N.models.users.User;
 
 
 describe('User', function () {
@@ -29,7 +29,7 @@ describe('User', function () {
   });
 
   describe('Auth provider', function () {
-    it('"plain" provider set/check password', co.wrap(function* () {
+    it('"plain" provider set/check password', Promise.coroutine(function* () {
       let authLink = new TEST.N.models.users.AuthLink();
       let pass = 'Qwerty123';
 

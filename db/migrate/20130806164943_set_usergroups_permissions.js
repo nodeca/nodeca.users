@@ -1,10 +1,10 @@
 'use strict';
 
 
-const co = require('bluebird-co').co;
+const Promise = require('bluebird');
 
 
-module.exports.up = co.wrap(function* (N) {
+module.exports.up = Promise.coroutine(function* (N) {
   let usergroupStore = N.settings.getStore('usergroup');
 
   // add usergroup settings for admin

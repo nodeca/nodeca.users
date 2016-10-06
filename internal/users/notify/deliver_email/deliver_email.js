@@ -31,7 +31,7 @@ module.exports = function (N) {
 
     // Remove users without email and send email to the rest
     //
-    yield Object.keys(local_env.messages).filter(user_id => emails[user_id]).map(user_id => {
+    yield Promise.all(Object.keys(local_env.messages).filter(user_id => emails[user_id]).map(user_id => {
       let params = {
         user_id,
         usergroup_ids: users_info[user_id].usergroups
@@ -60,6 +60,6 @@ module.exports = function (N) {
               N.logger.error('Cannot send email to %s: %s', emails[user_id], err.message || err);
             });
         });
-    });
+    }));
   });
 };

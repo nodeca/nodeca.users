@@ -3,9 +3,9 @@
 'use strict';
 
 
+const Promise  = require('bluebird');
 const Mongoose = require('mongoose');
 const Schema   = Mongoose.Schema;
-const co       = require('bluebird-co').co;
 
 
 module.exports = function (N, collectionName) {
@@ -47,7 +47,7 @@ module.exports = function (N, collectionName) {
 
   // Update media count in album
   //
-  let updateCount = co.wrap(function* (albumId, full) {
+  let updateCount = Promise.coroutine(function* (albumId, full) {
     let mTypes = N.models.users.MediaInfo.types;
 
     if (!full) {
@@ -63,7 +63,7 @@ module.exports = function (N, collectionName) {
 
   // Update album cover
   //
-  let updateCover = co.wrap(function* (albumId) {
+  let updateCover = Promise.coroutine(function* (albumId) {
     let mTypes = N.models.users.MediaInfo.types;
     let album = yield N.models.users.Album.findOne({ _id: albumId }).lean(true);
     let fileId = album.cover_id || '000000000000000000000000';
