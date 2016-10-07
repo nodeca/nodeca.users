@@ -13,7 +13,7 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
     .form-group.row
       label.form-control-label.col-xs-3= self.t('group.inherit')
       .col-xs-3
-        select.form-control.custom-select(data-bind="options: otherGroups, optionsText: 'name', optionsCaption: '#{self.t('group.inherit_none')}', value: currentGroup.parentGroup")
+        select.form-control.custom-select(data-bind="options: otherGroups, optionsText: 'name', optionsCaption: '" + self.t('group.inherit_none') + "', value: currentGroup.parentGroup")
 
     .form-group.row
       label.form-control-label.col-xs-3= self.t('filter')
