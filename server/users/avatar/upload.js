@@ -129,9 +129,12 @@ module.exports = function (N, apiPath) {
         { _id: env.data.user._id },
         { $set: { avatar_id: data.id } }
       );
-    } finally {
+    } catch (err) {
       yield unlink(fileInfo.path);
+      throw err;
     }
+
+    yield unlink(fileInfo.path);
   });
 
 

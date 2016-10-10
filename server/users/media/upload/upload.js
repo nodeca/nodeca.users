@@ -192,10 +192,13 @@ module.exports = function (N, apiPath) {
 
       env.res.media = media;
       env.data.media = media;
-    } finally {
-      // Remove file anyway after upload to gridfs
+    } catch (err) {
       yield unlink(fileInfo.path);
+      throw err;
     }
+
+    // Remove file after upload to gridfs
+    yield unlink(fileInfo.path);
   });
 
 
