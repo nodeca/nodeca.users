@@ -30,7 +30,8 @@ module.exports = function (N, apiPath) {
       '_id',
       'hid',
       'avatar_id',
-      'name'
+      'name',
+      'exists'
     ]);
 
     let user = env.data.user;

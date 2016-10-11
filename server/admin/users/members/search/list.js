@@ -111,7 +111,8 @@ module.exports = function (N, apiPath) {
       email:          user.email,
       last_active_ts: user.last_active_ts,
       joined_ts:      user.joined_ts,
-      post_count:     user.post_count
+      post_count:     user.post_count,
+      exists:         user.exists
     }));
 
     env.res.search_query = env.params;

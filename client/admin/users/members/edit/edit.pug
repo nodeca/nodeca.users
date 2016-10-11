@@ -1,4 +1,4 @@
-#content
+#content.user-edit(class=self.user.exists ? '' : 'user-edit__m-deleted')
   != self.partial('@admin.core.blocks.sidebar_menu')
 
   .main
@@ -11,13 +11,33 @@
           data-toggle='dropdown'
         )
         .dropdown-menu.dropdown-menu-right
-          button.dropdown-item(type='button')= self.t('delete_dialogs')
-          button.dropdown-item(type='button')= self.t('show_ips')
-          button.dropdown-item(type='button')= self.t('delete_account')
+          button.dropdown-item(
+            type='button'
+            data-on-click='admin.users.members.edit:delete_dialogs'
+            data-user-hid=self.user.hid
+          )= self.t('delete_dialogs')
 
-      h1.page-head__title(itemprop='name')= self.user.name
+          button.dropdown-item(
+            type='button'
+            data-user-hid=self.user.hid
+          )= self.t('show_ips')
+
+          if self.user.exists
+            button.dropdown-item(
+              type='button'
+              data-on-click='admin.users.members.edit:delete_account'
+              data-user-hid=self.user.hid
+            )= self.t('delete_account')
+          else
+            button.dropdown-item(
+              type='button'
+              data-on-click='admin.users.members.edit:restore_account'
+              data-user-hid=self.user.hid
+            )= self.t('restore_account')
+
+      h1.page-head__title.user-edit__name(itemprop='name')= self.user.name
       p.page-head__descr(itemprop='description')
-        a.user-edit-profile-link(href=self.link_to('users.member', { user_hid: self.user.hid }), target='_blank')= self.t('profile')
+        a.user-edit__profile-link(href=self.link_to('users.member', { user_hid: self.user.hid }), target='_blank')= self.t('profile')
 
     form#member_edit_form.form-horizontal(data-on-submit='admin.users.members.edit:submit', data-user-hid=self.user.hid)
       fieldset

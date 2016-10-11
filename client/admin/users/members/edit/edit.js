@@ -13,12 +13,12 @@ N.wire.once('navigate.done:' + module.apiPath, function init_handlers() {
   N.wire.on(module.apiPath + ':submit', function update_user(form) {
     let data = _.assign({ user_hid: form.$this.data('user-hid') }, form.fields);
 
-    return N.io.rpc('admin.users.members.edit.update', data).then(function () {
+    return N.io.rpc('admin.users.members.edit.update', data).then(() =>
       N.wire.emit('notify', {
         type: 'info',
         message: t('saved')
-      });
-    });
+      })
+    );
   });
 
 
@@ -41,5 +41,60 @@ N.wire.once('navigate.done:' + module.apiPath, function init_handlers() {
       $img.attr('src', identicon(N.runtime.user_id, avatarWidth));
       $root.removeClass('user-edit-avatar__m-exists');
     });
+  });
+
+
+  // Show account deletion confirmation dialog
+  //
+  N.wire.before(module.apiPath + ':delete_account', function confirm_delete_account() {
+    return N.wire.emit('admin.core.blocks.confirm', t('delete_account_confirm'));
+  });
+
+
+  // Click on delete account button
+  //
+  N.wire.on(module.apiPath + ':delete_account', function delete_account(data) {
+    let user_hid = data.$this.data('user-hid');
+
+    return N.io.rpc('admin.users.members.edit.delete_account', { user_hid, 'delete': true })
+               .then(() => N.wire.emit('navigate.reload'));
+  });
+
+
+  // Show restore account confirmation dialog
+  //
+  N.wire.before(module.apiPath + ':restore_account', function confirm_restore_account() {
+    return N.wire.emit('admin.core.blocks.confirm', t('restore_account_confirm'));
+  });
+
+
+  // Click on restore account button
+  //
+  N.wire.on(module.apiPath + ':restore_account', function restore_account(data) {
+    let user_hid = data.$this.data('user-hid');
+
+    return N.io.rpc('admin.users.members.edit.delete_account', { user_hid, 'delete': false })
+               .then(() => N.wire.emit('navigate.reload'));
+  });
+
+
+  // Show delete dialogs confirmation dialog
+  //
+  N.wire.before(module.apiPath + ':delete_dialogs', function confirm_delete_dialogs() {
+    return N.wire.emit('admin.core.blocks.confirm', t('delete_dialogs_confirm'));
+  });
+
+
+  // Click on delete dialogs button
+  //
+  N.wire.on(module.apiPath + ':delete_dialogs', function delete_dialogs(data) {
+    let user_hid = data.$this.data('user-hid');
+
+    return N.io.rpc('admin.users.members.edit.delete_dialogs', { user_hid }).then(() =>
+      N.wire.emit('notify', {
+        type: 'info',
+        message: t('dialogs_deleted')
+      })
+    );
   });
 });
