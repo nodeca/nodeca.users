@@ -145,4 +145,11 @@ module.exports = function (N, apiPath) {
 
     yield N.models.core.File.remove(env.data.old_avatar, true);
   });
+
+
+  // Mark user as active
+  //
+  N.wire.after(apiPath, function* set_active_flag(env) {
+    yield N.wire.emit('internal:users.mark_user_active', env);
+  });
 };

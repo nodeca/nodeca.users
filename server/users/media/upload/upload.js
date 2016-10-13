@@ -225,4 +225,11 @@ module.exports = function (N, apiPath) {
 
     yield N.models.users.Album.update({ _id: env.data.album._id }, { cover_id: media.media_id });
   });
+
+
+  // Mark user as active
+  //
+  N.wire.after(apiPath, function* set_active_flag(env) {
+    yield N.wire.emit('internal:users.mark_user_active', env);
+  });
 };

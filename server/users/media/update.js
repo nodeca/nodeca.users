@@ -83,4 +83,11 @@ module.exports = function (N, apiPath) {
     // Update new album (increment count)
     yield N.models.users.Album.updateInfo(album._id);
   });
+
+
+  // Mark user as active
+  //
+  N.wire.after(apiPath, function* set_active_flag(env) {
+    yield N.wire.emit('internal:users.mark_user_active', env);
+  });
 };

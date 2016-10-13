@@ -25,6 +25,8 @@ module.exports = function (N, collectionName) {
     exists         : { type: Boolean, 'default': true },
     // true -> `hell banned` user
     hb             : { type: Boolean, 'default': false },
+    // true -> user has posted something on the site (post, message, comment, etc.)
+    active         : { type: Boolean, 'default': false },
 
     locale         : String,
     name           : String,

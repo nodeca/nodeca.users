@@ -290,4 +290,11 @@ module.exports = function (N, apiPath) {
     env.res.dialog_id  = own_msg.parent;
     env.res.message_id = own_msg._id;
   });
+
+
+  // Mark user as active
+  //
+  N.wire.after(apiPath, function* set_active_flag(env) {
+    yield N.wire.emit('internal:users.mark_user_active', env);
+  });
 };
