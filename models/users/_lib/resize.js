@@ -202,7 +202,7 @@ const createPreview = Promise.coroutine(function* (image, resizeConfig, imageTyp
     }
 
     sharpInstance.resize(Math.round(scaledWidth), Math.round(scaledHeight));
-    sharpInstance.withoutEnlargement().crop(sharp.strategy.entropy);
+    sharpInstance.withoutEnlargement().crop(sharp.strategy.attention);
   }
 
   let res = yield new Promise((resolve, reject) => {
