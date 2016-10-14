@@ -1,6 +1,7 @@
 'use strict';
 
 
+const Promise       = require('bluebird');
 const Mongoose      = require('mongoose');
 const Schema        = Mongoose.Schema;
 const xregexp       = require('xregexp');
@@ -220,6 +221,29 @@ module.exports = function (N, collectionName) {
       self.hid = value;
       callback();
     });
+  });
+
+
+  // Clean up settings on user deletion (not deleting any actual content)
+  //
+  User.pre('remove', function (callback) {
+    var self = this;
+
+    Promise.coroutine(function* () {
+
+      yield N.models.users.Album.remove({ user: self._id });
+      yield N.models.users.AnnounceHideMark.remove({ user: self._id });
+      yield N.models.users.AuthLink.remove({ user: self._id });
+      yield N.models.users.Ignore.remove({ from: self._id });
+      yield N.models.users.Ignore.remove({ to: self._id });
+      yield N.models.users.Subscription.remove({ user: self._id });
+      yield N.models.users.UserExtra.remove({ user: self._id });
+      yield N.models.users.UserPenalty.remove({ user: self._id });
+      yield N.models.users.UserSettings.remove({ user: self._id });
+      yield N.models.users.TokenLogin.remove({ user: self._id });
+      yield N.models.users.TokenResetPassword.remove({ user: self._id });
+
+    })().asCallback(callback);
   });
 
 
