@@ -25,9 +25,18 @@
     )
 
       if isImage
-        - var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.media_id })
+        -
+          var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.media_id });
+          var size = self.media.image_sizes.orig;
+
         .user-media__image-container
-          img.user-media__image(src=imageUrl)
+          span.user-media__image-outer(
+            style= 'width:' + size.width + 'px'
+          )
+            img.user-media__image(src=imageUrl)
+            span.user-media__image-spacer(
+              style= 'padding-bottom:' + 100*size.height/size.width + '%'
+            )
 
       else if isVideo
         .user-media__video
