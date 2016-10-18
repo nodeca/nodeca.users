@@ -8,6 +8,6 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, {});
 
   N.wire.on(apiPath, function* messages_rebuild_stop() {
-    yield N.queue.worker('messages_rebuild').cancel();
+    yield N.queue.cancel('messages_rebuild');
   });
 };
