@@ -130,7 +130,7 @@ describe('UserPenalty', function () {
     );
 
     // Run task
-    yield TEST.N.queue.worker('invalidate_penalties').push();
+    yield TEST.N.queue.invalidate_penalties().run();
     yield Promise.delay(600);
 
     usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;

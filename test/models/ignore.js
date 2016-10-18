@@ -39,7 +39,7 @@ describe('Ignore', function () {
     })).save();
 
     // Run task
-    yield TEST.N.queue.worker('ignore_expire').push();
+    yield TEST.N.queue.ignore_expire().run();
     yield Promise.delay(600);
 
     let ignored_users = yield TEST.N.models.users.Ignore.find({ from: id1 }).lean(true);
