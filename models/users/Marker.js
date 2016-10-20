@@ -1,17 +1,23 @@
 // Content marker for forum topic lists, blog entries and so on
 //
-// Redis keys:
+// Redis data:
 //
-// - `marker_cut:<user_id>:<section_id>` (key) - contain timestamp of read cut
-// - `marker_marks:<user_id>` (zset) - contain `_id` of read content and timestamp as index
-// - `marker_pos:<user_id>` (hash) - content postinion
+// - `marker_marks:<user_id>`            (zset) - contain `_id` of read content and timestamp as score
+// - `marker_marks_items`                (set)  - `user_id` list, used to search all `marker_marks:*` sets
+// - `marker_pos:<user_id>`              (hash) - content position
 //   - <content_id> (JSON)
 //     - `current`
 //     - `max` - last read
 //     - `ts` - last update
-// - `marker_pos_updates` (zset) - last update info for `marker_pos:*`
-// - `marker_cut_updates` (zset) - last update info for `marker_cut:*`
-// - `marker_marks_items` (set) - items list for `marker_marks:*`
+// - `marker_pos_updates`                (zset) - last update info for `marker_pos:*`
+// - `marker_cut:<user_id>:<section_id>` (key)  - contain timestamp of read cut
+// - `marker_cut_updates`                (zset) - last update info for `marker_cut:*`
+//
+// GC logic:
+//
+// - remove old `marker_pos:*` using `marker_pos_updates`
+// - remove old `marker_cut:*` using `marker_cut_updates`
+// - for each user (stored in `marker_marks_items`) remove old `marker_marks:<user_id>`
 //
 'use strict';
 
@@ -358,9 +364,11 @@ module.exports = function (N, collectionName) {
   });
 
 
-  // Cleanup deprecated markers (older than 30 days)
+  // Cleanup deprecated markers (older than 30 days):
   //
-  // - callback (Function) - `function (err)`
+  // - remove old `marker_pos:*` using `marker_pos_updates`
+  // - remove old `marker_cut:*` using `marker_cut_updates`
+  // - for each user (stored in `marker_marks_items`) remove old `marker_marks:<user_id>`
   //
   Marker.cleanup = Promise.coroutine(function* () {
     let content_read_marks_expire = yield N.settings.get('content_read_marks_expire');
@@ -368,56 +376,55 @@ module.exports = function (N, collectionName) {
 
     // Cleanup position markers
     //
-    N.redis.zrangebyscoreAsync('marker_pos_updates', '-inf', lastTs).then(items => {
-      let query = N.redis.multi();
+    let posItems = yield N.redis.zrangebyscoreAsync('marker_pos_updates', '-inf', lastTs);
+    let posQuery = N.redis.multi();
 
-      items.forEach(item => {
-        let parts = item.split(':');
+    posItems.forEach(item => {
+      let parts = item.split(':');
 
-        query.hdel('marker_pos:' + parts[0], parts[1]);
-        query.zrem('marker_pos_updates', item);
-      });
-
-      return query.execAsync();
+      posQuery.hdel(`marker_pos:${parts[0]}`, parts[1]);
+      posQuery.zrem('marker_pos_updates', item);
     });
+
+    yield posQuery.execAsync();
 
 
     // Cleanup cut markers
     //
-    N.redis.zrangebyscoreAsync('marker_cut_updates', '-inf', lastTs).then(items => {
-      let query = N.redis.multi();
+    let cutItems = yield N.redis.zrangebyscoreAsync('marker_cut_updates', '-inf', lastTs);
+    let cutQuery = N.redis.multi();
 
-      items.forEach(item => {
-        query.del('marker_cut:' + item);
-        query.zrem('marker_cut_updates', item);
-      });
-
-      return query.execAsync();
+    cutItems.forEach(item => {
+      cutQuery.del('marker_cut:' + item);
+      cutQuery.zrem('marker_cut_updates', item);
     });
+
+    yield cutQuery.execAsync();
 
 
     // Cleanup read markers
     //
-    N.redis.smembersAsync('marker_marks_items').then(items => {
-      let query = N.redis.multi();
+    // TODO: cut by script if number of active users per month became too big
+    //
+    let marksItems = yield N.redis.smembersAsync('marker_marks_items');
+    let marksQuery = N.redis.multi();
 
-      items.forEach(function (item) {
-        query.zremrangebyscore('marker_marks:' + item, '-inf', lastTs);
-        query.zcard('marker_marks:' + item);
-      });
-
-      return query.execAsync().then(res => {
-        let query = N.redis.multi();
-
-        items.forEach((item, i) => {
-          if (res[i * 2 + 1] === 0) {
-            query.srem('marker_marks_items', item);
-          }
-        });
-
-        return query.execAsync();
-      });
+    marksItems.forEach(item => {
+      // Drop elements and count the rest
+      marksQuery.zremrangebyscore('marker_marks:' + item, '-inf', lastTs);
+      marksQuery.zcard('marker_marks:' + item);
     });
+
+    let res = yield marksQuery.execAsync();
+    let query = N.redis.multi();
+
+    marksItems.forEach((item, i) => {
+      if (res[i * 2 + 1] === 0) { // zcard result
+        query.srem('marker_marks_items', item);
+      }
+    });
+
+    yield query.execAsync();
   });
 
 
