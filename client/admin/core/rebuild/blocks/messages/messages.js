@@ -9,18 +9,27 @@ const ko = require('knockout');
 // Knockout bindings root object.
 let view = null;
 let SELECTOR = '#rebuild-messages-task';
+let finished_tasks = {};
 
 
 function update_task_status(task_info) {
   if (!view) return;
+  if (finished_tasks[task_info.uid]) return;
 
-  view.current(task_info.current);
-  view.total(task_info.total);
+  if (typeof task_info.current !== 'undefined') {
+    view.current(task_info.current);
+  }
 
-  // if task is running, but we're at 100%, set "started: false" because
-  // we'll receive no more notifications
-  if (task_info.current === task_info.total && task_info.current > 0 && task_info.total > 0) {
+  if (typeof task_info.total !== 'undefined') {
+    view.total(task_info.total);
+  }
+
+  if (task_info.finished) {
+    view.current(0);
+    view.total(1);
     view.started(false);
+
+    finished_tasks[task_info.uid] = true;
   } else {
     view.started(true);
   }
