@@ -15,7 +15,7 @@
     header.page-head
       h1.page-head__title(itemprop='name')
 
-        .page-actions.pull-xs-right
+        .page-actions.float-xs-right
           a.btn.btn-secondary(href=self.link_to('users.album', { 'user_hid': self.user_hid }))
             = self.t('all_media')
 
@@ -30,5 +30,5 @@
     ul.user-albumlist.thumb-grid.thumb-grid__m-fluid
       != self.partial('@users.albums_root.list')
 
-    p.m-t-1.text-muted.text-xs-center.hidden-sm-down.icon.icon-info.icon-space-after
+    p.mt-1.text-muted.text-xs-center.hidden-sm-down.icon.icon-info.icon-space-after
       = self.t('drag_tip')
