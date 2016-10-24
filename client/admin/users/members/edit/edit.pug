@@ -43,7 +43,7 @@
       fieldset
 
         .form-group.row
-          label.form-control-label.col-xs-3
+          label.col-form-label.col-xs-3
             = self.t('avatar')
           .col-xs-4.control-value
             .user-edit-avatar(class=self.user.avatar_id ? 'user-edit-avatar__m-exists' : '')
@@ -58,11 +58,11 @@
             if self.partial_exists('blocks.' + name)
               != self.partial('blocks.' + name, item)
             else
-              label.form-control-label.col-xs-3
+              label.col-form-label.col-xs-3
                 = self.t.exists(name) ? self.t(name) : self.t('@admin.users.about.' + name)
               .col-xs-4.control-value
                 if typeof(item.text) !== 'undefined'
-                  = item.text
+                  .form-control-static= item.text
                 else
                   input.form-control(type='text', name=item.name, value=item.value)
 
