@@ -34,7 +34,7 @@ module.exports = function (N, apiPath) {
   // Remove avatar
   //
   N.wire.on(apiPath, function* remove_avatar(env) {
-    yield N.models.users.User.update({ _id: env.data.user._id }, { avatar_id: null });
+    yield N.models.users.User.update({ _id: env.data.user._id }, { $unset: { avatar_id: true } });
   });
 
 

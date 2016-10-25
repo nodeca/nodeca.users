@@ -22,4 +22,13 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function delete_avatar(env) {
     return N.models.users.User.update({ _id: env.data.user._id }, { $unset: { avatar_id: true } });
   });
+
+
+  // Remove avatar from file store
+  //
+  N.wire.after(apiPath, function* remove_avatar_file(env) {
+    if (!env.data.user.avatar_id) return;
+
+    yield N.models.core.File.remove(env.data.user.avatar_id, true);
+  });
 };
