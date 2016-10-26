@@ -25,6 +25,9 @@ N.wire.on('navigate.done:users.settings.about', function initialize_datepicker()
     yearRange: [ 1900, new Date().getFullYear() ],
     i18n:      { months, weekdays, weekdaysShort },
     onSelect:  date => {
+      // pikaday returns date in local TZ, but toISOString returns date in UTC,
+      // so we need to cancel out timezone offset
+      date = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
       container.find('input').val(date.toISOString().slice(0, 10));
       container.find('input').trigger('change');
     }
