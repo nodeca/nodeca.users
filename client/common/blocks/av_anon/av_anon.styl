@@ -3,6 +3,6 @@
 .av-anon
   display inline-block
   background-color $body-bg-secondary
-  background-image url('$$ JSON.stringify("data:image/svg+xml;base64," + new Buffer(asset_body("nodeca.users/client/common/blocks/av_anon/av_anon.svg")).toString("base64")) $$')
+  background-image url('$$ JSON.stringify("data:image/svg+xml;base64," + Buffer.from(asset_body("nodeca.users/client/common/blocks/av_anon/av_anon.svg")).toString("base64")) $$')
   background-repeat no-repeat
   background-size cover

@@ -16,7 +16,7 @@ function addTestBlock(Buffer) {
     .filter(name => !/^[._]|\\[._]|\/[_.]/.test(name))
     .forEach(name => {
       let hex = fs.readFileSync(path.join(cwd, name), 'utf8').replace(/;.*/mg, '');
-      let buf = new Buffer(hex.match(/[0-9a-f]{2}/gi).map(i => parseInt(i, 16)));
+      let buf = Buffer.from(hex.match(/[0-9a-f]{2}/gi).map(i => parseInt(i, 16)));
 
       fixtures[name.replace(/\.exif\.txt$/, '')] = buf;
     });
