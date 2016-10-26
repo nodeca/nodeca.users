@@ -49,6 +49,9 @@ module.exports = function (N, collectionName) {
   //
   Vote.index({ 'for': 1, from: 1 });
 
+  // used to remove votes from admin interface
+  Vote.index({ from: 1 });
+
   /////////////////////////////////////////////////////////////////////////////
 
 

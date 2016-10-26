@@ -8,8 +8,10 @@ en-US:
   post_count: Posts
   button_save: Save
   saved: Saved
-  delete_dialogs: Remove all dialogs
+  delete_dialogs: Remove dialogs
+  delete_votes: Remove votes
   dialogs_deleted: Dialogs removed
+  votes_deleted: Votes removed
   show_ips: Show IP addresses
   delete_account: Delete account
   restore_account: Restore account
@@ -17,3 +19,4 @@ en-US:
   delete_account_confirm: Are you sure you want to delete this account?
   restore_account_confirm: Are you sure you want to restore this account?
   delete_dialogs_confirm: Are you sure you want to remove all dialogs associated with this account?
+  delete_votes_confirm: Are you sure you want to remove all votes created by this user?

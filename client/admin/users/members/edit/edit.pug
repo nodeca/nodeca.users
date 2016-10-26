@@ -6,11 +6,18 @@
 
     .page-head
       .dropdown.float-xs-right
-        button.btn.btn-square.btn-sm.btn-secondary.dropdown-toggle(
+        button.btn.btn-square.btn-secondary.dropdown-toggle(
           type='button'
           data-toggle='dropdown'
         )
         .dropdown-menu.dropdown-menu-right
+          button.dropdown-item(
+            type='button'
+            data-user-hid=self.user.hid
+          )= self.t('show_ips')
+
+          .dropdown-divider
+
           button.dropdown-item(
             type='button'
             data-on-click='admin.users.members.edit:delete_dialogs'
@@ -19,8 +26,9 @@
 
           button.dropdown-item(
             type='button'
+            data-on-click='admin.users.members.edit:delete_votes'
             data-user-hid=self.user.hid
-          )= self.t('show_ips')
+          )= self.t('delete_votes')
 
           if self.user.exists
             button.dropdown-item(

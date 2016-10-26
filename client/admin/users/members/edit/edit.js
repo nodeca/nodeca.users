@@ -97,4 +97,25 @@ N.wire.once('navigate.done:' + module.apiPath, function init_handlers() {
       })
     );
   });
+
+
+  // Show delete votes confirmation dialog
+  //
+  N.wire.before(module.apiPath + ':delete_votes', function confirm_delete_votes() {
+    return N.wire.emit('admin.core.blocks.confirm', t('delete_votes_confirm'));
+  });
+
+
+  // Click on delete votes button
+  //
+  N.wire.on(module.apiPath + ':delete_votes', function delete_votes(data) {
+    let user_hid = data.$this.data('user-hid');
+
+    return N.io.rpc('admin.users.members.edit.delete_votes', { user_hid }).then(() =>
+      N.wire.emit('notify', {
+        type: 'info',
+        message: t('votes_deleted')
+      })
+    );
+  });
 });
