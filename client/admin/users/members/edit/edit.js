@@ -99,6 +99,23 @@ N.wire.once('navigate.done:' + module.apiPath, function init_handlers() {
   });
 
 
+  // Show unblock confirmation dialog
+  //
+  N.wire.before(module.apiPath + ':unblock', function confirm_unblock() {
+    return N.wire.emit('admin.core.blocks.confirm', t('unblock_confirm'));
+  });
+
+
+  // Click on unblock button
+  //
+  N.wire.on(module.apiPath + ':unblock', function unblock(data) {
+    let user_hid = data.$this.data('user-hid');
+
+    return N.io.rpc('admin.users.members.edit.unblock', { user_hid })
+               .then(() => N.wire.emit('navigate.reload'));
+  });
+
+
   // Show delete votes confirmation dialog
   //
   N.wire.before(module.apiPath + ':delete_votes', function confirm_delete_votes() {

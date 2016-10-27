@@ -47,6 +47,14 @@
       p.page-head__descr(itemprop='description')
         a.user-edit__profile-link(href=self.link_to('users.member', { user_hid: self.user.hid }), target='_blank')= self.t('profile')
 
+    if self.penalty_expire
+      .alert.alert-danger
+         =self.t('blocked_until')
+         | 
+         !=self.timetag(self.penalty_expire, 'compact')
+
+         button.btn.btn-sm.btn-outline-danger.float-xs-right(data-on-click='admin.users.members.edit:unblock', data-user-hid=self.user.hid)= self.t('unblock')
+
     form#member_edit_form.form-horizontal(data-on-submit='admin.users.members.edit:submit', data-user-hid=self.user.hid)
       fieldset
 

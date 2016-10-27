@@ -8,6 +8,8 @@ en-US:
   post_count: Posts
   button_save: Save
   saved: Saved
+  blocked_until: Blocked until
+  unblock: Unblock
   delete_dialogs: Remove dialogs
   delete_votes: Remove votes
   dialogs_deleted: Dialogs removed
@@ -20,3 +22,4 @@ en-US:
   restore_account_confirm: Are you sure you want to restore this account?
   delete_dialogs_confirm: Are you sure you want to remove all dialogs associated with this account?
   delete_votes_confirm: Are you sure you want to remove all votes created by this user?
+  unblock_confirm: Are you sure you want to unblock this user?
