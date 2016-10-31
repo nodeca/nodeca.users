@@ -3,15 +3,19 @@
 'use strict';
 
 
-const ko = require('knockout');
-
-
 let view = null;
+
+
+N.wire.on('navigate.preload:' + module.apiPath, function load_deps(preload) {
+  preload.push('vendor.knockout');
+});
 
 
 // Page enter
 //
 N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
+  const ko = require('knockout');
+
   view = { hasError: ko.observable(false) };
   ko.applyBindings(view, $('#content')[0]);
 });
@@ -24,6 +28,8 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   // Page exit
   //
   N.wire.on('navigate.exit:' + module.apiPath, function page_exit() {
+    const ko = require('knockout');
+
     ko.cleanNode($('#content')[0]);
     view = null;
   });

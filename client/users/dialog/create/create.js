@@ -3,8 +3,7 @@
 'use strict';
 
 
-const _          = require('lodash');
-const Bloodhound = require('typeahead.js/dist/bloodhound.js');
+const _ = require('lodash');
 
 
 let options;
@@ -19,6 +18,11 @@ function updateOptions() {
     emoji:           options.user_settings.no_emojis         ? false : options.parse_options.emoji
   }));
 }
+
+
+N.wire.on('navigate.preload:' + module.apiPath, function load_deps(preload) {
+  preload.push('vendor.typeahead');
+});
 
 
 // Load mdedit
@@ -47,6 +51,8 @@ N.wire.before(module.apiPath + ':begin', function fetch_options() {
 // Show editor and add handlers for editor events
 //
 N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
+  const Bloodhound = require('typeahead.js/dist/bloodhound.js');
+
   let $editor = N.MDEdit.show({
     draftKey: [ 'dialog_create', N.runtime.user_hid, to_user ? to_user.nick : '' ].join('_'),
     draftCustomFields: {

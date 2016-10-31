@@ -8,8 +8,10 @@
 
 const _           = require('lodash');
 const filter_jpeg = require('nodeca.users/lib/filter_jpeg');
-const pica        = require('pica');
 
+
+// Promise that waits for pica dependency to load
+let waitForPica;
 
 // Avatar upload finish callback
 let onUploaded;
@@ -81,6 +83,8 @@ let redrawTaskId = 0;
 // Built high quality avatar preview. This is slow, do
 // it only after user stopped cropper change
 let previewHqUpdate = _.debounce(() => {
+  const pica = require('pica');
+
   let width = cropperRight - cropperLeft;
   let height = cropperBottom - cropperTop;
 
@@ -107,6 +111,8 @@ let previewHqUpdate = _.debounce(() => {
 
 
 let previewUpdate = _.debounce(() => {
+  const pica = require('pica');
+
   if (redrawPreviewStarted) return;
 
   redrawPreviewStarted = true;
@@ -575,7 +581,9 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
         $dropZone.removeClass('active');
 
         if (data.files && data.files.length) {
-          loadImage(data.files[0]);
+          waitForPica
+            .then(() => loadImage(data.files[0]))
+            .catch(err => N.wire.emit('error', err));
         }
         break;
 
@@ -590,6 +598,7 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
   let formData;
 
   N.wire.on('users.avatar.change:apply', function change_avatar_resize(__, callback) {
+    const pica = require('pica');
 
     var width = cropperRight - cropperLeft;
     var height = cropperBottom - cropperTop;
@@ -727,7 +736,11 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
 
   $('#avatar-change__upload').on('change', function () {
     let files = $(this)[0].files;
-    if (files.length > 0) loadImage(files[0]);
+    if (files.length > 0) {
+      waitForPica
+        .then(() => loadImage(files[0]))
+        .catch(err => N.wire.emit('error', err));
+    }
   });
 
   // Update cropper on dialog open.
@@ -738,4 +751,11 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
   });
 
   $dialog.modal('show');
+
+  waitForPica = new Promise((resolve, reject) => {
+    N.loader.loadAssets('vendor.pica', function (err) {
+      if (err) reject(err);
+      else resolve(err);
+    });
+  });
 });

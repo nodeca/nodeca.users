@@ -2,12 +2,16 @@
 
 'use strict';
 
-const Pikaday = require('pikaday');
-
 let picker;
+
+N.wire.on('navigate.preload:users.settings.about', function load_deps(preload) {
+  preload.push('vendor.pikaday');
+});
 
 
 N.wire.on('navigate.done:users.settings.about', function initialize_datepicker() {
+  const Pikaday = require('pikaday');
+
   let container = $('.user-settings-about-birthday');
 
   if (!container.length) return;

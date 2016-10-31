@@ -1,11 +1,12 @@
 'use strict';
 
 
-var ko = require('knockout');
 var _  = require('lodash');
 
 
 function Setting(name, schema, value) {
+  const ko = require('knockout');
+
   var self = this;
   var tHelp = 'users.setting_names.' + name + '__help';
 
@@ -36,6 +37,8 @@ function Setting(name, schema, value) {
 
 
 function Form(page_data) {
+  const ko = require('knockout');
+
   var self = this, categoryName, categorySettings, setting;
 
   this.categories = [];
@@ -110,11 +113,20 @@ Form.prototype.submit = function submit() {
 };
 
 
+N.wire.on('navigate.preload:' + module.apiPath, function load_deps(preload) {
+  preload.push('vendor.knockout');
+});
+
+
 N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
+  const ko = require('knockout');
+
   ko.applyBindings(new Form(N.runtime.page_data), $('#user-settings-general').get(0));
 });
 
 
 N.wire.on('navigate.exit:' + module.apiPath, function page_exit() {
+  const ko = require('knockout');
+
   ko.cleanNode($('#user-settings-general').get(0));
 });

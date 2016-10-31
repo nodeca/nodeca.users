@@ -4,8 +4,6 @@
 
 
 const _  = require('lodash');
-const ko = require('knockout');
-
 
 const CHECK_NICK_DELAY = 1000;
 
@@ -16,6 +14,8 @@ let view = null;
 // View model for editable fields of the form: email, pass and nick.
 //
 function Control(defaultHelp) {
+  const ko = require('knockout');
+
   this.defaultHelp = defaultHelp;
 
   this.hasError = ko.observable(false);
@@ -25,9 +25,16 @@ function Control(defaultHelp) {
 }
 
 
+N.wire.on('navigate.preload:' + module.apiPath, function load_deps(preload) {
+  preload.push('vendor.knockout');
+});
+
+
 // Page enter
 //
 N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
+  const ko = require('knockout');
+
   // Root view model.
   view = {
     email: new Control(t('')),
@@ -77,6 +84,8 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   // Page exit
   //
   N.wire.on('navigate.exit:' + module.apiPath, function page_exit() {
+    const ko = require('knockout');
+
     ko.cleanNode($('#content')[0]);
     view = null;
   });

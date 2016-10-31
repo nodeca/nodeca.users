@@ -2,10 +2,11 @@
 
 
 const _  = require('lodash');
-const ko = require('knockout');
 
 
 function Setting(field) {
+  const ko = require('knockout');
+
   var self = this;
   var tHelp = 'users.settings.about.' + field.name + '__help';
 
@@ -24,6 +25,8 @@ function Setting(field) {
 
 
 function Form(page_data) {
+  const ko = require('knockout');
+
   let self = this;
 
   this.about = {};
@@ -97,11 +100,20 @@ Form.prototype.submit = function submit() {
 };
 
 
+N.wire.on('navigate.preload:' + module.apiPath, function load_deps(preload) {
+  preload.push('vendor.knockout');
+});
+
+
 N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
+  const ko = require('knockout');
+
   ko.applyBindings(new Form(N.runtime.page_data), $('#user-settings-about').get(0));
 });
 
 
 N.wire.on('navigate.exit:' + module.apiPath, function page_exit() {
+  const ko = require('knockout');
+
   ko.cleanNode($('#user-settings-about').get(0));
 });

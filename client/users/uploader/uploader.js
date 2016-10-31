@@ -24,7 +24,6 @@
 
 
 const filter_jpeg = require('nodeca.users/lib/filter_jpeg');
-const pica        = require('pica');
 
 
 let settings;
@@ -75,6 +74,8 @@ function checkFile(data) {
 // Resize image if needed
 //
 function resizeImage(data) {
+  const pica = require('pica');
+
   return new Promise((resolve, reject) => {
     // Next tick
     setTimeout(() => {
@@ -368,6 +369,13 @@ N.wire.before(module.apiPath + ':add', function load_config(data) {
   return N.io.rpc(data.config).then(function (uploaderSettings) {
     settings = uploaderSettings;
   });
+});
+
+
+// Load dependencies
+//
+N.wire.before(module.apiPath + ':add', function load_deps(__, callback) {
+  N.loader.loadAssets('vendor.pica', callback);
 });
 
 

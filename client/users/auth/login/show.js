@@ -3,13 +3,15 @@
 'use strict';
 
 
-const ko = require('knockout');
-
-
 // Knockout view model of the page.
 let view = null;
 let redirectId;
 let previousPageParams = null;
+
+
+N.wire.on('navigate.preload:' + module.apiPath, function load_deps(preload) {
+  preload.push('vendor.knockout');
+});
 
 
 // Global listener to save previous page params
@@ -22,6 +24,8 @@ N.wire.on('navigate.exit', function save_previous_page_params(data) {
 // Page enter
 //
 N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
+  const ko = require('knockout');
+
   redirectId = data.params.redirect_id;
 
   view = {
@@ -47,6 +51,8 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   // Page exit
   //
   N.wire.on('navigate.exit:' + module.apiPath, function page_exit() {
+    const ko = require('knockout');
+
     ko.cleanNode($('#content')[0]);
     view = null;
   });
