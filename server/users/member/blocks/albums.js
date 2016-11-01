@@ -27,8 +27,11 @@ module.exports = function (N) {
 
     let albums = yield query;
 
-    // Try to remove default album
-    albums = albums.filter(album => album.default !== true);
+    // Try to remove default album, but still show default album for the
+    // owner if it's the only album (so user can navigate to his albums page)
+    if (env.user_info.user_hid !== env.data.user.hid || albums.length > 1) {
+      albums = albums.filter(album => album.default !== true);
+    }
 
     if (albums.length === 0) return;
 
