@@ -29,6 +29,19 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Fetch permissions
+  //
+  N.wire.before(apiPath, function* fetch_permissions(env) {
+    let users_mod_can_delete_media = yield env.extras.settings.fetch('users_mod_can_delete_media');
+
+    env.data.settings = env.data.settings || {};
+    env.data.settings.users_mod_can_delete_media = users_mod_can_delete_media;
+
+    env.res.settings = env.res.settings || {};
+    env.res.settings.users_mod_can_delete_media = users_mod_can_delete_media;
+  });
+
+
   // Fetch media
   //
   N.wire.before(apiPath, function* fetch_media(env) {
@@ -42,8 +55,10 @@ module.exports = function (N, apiPath) {
     }
 
     let deletedTypes = MediaInfo.types.LIST_DELETED;
+    let can_edit_media = env.data.settings.users_mod_can_delete_media || env.user_info.user_id === String(result.user);
 
-    if (deletedTypes.indexOf(result.type) !== -1 && env.user_info.user_id !== String(result.user)) {
+    // show this page if user is a moderator or media owner
+    if (deletedTypes.indexOf(result.type) !== -1 && !can_edit_media) {
       throw N.io.NOT_FOUND;
     }
 

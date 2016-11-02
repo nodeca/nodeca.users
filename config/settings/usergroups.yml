@@ -90,6 +90,12 @@ setting_schemas:
       type: boolean
       default: false
 
+    users_mod_can_delete_media:
+      priority: 2040
+      category_key: perm_admin
+      type: boolean
+      default: false
+
     cannot_receive_infractions:
       priority: 200
       category_key: perm_users

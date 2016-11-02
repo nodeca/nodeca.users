@@ -1,6 +1,7 @@
 en-US:
   delete: Delete
   move: Move
+  mod_actions: Moderation
   add_comment: Add comment
   restore: deleted, click here to restore
   next: Next

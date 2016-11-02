@@ -25,6 +25,7 @@ module.exports.up = Promise.coroutine(function* (N) {
     cannot_receive_infractions:    { value: true },
     cannot_be_ignored:             { value: true },
     users_mod_can_add_infractions: { value: true },
+    users_mod_can_delete_media:    { value: true },
 
     // same as members
     can_edit_profile:       { value: true },

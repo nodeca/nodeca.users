@@ -37,6 +37,8 @@ i18n:
 
           can_see_ip: Show IP
 
+          users_mod_can_delete_media: Can delete media
+
           can_add_mod_notes: Can add moderator's notes
 
           can_delete_mod_notes: Can delete moderator's notes

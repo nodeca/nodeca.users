@@ -8,8 +8,9 @@ module.exports = function (N, apiPath) {
 
 
   N.validate(apiPath, {
-    media_id: { format: 'mongo', required: true },
-    revert:  { type: 'boolean' }
+    media_id:     { format: 'mongo', required: true },
+    as_moderator: { type: 'boolean', required: true },
+    revert:       { type: 'boolean' }
   });
 
 
@@ -22,8 +23,15 @@ module.exports = function (N, apiPath) {
       throw N.io.NOT_FOUND;
     }
 
-    // Check media owner
-    if (env.user_info.user_id !== String(media.user)) {
+    if (env.params.as_moderator) {
+      // Permit as moderator
+      let users_mod_can_delete_media = yield env.extras.settings.fetch('users_mod_can_delete_media');
+
+      if (!users_mod_can_delete_media) {
+        throw N.io.FORBIDDEN;
+      }
+    } else if (env.user_info.user_id !== String(media.user)) {
+      // Check media owner
       throw N.io.FORBIDDEN;
     }
 
