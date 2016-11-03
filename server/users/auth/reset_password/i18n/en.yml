@@ -14,7 +14,7 @@ en-US:
 
       #{link}
 
-      If you did not requested password reset or changed your mind,
+      If you did not request password reset or changed your mind,
       just ignore this letter.
 
   request_done_show:

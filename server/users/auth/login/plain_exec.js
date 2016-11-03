@@ -28,11 +28,10 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // If there is neither email_or_nick or pass - stop before database queries.
+  // If email_or_nick is not specified, stop before database queries.
   //
   N.wire.before(apiPath, function check_params(env) {
-    if (_.isEmpty(env.params.email_or_nick) ||
-        _.isEmpty(env.params.pass)) {
+    if (_.isEmpty(env.params.email_or_nick)) {
       throw {
         code:    N.io.CLIENT_ERROR,
         message: env.t('err_login_failed')
@@ -122,6 +121,44 @@ module.exports = function (N, apiPath) {
 
     env.data.user = user;
     env.data.authLink_plain = authLink;
+  });
+
+
+  // If password is empty, send an email with a one-time link to log in
+  //
+  N.wire.on(apiPath, function* create_otp_email_token(env) {
+    if (!env.data.user || !env.data.authLink_plain) return;
+
+    // user already verified by other hooks, nothing left to do
+    if (env.data.authLink) return;
+
+    if (!_.isEmpty(env.params.pass)) return;
+
+    let token = yield N.models.users.TokenLoginByEmail.create({
+      user:        env.data.user._id,
+      ip:          env.req.ip,
+      redirect_id: env.params.redirect_id
+    });
+
+    let general_project_name = yield N.settings.get('general_project_name');
+
+    let link = env.helpers.link_to('users.auth.login.by_email_exec', {
+      secret_key: token.secret_key
+    });
+
+    yield N.mailer.send({
+      to:         env.data.authLink_plain.email,
+      subject:    env.t('email_subject', { project_name: general_project_name }),
+      text:       env.t('email_text',    { link, ip: env.req.ip }),
+      safe_error: true
+    });
+
+    throw {
+      code: N.io.REDIRECT,
+      head: {
+        Location: N.router.linkTo('users.auth.login.by_email_show')
+      }
+    };
   });
 
 

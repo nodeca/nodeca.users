@@ -5,3 +5,17 @@ en-US:
       again. Or use link below to reset your password.
 
     err_captcha_wrong: CAPTCHA verification failed, try again.
+
+    email_subject: '#{project_name}: link for logging in.'
+    email_text: |
+      This message is sent because of log in attempt from IP #{ip}
+
+      Follow this link to log in:
+
+      #{link}
+
+      If you did not try to log in or changed your mind,
+      just ignore this letter.
+
+  by_email_exec:
+    err_bad_token: Invalid security token.

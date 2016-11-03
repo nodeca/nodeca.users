@@ -41,6 +41,7 @@
                 type='password'
                 placeholder=self.t('password_desc')
               )
+              small.form-text.text-muted= self.t('password_help')
 
             // ko with: recaptcha_response_field
             != self.partial('@common.blocks.recaptcha')

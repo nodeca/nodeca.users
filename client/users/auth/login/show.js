@@ -96,6 +96,10 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
           });
       })
       .catch(err => {
+        if (err.code === N.io.REDIRECT) {
+          return N.wire.emit('navigate.to', err.head.Location);
+        }
+
         // Force captcha on every attempt.
         N.wire.emit('common.blocks.recaptcha.update');
 

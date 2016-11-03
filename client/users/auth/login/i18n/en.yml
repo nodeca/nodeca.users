@@ -6,6 +6,11 @@ en-US:
     email_desc: Enter email
     password: Password
     password_desc: Password
+    password_help: If you leave password empty, we will email you a link you can use to log in
     enter: Login
     forgot: forgot password?
     oauth_info: Log in via
+
+  by_email_show:
+    message:
+      One-time login link is sent to your email address.
