@@ -126,7 +126,7 @@ module.exports = function (N, collectionName) {
       return;
     }
 
-    N.models.core.File.remove(this.media_id, true, callback);
+    N.models.core.File.remove(this.media_id, true).asCallback(callback);
   });
 
 
