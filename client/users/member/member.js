@@ -26,12 +26,12 @@ N.wire.on('navigate.done:' + module.apiPath, function store_blocks_state(data) {
     .on('shown.bs.collapse', event => {
       collapsedBlocks = _.without(collapsedBlocks, $(event.target).attr('id'));
 
-      bag.set(key, collapsedBlocks);
+      bag.set(key, collapsedBlocks).catch(() => {}); // Suppress storage errors
     })
     .on('hidden.bs.collapse', function (event) {
       collapsedBlocks.push($(event.target).attr('id'));
 
-      bag.set(key, collapsedBlocks);
+      bag.set(key, collapsedBlocks).catch(() => {}); // Suppress storage errors
     });
 
   // Restore previous state
