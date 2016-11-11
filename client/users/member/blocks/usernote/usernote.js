@@ -39,8 +39,8 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
 
   // Load mdedit
   //
-  N.wire.before(module.apiPath + ':edit', function load_mdedit(__, callback) {
-    N.loader.loadAssets('mdedit', callback);
+  N.wire.before(module.apiPath + ':edit', function load_mdedit() {
+    return N.loader.loadAssets('mdedit');
   });
 
 

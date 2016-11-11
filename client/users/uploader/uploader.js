@@ -374,8 +374,8 @@ N.wire.before(module.apiPath + ':add', function load_config(data) {
 
 // Load dependencies
 //
-N.wire.before(module.apiPath + ':add', function load_deps(__, callback) {
-  N.loader.loadAssets('vendor.pica', callback);
+N.wire.before(module.apiPath + ':add', function load_deps() {
+  return N.loader.loadAssets('vendor.pica');
 });
 
 

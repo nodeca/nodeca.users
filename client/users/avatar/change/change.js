@@ -752,10 +752,5 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
 
   $dialog.modal('show');
 
-  waitForPica = new Promise((resolve, reject) => {
-    N.loader.loadAssets('vendor.pica', function (err) {
-      if (err) reject(err);
-      else resolve(err);
-    });
-  });
+  waitForPica = N.loader.loadAssets('vendor.pica');
 });

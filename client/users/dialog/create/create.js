@@ -20,15 +20,10 @@ function updateOptions() {
 }
 
 
-N.wire.on('navigate.preload:' + module.apiPath, function load_deps(preload) {
-  preload.push('vendor.typeahead');
-});
-
-
-// Load mdedit
+// Load dependencies
 //
-N.wire.before(module.apiPath + ':begin', function load_mdedit(__, callback) {
-  N.loader.loadAssets('mdedit', callback);
+N.wire.before(module.apiPath + ':begin', function load_deps() {
+  return N.loader.loadAssets([ 'mdedit', 'vendor.typeahead' ]);
 });
 
 
