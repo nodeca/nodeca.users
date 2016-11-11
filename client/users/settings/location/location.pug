@@ -1,0 +1,24 @@
+#content.user-settings-location
+  - var navbar_args = { level_up: self.link_to('users.member', { user_hid: self.runtime.user_hid }) };
+  != self.partial('@common.blocks.navbar.levelup_apps', navbar_args)
+
+  nav.breadcrumbs-container
+    .layout__container.container-fluid
+      != self.partial('@users.blocks.breadcrumbs')
+
+  .layout__container.container-fluid
+    != self.partial('@users.blocks.announces')
+
+    header.page-head
+      h1.page-head__title(itemprop='name')= self.t('title')
+      p.page-head__descr.hidden-xs-down(itemprop='description')
+        = self.t('description')
+
+    .alert.alert-warning
+      = self.t('notice')
+
+    .user-settings-location__map-container
+      .user-settings-location__map
+
+    .user-settings-location__actions.form-actions
+      button.btn.btn-primary.float-xs-right(type='submit')= self.t('submit')

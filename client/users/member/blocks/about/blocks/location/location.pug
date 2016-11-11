@@ -1,0 +1,23 @@
+- var own_page = (self.runtime.user_hid === self.user.hid)
+
+if own_page
+  a(href=self.link_to('users.settings.location'))
+    span.icon.icon-location.icon-space-after
+
+    if self.value.name
+      = self.value.name
+    else
+      = self.t('edit')
+else
+  a(
+    href= '#'
+    data-on-click= 'common.blocks.location_show_dlg'
+    data-latitude= self.value.point && self.value.point[0]
+    data-longitude= self.value.point && self.value.point[1]
+  )
+    span.icon.icon-location.icon-space-after
+
+    if self.value.name
+      = self.value.name
+    else
+      = self.t('show')

@@ -34,5 +34,5 @@
           small.form-text.text-muted(data-bind='text: about.' + name + '.help')
           <!-- /ko -->
 
-      br
-      button.btn.btn-primary(type='submit', data-bind='enable: isDirty() && !isSubmitting()')= self.t('submit')
+      .form-actions
+        button.btn.btn-primary(type='submit', data-bind='enable: isDirty() && !isSubmitting()')= self.t('submit')

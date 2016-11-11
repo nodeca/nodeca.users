@@ -1,0 +1,13 @@
+label.col-form-label.col-xs-3=self.t(self.name)
+.col-xs-4.control-value
+  .form-control-static
+    a(
+      href= '#'
+      data-on-click= 'admin.core.blocks.location_show_dlg'
+      data-latitude= self.value.point && self.value.point[0]
+      data-longitude= self.value.point && self.value.point[1]
+    )
+      if self.value.name
+        = self.value.name
+      else
+        = self.t('show')

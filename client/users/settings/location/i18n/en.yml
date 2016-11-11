@@ -1,0 +1,5 @@
+en-US:
+  title: My location
+  description: Click on the map to select your location.
+  notice: Precise location is not required, you can pick any place in the vicinity.
+  submit: Save

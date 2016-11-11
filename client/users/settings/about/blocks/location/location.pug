@@ -1,0 +1,11 @@
+<!-- ko with: about.#{self.name} -->
+label=self.t('location')
+.form-group
+  a.form-control-static(href=self.link_to('users.settings.location'))
+    span.icon.icon-location.icon-space-after
+
+    if self.value.name
+      = self.value.name
+    else
+      = self.t('edit')
+// /ko

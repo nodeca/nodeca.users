@@ -39,6 +39,9 @@ router:
     users.settings.ignore:
       "/settings/ignore": ~
 
+    users.settings.location:
+      "/settings/location": ~
+
     users.subscriptions.index:
       "/tracker/subscriptions": ~
 

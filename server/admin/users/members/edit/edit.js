@@ -90,24 +90,30 @@ module.exports = function (N, apiPath) {
     }
 
     env.res.fields.push({
+      name:     'location',
+      value:    { point: [ 0, 0 ], name: 'Null Island' },
+      priority: 210
+    });
+
+    env.res.fields.push({
       name:     'registered',
       text:     env.t('registered_date_ip', {
         date: user.joined_ts ? user.joined_ts.toISOString().slice(0, 10) : '—',
         ip:   user.joined_ip || '—'
       }),
-      priority: 200
+      priority: 210
     });
 
     env.res.fields.push({
       name:     'last_visited',
       text:     user.last_active_ts ? user.last_active_ts.toISOString().slice(0, 10) : '—',
-      priority: 210
+      priority: 220
     });
 
     env.res.fields.push({
       name:     'post_count',
       text:     user.post_count || 0,
-      priority: 210
+      priority: 230
     });
 
     env.res.fields.push({

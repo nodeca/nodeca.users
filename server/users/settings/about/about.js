@@ -48,6 +48,12 @@ module.exports = function (N, apiPath) {
       priority: 10
     });
 
+    env.res.about.push({
+      name:     'location',
+      value:    { point: [ 0, 0 ], name: 'Null Island' },
+      priority: 20
+    });
+
     if (N.config.users && N.config.users.about) {
       for (let name of Object.keys(N.config.users.about)) {
         env.res.about.push({
