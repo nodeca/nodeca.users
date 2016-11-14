@@ -21,4 +21,8 @@
       .user-settings-location__map
 
     .user-settings-location__actions.form-actions
-      button.btn.btn-primary.float-xs-right(type='submit')= self.t('submit')
+      button.user-settings-location__submit.btn.btn-primary.float-xs-right(
+        data-on-click='users.settings.location:save'
+        type='submit'
+        disabled
+      )= self.t('submit')
