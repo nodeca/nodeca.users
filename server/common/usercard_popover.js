@@ -114,6 +114,9 @@ module.exports = function (N, apiPath) {
       'last_active_ts'
     ]);
 
+    // only show contacts to registered users
+    let show_contacts = env.user_info.is_member;
+
     // only registered users can see full name and avatar
     if (env.user_info.is_member) {
       env.res.user.name = env.data.user.name;
@@ -125,7 +128,7 @@ module.exports = function (N, apiPath) {
 
     let birthday = env.data.user.about && env.data.user.about.birthday;
 
-    if (birthday) {
+    if (birthday && show_contacts) {
       let now = new Date();
       let age = now.getFullYear() - birthday.getFullYear();
 
@@ -135,9 +138,8 @@ module.exports = function (N, apiPath) {
       env.res.age = Math.max(age, 0);
     }
 
-    env.res.location = {
-      point: [ 0, 0 ],
-      name: 'Null Island'
-    };
+    if (env.data.user.location && show_contacts) {
+      env.res.location = env.data.user.location;
+    }
   });
 };

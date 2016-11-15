@@ -32,16 +32,17 @@ module.exports = function (N, collectionName) {
     locale         : String,
     name           : String,
     post_count     : { type: Number, 'default': 0 },
-
     avatar_id      : Schema.Types.ObjectId,
+
+    // coordinates, either [ Number, Number ] or Null
+    location       : Schema.Types.Mixed,
 
     // Profile data (contacts, location, etc.)
     //
     // Format is like this:
     // {
-    //   jabber:       String,
-    //   icq:          String,
-    //   location:     [ Number, Number ],
+    //   jabber: String,
+    //   icq:    String,
     //   ... etc ...
     // }
     //

@@ -2,18 +2,21 @@
 
 if own_page
   a(href=self.link_to('users.settings.location'))
-    span.icon.icon-location.icon-space-after
+    if self.value
+      span.icon.icon-location.icon-space-after
 
-    if self.value.name
-      = self.value.name
+      if self.value.name
+        = self.value.name
+      else
+        = self.t('edit')
     else
-      = self.t('edit')
+      = self.t('set')
 else
   a(
     href= '#'
     data-on-click= 'common.blocks.location_show_dlg'
-    data-latitude= self.value.point && self.value.point[0]
-    data-longitude= self.value.point && self.value.point[1]
+    data-latitude= self.value.location && self.value.location[0]
+    data-longitude= self.value.location && self.value.location[1]
   )
     span.icon.icon-location.icon-space-after
 

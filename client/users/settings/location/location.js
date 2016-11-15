@@ -45,11 +45,25 @@ N.wire.on('navigate.preload:' + module.apiPath, function load_deps(preload) {
 N.wire.on('navigate.done:' + module.apiPath, function initialize_map() {
   const leaflet = require('leaflet').noConflict();
 
-  map = leaflet.map($('.user-settings-location__map')[0]).setView([ 20, 0 ], 2);
+  let container = $('.user-settings-location__map');
+
+  map = leaflet.map(container[0]);
 
   leaflet.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://osm.org/copyright" target="_blank">OpenStreetMap</a> contributors'
   }).addTo(map);
+
+  if (N.runtime.page_data.location) {
+    set_marker_position(
+      N.runtime.page_data.location[0],
+      N.runtime.page_data.location[1]
+    );
+
+    map.setView(N.runtime.page_data.location, 10);
+  } else {
+    // adjust position and zoom to fit the entire map in viewport
+    map.setView([ 20, 0 ], container.width() > 600 ? 2 : 1);
+  }
 
   map.on('click', e => set_marker_position(e.latlng.lat, e.latlng.lng));
 });

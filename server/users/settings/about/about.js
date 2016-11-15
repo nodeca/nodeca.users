@@ -50,7 +50,9 @@ module.exports = function (N, apiPath) {
 
     env.res.about.push({
       name:     'location',
-      value:    { point: [ 0, 0 ], name: 'Null Island' },
+      value:    env.data.user.location ?
+                { location: env.data.user.location } :
+                null,
       priority: 20
     });
 

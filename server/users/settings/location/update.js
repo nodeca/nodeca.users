@@ -37,7 +37,10 @@ module.exports = function (N, apiPath) {
 
   // Save location
   //
-  N.wire.on(apiPath, function* save_location(/* env */) {
-    // TODO
+  N.wire.on(apiPath, function* save_location(env) {
+    yield N.models.users.User.update(
+      { _id: env.data.user._id },
+      { $set: { location: [ env.params.latitude, env.params.longitude ] } }
+    );
   });
 };

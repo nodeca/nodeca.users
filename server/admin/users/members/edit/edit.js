@@ -89,11 +89,13 @@ module.exports = function (N, apiPath) {
       }
     }
 
-    env.res.fields.push({
-      name:     'location',
-      value:    { point: [ 0, 0 ], name: 'Null Island' },
-      priority: 210
-    });
+    if (env.data.user.location) {
+      env.res.fields.push({
+        name:     'location',
+        value:    { location: env.data.user.location },
+        priority: 210
+      });
+    }
 
     env.res.fields.push({
       name:     'registered',

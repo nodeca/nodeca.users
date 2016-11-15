@@ -2,10 +2,13 @@
 label=self.t('location')
 .form-group
   a.form-control-static(href=self.link_to('users.settings.location'))
-    span.icon.icon-location.icon-space-after
+    if self.value
+      span.icon.icon-location.icon-space-after
 
-    if self.value.name
-      = self.value.name
+      if self.value.name
+        = self.value.name
+      else
+        = self.t('edit')
     else
-      = self.t('edit')
+      = self.t('set')
 // /ko

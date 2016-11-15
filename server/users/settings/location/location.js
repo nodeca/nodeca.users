@@ -33,6 +33,8 @@ module.exports = function (N, apiPath) {
   // Fill location
   //
   N.wire.on(apiPath, function fill_location(env) {
+    if (!env.data.user.location) return;
+
     env.res.location = env.data.user.location;
   });
 

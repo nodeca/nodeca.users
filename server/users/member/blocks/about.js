@@ -21,6 +21,7 @@ module.exports = function (N) {
   //
   N.wire.after('server:users.member', function fill_about(env) {
     let about = env.data.user.about || {};
+    let own_page = String(env.data.user._id) === env.user_info.user_id;
 
     // only show contacts to registered users
     let show_contacts = env.user_info.is_member;
@@ -51,10 +52,12 @@ module.exports = function (N) {
       });
     }
 
-    if (show_contacts) {
+    if (show_contacts && env.data.user.location || own_page) {
       env.res.blocks.about.list.push({
         name:     'location',
-        value:    { point: [ 0, 0 ], name: 'Null Island' },
+        value:    env.data.user.location ?
+                  { location: env.data.user.location } :
+                  null,
         priority: 30
       });
     }
