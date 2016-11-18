@@ -65,7 +65,25 @@ N.wire.on('navigate.done:' + module.apiPath, function initialize_map() {
     map.setView([ 20, 0 ], container.width() > 600 ? 2 : 1);
   }
 
-  map.on('click', e => set_marker_position(e.latlng.lat, e.latlng.lng));
+  let timer;
+  let prevent_click = false;
+
+  map.on('click', e => {
+    // solution to avoid double-click triggering click event is similar to
+    // https://css-tricks.com/snippets/javascript/bind-different-events-to-click-and-double-click/
+    timer = setTimeout(function () {
+      if (!prevent_click) {
+        set_marker_position(e.latlng.lat, e.latlng.lng);
+      }
+
+      prevent_click = false;
+    }, 300);
+  });
+
+  map.on('dblclick', () => {
+    prevent_click = true;
+    clearTimeout(timer);
+  });
 });
 
 

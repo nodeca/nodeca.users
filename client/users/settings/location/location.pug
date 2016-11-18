@@ -16,15 +16,14 @@
       p.page-head__descr.hidden-xs-down(itemprop='description')
         = self.t('description')
 
-    .alert.alert-warning
-      = self.t('notice')
-
     .user-settings-location__map-container
       .user-settings-location__map
 
-    .user-settings-location__actions.form-actions
-      button.user-settings-location__submit.btn.btn-primary.float-xs-right(
+      button.user-settings-location__submit.btn.btn-primary(
         data-on-click='users.settings.location:save'
         type='submit'
         disabled
       )= self.t('submit')
+
+    .alert.alert-warning
+      = self.t('notice')
