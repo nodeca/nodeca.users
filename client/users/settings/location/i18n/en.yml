@@ -4,3 +4,10 @@ en-US:
   notice: Precise location is not required, you can pick any place in the vicinity.
   submit: Save
   saved: Location saved
+
+  err_geolocation_denied: 'No permission to locate your position'
+  err_geolocation_unavailable: 'Failed to locate your position: data unavailable'
+  err_geolocation_timeout: 'Failed to locate your position: timed out'
+
+  locator_btn:
+    title: My location

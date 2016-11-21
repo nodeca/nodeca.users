@@ -33,6 +33,10 @@ function set_marker_position(lat, lng) {
 
   marker.setLatLng({ lat, lng });
   marker.addTo(map);
+
+  // prevent marker from moving when user clicks on it
+  marker.on('click', leaflet.DomEvent.stop);
+
   $('.user-settings-location__submit').prop('disabled', false);
 }
 
@@ -52,6 +56,47 @@ N.wire.on('navigate.done:' + module.apiPath, function initialize_map() {
   leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://osm.org/copyright" target="_blank">OpenStreetMap</a> contributors'
   }).addTo(map);
+
+  let Locator = leaflet.Control.extend({
+    options: { position: 'topleft' },
+    onAdd() {
+      let container = $(N.runtime.render('users.settings.location.locator_btn'));
+      let link = container.find('.user-settings-location__locator-btn')[0];
+
+      // using code similar to leaflet core to make sure button behavior
+      // is exactly the same as other buttons (zoom in/zoom out)
+      leaflet.DomEvent
+        .on(link, 'mousedown dblclick', leaflet.DomEvent.stopPropagation)
+        .on(link, 'click', leaflet.DomEvent.stop)
+        .on(link, 'click', function () {
+          let error_catched = false;
+
+          window.navigator.geolocation.getCurrentPosition(function success(position) {
+            map.setView(
+              [ position.coords.latitude, position.coords.longitude ],
+              Math.max(10, map.getZoom())
+            );
+          }, function error(err) {
+            if (error_catched) return;
+
+            error_catched = true;
+
+            let err_map = { 1: 'denied', 2: 'unavailable', 3: 'timeout' };
+
+            if (err.code && err_map[err.code]) {
+              N.wire.emit('notify', {
+                type: 'error',
+                message: t('err_geolocation_' + err_map[err.code])
+              });
+            }
+          }, { timeout: 10000 });
+        });
+
+      return container[0];
+    }
+  });
+
+  map.addControl(new Locator());
 
   if (N.runtime.page_data.location) {
     set_marker_position(
