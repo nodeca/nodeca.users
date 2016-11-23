@@ -1,20 +1,21 @@
 <!-- ko with: about.#{self.name} -->
-label=self.t('birthday')
-.form-group
-  // ko if: readonly
+label.user-settings-about-field__label=self.t('birthday')
+
+// ko if: readonly
+input.form-control(
+  type='text',
+  data-bind='value: value, valueUpdate: "keyup"',
+  disabled
+)
+// /ko
+
+// ko ifnot: readonly
+.input-group.user-settings-about-birthday
   input.form-control(
     type='text',
     data-bind='value: value, valueUpdate: "keyup"',
-    disabled
+    readonly
   )
-  // /ko
+// /ko
 
-  // ko ifnot: readonly
-  .input-group.user-settings-about-birthday
-    input.form-control(
-      type='text',
-      data-bind='value: value, valueUpdate: "keyup"',
-      readonly
-    )
-  // /ko
 // /ko

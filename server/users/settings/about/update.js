@@ -9,11 +9,11 @@ module.exports = function (N, apiPath) {
 
   let validate_params = {};
 
-  validate_params.birthday = { type: [ 'string', 'null' ], required: true };
+  validate_params.birthday = { type: [ 'string', 'null' ] };
 
   if (N.config.users && N.config.users.about) {
     for (let name of Object.keys(N.config.users.about)) {
-      validate_params[name] = { type: [ 'string', 'null' ], required: true };
+      validate_params[name] = { type: [ 'string', 'null' ] };
     }
   }
 
@@ -80,9 +80,14 @@ module.exports = function (N, apiPath) {
 
     if (N.config.users && N.config.users.about) {
       for (let name of Object.keys(N.config.users.about)) {
+        if (typeof env.params[name] === 'undefined') continue;
+
         let value = (env.params[name] || '').trim();
 
-        if (!value) continue;
+        if (!value) {
+          delete env.data.user.about[name];
+          continue;
+        }
 
         // try to validate it using regexp
         if (N.config.users.about[name].validate_re) {

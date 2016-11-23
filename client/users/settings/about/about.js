@@ -16,10 +16,16 @@ function Setting(field) {
   this.help        = N.runtime.t.exists(tHelp) ? N.runtime.t(tHelp) : '';
   this._value      = field.value;
   this.value       = ko.observable(this._value);
+  this._mandatory  = field.mandatory;
 
   this.modified = ko.computed(function () {
-    return (self._value !== self.value()) ||
-           (!self._value && !self.value()); // assume '' is equal to null
+    // assume '' is equal to null
+    return (self._value || '') !== (self.value() || '');
+  });
+
+  // show asterisk on mandatory fields if field is empty when page loads
+  this.must_fill = ko.computed(function () {
+    return !self._value && self._mandatory;
   });
 }
 
