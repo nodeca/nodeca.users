@@ -104,7 +104,7 @@ module.exports = function (N, apiPath) {
 
   // Fill user
   //
-  N.wire.on(apiPath, function fill_user(env) {
+  N.wire.on(apiPath, function* fill_user(env) {
     env.res.user = _.pick(env.data.user, [
       '_id',
       'hid',
@@ -139,7 +139,8 @@ module.exports = function (N, apiPath) {
     }
 
     if (env.data.user.location && show_contacts) {
-      env.res.location = env.data.user.location;
+      env.res.location      = env.data.user.location;
+      env.res.location_name = (yield N.models.core.Location.info([ env.data.user.location ], env.user_info.locale))[0];
     }
   });
 };

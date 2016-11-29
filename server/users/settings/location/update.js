@@ -38,9 +38,12 @@ module.exports = function (N, apiPath) {
   // Save location
   //
   N.wire.on(apiPath, function* save_location(env) {
-    yield N.models.users.User.update(
-      { _id: env.data.user._id },
-      { $set: { location: [ env.params.latitude, env.params.longitude ] } }
-    );
+    env.data.user.location = [ env.params.longitude, env.params.latitude ];
+
+    yield env.data.user.save();
+
+    // trigger location name resolution with priority,
+    // so user will see their own location name on other pages quicker
+    N.models.users.User.resolveLocation(env.data.user._id, env.user_info.locale);
   });
 };

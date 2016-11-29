@@ -100,11 +100,14 @@ N.wire.on('navigate.done:' + module.apiPath, function initialize_map() {
 
   if (N.runtime.page_data.location) {
     set_marker_position(
-      N.runtime.page_data.location[0],
-      N.runtime.page_data.location[1]
+      N.runtime.page_data.location[1],
+      N.runtime.page_data.location[0]
     );
 
-    map.setView(N.runtime.page_data.location, 10);
+    map.setView([
+      N.runtime.page_data.location[1],
+      N.runtime.page_data.location[0]
+    ], 10);
   } else {
     // adjust position and zoom to fit the entire map in viewport
     map.setView([ 20, 0 ], container.width() > 600 ? 2 : 1);

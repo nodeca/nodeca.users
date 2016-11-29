@@ -92,7 +92,10 @@ module.exports = function (N, apiPath) {
     if (env.data.user.location) {
       env.res.fields.push({
         name:     'location',
-        value:    { location: env.data.user.location },
+        value:    env.data.user.location ? {
+          location: env.data.user.location,
+          name:     (yield N.models.core.Location.info([ env.data.user.location ], env.user_info.locale))[0]
+        } : null,
         priority: 210
       });
     }

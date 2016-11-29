@@ -19,7 +19,7 @@ module.exports = function (N) {
 
   // Fill contacts
   //
-  N.wire.after('server:users.member', function fill_about(env) {
+  N.wire.after('server:users.member', function* fill_about(env) {
     let about = env.data.user.about || {};
     let own_page = String(env.data.user._id) === env.user_info.user_id;
 
@@ -55,9 +55,10 @@ module.exports = function (N) {
     if (show_contacts && env.data.user.location || own_page) {
       env.res.blocks.about.list.push({
         name:     'location',
-        value:    env.data.user.location ?
-                  { location: env.data.user.location } :
-                  null,
+        value:    env.data.user.location ? {
+          location: env.data.user.location,
+          name:     (yield N.models.core.Location.info([ env.data.user.location ], env.user_info.locale))[0]
+        } : null,
         priority: 30
       });
     }

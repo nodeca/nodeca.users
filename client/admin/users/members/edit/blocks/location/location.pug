@@ -4,8 +4,8 @@ label.col-form-label.col-xs-3=self.t(self.name)
     a(
       href= '#'
       data-on-click= 'admin.core.blocks.location_show_dlg'
-      data-latitude= self.value.location && self.value.location[0]
-      data-longitude= self.value.location && self.value.location[1]
+      data-latitude= self.value.location && self.value.location[1]
+      data-longitude= self.value.location && self.value.location[0]
     )
       if self.value.name
         = self.value.name

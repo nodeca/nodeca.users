@@ -120,6 +120,18 @@ module.exports = function (N, collectionName) {
   };
 
 
+  /**
+   *  models.users.User.resolveLocation(user_id, locale)
+   *
+   *  Resolve name for user location with 5 second delay used for deduplication
+   **/
+  User.statics.resolveLocation = Promise.coroutine(function* resolveLocation(user_id, locale) {
+    yield N.redis.zaddAsync('geo:member', Date.now(), String(user_id) + ':' + locale);
+
+    N.queue.geo_member_location_process().postpone();
+  });
+
+
   // Set `name` equal to `nick` by default,
   // you can override it by adding a custom hook with altered behavior
   //

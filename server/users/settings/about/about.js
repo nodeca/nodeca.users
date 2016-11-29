@@ -35,7 +35,7 @@ module.exports = function (N, apiPath) {
 
   // Fill contacts
   //
-  N.wire.on(apiPath, function fill_contacts(env) {
+  N.wire.on(apiPath, function* fill_contacts(env) {
     let about = env.data.user.about || {};
 
     env.res.about = [];
@@ -50,9 +50,10 @@ module.exports = function (N, apiPath) {
 
     env.res.about.push({
       name:     'location',
-      value:    env.data.user.location ?
-                { location: env.data.user.location } :
-                null,
+      value:    env.data.user.location ? {
+        location: env.data.user.location,
+        name:     (yield N.models.core.Location.info([ env.data.user.location ], env.user_info.locale))[0]
+      } : null,
       priority: 20
     });
 
