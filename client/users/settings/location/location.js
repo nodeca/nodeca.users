@@ -3,6 +3,7 @@
 
 let map;
 let marker;
+let geoip_latlng;
 
 
 // Create a marker if it does not exist, set its position
@@ -43,6 +44,27 @@ function set_marker_position(lat, lng) {
 
 N.wire.on('navigate.preload:' + module.apiPath, function load_deps(preload) {
   preload.push('vendor.leaflet');
+});
+
+
+// If location is not set, try to determine user location by their IP address
+//
+N.wire.before('navigate.done:' + module.apiPath, function get_user_coordinates() {
+  if (N.runtime.page_data.location) return;
+
+  let jqXhr = $.ajax({
+    url: 'https://freegeoip.net/json/',
+    type: 'GET',
+    dataType: 'json',
+    timeout: 2000
+  });
+
+  return Promise.resolve(jqXhr)
+    .then(res => {
+      if (typeof res.latitude === 'number' && typeof res.longitude === 'number') {
+        geoip_latlng = [ res.latitude, res.longitude ];
+      }
+    }, () => { /* ignore errors */ });
 });
 
 
@@ -108,6 +130,9 @@ N.wire.on('navigate.done:' + module.apiPath, function initialize_map() {
       N.runtime.page_data.location[1],
       N.runtime.page_data.location[0]
     ], 10);
+  } else if (geoip_latlng) {
+    // no location set, zoom in on a location determined by ip address
+    map.setView(geoip_latlng, 10);
   } else {
     // adjust position and zoom to fit the entire map in viewport
     map.setView([ 20, 0 ], container.width() > 600 ? 2 : 1);
