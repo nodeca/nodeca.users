@@ -133,9 +133,6 @@ router:
     users.auth.oauth.error_show:
       "/auth/oa/error": ~
 
-    users.rules:
-      "/rules": ~
-
     # Admin panel routes
     admin.users.usergroups.index:
       "/usergroups": ~
