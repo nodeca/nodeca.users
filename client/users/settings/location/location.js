@@ -176,12 +176,15 @@ N.wire.on(module.apiPath + ':save', function save_marker() {
     longitude: latlng.lng > 0 ?
                ((latlng.lng + 180) % 360) - 180 :
                ((latlng.lng - 180) % 360) + 180
-  }).then(() =>
-    N.wire.emit('notify', {
+  }).then(() => {
+    // center map on marker
+    map.flyTo(latlng);
+
+    return N.wire.emit('notify', {
       type: 'info',
       message: t('saved')
-    })
-  ).catch(err => N.wire.emit('error', err));
+    });
+  }).catch(err => N.wire.emit('error', err));
 });
 
 
