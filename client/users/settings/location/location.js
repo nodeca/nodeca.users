@@ -91,17 +91,20 @@ N.wire.on('navigate.done:' + module.apiPath, function initialize_map() {
         .on(link, 'mousedown dblclick', leaflet.DomEvent.stopPropagation)
         .on(link, 'click', leaflet.DomEvent.stop)
         .on(link, 'click', function () {
-          let error_catched = false;
+          // wrap it into promise to ensure it resolves only once
+          new Promise((resolve, reject) => {
+            window.navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+          }).then(function success(position) {
+            // user moved to a different page
+            if (!map) return;
 
-          window.navigator.geolocation.getCurrentPosition(function success(position) {
             map.setView(
               [ position.coords.latitude, position.coords.longitude ],
               Math.max(10, map.getZoom())
             );
           }, function error(err) {
-            if (error_catched) return;
-
-            error_catched = true;
+            // user moved to a different page
+            if (!map) return;
 
             let err_map = { 1: 'denied', 2: 'unavailable', 3: 'timeout' };
 
@@ -111,7 +114,7 @@ N.wire.on('navigate.done:' + module.apiPath, function initialize_map() {
                 message: t('err_geolocation_' + err_map[err.code])
               });
             }
-          }, { timeout: 10000 });
+          });
         });
 
       return container[0];
