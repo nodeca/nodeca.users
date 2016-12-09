@@ -23,7 +23,7 @@ module.exports = function (N, apiPath) {
     if (env.params.strict) {
       query.where('nick').equals(env.params.nick);
     } else {
-      query.where('nick').regex(new RegExp('^' + escapeRegexp(env.params.nick), 'i'));
+      query.where('nick_normalized_lc').regex(new RegExp('^' + escapeRegexp(env.params.nick.toLowerCase())));
     }
 
     env.res = yield query.limit(10)

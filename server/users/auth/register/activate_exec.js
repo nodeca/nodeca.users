@@ -54,15 +54,11 @@ module.exports = function (N, apiPath) {
 
     if (!token) return;
 
-    let id = yield N.models.users.User
-                      .findOne({ nick: token.reg_info.nick })
-                      .select('_id')
-                      .lean(true);
-
-    if (id) {
+    if (yield N.models.users.User.similarExists(env.params.nick)) {
       // Need to terminate chain without 500 error.
       // If user exists - kill fetched token as invalid.
       env.data.token = null;
+      return;
     }
   });
 

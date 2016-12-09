@@ -19,14 +19,10 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    let user = yield N.models.users.User
-                        .findOne({ nick: env.params.nick })
-                        .select('_id')
-                        .lean(true);
-
-    if (user) {
+    if (yield N.models.users.User.similarExists(env.params.nick)) {
       env.res.error   = true;
       env.res.message = env.t('message_busy_nick');
+      return;
     }
   });
 };

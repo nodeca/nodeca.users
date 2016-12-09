@@ -98,12 +98,7 @@ module.exports = function (N, apiPath) {
   // Check nick uniqueness
   //
   N.wire.before(apiPath, function* check_nick_uniqueness(env) {
-    let user = yield N.models.users.User
-                        .findOne({ nick: env.params.nick })
-                        .select('_id')
-                        .lean(true);
-
-    if (user) {
+    if (yield N.models.users.User.similarExists(env.params.nick)) {
       env.data.errors.nick = env.t('err_busy_nick');
     }
   });

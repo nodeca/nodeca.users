@@ -4,6 +4,7 @@
 const Promise       = require('bluebird');
 const Mongoose      = require('mongoose');
 const Schema        = Mongoose.Schema;
+const unhomoglyph   = require('unhomoglyph');
 const xregexp       = require('xregexp');
 const zxcvbn        = require('zxcvbn');
 const configReader  = require('../../server/_lib/resize_parse');
@@ -16,6 +17,14 @@ module.exports = function (N, collectionName) {
     hid            : Number,
 
     nick           : String,
+
+    // unhomoglyphed version of the nick, only used during registration
+    // to check that user doesn't register similarly looking nickname
+    nick_normalized    : String,
+
+    // lowercased (not unhomoglyphed) version of the nick
+    nick_normalized_lc : String,
+
     email          : String,
     usergroups     : [ Schema.Types.ObjectId ],
     joined_ts      : { type: Date, 'default': Date.now },
@@ -61,8 +70,13 @@ module.exports = function (N, collectionName) {
   User.index({ usergroups: 1 });
 
   // Needed for nick search
-  // TODO: make case-insensitive index instead maybe?
   User.index({ nick: 1 });
+
+  // Nick search in ACP, autocompletion in ACP and dialogs
+  User.index({ nick_normalized_lc: 1 });
+
+  // Homoglyph check during registration
+  User.index({ nick_normalized: 1 });
 
   // Search by registration date
   User.index({ joined_ts: 1 });
@@ -121,6 +135,37 @@ module.exports = function (N, collectionName) {
 
 
   /**
+   *  models.users.User.similarExists(nick) -> Boolean
+   *   - nick (String): Nickname to check.
+   *
+   *  Returns whether nicknames exist that either:
+   *   - written in a different case (ADMIN vs admin)
+   *   - visually similar (ADMIN vs ADM1N)
+   **/
+  User.statics.similarExists = Promise.coroutine(function* similarExists(nick) {
+    let user;
+
+    // check for same nick in different case (admin vs ADMIN)
+    user = yield N.models.users.User
+                        .findOne({ nick_normalized_lc: nick.toLowerCase() })
+                        .select('_id')
+                        .lean(true);
+
+    if (user) return true;
+
+    // check for similarly looking nick (ADMIN vs ADMlN)
+    user = yield N.models.users.User
+                        .findOne({ nick_normalized: unhomoglyph(nick) })
+                        .select('_id')
+                        .lean(true);
+
+    if (user) return true;
+
+    return false;
+  });
+
+
+  /**
    *  models.users.User.resolveLocation(user_id, locale)
    *
    *  Resolve name for user location with 5 second delay used for deduplication
@@ -143,6 +188,7 @@ module.exports = function (N, collectionName) {
     callback();
   });
 
+
   // Here's an example how to change name formatting:
   //
   //N.wire.before('init:models.users.User', function init_extend_user_model(User) {
@@ -154,6 +200,26 @@ module.exports = function (N, collectionName) {
   //
   //  callback();
   //});
+
+
+  // Set normalized nick
+  //
+  User.pre('save', function (callback) {
+    if (this.isModified('nick')) {
+      //
+      // Use two different fields for homoglyph check and lowercase,
+      // because unhomoglyphing doesn't work with lowercase:
+      //
+      //  - unhomoglyph then lowercase: `admin` and `ADMIN` are different
+      //  - lowercase then unhomoglyph: `ADMIN` and `ADMlN` are different
+      //
+      this.nick_normalized    = unhomoglyph(this.nick);
+      this.nick_normalized_lc = this.nick.toLowerCase();
+    }
+
+    callback();
+  });
+
 
   // Set `usergroups` for the new user if not defined
   //

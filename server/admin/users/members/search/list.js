@@ -36,11 +36,7 @@ module.exports = function (N, apiPath) {
     let search_query = env.data.search_query = env.data.search_query || {};
 
     if (env.params.nick) {
-      // use extended syntax for regexps for nick because
-      // we could use additional $gt condition on it
-      search_query.nick = search_query.nick || {};
-      search_query.nick.$regex = '^' + _.escapeRegExp(env.params.nick);
-      search_query.nick.$options = 'i';
+      search_query.nick_normalized_lc = new RegExp('^' + _.escapeRegExp(env.params.nick.toLowerCase()));
     }
 
     if (env.params.email) {

@@ -23,7 +23,8 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, function* find_users(env) {
     let users = yield N.models.users.User.find()
-                          .where('nick').regex(new RegExp('^' + _.escapeRegExp(env.params.nick), 'i'))
+                          .where('nick_normalized_lc').regex(
+                              new RegExp('^' + _.escapeRegExp(env.params.nick.toLowerCase())))
                           .where('exists').equals(true)
                           .limit(10)
                           .select('_id name nick')
