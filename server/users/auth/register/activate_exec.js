@@ -54,7 +54,7 @@ module.exports = function (N, apiPath) {
 
     if (!token) return;
 
-    if (yield N.models.users.User.similarExists(env.params.nick)) {
+    if (yield N.models.users.User.similarExists(token.reg_info.nick)) {
       // Need to terminate chain without 500 error.
       // If user exists - kill fetched token as invalid.
       env.data.token = null;
