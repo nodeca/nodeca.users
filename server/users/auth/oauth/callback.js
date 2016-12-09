@@ -58,11 +58,7 @@ module.exports = function (N, apiPath) {
 
     if (env.session.oauth.action !== 'register') return;
 
-    let authlink = yield N.models.users.AuthLink
-        .findOne({ email : env.data.oauth.email, exists: true })
-        .lean(true);
-
-    if (authlink) {
+    if (yield N.models.users.AuthLink.similarEmailExists(env.data.oauth.email)) {
       // reset oauth state
       env.session = _.omit(env.session, 'oauth');
       throw createRedirect('users.auth.oauth.error_show');

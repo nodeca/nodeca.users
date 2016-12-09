@@ -7,10 +7,12 @@
 'use strict';
 
 
-const _        = require('lodash');
-const Mongoose = require('mongoose');
-const Schema   = Mongoose.Schema;
-const password = require('./_lib/password');
+const _               = require('lodash');
+const Promise         = require('bluebird');
+const Mongoose        = require('mongoose');
+const Schema          = Mongoose.Schema;
+const password        = require('./_lib/password');
+const normalize_email = require('./_lib/normalize_email');
 
 
 module.exports = function (N, collectionName) {
@@ -30,6 +32,10 @@ module.exports = function (N, collectionName) {
     // Email is mandatory to `email` provider
     // We also will require it everywhere, when possible (twitter don't have it)
     email:            String,
+
+    // normalized email, only used to check email uniqueness during
+    // registration
+    email_normalized: String,
 
     // For oauth providers only, external user id
     provider_user_id: String,
@@ -65,6 +71,9 @@ module.exports = function (N, collectionName) {
 
   // used in login via oauth
   AuthLink.index({ provider_user_id: 1, exists: 1 });
+
+  // find similar emails
+  AuthLink.index({ email: 1 });
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -122,6 +131,34 @@ module.exports = function (N, collectionName) {
 
     return password.check(pass, _.get(this, 'meta.pass'));
   };
+
+
+  /**
+   * models.users.AuthLink#similarEmailExists(email) -> Boolean
+   * - email(String): email to check
+   *
+   * Check if similar email address is already registered
+   **/
+  AuthLink.statics.similarEmailExists = Promise.coroutine(function* similarEmailExists(email) {
+    let authLink = yield N.models.users.AuthLink
+                             .findOne({ exists: true })
+                             .where('email_normalized').equals(normalize_email(email))
+                             .select('_id')
+                             .lean(true);
+
+    return authLink ? true : false;
+  });
+
+
+  // Set normalized authlink
+  //
+  AuthLink.pre('save', function (callback) {
+    if (this.isModified('email')) {
+      this.email_normalized = normalize_email(this.email);
+    }
+
+    callback();
+  });
 
 
   //////////////////////////////////////////////////////////////////////////////

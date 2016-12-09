@@ -76,21 +76,17 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function* check_email_uniqueness(env) {
 
-    let emails = [ env.params.email ];
+    if (yield N.models.users.AuthLink.similarEmailExists(env.params.email)) {
+      env.data.errors.email = env.t('err_busy_email');
+      return;
+    }
 
     // If we use oauth for registration, provider email should be unique too.
     if (env.session.oauth && env.session.oauth.info) {
-      emails.push(env.session.oauth.info.email);
-    }
-
-    let id = yield N.models.users.AuthLink
-                      .findOne({ exists: true })
-                      .where('email').in(emails)
-                      .select('_id')
-                      .lean(true);
-
-    if (id) {
-      env.data.errors.email = env.t('err_busy_email');
+      if (yield N.models.users.AuthLink.similarEmailExists(env.session.oauth.info.email)) {
+        env.data.errors.email = env.t('err_busy_email');
+        return;
+      }
     }
   });
 

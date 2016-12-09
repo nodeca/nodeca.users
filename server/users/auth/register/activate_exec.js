@@ -71,22 +71,20 @@ module.exports = function (N, apiPath) {
 
     if (!token) return;
 
-    var emails = [ token.reg_info.email ];
-
-    if (token.oauth_info) {
-      emails.push(token.oauth_info.email);
-    }
-
-    let id = yield N.models.users.AuthLink
-                      .findOne({ exists: true })
-                      .where('email').in(emails)
-                      .select('_id')
-                      .lean(true);
-
-    if (id) {
+    if (yield N.models.users.AuthLink.similarEmailExists(token.reg_info.email)) {
       // Need to terminate chain without 500 error.
       // If email(s) occupied - kill fetched token as invalid.
       env.data.token = null;
+      return;
+    }
+
+    if (token.oauth_info) {
+      if (yield N.models.users.AuthLink.similarEmailExists(token.oauth_info.email)) {
+        // Need to terminate chain without 500 error.
+        // If email(s) occupied - kill fetched token as invalid.
+        env.data.token = null;
+        return;
+      }
     }
   });
 
