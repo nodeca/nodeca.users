@@ -137,7 +137,8 @@ module.exports = function (N, apiPath) {
     let token = yield N.models.users.TokenLoginByEmail.create({
       user:        env.data.user._id,
       ip:          env.req.ip,
-      redirect_id: env.params.redirect_id
+      redirect_id: env.params.redirect_id,
+      authlink:    env.data.authLink_plain._id
     });
 
     let general_project_name = yield N.settings.get('general_project_name');

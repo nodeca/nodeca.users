@@ -49,11 +49,14 @@ module.exports = function (N, apiPath) {
   // Fetch authlink
   //
   N.wire.on(apiPath, function* get_authlink(env) {
-    let authLink = yield N.models.users.AuthLink.findOne({ user: env.data.user._id, type: 'plain', exists: true });
+    let authLink = yield N.models.users.AuthLink.findOne()
+                             .where('_id').equals(env.data.token.authlink)
+                             .where('exists').equals(true)
+                             .lean(true);
 
     if (!authLink) {
-      // auth tokens are only issued for users with authlinks,
-      // so this never happens
+      // can happen if authlink becomes disabled after user requests otp,
+      // e.g. regular login with a password using vb authlink
       throw {
         code:    N.io.CLIENT_ERROR,
         message: env.t('err_bad_token')

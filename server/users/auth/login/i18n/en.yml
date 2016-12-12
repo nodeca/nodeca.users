@@ -8,7 +8,7 @@ en-US:
 
     email_subject: '#{project_name}: link for logging in.'
     email_text: |
-      This message is sent because of log in attempt from IP #{ip}
+      This message was sent because of log in attempt from IP #{ip}
 
       Follow this link to log in:
 

@@ -24,6 +24,7 @@ module.exports = function (N, collectionName) {
     create_ts:    { type: Date,   'default': Date, expires: TOKEN_EXPIRE_TIMEOUT },
     user:         Schema.Types.ObjectId,
     ip:           { type: String },
+    authlink:     Schema.Types.ObjectId,
     redirect_id:  Schema.Types.ObjectId
   },
   {
