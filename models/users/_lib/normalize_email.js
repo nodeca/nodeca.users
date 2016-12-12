@@ -33,27 +33,105 @@
 
 'use strict';
 
+const punycode = require('punycode');
 
-module.exports = function normalize_email(email) {
-  let email_parts = email.split('@');
 
-  let domain = email_parts.pop();
-  let user = email_parts.join('@');
-
+function normalize_gmail(username) {
   // lowercase
-  user = user.toLowerCase();
+  username = username.toLowerCase();
 
   // remove all dots, not significant for gmail
-  user = user.replace(/\./g, '');
+  username = username.replace(/\./g, '');
 
   // remove gmail mailboxes
-  if (user[0] !== '+') user = user.replace(/\+.*/g, '');
+  username = username.replace(/\+.*/g, '');
 
+  return username;
+}
+
+
+function normalize_yahoo(username) {
   // lowercase
+  username = username.toLowerCase();
+
+  // remove yahoo mailboxes
+  username = username.replace(/\-.*/g, '');
+
+  return username;
+}
+
+
+function normalize_yandex(username) {
+  // lowercase
+  username = username.toLowerCase();
+
+  // '.' is an alias for '-'
+  // https://yandex.com/support/mail/faq.xml#mail-aliases
+  username = username.replace(/-/g, '.');
+
+  return username;
+}
+
+
+function normalize_mailru(username) {
+  return username.toLowerCase();
+}
+
+
+function normalize_generic(username) {
+  // lowercase
+  username = username.toLowerCase();
+
+  // remove mailboxes
+  username = username.replace(/\+.*/g, '');
+
+  return username;
+}
+
+
+let rules = {
+  'gmail.com': {
+    aliases: [ 'googlemail.com' ],
+    fn: normalize_gmail
+  },
+  'yahoo.net': {
+    aliases: [ 'yahoodns.com', 'ymail.com' ],
+    fn: normalize_yahoo
+  },
+  'yandex.com': {
+    aliases: [ 'yandex.ru', 'narod.ru', 'yandex.ua', 'yandex.by', 'yandex.kz', 'ya.ru' ],
+    fn: normalize_yandex
+  },
+  'mail.ru': {
+    aliases: [ 'list.ru', 'inbox.ru' ],
+    fn: normalize_mailru
+  },
+  'default': { fn: normalize_generic }
+};
+
+
+module.exports = function normalize_email(email_str) {
+  let email_parts = email_str.split('@');
+
+  let domain = email_parts.pop();
+  let username = email_parts.join('@');
+
+  // lowercase domain
   domain = domain.toLowerCase();
 
-  // aliases (TODO: mail.ru, yandex.ru have many of those)
-  if (domain === 'googlemail.com') domain = 'gmail.com';
+  // punycode should get normalized domain (i.e. after lowercase)
+  domain = punycode.toASCII(domain);
 
-  return user + '@' + domain;
+  for (let r of Object.keys(rules)) {
+    if (r === domain || rules[r].aliases && rules[r].aliases.indexOf(domain) !== -1) {
+      username = rules[r].fn(username);
+      domain = r;
+
+      return username + '@' + domain;
+    }
+  }
+
+  username = rules.default.fn(username);
+
+  return username + '@' + domain;
 };
