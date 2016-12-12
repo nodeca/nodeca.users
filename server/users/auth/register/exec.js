@@ -8,6 +8,7 @@
 const _           = require('lodash');
 const Promise     = require('bluebird');
 const validator   = require('is-my-json-valid');
+const email_regex = require('email-regex');
 const recaptcha   = require('nodeca.core/lib/app/recaptcha');
 const password    = require('nodeca.users/models/users/_lib/password');
 
@@ -48,8 +49,9 @@ module.exports = function (N, apiPath) {
   }, {
     verbose: true,
     formats: {
-      pass: N.models.users.User.validatePassword,
-      nick: N.models.users.User.validateNick
+      pass:  N.models.users.User.validatePassword,
+      nick:  N.models.users.User.validateNick,
+      email: email_regex({ exact: true })
     }
   });
 
