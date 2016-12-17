@@ -2,6 +2,5 @@ en-US:
   profile: Profile
   dialogs: Dialogs
   admin: Administration
-  login: Login
-  register: Register
+  login: Login / Register
   logout: Logout

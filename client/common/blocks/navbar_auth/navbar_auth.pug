@@ -31,7 +31,7 @@ if self.runtime.is_member
 else
   //- data-api-path used to highlight curent navigation
   li.nav-item(data-api-path='users.auth.login')
-    a.nav-link(href=self.link_to('users.auth.login.show'))= self.t('login')
-
-  li.nav-item(data-api-path='users.auth.register')
-    a.nav-link(href=self.link_to('users.auth.register.show'))= self.t('register')
+    a.nav-link.icon.icon-login(
+      href=self.link_to('users.auth.login.show')
+      title=self.t('login')
+    )
