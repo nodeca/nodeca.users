@@ -211,6 +211,37 @@ N.wire.on('navigate.exit:' + module.apiPath, function progress_updater_teardown(
 });
 
 
+// Show/hide loading placeholders when new messages are fetched,
+// adjust scroll when adding/removing top placeholder
+//
+function reset_loading_placeholders() {
+  let prev = $('.user-messages-list__loading-prev');
+  let next = $('.user-messages-list__loading-next');
+
+  // if topmost dialog is loaded, hide top placeholder
+  if (dlgState.reached_start) {
+    if (!prev.hasClass('hidden-xs-up')) {
+      $window.scrollTop($window.scrollTop() - prev.outerHeight(true));
+    }
+
+    prev.addClass('hidden-xs-up');
+  } else {
+    if (prev.hasClass('hidden-xs-up')) {
+      $window.scrollTop($window.scrollTop() + prev.outerHeight(true));
+    }
+
+    prev.removeClass('hidden-xs-up');
+  }
+
+  // if last message is loaded, hide bottom placeholder
+  if (dlgState.reached_end) {
+    next.addClass('hidden-xs-up');
+  } else {
+    next.removeClass('hidden-xs-up');
+  }
+}
+
+
 // Init handlers
 //
 N.wire.once('navigate.done:' + module.apiPath, function page_init() {
@@ -267,7 +298,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       if (res.messages.length !== LOAD_MSGS_COUNT) {
         dlgState.reached_start = true;
-        $('.user-messages-list__loading-prev').addClass('hidden-xs-up');
+        reset_loading_placeholders();
       }
 
       if (res.messages.length === 0) return;
@@ -321,7 +352,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       if (res.messages.length !== LOAD_MSGS_COUNT) {
         dlgState.reached_end = true;
-        $('.user-messages-list__loading-next').addClass('hidden-xs-up');
+        reset_loading_placeholders();
       }
 
       if (res.messages.length === 0) return;

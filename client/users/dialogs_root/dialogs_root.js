@@ -226,6 +226,37 @@ N.wire.on('navigate.exit:' + module.apiPath, function progress_updater_teardown(
 });
 
 
+// Show/hide loading placeholders when new dialogs are fetched,
+// adjust scroll when adding/removing top placeholder
+//
+function reset_loading_placeholders() {
+  let prev = $('.dialog-list__loading-prev');
+  let next = $('.dialog-list__loading-next');
+
+  // if topmost dialog is loaded, hide top placeholder
+  if (dlgListState.reached_start) {
+    if (!prev.hasClass('hidden-xs-up')) {
+      $window.scrollTop($window.scrollTop() - prev.outerHeight(true));
+    }
+
+    prev.addClass('hidden-xs-up');
+  } else {
+    if (prev.hasClass('hidden-xs-up')) {
+      $window.scrollTop($window.scrollTop() + prev.outerHeight(true));
+    }
+
+    prev.removeClass('hidden-xs-up');
+  }
+
+  // if last dialog is loaded, hide bottom placeholder
+  if (dlgListState.reached_end) {
+    next.addClass('hidden-xs-up');
+  } else {
+    next.removeClass('hidden-xs-up');
+  }
+}
+
+
 // Init handlers
 //
 N.wire.once('navigate.done:' + module.apiPath, function page_init() {
@@ -303,7 +334,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       if (res.dialogs.length !== LOAD_DLGS_COUNT) {
         dlgListState.reached_start = true;
-        $('.dialog-list__loading-prev').addClass('hidden-xs-up');
+        reset_loading_placeholders();
       }
 
       if (res.dialogs.length === 0) return;
@@ -359,7 +390,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
       if (res.dialogs.length !== LOAD_DLGS_COUNT) {
         dlgListState.reached_end = true;
-        $('.dialog-list__loading-next').addClass('hidden-xs-up');
+        reset_loading_placeholders();
       }
 
       if (res.dialogs.length === 0) return;

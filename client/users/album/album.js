@@ -283,6 +283,37 @@ N.wire.on('navigate.exit:' + module.apiPath, function location_updater_teardown(
 });
 
 
+// Show/hide loading placeholders when new pages are fetched,
+// adjust scroll when adding/removing top placeholder
+//
+function reset_loading_placeholders() {
+  let prev = $('.user-album-root__loading-prev');
+  let next = $('.user-album-root__loading-next');
+
+  // if topmost picture is loaded, hide top placeholder
+  if (mediaState.reached_start) {
+    if (!prev.hasClass('hidden-xs-up')) {
+      $window.scrollTop($window.scrollTop() - prev.outerHeight(true));
+    }
+
+    prev.addClass('hidden-xs-up');
+  } else {
+    if (prev.hasClass('hidden-xs-up')) {
+      $window.scrollTop($window.scrollTop() + prev.outerHeight(true));
+    }
+
+    prev.removeClass('hidden-xs-up');
+  }
+
+  // if last picture is loaded, hide bottom placeholder
+  if (mediaState.reached_end) {
+    next.addClass('hidden-xs-up');
+  } else {
+    next.removeClass('hidden-xs-up');
+  }
+}
+
+
 ///////////////////////////////////////////////////////////////////////////
 // Whenever we are close to beginning/end of media list, check if we can
 // load more pages from the server
@@ -342,7 +373,7 @@ N.wire.once('navigate.done:' + module.apiPath, function prefetch_handler_setup()
 
       if (!res.prev_media) {
         mediaState.reached_start = true;
-        $('.user-album-root__loading-prev').addClass('hidden-xs-up');
+        reset_loading_placeholders();
       }
 
       if (res.media.length === 0) return;
@@ -412,7 +443,7 @@ N.wire.once('navigate.done:' + module.apiPath, function prefetch_handler_setup()
 
       if (!res.next_media) {
         mediaState.reached_end = true;
-        $('.user-album-root__loading-next').addClass('hidden-xs-up');
+        reset_loading_placeholders();
       }
 
       if (res.media.length === 0) return;
