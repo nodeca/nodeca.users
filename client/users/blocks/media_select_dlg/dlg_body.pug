@@ -5,7 +5,7 @@ select.media-select-dlg__albums.form-control.custom-select(data-on-change='users
       selected=album._id === self.selected_album_id
     )= album.default ? self.t('default_name') : album.title
 
-.media-select-dlg__actions.my-1.text-xs-center
+.media-select-dlg__actions.text-xs-center
   button.btn.btn-secondary(
     data-on-click='users.blocks.media_select_dlg:create_album'
   )= self.t('create_album')
@@ -29,6 +29,6 @@ select.media-select-dlg__albums.form-control.custom-select(data-on-change='users
 ul.media-select-dlg__content.thumb-grid.thumb-grid__m-fluid-md
   != self.partial('@users.blocks.media_select_dlg.media_list')
 
-a.media-select-dlg__more-medias.mt-1.btn.btn-secondary.btn-block.icon.icon-dimmed.icon-space-after.icon-more(
+a.media-select-dlg__more-medias.btn.btn-secondary.btn-block.icon.icon-dimmed.icon-space-after.icon-more(
   data-on-click='users.blocks.media_select_dlg:more_photos'
 )= self.t('more')
