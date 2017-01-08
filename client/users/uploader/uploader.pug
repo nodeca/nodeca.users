@@ -2,11 +2,11 @@
   .modal-dialog.modal-sm
     .modal-content
       .modal-header
+        h4.modal-title= self.t('title')
         button.close(
           aria-hidden='true'
           type='button'
           data-on-click='users.uploader:close'
         ) &times;
-        h4.modal-title= self.t('title')
       .modal-body
         #uploader-files

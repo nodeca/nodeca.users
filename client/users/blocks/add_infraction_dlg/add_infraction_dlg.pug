@@ -3,8 +3,8 @@
     .modal-content
       form(data-on-submit=self.apiPath + ':submit')
         .modal-header
-          button.close(type='button' tabindex='-1' data-dismiss='modal') &times;
           h4.modal-title=self.t('title')
+          button.close(type='button' tabindex='-1' data-dismiss='modal') &times;
         .modal-body
           .form-group.add-infraction-type
             label=self.t('type')
@@ -34,13 +34,13 @@
 
           label=self.t('expire')
           .row
-            .col-xs-6.form-group.add-infraction-expire
+            .col-6.form-group.add-infraction-expire
               input.add-infraction-expire__input.form-control(type='number'
                 tabindex='4'
                 name='expire'
                 value='30'
               )
-            .col-xs-6.form-group
+            .col-6.form-group
               label.checkbox-inline.col-form-label.add-infraction-expire__checkbox-label
                 input.add-infraction-expire__checkbox(type='checkbox'
                   tabindex='5'

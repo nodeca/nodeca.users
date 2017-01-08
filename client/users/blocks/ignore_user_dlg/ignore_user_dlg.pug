@@ -3,8 +3,8 @@
     .modal-content
       form.ignore-user-dlg(data-on-submit=self.apiPath + ':submit')
         .modal-header
-          button.close(type='button' tabindex='-1' data-dismiss='modal') &times;
           h4.modal-title=self.t('title')
+          button.close(type='button' tabindex='-1' data-dismiss='modal') &times;
         .modal-body
           .form-group
             a(href=self.link_to('users.member', { user_hid: self.user.hid }))

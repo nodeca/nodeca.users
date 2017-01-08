@@ -59,9 +59,9 @@
       fieldset
 
         .form-group.row
-          label.col-form-label.col-xs-3
+          label.col-form-label.col-3
             = self.t('avatar')
-          .col-xs-4.control-value
+          .col-4.control-value
             .user-edit-avatar(class=self.user.avatar_id ? 'user-edit-avatar__m-exists' : '')
               a.user-edit-avatar__delete.btn.btn-sm.btn-square.btn-secondary(href='#', data-on-click='admin.users.members.edit:delete_avatar', data-user-hid=self.user.hid)= '×'
               img.user-edit-avatar__image()&attributes(self.avatar(self.user))
@@ -74,15 +74,15 @@
             if self.partial_exists('blocks.' + name)
               != self.partial('blocks.' + name, item)
             else
-              label.col-form-label.col-xs-3
+              label.col-form-label.col-3
                 = self.t.exists(name) ? self.t(name) : self.t('@admin.users.about.' + name)
-              .col-xs-4.control-value
+              .col-4.control-value
                 if typeof(item.text) !== 'undefined'
                   .form-control-static= item.text
                 else
                   input.form-control(type='text', name=item.name, value=item.value)
 
       .form-group.row
-        .col-xs-9.col-xs-offset-3
+        .col-9.col-offset-3
           button.btn.btn-primary(type='submit')
             = self.t('button_save')

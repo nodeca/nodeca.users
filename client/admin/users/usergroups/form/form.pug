@@ -3,21 +3,21 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
     legend= self.t('group.options')
 
     .form-group.row
-      label.col-form-label.col-xs-3= self.t('group.short_name')
-      .col-xs-3
+      label.col-form-label.col-3= self.t('group.short_name')
+      .col-3
         input.form-control(type="text", data-bind="value: currentGroup.name, disable: currentGroup.isProtected")
         // ko if: currentGroup.localizedName()
         div(data-bind="text: currentGroup.localizedName")
         // /ko
 
     .form-group.row
-      label.col-form-label.col-xs-3= self.t('group.inherit')
-      .col-xs-3
+      label.col-form-label.col-3= self.t('group.inherit')
+      .col-3
         select.form-control.custom-select(data-bind="options: otherGroups, optionsText: 'name', optionsCaption: '" + self.t('group.inherit_none') + "', value: currentGroup.parentGroup")
 
     .form-group.row
-      label.col-form-label.col-xs-3= self.t('filter')
-      .col-xs-9
+      label.col-form-label.col-3= self.t('filter')
+      .col-9
         label.radio-inline
           input(type="radio", name="filter", value="", data-bind="checked: filter")
           | 
@@ -45,9 +45,9 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
     // ko foreach: settings
     .form-group.form-group-hover.row(data-bind="visible: visible, css: { overriden: overriden, inherited: inherited, forced: forced }")
 
-      label.col-form-label.col-xs-3(data-bind="text: localizedName, attr: { 'for': elementId }")
+      label.col-form-label.col-3(data-bind="text: localizedName, attr: { 'for': elementId }")
 
-      .col-xs-4.control-value
+      .col-4.control-value
         // ko if: 'string' === valueType
         input.form-control(type="text", data-bind="value: value, valueUpdate: 'keyup', attr: { id: elementId }")
         // /ko
@@ -66,7 +66,7 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
         small.form-text.text-muted(data-bind="text: localizedHelp")
         // /ko
 
-      .col-xs-4
+      .col-4
         label.checkbox-inline(data-bind="visible: parentSetting")
           input(type="checkbox", data-bind="checked: overriden")
           | 
@@ -81,6 +81,6 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
   // /ko
 
   .form-group.row
-    .col-xs-9.col-xs-offset-3
+    .col-9.col-offset-3
       button.btn.btn-primary(type="submit", data-bind="enable: currentGroup.isDirty")
         = self.t('submit')

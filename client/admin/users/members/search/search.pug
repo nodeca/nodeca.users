@@ -15,13 +15,13 @@
           != self.partial('blocks.' + item.name, item)
         else
           .form-group.row
-            label.col-form-label.col-xs-3
+            label.col-form-label.col-3
               = self.t.exists(item.name) ? self.t(item.name) : self.t('@admin.users.about.' + item.name)
-            .col-xs-4
+            .col-4
               input.form-control(type='text', name=item.name, value=item.value)
 
       .form-group.row
-        .col-xs-9
+        .col-9
           button.btn.btn-primary(type='submit')
             = self.t('search')
 

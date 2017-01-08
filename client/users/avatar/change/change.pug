@@ -2,10 +2,10 @@
   .modal-dialog.modal-lg
     .modal-content
       .modal-header
+        h4.modal-title= self.t('title')
         button.close(data-dismiss='modal')
           span(aria-hidden='true') &times;
           span.sr-only= self.t('close')
-        h4.modal-title= self.t('title')
 
       .modal-body
         .avatar-change(data-on-dragdrop='users.avatar.change:dd_area')
@@ -28,7 +28,7 @@
           canvas.avatar-preview
 
       .modal-footer
-        button.btn.btn-link.float-left(
+        button.btn.btn-link.mr-auto(
           type='button'
           onClick='document.getElementById("avatar-change__upload").click()'
         )= self.t('select')
