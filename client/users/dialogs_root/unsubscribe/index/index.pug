@@ -15,9 +15,9 @@
               =self.t('confirmation')
 
             .form-group
-              .checkbox
-                label
-                  input(type='checkbox' name='confirm' data-on-change='users.dialogs_root.unsubscribe.index:change')
+              .form-check
+                label.form-check-label
+                  input.form-check-input(type='checkbox' name='confirm' data-on-change='users.dialogs_root.unsubscribe.index:change')
                   | 
                   =self.t('label')
 

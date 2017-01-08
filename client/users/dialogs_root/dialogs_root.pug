@@ -39,16 +39,16 @@
           title=self.t('new_message')
         )
       h1.page-head__title(itemprop='name')= self.t('title')
-      .dialog-list-filter(itemprop='description')
-        label.dialog-list-filter__label.checkbox-inline(
-          data-on-change='users.dialogs_root:toggle_answered'
-        )
-          input.dialog-list-filter__checkbox(
-            type='checkbox'
-            checked=self.dialogs_hide_answered
+      .dialog-list-filter.form-inline(itemprop='description')
+        .form-check
+          label.form-check-label.dialog-list-filter__label(
+            data-on-change='users.dialogs_root:toggle_answered'
           )
-          |  
-          = self.t('hide_answered_dialogs')
+            input.form-check-input.dialog-list-filter__checkbox(
+              type='checkbox'
+              checked=self.dialogs_hide_answered
+            )
+            = ' ' + self.t('hide_answered_dialogs')
 
     if self.dialogs.length === 0
       .dialog-list-no-items=self.t('no_messages')

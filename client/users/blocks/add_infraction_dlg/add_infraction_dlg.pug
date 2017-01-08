@@ -32,22 +32,23 @@
               value='0'
             )
 
-          label=self.t('expire')
-          .row
-            .col-6.form-group.add-infraction-expire
-              input.add-infraction-expire__input.form-control(type='number'
-                tabindex='4'
-                name='expire'
-                value='30'
-              )
-            .col-6.form-group
-              label.checkbox-inline.col-form-label.add-infraction-expire__checkbox-label
-                input.add-infraction-expire__checkbox(type='checkbox'
-                  tabindex='5'
-                  data-on-change=self.apiPath + ':set_expire_never'
+          .form-group
+            label= self.t('expire')
+            .row
+              .col-6.add-infraction-expire
+                input.add-infraction-expire__input.form-control(type='number'
+                  tabindex='4'
+                  name='expire'
+                  value='30'
                 )
-                =' '
-                =self.t('expire_never')
+              .col-6
+                label.form-check-label.col-form-label.add-infraction-expire__checkbox-label
+                  input.add-infraction-expire__checkbox.form-check-input(type='checkbox'
+                    tabindex='5'
+                    data-on-change=self.apiPath + ':set_expire_never'
+                  )
+                  =' '
+                  =self.t('expire_never')
 
         .modal-footer
           button.btn.btn-secondary(type='button' tabindex='6' data-dismiss='modal')=self.t('cancel')
