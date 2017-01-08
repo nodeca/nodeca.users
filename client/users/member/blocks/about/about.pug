@@ -20,7 +20,7 @@
             href=self.link_to('users.settings.about')
           )
 
-  #member-about-info.member-block__inner.collapse.in
+  #member-about-info.member-block__inner.collapse.show
     dl.member-about__dl
       each item in self.blocks.about.list
         dt.member-about__dt=item.title || self.t(item.name)

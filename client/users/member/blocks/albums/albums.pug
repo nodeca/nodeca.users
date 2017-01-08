@@ -12,7 +12,7 @@
         span.member-block__header-arrow.icon.icon-right-open
         small.member-block__header-counter #{self.blocks.albums.count}
 
-  #member-albums-info.member-block__inner.collapse.in
+  #member-albums-info.member-block__inner.collapse.show
     ul.member-block__image-list
       each album in self.blocks.albums.list
         - var href = self.link_to('users.album', { user_hid: self.user.hid, album_id: album._id })

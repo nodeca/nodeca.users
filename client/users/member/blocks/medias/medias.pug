@@ -14,7 +14,7 @@
         span.member-block__header-arrow.icon.icon-right-open
         small.member-block__header-counter= self.blocks.medias.count
 
-  #member-medias-info.member-block__inner.collapse.in
+  #member-medias-info.member-block__inner.collapse.show
     ul.member-block__image-list
       each media in self.blocks.medias.list
         - var href = self.link_to('users.media', { user_hid: self.user.hid, media_id: media.media_id })
