@@ -1,16 +1,16 @@
 .modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
-  .modal-dialog
+  .modal-dialog(role='document')
     .modal-content
       form(data-on-submit='users.album.create:submit')
 
         .modal-header
+          h4.modal-title= self.t('title')
           button.close(
             aria-hidden='true'
             type='button'
             data-dismiss='modal'
             tabindex='-1'
           ) &times;
-          h4.modal-title= self.t('title')
 
         .modal-body
           label(for='album_name_dlg_input')=self.t('input_name')
