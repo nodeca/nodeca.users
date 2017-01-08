@@ -5,7 +5,7 @@
     != self.partial('@admin.core.blocks.breadcrumbs')
 
     .page-head
-      .dropdown.float-xs-right
+      .dropdown.float-right
         button.btn.btn-square.btn-secondary.dropdown-toggle(
           type='button'
           data-toggle='dropdown'
@@ -53,7 +53,7 @@
          | 
          !=self.timetag(self.penalty_expire, 'compact')
 
-         button.btn.btn-sm.btn-outline-danger.float-xs-right(data-on-click='admin.users.members.edit:unblock', data-user-hid=self.user.hid)= self.t('unblock')
+         button.btn.btn-sm.btn-outline-danger.float-right(data-on-click='admin.users.members.edit:unblock', data-user-hid=self.user.hid)= self.t('unblock')
 
     form#member_edit_form.form-horizontal(data-on-submit='admin.users.members.edit:submit', data-user-hid=self.user.hid)
       fieldset
