@@ -41,7 +41,7 @@ N.wire.on('navigate.done:' + module.apiPath, function store_blocks_state(data) {
 
       collapsedBlocks.forEach(function (blockID) {
         $('#' + blockID)
-          .removeClass('in')
+          .removeClass('show')
           .parent()
           .find('.member-block__header-collapser')
           .addClass('collapsed');
