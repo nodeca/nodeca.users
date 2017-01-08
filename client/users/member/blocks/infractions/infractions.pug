@@ -41,7 +41,7 @@
             th=self.t('date')
             th=self.t('by')
             th=self.t('reason')
-            th.text-xs-center=self.t('points')
+            th.text-center=self.t('points')
             th=self.t('expires')
 
           tbody
@@ -91,7 +91,7 @@
                       else
                         span(title=del_reason.join(' '))=reason
 
-                td.member-infractions-item__points.text-xs-center
+                td.member-infractions-item__points.text-center
                   =infraction.points
 
                 td.member-infractions-item__expire.text-nowrap
