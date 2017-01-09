@@ -44,7 +44,7 @@
       .user-messages-list-no-items=self.t('no_messages')
 
     else
-      .user-messages-list__loading-prev(
+      .user-messages-list__loading-prev.nojs-hide(
         class=(self.pagination.chunk_offset === 0 ? 'hidden-xs-up' : '')
       )
         span.icon.icon-loading-placeholder
@@ -62,7 +62,7 @@
         }
       )!=self.partial('@users.blocks.message_list')
 
-      .user-messages-list__loading-next(
+      .user-messages-list__loading-next.nojs-hide(
         class=(!self.messages || self.messages.length === 0 || String(self.messages[self.messages.length - 1]._id) === String(self.last_message_id) ? 'hidden-xs-up': '')
       )
         span.icon.icon-loading-placeholder

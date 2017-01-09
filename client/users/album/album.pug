@@ -74,7 +74,7 @@
     - self.add_raw_data('prev_media', self.prev_media)
     - self.add_raw_data('next_media', self.next_media)
 
-    .user-album-root__loading-prev(
+    .user-album-root__loading-prev.nojs-hide(
       class=(!self.prev_media ? 'hidden-xs-up' : '')
     )
       span.icon.icon-loading-placeholder
@@ -92,12 +92,12 @@
       }
     )!= self.partial('@users.album.list')
 
-    .user-album-root__loading-next(
+    .user-album-root__loading-next.nojs-hide(
       class=(!self.next_media ? 'hidden-xs-up' : '')
     )
       span.icon.icon-loading-placeholder
 
-    .pager
+    nav.pager.js-hide
       - var link = self.link_to(self.apiPath, { user_hid: self.user_hid, album_id: self.album && self.album._id, media_id: self.prev_media });
       a.btn.btn-secondary(href=link)= self.t('prev_page')
 

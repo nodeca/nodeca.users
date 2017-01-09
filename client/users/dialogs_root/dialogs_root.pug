@@ -54,7 +54,7 @@
       .dialog-list-no-items=self.t('no_messages')
 
     else
-      .dialog-list__loading-prev(
+      .dialog-list__loading-prev.nojs-hide(
         class=(self.pagination.chunk_offset === 0 || !first_message_id ? 'hidden-xs-up' : '')
       )
         span.icon.icon-loading-placeholder
@@ -72,7 +72,7 @@
         }
       )!=self.partial('@users.blocks.dialog_list')
 
-      .dialog-list__loading-next(
+      .dialog-list__loading-next.nojs-hide(
         class=(!self.dialogs || self.dialogs.length === 0 || String(self.dialogs[self.dialogs.length - 1]._id) === String(self.last_dialog_id) || !last_message_id ? 'hidden-xs-up' : '')
       )
         span.icon.icon-loading-placeholder

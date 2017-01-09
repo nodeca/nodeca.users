@@ -51,6 +51,6 @@
             tr
               td(colspan=5)= self.t('no_results')
 
-    .members-search__loading-next(
+    .members-search__loading-next.nojs-hide(
       class=(self.prefetch_start ? '' : 'hidden-xs-up')
     )= self.t('loading')
