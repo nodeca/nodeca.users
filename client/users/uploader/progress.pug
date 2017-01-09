@@ -1,5 +1,5 @@
 div(id=self.element_id)
   .uploader-progress__name= self.file_name
-  .uploader-progress__container
+  .uploader-progress__container.progress
     .uploader-progress__status.text-muted= self.t('compressing')
-    progress.progress.uploader-progress__bar(value="0", max="100")
+    .progress-bar

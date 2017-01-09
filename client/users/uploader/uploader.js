@@ -278,8 +278,8 @@ function startUpload(data) {
       if (xhr.upload) {
         xhr.upload.addEventListener('progress', function (e) {
           if (e.lengthComputable) {
-            progress = (e.loaded * 100) / e.total;
-            $progressInfo.find('.uploader-progress__bar').attr('value', progress);
+            progress = ((e.loaded * 100) / e.total).toFixed(2);
+            $progressInfo.find('.progress-bar').width(progress + '%');
           }
         }, false);
       }
@@ -292,7 +292,7 @@ function startUpload(data) {
   return Promise.resolve(jqXhr)
     .then(res => {
       uploadedFiles.push(res.media);
-      $progressInfo.find('.uploader-progress__bar').addClass('progress-success');
+      $progressInfo.find('.progress-bar').addClass('bg-success');
     })
     .catch(err => {
       // Don't show error if user terminate file upload
@@ -301,7 +301,7 @@ function startUpload(data) {
       }
 
       $progressInfo.find('.uploader-progress__name').addClass('text-danger');
-      $progressInfo.find('.uploader-progress__bar').addClass('progress-danger');
+      $progressInfo.find('.progress-bar').addClass('bg-danger');
 
       // Client error
       if (err.status === N.io.CLIENT_ERROR) {
