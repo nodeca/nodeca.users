@@ -1,7 +1,14 @@
 @import "nodeca.core/client/common/_variables"
 
+$progress-height = 1.5rem
+
+.uploader-progress
+  margin-bottom .5rem
+
 .uploader-progress__container
   position relative
+  .progress-bar
+    height $progress-height
 
 .uploader-progress__status
   display none
@@ -10,8 +17,7 @@
   top 0
   left 0
   right 0
-  height 1.1rem
-  line-height 1.1rem
+  line-height $progress-height
   text-align center
   z-index 10
 
