@@ -4,11 +4,17 @@
 'use strict';
 
 
-const _ = require('lodash');
+const _         = require('lodash');
+const validator = require('is-my-json-valid');
 
 
 module.exports = function (N, apiPath) {
-  let validate_params = {
+
+  // all validation is performed later (so it can be shared with search.js and
+  // extended from other packages)
+  N.validate(apiPath, { properties: {}, additionalProperties: true });
+
+  let validate_properties = {
     nick:            { type: 'string' },
     usergroup:       { anyOf: [ { format: 'mongo' }, { type: 'string', pattern: '^$' } ] },
     email:           { type: 'string' },
@@ -22,62 +28,76 @@ module.exports = function (N, apiPath) {
 
   if (N.config.users && N.config.users.about) {
     for (let name of Object.keys(N.config.users.about)) {
-      validate_params[name] = { type: 'string' };
+      validate_properties[name] = { type: 'string' };
     }
   }
 
-  N.validate(apiPath, {
-    properties: validate_params,
+  const validate = validator({
+    type: 'object',
+    properties: validate_properties,
     additionalProperties: true
+  });
+
+
+  N.wire.before(apiPath, { priority: -20 }, function get_query(env) {
+    // if this method is called by RPC, query is in `env.params`, if this
+    // method is called from search.js as a subcall, data is
+    // in `env.data.search_params`
+    if (!env.data.search_params) {
+      env.data.search_params = env.params;
+    }
+
+    if (!validate(env.data.search_params)) throw N.io.BAD_REQUEST;
   });
 
 
   N.wire.before(apiPath, function create_search_query(env) {
     let search_query = env.data.search_query = env.data.search_query || {};
+    let search_params = env.data.search_params;
 
-    if (env.params.nick) {
-      search_query.nick_normalized_lc = new RegExp('^' + _.escapeRegExp(env.params.nick.toLowerCase()));
+    if (search_params.nick) {
+      search_query.nick_normalized_lc = new RegExp('^' + _.escapeRegExp(search_params.nick.toLowerCase()));
     }
 
-    if (env.params.email) {
-      search_query.email = new RegExp('^' + _.escapeRegExp(env.params.email), 'i');
+    if (search_params.email) {
+      search_query.email = new RegExp('^' + _.escapeRegExp(search_params.email), 'i');
     }
 
-    if (env.params.usergroup) {
-      search_query.usergroups = env.params.usergroup;
+    if (search_params.usergroup) {
+      search_query.usergroups = search_params.usergroup;
     }
 
-    if (env.params.reg_date_from) {
+    if (search_params.reg_date_from) {
       search_query.joined_ts = search_query.joined_ts || {};
-      search_query.joined_ts.$gte = new Date(env.params.reg_date_from);
+      search_query.joined_ts.$gte = new Date(search_params.reg_date_from);
     }
 
-    if (env.params.reg_date_to) {
+    if (search_params.reg_date_to) {
       search_query.joined_ts = search_query.joined_ts || {};
-      search_query.joined_ts.$lte = new Date(env.params.reg_date_to);
+      search_query.joined_ts.$lte = new Date(search_params.reg_date_to);
     }
 
-    if (env.params.post_count_from) {
+    if (search_params.post_count_from) {
       search_query.post_count = search_query.post_count || {};
-      search_query.post_count.$gte = Number(env.params.post_count_from);
+      search_query.post_count.$gte = Number(search_params.post_count_from);
     }
 
-    if (env.params.post_count_to) {
+    if (search_params.post_count_to) {
       search_query.post_count = search_query.post_count || {};
-      search_query.post_count.$lte = Number(env.params.post_count_to);
+      search_query.post_count.$lte = Number(search_params.post_count_to);
     }
 
     if (N.config.users && N.config.users.about) {
       for (let name of Object.keys(N.config.users.about)) {
-        if (env.params[name]) {
-          search_query['about.' + name] = new RegExp('^' + _.escapeRegExp(env.params[name]), 'i');
+        if (search_params[name]) {
+          search_query['about.' + name] = new RegExp('^' + _.escapeRegExp(search_params[name]), 'i');
         }
       }
     }
 
-    if (env.params.start) {
+    if (search_params.start) {
       search_query.nick = search_query.nick || {};
-      search_query.nick.$gt = env.params.start;
+      search_query.nick.$gt = search_params.start;
     }
   });
 
@@ -87,7 +107,7 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function* members_search(env) {
     if (!env.data.search_query) return;
 
-    let load_count = env.params.limit || 100;
+    let load_count = env.data.search_params.limit || 100;
 
     let search_results = yield N.models.users.User
                                    .find(env.data.search_query)
@@ -111,6 +131,6 @@ module.exports = function (N, apiPath) {
       exists:         user.exists
     }));
 
-    env.res.search_query = env.params;
+    env.res.search_query = env.data.search_params;
   });
 };
