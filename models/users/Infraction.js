@@ -22,8 +22,8 @@ module.exports = function (N, collectionName) {
     points: Number,
 
     src: Schema.Types.ObjectId,
-    // FORUM_POST, BLOG_ENTRY, etc.
-    src_type: String,
+    // N.shared.content_type (FORUM_POST, BLOG_ENTRY, ...)
+    src_type: Number,
 
     ts: { type: Date, 'default': Date.now },
 

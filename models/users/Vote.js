@@ -7,11 +7,6 @@ var Schema = Mongoose.Schema;
 
 module.exports = function (N, collectionName) {
 
-  var types = {
-    FORUM_POST: 1
-  };
-
-
   var Vote = new Schema({
 
     // User who created vote
@@ -23,7 +18,7 @@ module.exports = function (N, collectionName) {
     // Content id
     'for': Schema.ObjectId,
 
-    // Content type
+    // N.shared.content_type (FORUM_POST, BLOG_ENTRY, ...)
     type: Number,
 
     // Hell banned
@@ -53,11 +48,6 @@ module.exports = function (N, collectionName) {
   Vote.index({ from: 1 });
 
   /////////////////////////////////////////////////////////////////////////////
-
-
-  // Export types
-  //
-  Vote.statics.types = types;
 
 
   N.wire.on('init:models', function emit_init_Vote() {
