@@ -7,14 +7,13 @@ $avatar-size-sm         = 35px
 $avatar-aside-size-sm   = $avatar-size-sm / 2
 
 .dialog-list-item
-  display table-row
+  display flex
+  padding-bottom 2rem
 
 // Avatar + tab
 .dialog-list-item__aside
-  display table-cell
-  width $avatar-size + $avatar-aside-size
-  vertical-align top
-  padding-bottom 2rem
+  flex 0 0 0%
+  min-width $avatar-size + $avatar-aside-size
   padding-top .125rem
 
 .dialog-list-item__aside-inner
@@ -106,10 +105,9 @@ $avatar-aside-size-sm   = $avatar-size-sm / 2
 
 // Content
 .dialog-list-item__content
-  display table-cell
+  flex 1 1 0%
   padding-left 1rem
-  vertical-align top
-  padding-bottom 2rem
+  min-width 0
 
 .dialog-list-item__header
   display flex
