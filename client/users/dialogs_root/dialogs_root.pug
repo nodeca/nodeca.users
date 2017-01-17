@@ -33,11 +33,7 @@
 
     header.page-head
       .float-right
-        button.btn.btn-secondary.btn-square.icon.icon-plus(
-          type='button'
-          data-on-click='users.dialogs_root:create_message'
-          title=self.t('new_message')
-        )
+        != self.partial('@users.dialogs_root.blocks.toolbar_controls')
       h1.page-head__title(itemprop='name')= self.t('title')
       .dialog-list-filter.form-inline(itemprop='description')
         .form-check
