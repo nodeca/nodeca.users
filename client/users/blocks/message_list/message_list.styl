@@ -5,14 +5,11 @@ $avatar-size  = 1.875rem
 $space        = 1rem
 
 .user-messages-list-item
-  display table
-  table-layout fixed
-  width 100%
+  display flex
   margin-bottom 1.5rem
 
 .user-messages-list-item__aside
-  display table-cell
-  vertical-align top
+  flex 0 0 0%
   padding ($space / 2) $space ($space / 2) 0
   min-width $avatar-size + $space
 
@@ -28,14 +25,14 @@ $space        = 1rem
   box-shadow: 0 0 1px $body-color-secondary
 
 .user-messages-list-item__separator
-  display table-cell
+  flex 0 0 0%
   min-width $sep-width
   border-radius 1rem
   background-color $decorator-color
 
 .user-messages-list-item__content
-  display table-cell
-  width 100%
+  flex 1 1 0%
+  min-width 0
   padding: ($space / 2) (($avatar-size + $space) * 2 + $sep-width) 0 $space
 
 .user-messages-list-item__message

@@ -6,28 +6,8 @@ each message in self.messages
       id='message' + message._id
       data-message-id=message._id
     )
-      .user-messages-list-item__inner
-        .user-messages-list-item__content
-          .user-messages-list-item__aside-inline
-            if author
-              a.user-messages-list-item__avatar(
-                href=self.link_to('users.member', { user_hid: author.hid })
-              )
-                img.user-messages-list-item__avatar-image(alt=author.name)&attributes(self.avatar(author, 'sm'))
-            else
-              span.user-messages-list-item__avatar-image.av-anon
-
-          .user-messages-list-item__message.message
-            !=message.html
-
-            if (message.tail && message.tail.length)
-              .user-messages-list-item__tail.markup-tail!=self.partial('@users.blocks.message_list.attachments', { message: message, author: author })
-
-          .user-messages-list-item__date!=self.timetag(message.ts, 'relative')
-
-        .user-messages-list-item__separator
-
-        .user-messages-list-item__aside
+      .user-messages-list-item__content
+        .user-messages-list-item__aside-inline
           if author
             a.user-messages-list-item__avatar(
               href=self.link_to('users.member', { user_hid: author.hid })
@@ -35,14 +15,44 @@ each message in self.messages
               img.user-messages-list-item__avatar-image(alt=author.name)&attributes(self.avatar(author, 'sm'))
           else
             span.user-messages-list-item__avatar-image.av-anon
+
+        .user-messages-list-item__message.message
+          !=message.html
+
+          if (message.tail && message.tail.length)
+            .user-messages-list-item__tail.markup-tail!=self.partial('@users.blocks.message_list.attachments', { message: message, author: author })
+
+        .user-messages-list-item__date!=self.timetag(message.ts, 'relative')
+
+      .user-messages-list-item__separator
+
+      .user-messages-list-item__aside
+        if author
+          a.user-messages-list-item__avatar(
+            href=self.link_to('users.member', { user_hid: author.hid })
+          )
+            img.user-messages-list-item__avatar-image(alt=author.name)&attributes(self.avatar(author, 'sm'))
+        else
+          span.user-messages-list-item__avatar-image.av-anon
 
   else
     .user-messages-list-item.user-messages-list-item__m-not-self(
       id='message' + message._id
       data-message-id=message._id
     )
-      .user-messages-list-item__inner
-        .user-messages-list-item__aside
+      .user-messages-list-item__aside
+        if author
+          a.user-messages-list-item__avatar(
+            href=self.link_to('users.member', { user_hid: author.hid })
+          )
+            img.user-messages-list-item__avatar-image(alt=author.name)&attributes(self.avatar(author, 'sm'))
+        else
+          span.user-messages-list-item__avatar-image.av-anon
+
+      .user-messages-list-item__separator
+
+      .user-messages-list-item__content
+        .user-messages-list-item__aside-inline
           if author
             a.user-messages-list-item__avatar(
               href=self.link_to('users.member', { user_hid: author.hid })
@@ -51,22 +61,10 @@ each message in self.messages
           else
             span.user-messages-list-item__avatar-image.av-anon
 
-        .user-messages-list-item__separator
+        .user-messages-list-item__message.message
+          !=message.html
 
-        .user-messages-list-item__content
-          .user-messages-list-item__aside-inline
-            if author
-              a.user-messages-list-item__avatar(
-                href=self.link_to('users.member', { user_hid: author.hid })
-              )
-                img.user-messages-list-item__avatar-image(alt=author.name)&attributes(self.avatar(author, 'sm'))
-            else
-              span.user-messages-list-item__avatar-image.av-anon
+          if (message.tail && message.tail.length)
+            .user-messages-list-item__tail.markup-tail!=self.partial('@users.blocks.message_list.attachments', { message: message, author: author })
 
-          .user-messages-list-item__message.message
-            !=message.html
-
-            if (message.tail && message.tail.length)
-              .user-messages-list-item__tail.markup-tail!=self.partial('@users.blocks.message_list.attachments', { message: message, author: author })
-
-          .user-messages-list-item__date!=self.timetag(message.ts, 'relative')
+        .user-messages-list-item__date!=self.timetag(message.ts, 'relative')
