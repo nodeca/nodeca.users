@@ -131,7 +131,7 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
       });
     })
     .on('submit.nd.mdedit', () => {
-      $editor.find('.mdedit__submit').addClass('disabled');
+      $editor.find('.mdedit-btn__submit').addClass('disabled');
 
       let errors = false;
 
@@ -150,7 +150,7 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
       }
 
       if (errors) {
-        $editor.find('.mdedit__submit').removeClass('disabled');
+        $editor.find('.mdedit-btn__submit').removeClass('disabled');
         return false;
       }
 
@@ -176,7 +176,7 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
           });
         })
         .catch(err => {
-          $editor.find('.mdedit__submit').removeClass('disabled');
+          $editor.find('.mdedit-btn__submit').removeClass('disabled');
 
           if (err.type === 'BAD_NICK') {
             $to.parent().addClass('has-danger');

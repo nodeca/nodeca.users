@@ -64,7 +64,7 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
       $editor.find('.mdedit-footer').append(N.runtime.render(module.apiPath + '.options_btn'));
     })
     .on('submit.nd.mdedit', () => {
-      $editor.find('.mdedit__submit').addClass('disabled');
+      $editor.find('.mdedit-btn__submit').addClass('disabled');
 
       let params = {
         dialog_id:                data.dialog_id,
@@ -86,7 +86,7 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
           force: true
         });
       }).catch(err => {
-        $editor.find('.mdedit__submit').removeClass('disabled');
+        $editor.find('.mdedit-btn__submit').removeClass('disabled');
         N.wire.emit('error', err);
       });
 

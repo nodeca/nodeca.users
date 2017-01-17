@@ -1,1 +1,9 @@
-button.btn.btn-link(data-on-click='users.dialog.reply:options' tabindex=5)=self.t('options')
+button.mdedit-btn__options.btn.btn-link.hidden-xs-down(
+  data-on-click='users.dialog.reply:options'
+  tabindex=5
+)= self.t('options')
+button.mdedit-btn__options.btn.btn-link.hidden-sm-up.icon.icon-sliders(
+  data-on-click='users.dialog.reply:options'
+  tabindex=5
+  title=self.t('options')
+)
