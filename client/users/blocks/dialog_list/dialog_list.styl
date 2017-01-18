@@ -8,7 +8,7 @@ $avatar-aside-size-sm   = $avatar-size-sm / 2
 
 .dialog-list-item
   display flex
-  padding-bottom 2rem
+  padding-bottom 1.5rem
 
 // Avatar + tab
 .dialog-list-item__aside
@@ -111,46 +111,48 @@ $avatar-aside-size-sm   = $avatar-size-sm / 2
 
 .dialog-list-item__header
   display flex
-  align-items flex-end
+  align-items center
 
 .dialog-list-item__info
   flex 1 1 100%
-  overflow hidden
+  min-width 0
 
 .dialog-list-item__title
   display block
   font-size $font-size-lg
   line-height 1.1em
-  margin-bottom .125rem
   shortable()
 
-.dialog-list-item__talk-with
+.dialog-list-item__title-meta
+  display flex
   font-size $font-size-xs
-  line-height 1.1em
+  white-space nowrap
+
+.dialog-list-item__talk-with
   color $body-color-secondary + 20%
   shortable()
 
 .dialog-list-item__controls
-  white-space nowrap
-  font-size $font-size-xs
-  line-height 1.1em
-  margin 0 -.5rem -.4375rem .5rem
+  padding-left .5rem
+  height 1.125rem
+  margin-right -.5rem
+  margin-top -.25rem
 
 a.dialog-list-item__preview
   display block
   //font-family $font-family-sans-serif-wide
   font-size $font-size-xs
-  margin-top .375rem
   color $body-color-secondary
   text-decoration none
+  margin-top .125rem
 
 .dialog-list-item__date
+  margin-left auto
+  padding-left 1.5rem
   color $body-color-secondary + 20%
 
 .dialog-list-item__delete
   color $body-color-secondary + 60%
-  margin-left .25rem
-  margin-top -.0625rem
 
 
 @media (max-width: $grid-breakpoints.sm - 1)
@@ -160,5 +162,3 @@ a.dialog-list-item__preview
     display none
   .dialog-list-item__aside-inline
     display block
-  .dialog-list-item__preview
-    margin-top .5rem
