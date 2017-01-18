@@ -98,9 +98,8 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
       if (!bloodhound) {
         bloodhound = new Bloodhound({
           remote: {
-            // Hack to get nick in first param of transport call
-            url: '%QUERY',
-            wildcard: '%QUERY',
+            url: 'unused', // bloodhound throws if it's not defined
+            prepare(nick) { return nick; },
             // Reroute request to rpc
             transport(req, onSuccess, onError) {
               N.io.rpc('common.user_lookup', { nick: req.url })
