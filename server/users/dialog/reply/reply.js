@@ -52,6 +52,8 @@ module.exports = function (N, apiPath) {
     env.data.to = yield N.models.users.User.findOne()
                             .where('_id').equals(env.data.dialog.to)
                             .lean(true);
+
+    if (!env.data.to || !env.data.to.exists) throw N.io.NOT_FOUND;
   });
 
 

@@ -56,6 +56,9 @@ module.exports = function (N, apiPath) {
   // Check if we can send a message to that user
   //
   N.wire.after(apiPath, function* fill_dialog_permissions(env) {
+    // can't send messages to deleted users
+    if (!env.data.to || !env.data.to.exists) return;
+
     let settings = yield env.extras.settings.fetch([
       'can_use_dialogs',
       'can_create_dialogs'
