@@ -13,11 +13,16 @@ function escapeRegexp(source) {
 //
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
-    nick:   { type: 'string',  required: true,  minLength: 1     },
+    nick:   { type: 'string',  required: true },
     strict: { type: 'boolean', required: true }
   });
 
   N.wire.on(apiPath, function* moderator_find_user(env) {
+    if (env.params.nick.length < 3 && !env.params.strict) {
+      env.res = [];
+      return;
+    }
+
     var query = N.models.users.User.find();
 
     if (env.params.strict) {
@@ -28,6 +33,7 @@ module.exports = function (N, apiPath) {
 
     env.res = yield query.limit(10)
                          .select('_id name nick')
+                         .sort('nick')
                          .lean(true);
   });
 };

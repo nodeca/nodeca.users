@@ -8,7 +8,7 @@ const _ = require('lodash');
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
-    nick: { type: 'string', required: true, minLength: 1 }
+    nick: { type: 'string', required: true }
   });
 
 
@@ -22,10 +22,16 @@ module.exports = function (N, apiPath) {
   // Find users and fill response
   //
   N.wire.on(apiPath, function* find_users(env) {
+    if (env.params.nick.length < 3) {
+      env.res = [];
+      return;
+    }
+
     let users = yield N.models.users.User.find()
                           .where('nick_normalized_lc').regex(
                               new RegExp('^' + _.escapeRegExp(env.params.nick.toLowerCase())))
                           .where('exists').equals(true)
+                          .sort('nick')
                           .limit(10)
                           .select('_id name nick')
                           .lean(true);
