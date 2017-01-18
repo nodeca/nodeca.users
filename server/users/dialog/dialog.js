@@ -17,6 +17,13 @@ module.exports = function (N, apiPath) {
   let buildMessagesIds = require('./list/_build_messages_ids_by_range')(N);
 
 
+  // Redirect guests to login page
+  //
+  N.wire.before(apiPath, function* force_login_guest(env) {
+    yield N.wire.emit('internal:users.force_login_guest', env);
+  });
+
+
   // Fetch user
   //
   N.wire.before(apiPath, function* fetch_user(env) {

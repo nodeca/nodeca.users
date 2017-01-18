@@ -40,6 +40,13 @@ module.exports = function (N, apiPath) {
   }
 
 
+  // Redirect guests to login page
+  //
+  N.wire.before(apiPath, function* force_login_guest(env) {
+    yield N.wire.emit('internal:users.force_login_guest', env);
+  });
+
+
   // Fetch member by 'user_hid'
   //
   N.wire.before(apiPath, function fetch_user_by_hid(env) {
