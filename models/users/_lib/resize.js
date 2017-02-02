@@ -171,10 +171,11 @@ const createPreview = Promise.coroutine(function* (image, resizeConfig, imageTyp
   }
 
   let sharpInstance = sharp(image.buffer);
+  let formatOptions = {};
 
   if (outType === 'jpeg') {
     // Set quality for jpeg image (default sharp quality is 80)
-    sharpInstance.quality(resizeConfig.jpeg_quality);
+    formatOptions.quality = resizeConfig.jpeg_quality;
 
     // Rotate image / fix Exif orientation
     sharpInstance.rotate();
@@ -208,7 +209,7 @@ const createPreview = Promise.coroutine(function* (image, resizeConfig, imageTyp
   let res = yield new Promise((resolve, reject) => {
     // using callback interface instead of promises here,
     // because promises don't return `info` object
-    sharpInstance.toFormat(outType).withMetadata().toBuffer(function (err, buffer, info) {
+    sharpInstance.toFormat(outType, formatOptions).withMetadata().toBuffer(function (err, buffer, info) {
       if (err) reject(err);
       else resolve({ buffer, info });
     });
