@@ -88,7 +88,7 @@ N.wire.after('navigate.done:' + module.apiPath, function uploader_setup() {
     if (files.length > 0) {
       let params = {
         files,
-        url: N.router.linkTo('users.media.upload', { album_id: mediaState.album_id }),
+        rpc: [ 'users.media.upload', { album_id: mediaState.album_id } ],
         config: 'users.uploader_config',
         uploaded: null
       };

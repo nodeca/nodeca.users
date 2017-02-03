@@ -595,7 +595,7 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
   ///////////////////////////////////////////////////////////////////////////////
   // Save selected avatar
 
-  let formData;
+  let avatarBlob;
 
   N.wire.on('users.avatar.change:apply', function change_avatar_resize(__, callback) {
     const pica = require('pica');
@@ -636,10 +636,7 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
 
       avatarCanvas.toBlob(function (blob) {
 
-        formData = new FormData();
-        formData.append('file', blob);
-        formData.append('csrf', N.runtime.token_csrf);
-
+        avatarBlob = blob;
         callback();
 
       }, 'image/jpeg', 90);
@@ -647,26 +644,19 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
   });
 
   N.wire.after('users.avatar.change:apply', function change_avatar_upload() {
+    let avatar = avatarBlob;
+    avatarBlob = null;
 
-    // Upload resizd avatar
-    $.ajax({
-      url: N.router.linkTo('users.avatar.upload'),
-      type: 'POST',
-      data: formData,
-      dataType: 'json',
-      processData: false,
-      contentType: false
-    })
+    // Upload resized avatar
+    return N.io.rpc('users.avatar.upload', { avatar })
       .then(result => {
         data.avatar_id = result.avatar_id;
         $dialog.modal('hide');
         onUploaded();
-      })
-      .fail(() => {
+      }, () => {
         $dialog.modal('hide');
         N.wire.emit('notify', t('err_upload_failed'));
-      })
-      .always(() => { formData = null; });
+      });
   });
 
 

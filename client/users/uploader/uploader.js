@@ -6,7 +6,7 @@
 //
 // let params = {
 //   files: event.dataTransfer.files,
-//   url: '/url/to/upload/method',
+//   rpc: [ apiPath, params ],
 //   config: 'users.uploader_config',
 //   uploaded: null
 // };
@@ -16,13 +16,14 @@
 // params:
 //
 // - files    - required
-// - url      - required
+// - rpc      - required
 // - config   - required, name of server method that returns config for uploader
 // - uploaded - null, will be filled after upload - array of uploaded media
 //
 'use strict';
 
 
+const _           = require('lodash');
 const filter_jpeg = require('nodeca.users/lib/filter_jpeg');
 
 
@@ -257,42 +258,28 @@ function startUpload(data) {
   // If 'resizeImage' finished after user closed dialog
   if (aborted) return Promise.reject(new Error('aborted'));
 
-  let formData = new FormData();
-
-  formData.append('file', data.file);
-  formData.append('csrf', N.runtime.token_csrf);
-
   let $progressInfo = $('#' + data.uploaderFileId);
 
-  let jqXhr = $.ajax({
-    url: data.url,
-    type: 'POST',
-    data: formData,
-    dataType: 'json',
-    processData: false,
-    contentType: false,
-    xhr() {
-      let xhr = $.ajaxSettings.xhr();
-      let progress;
+  let request = N.io.rpc(
+    data.rpc[0],
+    _.assign({}, data.rpc[1], { file: data.file }),
+    {
+      onProgress(e) {
+        if (e.lengthComputable) {
+          let progress = ((e.loaded * 100) / e.total).toFixed(2);
 
-      if (xhr.upload) {
-        xhr.upload.addEventListener('progress', function (e) {
-          if (e.lengthComputable) {
-            progress = ((e.loaded * 100) / e.total).toFixed(2);
-            $progressInfo.find('.progress-bar').width(progress + '%');
-          }
-        }, false);
+          $progressInfo.find('.progress-bar').width(progress + '%');
+        }
       }
-      return xhr;
     }
-  });
+  );
 
-  requests.push(jqXhr);
+  requests.push(request);
 
-  return Promise.resolve(jqXhr)
+  return request
     .then(res => {
       uploadedFiles.push(res.media);
-      $progressInfo.find('.progress-bar').addClass('bg-success');
+      $progressInfo.find('.progress-bar').width('100%').addClass('bg-success');
     })
     .catch(err => {
       // Don't show error if user terminate file upload
@@ -314,8 +301,8 @@ function startUpload(data) {
 
 function abort() {
   if (requests) {
-    requests.forEach(function (jqXhr) {
-      jqXhr.abort();
+    requests.forEach(function (request) {
+      request.cancel();
     });
   }
 
@@ -415,7 +402,7 @@ N.wire.on(module.apiPath + ':add', function add_files(data) {
   // Create unique id. Add initial progress info to dialog
   for (let i = 0; i < data.files.length; i++) {
     let info = {
-      url: data.url,
+      rpc: data.rpc,
       file: data.files[i],
       // create unique file id
       uploaderFileId: 'upload_' + Math.floor(Math.random() * 1e10)

@@ -3,13 +3,10 @@
 'use strict';
 
 
-const path        = require('path');
-const formidable  = require('formidable');
-const tmpDir      = require('os').tmpdir();
 const _           = require('lodash');
 const mime        = require('mime-types').lookup;
+const path        = require('path');
 const resizeParse = require('../../../_lib/resize_parse');
-const unlink      = require('mz/fs').unlink;
 
 
 module.exports = function (N, apiPath) {
@@ -18,7 +15,8 @@ module.exports = function (N, apiPath) {
 
   // CSRF comes in post data and checked separately
   N.validate(apiPath, {
-    album_id: { format: 'mongo' }
+    album_id: { format: 'mongo', required: false },
+    file:     { type: 'string',  required: true }
   });
 
 
@@ -58,30 +56,6 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Check file size early by header and terminate immediately for big uploads
-  //
-  N.wire.before(apiPath, function* check_file_size(env) {
-    // `Content-Length` = (files + wrappers) + (params + wrappers)
-    //
-    // When single big file sent, `Content-Length` ~ FileSize.
-    // Difference is < 200 bytes.
-    let size = env.origin.req.headers['content-length'];
-
-    if (!size) {
-      throw N.io.LENGTH_REQUIRED;
-    }
-
-    let users_media_single_quota_kb = yield env.extras.settings.fetch('users_media_single_quota_kb');
-
-    if (size > users_media_single_quota_kb * 1024) {
-      throw {
-        code:    N.io.CLIENT_ERROR,
-        message: env.t('err_file_size', { max_size_kb: users_media_single_quota_kb })
-      };
-    }
-  });
-
-
   // Check quota
   //
   N.wire.before(apiPath, function* check_quota(env) {
@@ -100,77 +74,43 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Fetch post body with files via formidable
+  // Check file size and type
   //
-  N.wire.before(apiPath, function upload_media(env, callback) {
-    let form = new formidable.IncomingForm();
+  N.wire.before(apiPath, function* upload_media(env) {
+    let fileInfo = env.req.files.file && env.req.files.file[0];
 
-    form.uploadDir = tmpDir;
+    if (!fileInfo) throw new Error('No file was uploaded');
 
-    form.on('progress', (bytesReceived, contentLength) => {
+    let users_media_single_quota_kb = yield env.extras.settings.fetch('users_media_single_quota_kb');
 
-      // Terminate connection if `Content-Length` header is fake
-      if (bytesReceived > contentLength) {
-        form._error(new Error('Data size too big (should be equal to Content-Length)'));
-      }
-    });
+    if (fileInfo.size > users_media_single_quota_kb * 1024) {
+      throw {
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('err_file_size', { max_size_kb: users_media_single_quota_kb })
+      };
+    }
 
-    form.parse(env.origin.req, (err, fields, files) => {
-      files = _.toArray(files);
+    // Usually file size and type are checked on client side,
+    // but we must check it on server side for security reasons
+    let allowedTypes = _.map(config.extensions, ext => mime(ext));
 
-      function fail(err) {
-        // Don't care unlink result, forward previous error
-        files.forEach(f => unlink(f.path).catch(() => {}));
-        callback(err);
-      }
+    if (allowedTypes.indexOf(fileInfo.headers['content-type']) === -1) {
+      // Fallback attempt: FF can send strange mime,
+      // `application/x-zip-compressed` instead of `application/zip`
+      // Try to fix it.
+      let mimeByExt = mime(path.extname(fileInfo.originalFilename || '').slice(1));
 
-      // In this callback also will be 'aborted' error
-      if (err) {
-        fail(err);
-        return;
-      }
-
-      // Check CSRF
-      if (!env.session.token_csrf || !fields.csrf || (env.session.token_csrf !== fields.csrf)) {
-        fail({
-          code: N.io.INVALID_CSRF_TOKEN,
-          data: { token: env.session.token_csrf }
-        });
-        return;
+      if (allowedTypes.indexOf(mimeByExt) === -1) {
+        throw {
+          code: N.io.CLIENT_ERROR,
+          message: env.t('err_invalid_ext', { file_name: fileInfo.originalFilename })
+        };
       }
 
-      // Should never happens - uploader send only one file
-      if (files.length !== 1) {
-        fail(new Error('Only one file allowed on single upload request'));
-        return;
-      }
+      fileInfo.headers['content-type'] = mimeByExt;
+    }
 
-      let fileInfo = files[0];
-
-      // Usually file size and type are checked on client side,
-      // but we must check it on server side for security reasons
-      let allowedTypes = _.map(config.extensions, ext => mime(ext));
-
-      if (allowedTypes.indexOf(fileInfo.type) === -1) {
-        // Fallback attempt: FF can send strange mime,
-        // `application/x-zip-compressed` instead of `application/zip`
-        // Try to fix it.
-        let mimeByExt = mime(path.extname(fileInfo.name).slice(1));
-
-        if (allowedTypes.indexOf(mimeByExt) === -1) {
-          fail({
-            code: N.io.CLIENT_ERROR,
-            message: env.t('err_invalid_ext', { file_name: fileInfo.name })
-          });
-          return;
-        }
-
-        fileInfo.type = mimeByExt;
-      }
-
-      env.data.upload_file_info = fileInfo;
-      callback();
-    });
+    env.data.upload_file_info = fileInfo;
   });
 
 
@@ -179,26 +119,18 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function* save_media(env) {
     let fileInfo = env.data.upload_file_info;
 
-    try {
-      let media = yield N.models.users.MediaInfo.createFile({
-        album_id: env.data.album._id,
-        user_id: env.user_info.user_id,
-        path: fileInfo.path,
-        name: fileInfo.name,
-        // In case of blob fileInfo.name will be 'blob'.
-        // Get extension from fileInfo.type.
-        ext: fileInfo.type.split('/').pop()
-      });
+    let media = yield N.models.users.MediaInfo.createFile({
+      album_id: env.data.album._id,
+      user_id: env.user_info.user_id,
+      path: fileInfo.path,
+      name: fileInfo.originalFilename,
+      // In case of blob fileInfo.name will be 'blob'.
+      // Get extension from fileInfo.type.
+      ext: (fileInfo.headers['content-type'] || '').split('/').pop()
+    });
 
-      env.res.media = media;
-      env.data.media = media;
-    } catch (err) {
-      yield unlink(fileInfo.path);
-      throw err;
-    }
-
-    // Remove file after upload to gridfs
-    yield unlink(fileInfo.path);
+    env.res.media = media;
+    env.data.media = media;
   });
 
 
