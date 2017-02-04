@@ -140,7 +140,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         if (data.files && data.files.length) {
           let params = {
             files: data.files,
-            url: N.router.linkTo('users.media.upload', { album_id: mediaState.album_id }),
+            rpc: [ 'users.media.upload', { album_id: mediaState.album_id } ],
             config: 'users.uploader_config',
             uploaded: null
           };

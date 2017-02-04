@@ -80,7 +80,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         if (data.files && data.files.length) {
           return N.wire.emit('users.uploader:add', {
             files: data.files,
-            url: N.router.linkTo('users.media.upload', { album_id: id }),
+            rpc: [ 'users.media.upload', { album_id: id } ],
             config: 'users.uploader_config'
           }).then(() => updateAlbumList(id));
         }
