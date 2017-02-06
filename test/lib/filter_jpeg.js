@@ -23,16 +23,20 @@ function addTestBlock(TypedArray) {
 
   function addTest(args, source, equals, callback) {
     let filter = filter_jpeg(args);
+    let finished = false;
 
     filter.onEnd = function () {
       let buffer = new TypedArray(Buffer.concat(filter.output.map(Buffer)));
 
       assert.deepEqual(buffer, equals);
-      callback();
+      finished = true;
     };
 
     filter.push(source);
     filter.end();
+
+    assert(finished);
+    callback();
   }
 
   it('should leave file as is if no options', function (callback) {
@@ -52,6 +56,13 @@ function addTestBlock(TypedArray) {
   it('should remove jpeg padding', function (callback) {
     addTest({},
             fixtures['jpeg1-padded'],
+            fixtures['jpeg1-orig'],
+            callback);
+  });
+
+  it('should remove data after EOI', function (callback) {
+    addTest({},
+            fixtures['jpeg1-data-after'],
             fixtures['jpeg1-orig'],
             callback);
   });
