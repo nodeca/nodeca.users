@@ -28,8 +28,15 @@ i18n:
           registered_user_group: Group after activation
 
           ban_ip: Banned IPs
+          ban_ip_help: |
+            One pattern per line. Can define subnets as "123.234.12.".
+            Users from those IPs will be banned after registration.
 
           ban_email: Banned emails
+          ban_email_help: |
+            One pattern per line. If user's email contains one of
+            pattern, that user will be banned after registration.
+            Example: "@google.com".
 
           can_access_acp: Can access ACP
 
