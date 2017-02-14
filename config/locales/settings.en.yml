@@ -27,6 +27,10 @@ i18n:
 
           registered_user_group: Group after activation
 
+          ban_ip: Banned IPs
+
+          ban_email: Banned emails
+
           can_access_acp: Can access ACP
 
           can_hellban: Can hellban users
