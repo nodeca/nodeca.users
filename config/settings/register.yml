@@ -19,15 +19,3 @@ setting_schemas:
       type: dropdown
       values: usergroups
       default: members
-
-    ban_ip:
-      priority: 30
-      group_key: register
-      category_key: register_common
-      type: multiline
-
-    ban_email:
-      priority: 40
-      group_key: register
-      category_key: register_common
-      type: multiline
