@@ -4,23 +4,20 @@
 'use strict';
 
 
-const _           = require('lodash');
-const querystring = require('querystring');
+const _  = require('lodash');
 
 
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
-    $query: { type: 'string', required: false }
+    $query: { type: 'object', required: false }
   });
 
 
   // Parse querystring
   //
   N.wire.before(apiPath, { priority: -20 }, function parse_query(env) {
-    let search_params = querystring.parse(env.params.$query || {});
-
-    env.data.search_params = search_params;
+    env.data.search_params = env.params.$query || {};
   });
 
 
