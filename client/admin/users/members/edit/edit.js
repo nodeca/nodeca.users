@@ -13,12 +13,8 @@ N.wire.once('navigate.done:' + module.apiPath, function init_handlers() {
   N.wire.on(module.apiPath + ':submit', function update_user(form) {
     let data = _.assign({ user_hid: form.$this.data('user-hid') }, form.fields);
 
-    return N.io.rpc('admin.users.members.edit.update', data).then(() =>
-      N.wire.emit('notify', {
-        type: 'info',
-        message: t('saved')
-      })
-    );
+    return N.io.rpc('admin.users.members.edit.update', data)
+      .then(() => N.wire.emit('notify.info', t('saved')));
   });
 
 
@@ -90,12 +86,8 @@ N.wire.once('navigate.done:' + module.apiPath, function init_handlers() {
   N.wire.on(module.apiPath + ':delete_dialogs', function delete_dialogs(data) {
     let user_hid = data.$this.data('user-hid');
 
-    return N.io.rpc('admin.users.members.edit.delete_dialogs', { user_hid }).then(() =>
-      N.wire.emit('notify', {
-        type: 'info',
-        message: t('dialogs_deleted')
-      })
-    );
+    return N.io.rpc('admin.users.members.edit.delete_dialogs', { user_hid })
+      .then(() => N.wire.emit('notify.info', t('dialogs_deleted')));
   });
 
 
@@ -128,11 +120,7 @@ N.wire.once('navigate.done:' + module.apiPath, function init_handlers() {
   N.wire.on(module.apiPath + ':delete_votes', function delete_votes(data) {
     let user_hid = data.$this.data('user-hid');
 
-    return N.io.rpc('admin.users.members.edit.delete_votes', { user_hid }).then(() =>
-      N.wire.emit('notify', {
-        type: 'info',
-        message: t('votes_deleted')
-      })
-    );
+    return N.io.rpc('admin.users.members.edit.delete_votes', { user_hid })
+      .then(() => N.wire.emit('notify.info', t('votes_deleted')));
   });
 });

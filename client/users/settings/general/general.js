@@ -100,10 +100,7 @@ Form.prototype.submit = function submit() {
   });
 
   N.io.rpc('users.settings.general.update', data).then(function () {
-    N.wire.emit('notify', {
-      type: 'info',
-      message: t('saved')
-    });
+    N.wire.emit('notify.info', t('saved'));
 
     self.settings.forEach(function (setting) {
       setting._value = setting.value();

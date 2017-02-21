@@ -307,10 +307,8 @@ Form.prototype.create = function create() {
     .then(() => N.io.rpc('admin.users.usergroups.create', this.currentGroup.getOutputData()))
     .then(() => {
       this.currentGroup.markClean();
-      return N.wire.emit('notify', {
-        type: 'info',
-        message: N.runtime.t('admin.users.usergroups.form.created')
-      });
+
+      return N.wire.emit('notify.info', N.runtime.t('admin.users.usergroups.form.created'));
     })
     .then(() => N.wire.emit('navigate.to', { apiPath: 'admin.users.usergroups.index' }))
     .catch(err => N.wire.emit('error', err));
@@ -324,10 +322,7 @@ Form.prototype.update = function update() {
     .then(() => {
       this.currentGroup.markClean();
 
-      return N.wire.emit('notify', {
-        type: 'info',
-        message: N.runtime.t('admin.users.usergroups.form.updated')
-      });
+      return N.wire.emit('notify.info', N.runtime.t('admin.users.usergroups.form.updated'));
     })
     .catch(err => N.wire.emit('error', err));
 };

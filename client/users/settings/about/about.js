@@ -79,10 +79,7 @@ Form.prototype.submit = function submit() {
     self.isDirty(false);
     self.isSubmitting(false);
 
-    N.wire.emit('notify', {
-      type: 'info',
-      message: t('saved')
-    });
+    N.wire.emit('notify.info', t('saved'));
 
     Object.keys(self.about).forEach(function (name) {
       if (res.fields[name]) {

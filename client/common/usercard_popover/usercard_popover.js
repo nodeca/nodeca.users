@@ -71,7 +71,7 @@ N.wire.once('navigate.done', function init_usercard_click() {
           throw err;
         }
 
-        N.wire.emit('notify', { type: 'error', message: t('error') });
+        N.wire.emit('notify', t('error'));
       });
   });
 

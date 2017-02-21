@@ -109,10 +109,7 @@ N.wire.on('navigate.done:' + module.apiPath, function initialize_map() {
             let err_map = { 1: 'denied', 2: 'unavailable', 3: 'timeout' };
 
             if (err.code && err_map[err.code]) {
-              N.wire.emit('notify', {
-                type: 'error',
-                message: t('err_geolocation_' + err_map[err.code])
-              });
+              N.wire.emit('notify', t('err_geolocation_' + err_map[err.code]));
             }
           });
         });
@@ -180,10 +177,7 @@ N.wire.on(module.apiPath + ':save', function save_marker() {
     // center map on marker
     map.flyTo(latlng);
 
-    return N.wire.emit('notify', {
-      type: 'info',
-      message: t('saved')
-    });
+    return N.wire.emit('notify.info', t('saved'));
   }).catch(err => N.wire.emit('error', err));
 });
 

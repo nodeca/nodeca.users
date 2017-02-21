@@ -72,7 +72,7 @@ N.wire.on(module.apiPath + ':edit', function show_editor(data) {
             force: true
           });
         })
-        .then(() => N.wire.emit('notify', { type: 'info', message: t('updated_notice') }))
+        .then(() => N.wire.emit('notify.info', t('updated_notice')))
         .catch(err => {
           $editor.find('.mdedit-btn__submit').removeClass('disabled');
           N.wire.emit('error', err);

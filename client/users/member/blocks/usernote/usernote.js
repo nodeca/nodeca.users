@@ -91,7 +91,7 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
           }
 
           // otherwise show a completion message to user
-          return N.wire.emit('notify', { type: 'info', message: t('update_notice') });
+          return N.wire.emit('notify.info', t('update_notice'));
         }).catch(err => {
           $editor.find('.mdedit-btn__submit').removeClass('disabled');
           N.wire.emit('error', err);
