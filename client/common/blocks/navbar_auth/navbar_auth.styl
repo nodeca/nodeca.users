@@ -1,13 +1,20 @@
 @import "nodeca.core/client/common/_variables"
 
 // Hide default caret from .dropdown-toggle
-.navbar-auth__dropdown-toggle
-  padding-top 0 !important
-  padding-bottom 0 !important
-  &:after
-    display none
+.navbar-auth__dropdown-toggle:after
+  display none
 
 .navbar-auth__avatar
   height 2.375rem
   border-radius 3px
   border 1px solid ($brand-primary + 20%)
+
+//
+// Tweak top/bottom padding for mobile and desktop toolbars
+//
+.navbar-auth__dropdown-toggle
+  padding-bottom 0 !important
+
+@media (min-width: $grid-breakpoints.sm)
+  .navbar-auth__dropdown-toggle
+    padding-top 0 !important
