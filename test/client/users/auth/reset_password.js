@@ -59,7 +59,7 @@ describe('Reset password', function () {
       .do.fill('form[data-on-submit="users.auth.reset_password.request_exec"]', {
         email
       })
-      .do.click('button[type="submit"]')
+      .do.click('form[data-on-submit="users.auth.reset_password.request_exec"] button[type="submit"]')
       .close()
       .run();
 
@@ -97,7 +97,7 @@ describe('Reset password', function () {
       .do.fill('form[data-on-submit="users.auth.reset_password.change_exec"]', {
         password: new_password
       })
-      .do.click('button[type="submit"]')
+      .do.click('form[data-on-submit="users.auth.reset_password.change_exec"] button[type="submit"]')
       .close()
       .run();
 

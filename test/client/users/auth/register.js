@@ -43,7 +43,7 @@ describe('Register', function () {
         pass,
         nick: login
       })
-      .do.click('button[type="submit"]')
+      .do.click('form[data-on-submit="users.auth.register.exec"] button[type="submit"]')
       .close()
       .run();
 
