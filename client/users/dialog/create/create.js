@@ -46,7 +46,7 @@ N.wire.before(module.apiPath + ':begin', function fetch_options() {
 // Show editor and add handlers for editor events
 //
 N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
-  const Bloodhound = require('typeahead.js/dist/bloodhound.js');
+  const Bloodhound = require('corejs-typeahead/dist/bloodhound.js');
 
   let $editor = N.MDEdit.show({
     draftKey: [ 'dialog_create', N.runtime.user_hid, to_user ? to_user.nick : '' ].join('_'),
