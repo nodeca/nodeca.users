@@ -1,6 +1,7 @@
-.page-actions.dialogs-root__toolbar-controls
-  button.btn.btn-secondary.btn-square.icon.icon-plus(
-    type='button'
-    data-on-click='users.dialogs_root:create_message'
-    title=self.t('new_dialog')
-  )
+if self.settings.can_create_dialogs
+  .page-actions.dialogs-root__toolbar-controls
+    button.btn.btn-secondary.btn-square.icon.icon-plus(
+      type='button'
+      data-on-click='users.dialogs_root:create_message'
+      title=self.t('new_dialog')
+    )
