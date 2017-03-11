@@ -40,6 +40,12 @@ N.wire.once('navigate.done', function init_usercard_click() {
 
     N.io.rpc(module.apiPath, { user_hid })
       .then(function (res) {
+        // Add reference info to template data.
+        // Example: "fp:fp4c8153c09f81af617c72a584"
+        // Can be used to pre-fill title & content via hooks
+        let ref = $link.data('user-ref');
+        if (ref) res.ref = ref;
+
         let pos_left = $link.offset().left + $link.innerWidth();
         let $card = $(N.runtime.render(module.apiPath, res));
 
@@ -107,7 +113,8 @@ N.wire.once('navigate.done', function init_usercard_click() {
   N.wire.on(module.apiPath + ':message', function create_dialog(data) {
     let params = {
       nick: data.$this.data('to-nick'),
-      hid: data.$this.data('to-hid')
+      hid: data.$this.data('to-hid'),
+      ref: data.$this.data('ref')
     };
 
     return N.wire.emit('users.dialog.create:begin', params)

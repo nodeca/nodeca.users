@@ -48,13 +48,18 @@ N.wire.before(module.apiPath + ':begin', function fetch_options() {
 N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
   const Bloodhound = require('corejs-typeahead/dist/bloodhound.js');
 
+  // build draft key tail
+  let key_tail = '';
+  if (to_user) key_tail += to_user.ref ? to_user.ref : (to_user.nick || '');
+
   let $editor = N.MDEdit.show({
-    draftKey: [ 'dialog_create', N.runtime.user_hid, to_user ? to_user.nick : '' ].join('_'),
+    draftKey: `dialog_create_${N.runtime.user_hid}_${key_tail}`,
     draftCustomFields: {
       '.dialogs-create__title': 'input',
       // Add `:last` because typeahead create additional field copy
       '.dialogs-create__user-nick-input:last': 'input'
-    }
+    },
+    text: to_user ? to_user.text || '' : ''
   });
 
   let $inputs = $(N.runtime.render(module.apiPath + '.inputs', {
@@ -63,6 +68,9 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
 
   let $to = $inputs.find('.dialogs-create__user-nick-input');
   let $title = $inputs.find('.dialogs-create__title');
+
+  // prefill title if needed
+  if (to_user && to_user.title) $title.val(to_user.title);
 
   updateOptions();
 
