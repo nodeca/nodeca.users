@@ -3,16 +3,6 @@
 
 N.wire.once('navigate.done', function page_setup() {
 
-  // Reload page on `local.users.auth` message after delay
-  //
-  N.live.on('local.users.auth', function logout_reload() {
-    // Automatically reload after 2 sec
-    setTimeout(function () {
-      window.location.reload();
-    }, 2000);
-  });
-
-
   // Update avatar in navbar
   //
   N.live.on('local.users.avatar.change', function update_avatar(avatarId) {

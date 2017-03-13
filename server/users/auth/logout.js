@@ -28,5 +28,8 @@ module.exports = function (N, apiPath) {
     // so core could reset user cookie
     //
     env.session = null;
+
+    // force all other tabs to reload
+    env.extras.setCookie('reload_tabs', 1, { httpOnly: false });
   });
 };

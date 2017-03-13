@@ -32,6 +32,9 @@ module.exports = function (N, apiPath) {
 
     env.session_id      = token.session_id;
 
+    // force all other tabs to reload
+    env.extras.setCookie('reload_tabs', 1, { httpOnly: false });
+
     // fill redirect with default value
     env.data.redirect_url = N.router.linkTo('users.member', { user_hid: env.data.user.hid });
 
