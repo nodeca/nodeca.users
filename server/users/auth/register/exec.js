@@ -105,7 +105,7 @@ module.exports = function (N, apiPath) {
 
   // Additional checks for password
   //
-  N.wire.before(apiPath, function* check_password(env) {
+  N.wire.before(apiPath, function check_password(env) {
     // forbid password equal to user nickname
     if (env.params.pass.toLowerCase() === env.params.nick.toLowerCase()) {
       env.data.errors.pass = env.t('err_password_is_nick');
