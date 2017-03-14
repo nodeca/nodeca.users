@@ -9,6 +9,7 @@ const _           = require('lodash');
 const Promise     = require('bluebird');
 const validator   = require('is-my-json-valid');
 const email_regex = require('email-regex');
+const url         = require('url');
 const recaptcha   = require('nodeca.core/lib/app/recaptcha');
 const password    = require('nodeca.users/models/users/_lib/password');
 
@@ -98,6 +99,33 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, function* check_nick_uniqueness(env) {
     if (yield N.models.users.User.similarExists(env.params.nick)) {
       env.data.errors.nick = env.t('err_busy_nick');
+    }
+  });
+
+
+  // Additional checks for password
+  //
+  N.wire.before(apiPath, function* check_password(env) {
+    // forbid password equal to user nickname
+    if (env.params.pass.toLowerCase() === env.params.nick.toLowerCase()) {
+      env.data.errors.pass = env.t('err_password_is_nick');
+      return;
+    }
+
+    // forbid password equal to user email address
+    if (env.params.pass.toLowerCase() === env.params.email.toLowerCase()) {
+      env.data.errors.pass = env.t('err_password_is_email');
+      return;
+    }
+
+    // forbid password equal to hostname
+    let mount = _.get(N.config, 'bind.default.mount');
+
+    if (mount) {
+      if (env.params.pass.toLowerCase() === url.parse(mount).hostname.toLowerCase()) {
+        env.data.errors.pass = env.t('err_password_is_hostname');
+        return;
+      }
     }
   });
 

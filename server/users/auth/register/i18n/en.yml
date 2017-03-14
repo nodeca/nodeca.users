@@ -6,6 +6,9 @@ en-US:
     err_busy_email: This email is already used.
     err_busy_nick: This nick is already used.
     err_wrong_captcha: CAPTCHA verification failed, try again.
+    err_password_is_nick: You shouldn't set your nickname as a password.
+    err_password_is_email: You shouldn't set your email address as a password.
+    err_password_is_hostname: You shouldn't set website address as a password.
 
     email_subject: '#{project_name}: activate your account'
     email_text: |

@@ -2,6 +2,9 @@
 //
 'use strict';
 
+const _   = require('lodash');
+const url = require('url');
+
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
@@ -14,19 +17,6 @@ module.exports = function (N, apiPath) {
   // Don't limit logged-in users to change pass. Because
   // user can forget password, but still have cookies to hemember him.
   //
-
-
-  // Validate new password
-  //
-  N.wire.before(apiPath, function validate_password(env) {
-    if (!N.models.users.User.validatePassword(env.params.password)) {
-      return {
-        code:         N.io.CLIENT_ERROR,
-        message:      null,
-        bad_password: true
-      };
-    }
-  });
 
 
   // Check token
@@ -69,6 +59,50 @@ module.exports = function (N, apiPath) {
         message:      env.t('err_broken_token'),
         bad_password: false
       };
+    }
+  });
+
+
+  // Validate new password
+  //
+  N.wire.before(apiPath, function validate_password(env) {
+    if (!N.models.users.User.validatePassword(env.params.password)) {
+      return {
+        code:         N.io.CLIENT_ERROR,
+        message:      null,
+        bad_password: true
+      };
+    }
+
+    // forbid password equal to user nickname
+    if (env.params.password.toLowerCase() === env.data.user.nick.toLowerCase()) {
+      return {
+        code:         N.io.CLIENT_ERROR,
+        message:      env.t('err_password_is_nick'),
+        bad_password: true
+      };
+    }
+
+    // forbid password equal to user email address
+    if (env.params.password.toLowerCase() === env.data.user.email.toLowerCase()) {
+      return {
+        code:         N.io.CLIENT_ERROR,
+        message:      env.t('err_password_is_email'),
+        bad_password: true
+      };
+    }
+
+    // forbid password equal to hostname
+    let mount = _.get(N.config, 'bind.default.mount');
+
+    if (mount) {
+      if (env.params.password.toLowerCase() === url.parse(mount).hostname.toLowerCase()) {
+        return {
+          code:         N.io.CLIENT_ERROR,
+          message:      env.t('err_password_is_hostname'),
+          bad_password: true
+        };
+      }
     }
   });
 

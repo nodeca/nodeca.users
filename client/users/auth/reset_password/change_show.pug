@@ -26,6 +26,6 @@
                   type='password'
                   placeholder=self.t('password_desc')
                 )
-                small.form-text(data-bind='css: hasError() ? "text-danger" : "text-muted"')=self.t('password_help')
+                small.form-text(data-bind='text: help, css: hasError() ? "text-danger" : "text-muted"')
 
               button.btn.btn-primary(type='submit')= self.t('ok')
