@@ -5,8 +5,6 @@
 
 // Knockout view model of the page.
 let view = null;
-let redirectId;
-let previousPageParams = null;
 
 
 N.wire.on('navigate.preload:' + module.apiPath, function load_deps(preload) {
@@ -14,19 +12,10 @@ N.wire.on('navigate.preload:' + module.apiPath, function load_deps(preload) {
 });
 
 
-// Global listener to save previous page params
-//
-N.wire.on('navigate.exit', function save_previous_page_params(data) {
-  previousPageParams = data;
-});
-
-
 // Page enter
 //
-N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
+N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
   const ko = require('knockout');
-
-  redirectId = data.params.redirect_id;
 
   view = {
     message: ko.observable(null),
@@ -63,33 +52,23 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   N.wire.on('users.auth.login.plain_exec', function login(form) {
     let loginParams = form.fields;
 
-    if (redirectId) {
-      loginParams.redirect_id = redirectId;
-    }
-
     return N.io.rpc('users.auth.login.plain_exec', loginParams)
       .then(function (res) {
+        let route = N.router.match(res.redirect_url);
 
-        // If `redirectId` specified - use `redirect_url` form response
-        if (redirectId) {
-          window.location = res.redirect_url;
-          return;
-        }
-
-        // If this page loaded directly - navigate to `redirect_url`
-        if (!previousPageParams) {
-          window.location = res.redirect_url;
+        if (!route) {
+          window.location = '/';
           return;
         }
 
         // Check that previous page can be loaded, because it can return redirect or forbid access
-        N.io.rpc(previousPageParams.apiPath, previousPageParams.params, { handleAllErrors: true })
+        N.io.rpc(route.meta.methods.get, route.params, { handleAllErrors: true })
           .then(() => {
             // Navigate to previous page
-            window.location = N.router.linkTo(previousPageParams.apiPath, previousPageParams.params);
+            window.location = res.redirect_url;
           })
           .catch(() => {
-            window.location = res.redirect_url;
+            window.location = '/';
           });
       })
       .catch(err => {

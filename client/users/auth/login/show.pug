@@ -18,6 +18,9 @@
             .form-group(data-bind='visible: message', style='display: none')
               p.text-danger(data-bind='text: message')
 
+            if self.redirect_id
+              input(type='hidden', name='redirect_id', value=self.redirect_id)
+
             if self.oauth && Object.keys(self.oauth).length
               .form-group
                 != self.partial('@common.blocks.oauth_buttons')

@@ -21,7 +21,11 @@ N.wire.once('navigate.done', function page_setup() {
 //
 N.wire.on('navigate.done', function reload_other_tabs() {
   if (String(document.cookie).indexOf('reload_tabs=1') !== -1) {
-    document.cookie = 'reload_tabs=0; expires=' + new Date(0).toGMTString();
-    N.live.emit('local.users.auth');
+    document.cookie = 'reload_tabs=0; path=/; expires=' + new Date(0).toGMTString();
+
+    // check that cookie was successfully reset, just in case
+    if (String(document.cookie).indexOf('reload_tabs=1') === -1) {
+      N.live.emit('local.users.auth');
+    }
   }
 });
