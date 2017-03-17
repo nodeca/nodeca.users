@@ -319,7 +319,7 @@ module.exports = function (N, collectionName) {
       yield N.models.users.UserExtra.remove({ user: self._id });
       yield N.models.users.UserPenalty.remove({ user: self._id });
       yield N.models.users.UserSettings.remove({ user: self._id });
-      yield N.models.users.TokenLogin.remove({ user: self._id });
+      yield N.models.users.AuthSession.remove({ user: self._id });
       yield N.models.users.TokenResetPassword.remove({ user: self._id });
 
     })().asCallback(callback);

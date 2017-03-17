@@ -22,15 +22,15 @@ module.exports = function (N, apiPath) {
       N.redis.del('sess:' + env.session_id);
     }
 
-    let token = new N.models.users.TokenLogin({
+    let authSession = new N.models.users.AuthSession({
       user:         env.data.user._id,
       ip:           env.req.ip,
       authprovider: env.data.authProvider._id
     });
 
-    yield token.save();
+    yield authSession.save();
 
-    env.session_id      = token.session_id;
+    env.session_id = authSession.session_id;
 
     // force all other tabs to reload
     env.extras.setCookie('reload_tabs', 1, { httpOnly: false });

@@ -23,18 +23,18 @@ module.exports = function (N) {
       let session_id = yield N.redis.getAsync('token_live:' + data.message.token);
 
       // Fetch session
-      let token_login = yield N.models.users.TokenLogin.findOne()
+      let authSession = yield N.models.users.AuthSession.findOne()
                                   .where('session_id').equals(session_id)
                                   .select('_id user')
                                   .lean(true);
 
       // If token not found
-      if (!token_login) {
+      if (!authSession) {
         data.__user_info__ = null;
         return data.__user_info__;
       }
 
-      data.__user_info__ = yield userInfo(N, token_login.user);
+      data.__user_info__ = yield userInfo(N, authSession.user);
 
       return data.__user_info__;
     });

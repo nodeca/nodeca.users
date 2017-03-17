@@ -102,7 +102,7 @@ module.exports = function (N, apiPath) {
 
     yield N.wire.emit('internal:users.user_create', env);
 
-    // authProvider info is needed to create TokenLogin
+    // authProvider info is needed to create AuthSession
     //
     // TODO: when we will have oauth registration, it should select link based on
     //       env.data.oauth_info

@@ -16,7 +16,7 @@ module.exports = function (N, apiPath) {
     //
     yield N.redis.delAsync('sess:' + env.session_id);
 
-    yield N.models.users.TokenLogin.remove({ session_id: env.session_id });
+    yield N.models.users.AuthSession.remove({ session_id: env.session_id });
 
     // Repeat session deletion, because session might be restored in the time
     // between redis and mongo calls above (e.g. race condition with a parallel
