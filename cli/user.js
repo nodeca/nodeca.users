@@ -119,24 +119,24 @@ module.exports.run = Promise.coroutine(function* (N, args) {
   //
   if (args.pass) {
     // disable all other passwords
-    yield N.models.users.AuthLink.update(
+    yield N.models.users.AuthProvider.update(
       { user: user._id, type: 'plain', exists: true },
       { $set: { exists: false } },
       { multi: true }
     );
 
-    let authLink = new N.models.users.AuthLink();
+    let authProvider = new N.models.users.AuthProvider();
 
-    authLink.type = 'plain';
-    authLink.email = args.email || user.email;
+    authProvider.type = 'plain';
+    authProvider.email = args.email || user.email;
 
-    yield authLink.setPass(args.pass);
+    yield authProvider.setPass(args.pass);
 
-    authLink.user = user._id;
-    authLink.ip = '127.0.0.1';
-    authLink.last_ip = '127.0.0.1';
+    authProvider.user = user._id;
+    authProvider.ip = '127.0.0.1';
+    authProvider.last_ip = '127.0.0.1';
 
-    yield authLink.save();
+    yield authProvider.save();
   }
 
 

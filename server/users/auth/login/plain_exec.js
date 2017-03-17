@@ -71,40 +71,40 @@ module.exports = function (N, apiPath) {
 
   // Try to find auth data using `email_or_nick` as an email.
   //
-  N.wire.on(apiPath, function* find_authlink_by_email(env) {
+  N.wire.on(apiPath, function* find_authprovider_by_email(env) {
     // user already verified by hooks, nothing left to do
-    if (env.data.authLink) return;
+    if (env.data.authProvider) return;
 
-    if (env.data.user && env.data.authLink_plain) return;
+    if (env.data.user && env.data.authProvider_plain) return;
 
-    let authLink = yield N.models.users.AuthLink
+    let authProvider = yield N.models.users.AuthProvider
                             .findOne({
                               email: env.params.email_or_nick,
                               type: 'plain',
                               exists: true
                             });
 
-    if (!authLink) return;
+    if (!authProvider) return;
 
     let user = yield N.models.users.User
-                        .findOne({ _id: authLink.user })
+                        .findOne({ _id: authProvider.user })
                         .lean(true);
 
     // There is no error - let next hooks do their job.
     if (!user) return;
 
     env.data.user = user;
-    env.data.authLink_plain = authLink;
+    env.data.authProvider_plain = authProvider;
   });
 
 
   // Try to find auth data using `email_or_nick` as a nick.
   //
-  N.wire.on(apiPath, function* find_authlink_by_nick(env) {
+  N.wire.on(apiPath, function* find_authprovider_by_nick(env) {
     // user already verified by hooks, nothing left to do
-    if (env.data.authLink) return;
+    if (env.data.authProvider) return;
 
-    if (env.data.user && env.data.authLink_plain) return;
+    if (env.data.user && env.data.authProvider_plain) return;
 
     let user = yield N.models.users.User
       .findOne({ nick: env.params.email_or_nick })
@@ -113,24 +113,24 @@ module.exports = function (N, apiPath) {
     // There is no error - let next hooks do their job.
     if (!user) return;
 
-    let authLink = yield N.models.users.AuthLink
+    let authProvider = yield N.models.users.AuthProvider
       .findOne({ user: user._id, type: 'plain', exists: true });
 
     // There is no error - let next hooks do their job.
-    if (!authLink) return;
+    if (!authProvider) return;
 
     env.data.user = user;
-    env.data.authLink_plain = authLink;
+    env.data.authProvider_plain = authProvider;
   });
 
 
   // If password is empty, send an email with a one-time link to log in
   //
   N.wire.on(apiPath, function* create_otp_email_token(env) {
-    if (!env.data.user || !env.data.authLink_plain) return;
+    if (!env.data.user || !env.data.authProvider_plain) return;
 
     // user already verified by other hooks, nothing left to do
-    if (env.data.authLink) return;
+    if (env.data.authProvider) return;
 
     if (!_.isEmpty(env.params.pass)) return;
 
@@ -138,7 +138,7 @@ module.exports = function (N, apiPath) {
       user:        env.data.user._id,
       ip:          env.req.ip,
       redirect_id: env.params.redirect_id,
-      authlink:    env.data.authLink_plain._id
+      authprovider:    env.data.authProvider_plain._id
     });
 
     let general_project_name = yield N.settings.get('general_project_name');
@@ -148,7 +148,7 @@ module.exports = function (N, apiPath) {
     });
 
     yield N.mailer.send({
-      to:         env.data.authLink_plain.email,
+      to:         env.data.authProvider_plain.email,
       subject:    env.t('email_subject', { project_name: general_project_name }),
       text:       env.t('email_text',    { link, ip: env.req.ip }),
       safe_error: true
@@ -163,15 +163,15 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Try to login using plain authlink
+  // Try to login using plain authprovider
   //
-  N.wire.on(apiPath, function* verify_authlink(env) {
-    if (!env.data.user || !env.data.authLink_plain) return;
+  N.wire.on(apiPath, function* verify_authprovider(env) {
+    if (!env.data.user || !env.data.authProvider_plain) return;
 
-    let success = yield env.data.authLink_plain.checkPass(env.params.pass);
+    let success = yield env.data.authProvider_plain.checkPass(env.params.pass);
 
     if (success) {
-      env.data.authLink = env.data.authLink_plain;
+      env.data.authProvider = env.data.authProvider_plain;
     }
   });
 
@@ -179,9 +179,9 @@ module.exports = function (N, apiPath) {
   // Do login
   //
   N.wire.after(apiPath, function* login_do(env) {
-    // if env.data.authLink variable is set, it means this authlink
+    // if env.data.authProvider variable is set, it means this authprovider
     // has been verified, and password matches
-    if (!env.data.authLink) {
+    if (!env.data.authProvider) {
       throw {
         code:    N.io.CLIENT_ERROR,
         message: env.t('err_login_failed')

@@ -312,7 +312,7 @@ module.exports = function (N, collectionName) {
 
       yield N.models.users.Album.remove({ user: self._id });
       yield N.models.users.AnnounceHideMark.remove({ user: self._id });
-      yield N.models.users.AuthLink.remove({ user: self._id });
+      yield N.models.users.AuthProvider.remove({ user: self._id });
       yield N.models.users.Ignore.remove({ from: self._id });
       yield N.models.users.Ignore.remove({ to: self._id });
       yield N.models.users.Subscription.remove({ user: self._id });

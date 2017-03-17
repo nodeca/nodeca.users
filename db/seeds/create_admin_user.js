@@ -6,8 +6,8 @@ const Promise = require('bluebird');
 
 module.exports = Promise.coroutine(function* (N) {
 
-  let user     = new N.models.users.User();
-  let authLink = new N.models.users.AuthLink();
+  let user         = new N.models.users.User();
+  let authProvider = new N.models.users.AuthProvider();
 
   prompt.message   = '';
   prompt.delimiter = '';
@@ -41,14 +41,14 @@ module.exports = Promise.coroutine(function* (N) {
 
   // create auth link
 
-  authLink.type = 'plain';
-  authLink.email = email;
+  authProvider.type = 'plain';
+  authProvider.email = email;
 
-  yield authLink.setPass(password);
+  yield authProvider.setPass(password);
 
-  authLink.user = user._id;
-  authLink.ip = '127.0.0.1';
-  authLink.last_ip = '127.0.0.1';
+  authProvider.user = user._id;
+  authProvider.ip = '127.0.0.1';
+  authProvider.last_ip = '127.0.0.1';
 
-  yield authLink.save();
+  yield authProvider.save();
 });

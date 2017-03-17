@@ -19,7 +19,7 @@ module.exports = function (N, collectionName) {
 
   // Provider sub-document schema
   //
-  let AuthLink = new Schema({
+  let AuthProvider = new Schema({
 
     user:             Schema.Types.ObjectId,
 
@@ -67,24 +67,24 @@ module.exports = function (N, collectionName) {
   //////////////////////////////////////////////////////////////////////////////
 
   // - plain login
-  AuthLink.index({ user: 1, type: 1, exists: 1 });
+  AuthProvider.index({ user: 1, type: 1, exists: 1 });
 
   // used in login via oauth
-  AuthLink.index({ provider_user_id: 1, exists: 1 });
+  AuthProvider.index({ provider_user_id: 1, exists: 1 });
 
   // find similar emails
-  AuthLink.index({ email: 1 });
+  AuthProvider.index({ email: 1 });
 
 
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * models.users.AuthLink#providers.AuthProvider#setPass(password) -> void
+   * models.users.AuthProvider#providers.AuthProvider#setPass(password) -> void
    * - password(String):  user password
    *
    * Generate password hash and put in property
    **/
-  AuthLink.methods.setPass = function (pass) {
+  AuthProvider.methods.setPass = function (pass) {
     if (this.type !== 'plain') {
       return Promise.reject(new Error("Can't set password for non plain provider"));
     }
@@ -99,12 +99,12 @@ module.exports = function (N, collectionName) {
 
 
   /**
-   * models.users.AuthLink#providers.AuthProvider#setPassHash(password) -> void
+   * models.users.AuthProvider#providers.AuthProvider#setPassHash(password) -> void
    * - password(String):  user password hash
    *
    * Set user password
    **/
-  AuthLink.methods.setPassHash = function (hash) {
+  AuthProvider.methods.setPassHash = function (hash) {
     if (this.type !== 'plain') {
       return Promise.reject(new Error("Can't set password for non plain provider"));
     }
@@ -119,12 +119,12 @@ module.exports = function (N, collectionName) {
 
 
   /**
-   * models.users.AuthLink#providers.AuthProvider#checkPass(password) -> Boolean
+   * models.users.AuthProvider#providers.AuthProvider#checkPass(password) -> Boolean
    * - password(String):  checked word
    *
    * Compare word with stored password
    **/
-  AuthLink.methods.checkPass = function (pass) {
+  AuthProvider.methods.checkPass = function (pass) {
     if (this.type !== 'plain') {
       return Promise.reject(new Error("Can't set password for non plain provider"));
     }
@@ -134,25 +134,25 @@ module.exports = function (N, collectionName) {
 
 
   /**
-   * models.users.AuthLink#similarEmailExists(email) -> Boolean
+   * models.users.AuthProvider#similarEmailExists(email) -> Boolean
    * - email(String): email to check
    *
    * Check if similar email address is already registered
    **/
-  AuthLink.statics.similarEmailExists = Promise.coroutine(function* similarEmailExists(email) {
-    let authLink = yield N.models.users.AuthLink
+  AuthProvider.statics.similarEmailExists = Promise.coroutine(function* similarEmailExists(email) {
+    let authProvider = yield N.models.users.AuthProvider
                              .findOne({ exists: true })
                              .where('email_normalized').equals(normalize_email(email))
                              .select('_id')
                              .lean(true);
 
-    return authLink ? true : false;
+    return authProvider ? true : false;
   });
 
 
-  // Set normalized authlink
+  // Set normalized authprovider
   //
-  AuthLink.pre('save', function (callback) {
+  AuthProvider.pre('save', function (callback) {
     if (this.isModified('email')) {
       this.email_normalized = normalize_email(this.email);
     }
@@ -164,12 +164,12 @@ module.exports = function (N, collectionName) {
   //////////////////////////////////////////////////////////////////////////////
 
 
-  N.wire.on('init:models', function emit_init_AuthLink() {
-    return N.wire.emit('init:models.' + collectionName, AuthLink);
+  N.wire.on('init:models', function emit_init_AuthProvider() {
+    return N.wire.emit('init:models.' + collectionName, AuthProvider);
   });
 
 
-  N.wire.on('init:models.' + collectionName, function init_model_AuthLink(schema) {
+  N.wire.on('init:models.' + collectionName, function init_model_AuthProvider(schema) {
     N.models[collectionName] = Mongoose.model(collectionName, schema);
   });
 };

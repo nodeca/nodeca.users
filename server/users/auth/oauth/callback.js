@@ -58,7 +58,7 @@ module.exports = function (N, apiPath) {
 
     if (env.session.oauth.action !== 'register') return;
 
-    if (yield N.models.users.AuthLink.similarEmailExists(env.data.oauth.email)) {
+    if (yield N.models.users.AuthProvider.similarEmailExists(env.data.oauth.email)) {
       // reset oauth state
       env.session = _.omit(env.session, 'oauth');
       throw createRedirect('users.auth.oauth.error_show');
@@ -70,8 +70,8 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, function* finish_auth(env) {
 
-    // Find authlink for oauth data
-    let authLink = yield N.models.users.AuthLink
+    // Find authprovider for oauth data
+    let authProvider = yield N.models.users.AuthProvider
                             .findOne({
                               provider_user_id: env.data.oauth.provider_user_id,
                               type:             env.params.provider,
@@ -79,8 +79,8 @@ module.exports = function (N, apiPath) {
                             })
                             .lean(true);
 
-    // No AuthLink - go to registration with this auth data
-    if (!authLink) {
+    // No AuthProvider - go to registration with this auth data
+    if (!authProvider) {
       env.session.oauth = env.session.oauth || {};
       env.session.oauth.info = env.data.oauth;
       throw createRedirect('users.auth.register.show');
@@ -88,17 +88,17 @@ module.exports = function (N, apiPath) {
 
       // Find user for oauth data
     let user = yield N.models.users.User
-                        .findOne({ _id: authLink.user, exists: true })
+                        .findOne({ _id: authProvider.user, exists: true })
                         .lean(true);
 
-    // If AuthLink exists, but user not found - db is broken,
+    // If AuthProvider exists, but user not found - db is broken,
     // go to registration, but without oauth data.
     if (!user) {
       throw createRedirect('users.auth.register.show');
     }
 
     env.data.user     = user;
-    env.data.authLink = authLink;
+    env.data.authProvider = authProvider;
     env.data.redirect_id = (env.session.oauth || {}).redirect_id;
 
     yield N.wire.emit('internal:users.login', env);

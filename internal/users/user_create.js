@@ -1,4 +1,4 @@
-// Creates user and AuthLinks.
+// Creates user and AuthProviders.
 // Expects env.data to be filled with:
 //
 //   reg_info:
@@ -6,7 +6,7 @@
 //     email
 //     pass_hash
 //   oauth_info:
-//     ... # If oauth used, the same hash as AuthLink schema
+//     ... # If oauth used, the same hash as AuthProvider schema
 //
 'use strict';
 
@@ -33,7 +33,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function* create_user_provider(env) {
     let user = env.data.user;
-    let authLink = new N.models.users.AuthLink({
+    let authProvider = new N.models.users.AuthProvider({
       user:    user._id,
       type:    'plain',
       email:   env.data.reg_info.email,
@@ -42,11 +42,11 @@ module.exports = function (N, apiPath) {
     });
 
     try {
-      yield authLink.setPassHash(env.data.reg_info.pass_hash);
-      yield authLink.save();
+      yield authProvider.setPassHash(env.data.reg_info.pass_hash);
+      yield authProvider.save();
     } catch (__) {
       yield N.models.users.User.remove({ _id: user._id });
-      yield N.models.users.AuthLink.remove({ user: user._id });
+      yield N.models.users.AuthProvider.remove({ user: user._id });
     }
   });
 
@@ -57,17 +57,17 @@ module.exports = function (N, apiPath) {
     if (!env.data.oauth_info) return;
 
     let user = env.data.user;
-    let authLink = new N.models.users.AuthLink(env.data.oauth_info);
+    let authProvider = new N.models.users.AuthProvider(env.data.oauth_info);
 
-    authLink.user    = user._id;
-    authLink.ip      = env.req.ip;
-    authLink.last_ip = env.req.ip;
+    authProvider.user    = user._id;
+    authProvider.ip      = env.req.ip;
+    authProvider.last_ip = env.req.ip;
 
     try {
-      yield authLink.save();
+      yield authProvider.save();
     } catch (__) {
       yield N.models.users.User.remove({ _id: user._id });
-      yield N.models.users.AuthLink.remove({ user: user._id });
+      yield N.models.users.AuthProvider.remove({ user: user._id });
     }
   });
 };

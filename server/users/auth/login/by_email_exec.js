@@ -46,17 +46,17 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Fetch authlink
+  // Fetch authprovider
   //
-  N.wire.on(apiPath, function* get_authlink(env) {
-    let authLink = yield N.models.users.AuthLink.findOne()
-                             .where('_id').equals(env.data.token.authlink)
+  N.wire.on(apiPath, function* get_authprovider(env) {
+    let authProvider = yield N.models.users.AuthProvider.findOne()
+                             .where('_id').equals(env.data.token.authprovider)
                              .where('exists').equals(true)
                              .lean(true);
 
-    if (!authLink) {
-      // can happen if authlink becomes disabled after user requests otp,
-      // e.g. regular login with a password using vb authlink
+    if (!authProvider) {
+      // can happen if authprovider becomes disabled after user requests otp,
+      // e.g. regular login with a password using vb authprovider
       throw {
         code:    N.io.CLIENT_ERROR,
         message: env.t('err_bad_token')
@@ -64,7 +64,7 @@ module.exports = function (N, apiPath) {
     }
 
     // keep it for logging in later on
-    env.data.authLink = authLink;
+    env.data.authProvider = authProvider;
   });
 
 

@@ -30,14 +30,14 @@ describe('User', function () {
 
   describe('Auth provider', function () {
     it('"plain" provider set/check password', Promise.coroutine(function* () {
-      let authLink = new TEST.N.models.users.AuthLink();
+      let authProvider = new TEST.N.models.users.AuthProvider();
       let pass = 'Qwerty123';
 
-      authLink.type = 'plain';
+      authProvider.type = 'plain';
 
-      yield authLink.setPass(pass);
+      yield authProvider.setPass(pass);
 
-      let ok = yield authLink.checkPass(pass);
+      let ok = yield authProvider.checkPass(pass);
 
       assert.equal(ok, true);
     }));

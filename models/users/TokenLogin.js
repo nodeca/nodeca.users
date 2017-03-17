@@ -18,7 +18,7 @@ module.exports = function (N, collectionName) {
   var TokenLogin = new Schema({
     session_id:   { type: String, 'default': createToken },
     user:         Schema.Types.ObjectId,
-    authlink:     Schema.Types.ObjectId,
+    authprovider: Schema.Types.ObjectId,
     ip:           String
   },
   {

@@ -79,14 +79,14 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function* check_email_uniqueness(env) {
 
-    if (yield N.models.users.AuthLink.similarEmailExists(env.params.email)) {
+    if (yield N.models.users.AuthProvider.similarEmailExists(env.params.email)) {
       env.data.errors.email = env.t('err_busy_email');
       return;
     }
 
     // If we use oauth for registration, provider email should be unique too.
     if (env.session.oauth && env.session.oauth.info) {
-      if (yield N.models.users.AuthLink.similarEmailExists(env.session.oauth.info.email)) {
+      if (yield N.models.users.AuthProvider.similarEmailExists(env.session.oauth.info.email)) {
         env.data.errors.email = env.t('err_busy_email');
         return;
       }
@@ -188,12 +188,12 @@ module.exports = function (N, apiPath) {
   let create_user = Promise.coroutine(function* create_user(env) {
     yield N.wire.emit('internal:users.user_create', env);
 
-    // authLink info is needed to create TokenLogin
+    // authProvider info is needed to create TokenLogin
     //
     // TODO: when we will have oauth registration, it should select link based on
     //       env.data.oauth_info
     //
-    env.data.authLink = yield N.models.users.AuthLink.findOne({ user: env.data.user._id });
+    env.data.authProvider = yield N.models.users.AuthProvider.findOne({ user: env.data.user._id });
 
     yield N.wire.emit('internal:users.login', env);
 

@@ -24,7 +24,7 @@ describe('Reset password', function () {
 
     yield user.save();
 
-    let authLink = new TEST.N.models.users.AuthLink({
+    let authProvider = new TEST.N.models.users.AuthProvider({
       type: 'plain',
       email,
       user: user._id,
@@ -32,8 +32,8 @@ describe('Reset password', function () {
       last_ip: '127.0.0.1'
     });
 
-    yield authLink.setPass(old_password);
-    yield authLink.save();
+    yield authProvider.setPass(old_password);
+    yield authProvider.save();
 
     smtp = simplesmtp.createServer({ disableDNSValidation: true });
 
@@ -105,13 +105,13 @@ describe('Reset password', function () {
 
     assert(email_body.indexOf(login) !== -1);
 
-    let authLink = yield TEST.N.models.users.AuthLink.findOne({
+    let authProvider = yield TEST.N.models.users.AuthProvider.findOne({
       email,
       type: 'plain',
       exists: true
     });
 
-    assert.strictEqual(yield authLink.checkPass(new_password), true);
+    assert.strictEqual(yield authProvider.checkPass(new_password), true);
   }));
 
 

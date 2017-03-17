@@ -21,15 +21,15 @@ describe('Login', function () {
 
     yield user.save();
 
-    let authLink = new TEST.N.models.users.AuthLink();
+    let authProvider = new TEST.N.models.users.AuthProvider();
 
-    authLink.type = 'plain';
-    authLink.email = email;
-    yield authLink.setPass(password);
-    authLink.user = user._id;
-    authLink.ip = '127.0.0.1';
-    authLink.last_ip = '127.0.0.1';
-    yield authLink.save();
+    authProvider.type = 'plain';
+    authProvider.email = email;
+    yield authProvider.setPass(password);
+    authProvider.user = user._id;
+    authProvider.ip = '127.0.0.1';
+    authProvider.last_ip = '127.0.0.1';
+    yield authProvider.save();
   }));
 
 

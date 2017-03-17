@@ -110,10 +110,14 @@ module.exports = function (N, apiPath) {
   // Update password & remove used token
   //
   N.wire.on(apiPath, function* update_password(env) {
-    let authLink = yield N.models.users.AuthLink.findOne({ user: env.data.user._id, type: 'plain', exists: true });
+    let authProvider = yield N.models.users.AuthProvider.findOne({
+      user: env.data.user._id,
+      type: 'plain',
+      exists: true
+    });
 
-    if (!authLink) {
-      authLink = new N.models.users.AuthLink({
+    if (!authProvider) {
+      authProvider = new N.models.users.AuthProvider({
         user:    env.data.user._id,
         type:    'plain',
         email:   env.data.user.email,
@@ -122,11 +126,11 @@ module.exports = function (N, apiPath) {
       });
     }
 
-    yield authLink.setPass(env.params.password);
-    yield authLink.save();
+    yield authProvider.setPass(env.params.password);
+    yield authProvider.save();
 
     // keep it for logging in later on
-    env.data.authLink = authLink;
+    env.data.authProvider = authProvider;
   });
 
 

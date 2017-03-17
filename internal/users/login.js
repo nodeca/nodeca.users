@@ -2,13 +2,13 @@
 //
 // - recreate new session (change session id for security reasons)
 // - fill redirection URL
-// - log ip/time to AuthLink, been used for login
+// - log ip/time to AuthProvider, been used for login
 //
 // Expects env.data filled with:
 //
 // - user
 // - redirect_id (optional)
-// - authLink
+// - authProvider
 //
 'use strict';
 
@@ -23,9 +23,9 @@ module.exports = function (N, apiPath) {
     }
 
     let token = new N.models.users.TokenLogin({
-      user:     env.data.user._id,
-      ip:       env.req.ip,
-      authlink: env.data.authLink._id
+      user:         env.data.user._id,
+      ip:           env.req.ip,
+      authprovider: env.data.authProvider._id
     });
 
     yield token.save();
@@ -58,15 +58,15 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Remember login ip and date in used AuthLink
+  // Remember login ip and date in used AuthProvider
   //
   N.wire.after(apiPath, function* remember_auth_data(env) {
-    // authLink is not filled for (register + autologin)
+    // authProvider is not filled for (register + autologin)
     // Just skip update for this case.
-    if (!env.data.authLink) return;
+    if (!env.data.authProvider) return;
 
-    yield N.models.users.AuthLink.update(
-              { _id: env.data.authLink._id },
+    yield N.models.users.AuthProvider.update(
+              { _id: env.data.authProvider._id },
               { $set: { last_ts: Date.now(), last_ip: env.req.ip } });
   });
 };

@@ -69,19 +69,19 @@ module.exports = function (N, apiPath) {
       env.data.user.nick = env.params.nick;
     }
 
-    // change email in authlinks
+    // change email in authproviders
     if (env.data.user.email !== env.params.email) {
       env.data.user.email = env.params.email;
 
-      let authLink = yield N.models.users.AuthLink.findOne()
+      let authProvider = yield N.models.users.AuthProvider.findOne()
                                .where('user').equals(env.data.user._id)
                                .where('type').equals('plain')
                                .where('exists').equals(true)
                                .lean(false);
 
-      if (authLink) {
-        authLink.email = env.params.email;
-        yield authLink.save();
+      if (authProvider) {
+        authProvider.email = env.params.email;
+        yield authProvider.save();
       }
     }
 

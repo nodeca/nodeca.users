@@ -1,5 +1,5 @@
 // Activates user account.
-// Check token. If token is correct - create User and AuthLink records.
+// Check token. If token is correct - create User and AuthProvider records.
 
 
 'use strict';
@@ -71,7 +71,7 @@ module.exports = function (N, apiPath) {
 
     if (!token) return;
 
-    if (yield N.models.users.AuthLink.similarEmailExists(token.reg_info.email)) {
+    if (yield N.models.users.AuthProvider.similarEmailExists(token.reg_info.email)) {
       // Need to terminate chain without 500 error.
       // If email(s) occupied - kill fetched token as invalid.
       env.data.token = null;
@@ -79,7 +79,7 @@ module.exports = function (N, apiPath) {
     }
 
     if (token.oauth_info) {
-      if (yield N.models.users.AuthLink.similarEmailExists(token.oauth_info.email)) {
+      if (yield N.models.users.AuthProvider.similarEmailExists(token.oauth_info.email)) {
         // Need to terminate chain without 500 error.
         // If email(s) occupied - kill fetched token as invalid.
         env.data.token = null;
@@ -102,12 +102,12 @@ module.exports = function (N, apiPath) {
 
     yield N.wire.emit('internal:users.user_create', env);
 
-    // authLink info is needed to create TokenLogin
+    // authProvider info is needed to create TokenLogin
     //
     // TODO: when we will have oauth registration, it should select link based on
     //       env.data.oauth_info
     //
-    env.data.authLink = yield N.models.users.AuthLink.findOne({ user: env.data.user._id });
+    env.data.authProvider = yield N.models.users.AuthProvider.findOne({ user: env.data.user._id });
 
     yield N.wire.emit('internal:users.login', env);
 
