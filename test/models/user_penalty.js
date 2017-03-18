@@ -117,7 +117,8 @@ describe('UserPenalty', function () {
       points: 20
     })).save();
 
-    yield Promise.delay(100);
+    // Infraction propagate logic sit on `postsave` hook, wait it.
+    yield Promise.delay(1000);
 
     let usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
 
