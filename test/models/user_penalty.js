@@ -131,8 +131,17 @@ describe('UserPenalty', function () {
     );
 
     // Run task
-    yield TEST.N.queue.invalidate_penalties().run();
-    yield Promise.delay(600);
+    let task_id = yield TEST.N.queue.invalidate_penalties().run();
+    let retries = 100;
+
+    let task = yield TEST.N.queue.getTask(task_id);
+
+    while (task.state !== 'finished' && --retries > 0) {
+      yield Promise.delay(100);
+      task = yield TEST.N.queue.getTask(task_id);
+    }
+
+    if (!retries) throw new Error('Task waiting timeout');
 
     usergroups = (yield TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
     assert.deepStrictEqual(usergroups.toObject(), [ user.usergroups[0] ]);

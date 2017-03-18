@@ -39,8 +39,17 @@ describe('Ignore', function () {
     })).save();
 
     // Run task
-    yield TEST.N.queue.ignore_expire().run();
-    yield Promise.delay(600);
+    let task_id = yield TEST.N.queue.ignore_expire().run();
+    let retries = 100;
+
+    let task = yield TEST.N.queue.getTask(task_id);
+
+    while (task.state !== 'finished' && --retries > 0) {
+      yield Promise.delay(100);
+      task = yield TEST.N.queue.getTask(task_id);
+    }
+
+    if (!retries) throw new Error('Task waiting timeout');
 
     let ignored_users = yield TEST.N.models.users.Ignore.find({ from: id1 }).lean(true);
 
