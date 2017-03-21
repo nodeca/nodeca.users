@@ -25,6 +25,7 @@ module.exports = function (N, apiPath) {
     let authSession = new N.models.users.AuthSession({
       user:         env.data.user._id,
       ip:           env.req.ip,
+      user_agent:   env.origin.req.headers['user-agent'],
       authprovider: env.data.authProvider._id
     });
 

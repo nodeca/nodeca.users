@@ -1,9 +1,8 @@
 /**
- *  class models.users.AuthSession
+ *  class models.users.AuthSessionLog
  *
- *  User authentication record. Created after login.
- *  Contains redis session ref, login method and other info
- *  for security logs.
+ *  User authentication record log. An AuthSession record is moved here
+ *  upon user logout.
  **/
 
 'use strict';
@@ -14,9 +13,18 @@ const Schema      = Mongoose.Schema;
 const createToken = require('nodeca.core/lib/app/random_token');
 
 
+// Reason why this session was terminated
+//
+const logout_types = {
+  EXPIRED: 1, // timed out
+  LOGOUT:  2, // user clicked logout button
+  REVOKED: 3  // from another device
+};
+
+
 module.exports = function (N, collectionName) {
 
-  let AuthSession = new Schema({
+  let AuthSessionLog = new Schema({
     session_id:    { type: String, 'default': () => 'm' + createToken() },
     user:          Schema.Types.ObjectId,
     authprovider:  Schema.Types.ObjectId,
@@ -33,20 +41,19 @@ module.exports = function (N, collectionName) {
   // Indexes
   //////////////////////////////////////////////////////////////////////////////
 
-  // used for re-creating session when redis session is expired
-  AuthSession.index({ session_id: 1 });
-
   // TODO: add indexes to display these records in user interface
 
   //////////////////////////////////////////////////////////////////////////////
 
+  AuthSessionLog.statics.logout_types = logout_types;
 
-  N.wire.on('init:models', function emit_init_AuthSession() {
-    return N.wire.emit('init:models.' + collectionName, AuthSession);
+
+  N.wire.on('init:models', function emit_init_AuthSessionLog() {
+    return N.wire.emit('init:models.' + collectionName, AuthSessionLog);
   });
 
 
-  N.wire.on('init:models.' + collectionName, function init_model_AuthSession(schema) {
+  N.wire.on('init:models.' + collectionName, function init_model_AuthSessionLog(schema) {
     N.models[collectionName] = Mongoose.model(collectionName, schema);
   });
 };

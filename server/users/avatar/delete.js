@@ -13,8 +13,7 @@ module.exports = function (N, apiPath) {
   // Check permissions
   //
   N.wire.before(apiPath, function check_permissions(env) {
-    // Check is current user owner of album
-    if (env.session.is_guest) throw N.io.FORBIDDEN;
+    if (!env.user_info.is_member) throw N.io.FORBIDDEN;
   });
 
 
