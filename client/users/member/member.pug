@@ -13,7 +13,7 @@
 
     header.member-head(
       class= self.avatar_exists ? 'member-head__m-avatar-exists' : ''
-      class= self.runtime.is_guest ? 'member-head__m-guest' : ''
+      class= !self.runtime.is_member ? 'member-head__m-guest' : ''
     )
       .member-head__aside
         .member-avatar

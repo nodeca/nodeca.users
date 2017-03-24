@@ -72,7 +72,7 @@ module.exports = function (N, apiPath) {
   // Check auth
   //
   N.wire.before(apiPath, function check_auth(env) {
-    if (env.user_info.is_guest) {
+    if (!env.user_info.is_member) {
       return N.io.FORBIDDEN;
     }
   });

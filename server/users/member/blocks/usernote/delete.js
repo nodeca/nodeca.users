@@ -13,7 +13,7 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.on(apiPath, function check_permissions(env) {
-    if (env.user_info.is_guest) return N.io.NOT_FOUND;
+    if (!env.user_info.is_member) return N.io.NOT_FOUND;
   });
 
 

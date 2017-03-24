@@ -33,7 +33,7 @@ module.exports = function (N, apiPath) {
   // Fill actions
   //
   N.wire.before(apiPath, function fill_actions(env) {
-    if (env.user_info.is_guest) {
+    if (!env.user_info.is_member) {
       env.data.actions = [];
       return;
     }
@@ -164,7 +164,7 @@ module.exports = function (N, apiPath) {
   // Check if we can send a message to that user
   //
   N.wire.before(apiPath, function* fill_dialog_permissions(env) {
-    if (env.user_info.is_guest) return;
+    if (!env.user_info.is_member) return;
     if (String(env.data.user._id) === String(env.user_info.user_id)) return;
 
     let settings = yield env.extras.settings.fetch([

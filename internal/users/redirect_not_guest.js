@@ -8,7 +8,7 @@ module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, function user_internal_redirect_members(env) {
 
-    if (!env.user_info.is_guest) {
+    if (env.user_info.is_member) {
       return {
         code: N.io.REDIRECT,
         head: {

@@ -19,7 +19,7 @@ module.exports = function (N, apiPath) {
   // TODO: Add permissions check
   //
   N.wire.before(apiPath, function check_user_auth(env) {
-    if (env.user_info.is_guest) throw N.io.FORBIDDEN;
+    if (!env.user_info.is_member) throw N.io.FORBIDDEN;
   });
 
 

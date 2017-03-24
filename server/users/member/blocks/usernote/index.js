@@ -9,7 +9,7 @@ const _ = require('lodash');
 module.exports = function (N) {
 
   N.wire.after('server:users.member', function* add_notepad(env) {
-    if (env.user_info.is_guest) return;
+    if (!env.user_info.is_member) return;
 
     let usernote = yield N.models.users.UserNote.findOne({
       from: env.user_info.user_id,

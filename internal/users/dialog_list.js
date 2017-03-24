@@ -37,7 +37,7 @@ module.exports = function (N, apiPath) {
   // Check permissions
   //
   N.wire.before(apiPath, function check_permissions(env) {
-    if (env.user_info.is_guest) throw N.io.NOT_FOUND;
+    if (!env.user_info.is_member) throw N.io.NOT_FOUND;
     if (!env.data.settings.can_use_dialogs) throw N.io.NOT_FOUND;
   });
 

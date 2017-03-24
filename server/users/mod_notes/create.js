@@ -17,7 +17,7 @@ module.exports = function (N, apiPath) {
   // Check auth and permissions
   //
   N.wire.before(apiPath, function* check_permissions(env) {
-    if (env.user_info.is_guest) throw N.io.NOT_FOUND;
+    if (!env.user_info.is_member) throw N.io.NOT_FOUND;
 
     let can_add_mod_notes = yield env.extras.settings.fetch('can_add_mod_notes');
 

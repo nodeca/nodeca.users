@@ -28,7 +28,7 @@ module.exports = function (N, apiPath) {
   // Check user permission
   //
   N.wire.before(apiPath, function* check_permissions(env) {
-    if (env.user_info.is_guest) return N.io.NOT_FOUND;
+    if (!env.user_info.is_member) return N.io.NOT_FOUND;
 
     let can_create_dialogs = yield env.extras.settings.fetch('can_create_dialogs');
 

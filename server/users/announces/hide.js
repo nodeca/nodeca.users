@@ -8,7 +8,7 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, { announceid: String });
 
   N.wire.on(apiPath, function* hide_announce(env) {
-    if (env.user_info.is_guest) return;
+    if (!env.user_info.is_member) return;
     if (!N.config.announces) return;
 
     let announce = N.config.announces[env.params.announceid];

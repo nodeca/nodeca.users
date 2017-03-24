@@ -14,7 +14,7 @@ module.exports = function (N, apiPath) {
   // Check auth and permissions
   //
   N.wire.before(apiPath, function* check_permissions(env) {
-    if (env.user_info.is_guest) throw N.io.FORBIDDEN;
+    if (!env.user_info.is_member) throw N.io.FORBIDDEN;
 
     let infraction = yield N.models.users.Infraction.findOne()
                               .where('_id').equals(env.params.infraction_id)
