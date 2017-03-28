@@ -11,8 +11,7 @@ module.exports = function (N, collectionName) {
     user:   Schema.Types.ObjectId,
     type:   String, // penalty action type (`to_violators`)
     expire: Date
-  },
-  {
+  }, {
     versionKey: false
   });
 

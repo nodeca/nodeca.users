@@ -22,8 +22,7 @@ module.exports = function (N, collectionName) {
     text            : String,
     // Comment status (visible, deleted, hellbanned)
     st              : Number
-  },
-  {
+  }, {
     versionKey : false
   });
 

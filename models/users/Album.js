@@ -23,8 +23,7 @@ module.exports = function (N, collectionName) {
     // true if almum is default, for incoming medias.
     // Such albums can not be deleted
     'default':    { type: Boolean, 'default': false }
-  },
-  {
+  }, {
     versionKey: false
   });
 

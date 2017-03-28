@@ -30,8 +30,7 @@ module.exports = function (N, collectionName) {
     del_reason: String,
     del_by: Schema.ObjectId,
     exists: { type: Boolean, 'default': true }
-  },
-  {
+  }, {
     versionKey: false
   });
 

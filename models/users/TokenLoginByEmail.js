@@ -26,8 +26,7 @@ module.exports = function (N, collectionName) {
     ip:           { type: String },
     authprovider: Schema.Types.ObjectId,
     redirect_id:  Schema.Types.ObjectId
-  },
-  {
+  }, {
     versionKey : false
   });
 

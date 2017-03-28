@@ -25,8 +25,7 @@ module.exports = function (N, collectionName) {
     logout_type:   { type: Number, 'default': 0 },
     user_agent:    String,
     ip:            String
-  },
-  {
+  }, {
     versionKey : false
   });
 

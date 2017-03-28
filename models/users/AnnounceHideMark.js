@@ -18,8 +18,7 @@ module.exports = function (N, collectionName) {
 
     // time when this document was last updated
     ts:    Date
-  },
-  {
+  }, {
     versionKey: false
   });
 

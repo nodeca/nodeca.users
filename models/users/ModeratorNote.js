@@ -13,8 +13,7 @@ module.exports = function (N, collectionName) {
     md:      String,
     html:    String,
     ts:      { type: Date, 'default': Date.now }
-  },
-  {
+  }, {
     versionKey: false
   });
 

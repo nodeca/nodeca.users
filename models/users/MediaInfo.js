@@ -98,13 +98,12 @@ module.exports = function (N, collectionName) {
   //
   MediaInfo.statics.markDeleted = Promise.coroutine(function* (media_id, revert) {
     let media = yield N.models.users.MediaInfo
-                          .findOneAndUpdate(
-                            {
-                              media_id,
-                              type: { $in: (revert ? types.LIST_DELETED : types.LIST_VISIBLE) }
-                            },
-                            { $bit: { type: { xor: types.MASK_DELETED } } }
-                          )
+                          .findOneAndUpdate({
+                            media_id,
+                            type: { $in: (revert ? types.LIST_DELETED : types.LIST_VISIBLE) }
+                          }, {
+                            $bit: { type: { xor: types.MASK_DELETED } }
+                          })
                           .select('file_size user')
                           .lean(true);
 

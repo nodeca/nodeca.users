@@ -24,8 +24,7 @@ module.exports = function (N, collectionName) {
     ip:               { type: String },
     reg_info:         {},
     oauth_info:       {}
-  },
-  {
+  }, {
     versionKey : false
   });
 

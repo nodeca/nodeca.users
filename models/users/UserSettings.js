@@ -8,12 +8,11 @@ const Schema = Mongoose.Schema;
 module.exports = function (N, collectionName) {
 
   let UserSettings = new Schema({
-      user : Schema.Types.ObjectId
-    },
-    {
-      versionKey: false,
-      strict: false // allow additional fields
-    });
+    user : Schema.Types.ObjectId
+  }, {
+    versionKey: false,
+    strict: false // allow additional fields
+  });
 
   // Indexes
   //////////////////////////////////////////////////////////////////////////////

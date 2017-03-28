@@ -8,27 +8,26 @@ const Schema = Mongoose.Schema;
 module.exports = function (N, collectionName) {
 
   let DlgMessage = new Schema({
-      parent       : Schema.Types.ObjectId,
-      user         : Schema.Types.ObjectId,
-      ts           : { type: Date, 'default': Date.now },
-      exists       : { type: Boolean, 'default': true },
+    parent       : Schema.Types.ObjectId,
+    user         : Schema.Types.ObjectId,
+    ts           : { type: Date, 'default': Date.now },
+    exists       : { type: Boolean, 'default': true },
 
 
-      html         : String,
-      md           : String,
-      attach       : [ Schema.Types.ObjectId ],
-      params_ref   : Schema.ObjectId,
-      imports      : [ String ],
-      import_users : [ Schema.ObjectId ],
-      tail         : [ new Schema({ // explicit definition to remove `_id` field
-        media_id: Schema.ObjectId,
-        file_name: String,
-        type: { type: Number }
-      }, { _id: false }) ]
-    },
-    {
-      versionKey: false
-    });
+    html         : String,
+    md           : String,
+    attach       : [ Schema.Types.ObjectId ],
+    params_ref   : Schema.ObjectId,
+    imports      : [ String ],
+    import_users : [ Schema.ObjectId ],
+    tail         : [ new Schema({ // explicit definition to remove `_id` field
+      media_id: Schema.ObjectId,
+      file_name: String,
+      type: { type: Number }
+    }, { _id: false }) ]
+  }, {
+    versionKey: false
+  });
 
 
   /////////////////////////////////////////////////////////////////////////////

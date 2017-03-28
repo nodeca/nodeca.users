@@ -56,8 +56,7 @@ module.exports = function (N, collectionName) {
     // }
     //
     about          : Schema.Types.Mixed
-  },
-  {
+  }, {
     versionKey : false
   });
 

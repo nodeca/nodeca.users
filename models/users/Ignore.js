@@ -22,8 +22,7 @@ module.exports = function (N, collectionName) {
 
     // expiration date
     expire: Date
-  },
-  {
+  }, {
     versionKey: false
   });
 

@@ -195,10 +195,10 @@ function UserGroup(form, data) {
                           .sortBy('priority')
                           .value();
 
-  this.settingsByName = this.settings.reduce(function (acc, s) {
-                          acc[s.name] = s;
-                          return acc;
-                        }, {});
+  this.settingsByName = this.settings.reduce((acc, s) => {
+    acc[s.name] = s;
+    return acc;
+  }, {});
 
   this.categories    = _(form.setting_schemas)
                           .map('category_key')
@@ -213,11 +213,11 @@ function UserGroup(form, data) {
 
   // Helpers.
   //
-  this.isDirty = ko.computed(function () {
-    return this.name.isDirty()     ||
-           this.parentId.isDirty() ||
-           this.settings.some(function (s) { return s.isDirty(); });
-  }, this);
+  this.isDirty = ko.computed(() =>
+    this.name.isDirty()     ||
+    this.parentId.isDirty() ||
+    this.settings.some(s => s.isDirty())
+  );
 }
 
 // Checks if the given group is a descendant of this.

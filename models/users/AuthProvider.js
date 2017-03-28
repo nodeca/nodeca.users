@@ -58,8 +58,7 @@ module.exports = function (N, collectionName) {
     // metadata, if we like to extract extended info from oauth providers
     // pass, first_name, last_name
     meta:             {}
-  },
-  {
+  }, {
     versionKey : false
   });
 

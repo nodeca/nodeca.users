@@ -33,8 +33,7 @@ module.exports = function (N, collectionName) {
     //         force: Boolean
     //
     settings     : { type: Schema.Types.Mixed, 'default': {} }
-  },
-  {
+  }, {
     versionKey : false
   });
 
