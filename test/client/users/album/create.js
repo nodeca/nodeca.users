@@ -1,4 +1,4 @@
-/*global document*/
+/*global document,window,$*/
 
 'use strict';
 
@@ -21,11 +21,25 @@ describe('Albums create dialog', function () {
       // Get albums count before create new
       .get.count('.user-albumlist li', paramsStack)
 
+      // Set a global variable when dialog is opened
+      .get.evaluate(function () {
+        function handler(e) {
+          if ($(e.target).find('form[data-on-submit="users.album.create:submit"]').length) {
+            $(document).off('shown.bs.modal', handler);
+            window._album_create_dialog_shown_fired = true;
+          }
+        }
+
+        $(document).on('shown.bs.modal', handler);
+      })
+
       // Click "+"
       .do.click('[data-on-click="users.albums_root.create_album"]')
 
-      // Wait for dialog
-      .do.wait(500)
+      // Wait for dialog to open
+      .do.wait(function () {
+        return window._album_create_dialog_shown_fired;
+      })
 
       // Fill out album's name
       .do.fill('form[data-on-submit="users.album.create:submit"]', {
