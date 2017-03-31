@@ -185,7 +185,7 @@ module.exports = function (N, apiPath) {
 
   // Create user record and login
   //
-  let create_user = Promise.coroutine(function* create_user(env) {
+  let create_user = Promise.coroutine(function* _create_user(env) {
     yield N.wire.emit('internal:users.user_create', env);
 
     // authProvider info is needed to create AuthSession
@@ -203,7 +203,7 @@ module.exports = function (N, apiPath) {
 
   // If the user have to confirm email, create token and send it by email.
   //
-  let send_activation = Promise.coroutine(function* send_activation(env) {
+  let send_activation = Promise.coroutine(function* _send_activation(env) {
     let token = yield N.models.users.TokenActivationEmail.create({
       ip: env.req.ip,
       reg_info: env.data.reg_info,
