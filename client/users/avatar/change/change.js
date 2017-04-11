@@ -9,6 +9,8 @@
 const _           = require('lodash');
 const filter_jpeg = require('nodeca.users/lib/filter_jpeg');
 
+// Pica instance
+let pica;
 
 // Promise that waits for pica dependency to load
 let waitForPica;
@@ -78,12 +80,12 @@ var cropperUpdate = _.debounce(() => {
 let redrawPreviewStarted = false;
 
 // Used to discard previous result if HW resize called multiple times
-let redrawTaskId = 0;
+let redrawTaskCancel = null;
 
 // Built high quality avatar preview. This is slow, do
 // it only after user stopped cropper change
 let previewHqUpdate = _.debounce(() => {
-  const pica = require('pica');
+  pica = pica || require('pica')();
 
   let width = cropperRight - cropperLeft;
   let height = cropperBottom - cropperTop;
@@ -101,18 +103,20 @@ let previewHqUpdate = _.debounce(() => {
     0, 0, width, height);
 
   // Resize to preview size
-  redrawTaskId = pica.resizeCanvas(canvasCropped, canvasPreview, {
+  pica.resize(canvasCropped, canvasPreview, {
     unsharpAmount: 80,
     unsharpRadius: 0.6,
-    unsharpThreshold: 2
-  }, () => {});
+    unsharpThreshold: 2,
+    cancelToken: new Promise((resolve, reject) => {
+      redrawTaskCancel = () => reject('CANCELED');
+    })
+  }).then(() => { redrawTaskCancel = null; })
+    .catch(() => {});
 
 }, 500);
 
 
 let previewUpdate = _.debounce(() => {
-  const pica = require('pica');
-
   if (redrawPreviewStarted) return;
 
   redrawPreviewStarted = true;
@@ -123,11 +127,9 @@ let previewUpdate = _.debounce(() => {
       cropperLeft, cropperTop, cropperRight - cropperLeft, cropperBottom - cropperTop,
       0, 0, previewWidth, previewHeight);
 
-    // Check is web worker available in browser
-    if (pica.WW) {
-      pica.terminate(redrawTaskId);
-      previewHqUpdate();
-    }
+    if (redrawTaskCancel) redrawTaskCancel();
+
+    previewHqUpdate();
 
     redrawPreviewStarted = false;
   });
@@ -597,8 +599,8 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
 
   let avatarBlob;
 
-  N.wire.on('users.avatar.change:apply', function change_avatar_resize(__, callback) {
-    const pica = require('pica');
+  N.wire.on('users.avatar.change:apply', function change_avatar_resize() {
+    pica = pica || require('pica')();
 
     var width = cropperRight - cropperLeft;
     var height = cropperBottom - cropperTop;
@@ -622,24 +624,18 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
     avatarCanvas.width = avatarWidth;
     avatarCanvas.height = avatarHeight;
 
-
-    pica.resizeCanvas(canvasCropped, avatarCanvas, {
+    return pica.resize(canvasCropped, avatarCanvas, {
       unsharpAmount: 80,
       unsharpRadius: 0.6,
       unsharpThreshold: 2
-    }, err => {
-
-      if (err) {
-        N.wire.emit('notify', t('err_image_invalid'));
-        return;
-      }
-
-      avatarCanvas.toBlob(function (blob) {
-
-        avatarBlob = blob;
-        callback();
-
-      }, 'image/jpeg', 90);
+    })
+    .then(() => pica.toBlob(avatarCanvas, 'image/jpeg', 90))
+    .then(function (blob) {
+      avatarBlob = blob;
+    })
+    .catch(() => {
+      N.wire.emit('notify', t('err_image_invalid'));
+      throw 'CANCELED';
     });
   });
 

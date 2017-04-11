@@ -35,6 +35,7 @@ let aborted;
 let closeConfirmation;
 let uploadedFiles;
 let requests;
+let pica;
 
 
 // Concatenate multiple Uint8Arrays
@@ -75,7 +76,7 @@ function checkFile(data) {
 // Resize image if needed
 //
 function resizeImage(data) {
-  const pica = require('pica');
+  pica = pica || require('pica')();
 
   return new Promise((resolve, reject) => {
     // Next tick
@@ -155,9 +156,9 @@ function resizeImage(data) {
 
         source.getContext('2d').drawImage(img, cropX, 0, width, img.height);
 
-        pica.resizeCanvas(source, dest, { alpha }, function () {
-
-          dest.toBlob(function (blob) {
+        pica.resize(source, dest, { alpha })
+          .then(() => pica.toBlob(dest, data.file.type, quality))
+          .then(function (blob) {
             let jpegBlob, jpegBody;
 
             if (jpegHeader) {
@@ -175,8 +176,7 @@ function resizeImage(data) {
             data.file.name = name;
             $progressStatus.hide(0);
             resolve();
-          }, data.file.type, quality);
-        });
+          });
       };
 
       img.onerror = () => {
