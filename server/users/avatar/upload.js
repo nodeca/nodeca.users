@@ -11,7 +11,7 @@ module.exports = function (N, apiPath) {
 
   const config = resizeParse(N.config.users.avatars);
 
-  // CSRF comes in post data and checked separately
+
   N.validate(apiPath, {
     avatar: { type: 'string', required: true }
   });

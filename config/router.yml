@@ -152,12 +152,3 @@ router:
         user_hid:
           match: /\d+/
           type: 'integer'
-
-  http.post:
-    users.avatar.upload:
-      "/upload_avatar": ~
-
-    users.media.upload:
-      "/upload/({album_id})":
-        album_id:
-          match: /[0-9a-f]{24}/

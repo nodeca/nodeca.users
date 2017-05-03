@@ -13,7 +13,7 @@ module.exports = function (N, apiPath) {
 
   const config = resizeParse(N.config.users.uploads);
 
-  // CSRF comes in post data and checked separately
+
   N.validate(apiPath, {
     album_id: { format: 'mongo', required: false },
     file:     { type: 'string',  required: true }
