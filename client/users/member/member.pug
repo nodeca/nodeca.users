@@ -39,7 +39,7 @@
             != self.timetag(self.user.last_active_ts, 'relative_full')
 
           if self.user_is_hb
-            p.page-head__descr.member__hb.text-danger(itemprop='description')=self.t('hellbaned')
+            p.page-head__descr.member__hb.text-danger(itemprop='description')=self.t('hellbanned')
 
           if self.settings.can_add_mod_notes && self.mod_notes_count > 0
             p.page-head__descr

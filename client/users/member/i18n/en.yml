@@ -11,4 +11,4 @@ en-US:
   ignore_removed: User removed from ignore list
   send_message_help: Send message
   mod_notes: "Moderator's notes (#{count})"
-  hellbaned: Hellbaned
+  hellbanned: Hellbanned

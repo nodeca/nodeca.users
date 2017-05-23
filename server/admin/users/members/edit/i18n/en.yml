@@ -2,3 +2,13 @@ en-US:
   registered_date_ip: '#{date} (IP: #{ip})'
   edit:
     registered_date_ip: '#{date} (IP: #{ip})'
+
+  update:
+    nick: Nick
+    usergroups: Usergroups
+    email: E-mail
+    birthday: Birthday
+    hb: Hellbanned
+    yes: Yes
+    no: No
+    mod_note_header: 'Profile change:'

@@ -176,6 +176,23 @@ module.exports = function (N, collectionName) {
   });
 
 
+  // List of important property names (changes should be logged for those)
+  //
+  User.statics.trackable = [
+    'nick',
+    'usergroups',
+    'email',
+    'about.birthday',
+    'hb'
+  ];
+
+  if (N.config.users && N.config.users.about) {
+    for (let name of Object.keys(N.config.users.about)) {
+      User.statics.trackable.push('about.' + name);
+    }
+  }
+
+
   // Set `name` equal to `nick` by default,
   // you can override it by adding a custom hook with altered behavior
   //
