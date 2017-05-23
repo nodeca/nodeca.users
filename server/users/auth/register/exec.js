@@ -119,10 +119,11 @@ module.exports = function (N, apiPath) {
     }
 
     // forbid password equal to hostname
-    let mount = _.get(N.config, 'bind.default.mount');
+    let mount = _.get(N.config, 'bind.default.mount', '/');
+    let hostname = url.parse(mount).hostname;
 
-    if (mount) {
-      if (env.params.pass.toLowerCase() === url.parse(mount).hostname.toLowerCase()) {
+    if (hostname) {
+      if (env.params.pass.toLowerCase() === hostname.toLowerCase()) {
         env.data.errors.pass = env.t('err_password_is_hostname');
         return;
       }

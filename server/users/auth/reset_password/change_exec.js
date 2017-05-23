@@ -93,10 +93,11 @@ module.exports = function (N, apiPath) {
     }
 
     // forbid password equal to hostname
-    let mount = _.get(N.config, 'bind.default.mount');
+    let mount = _.get(N.config, 'bind.default.mount', '/');
+    let hostname = url.parse(mount).hostname;
 
-    if (mount) {
-      if (env.params.password.toLowerCase() === url.parse(mount).hostname.toLowerCase()) {
+    if (hostname) {
+      if (env.params.password.toLowerCase() === hostname.toLowerCase()) {
         return {
           code:         N.io.CLIENT_ERROR,
           message:      env.t('err_password_is_hostname'),
