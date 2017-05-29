@@ -188,7 +188,7 @@ module.exports = function (N, apiPath) {
       if (env.t.exists(name)) {
         localized_name = env.t(name);
       } else if (env.t.exists('@admin.users.about.' + name)) {
-        localized_name = env.t.exists('@admin.users.about.' + name);
+        localized_name = env.t('@admin.users.about.' + name);
       } else {
         // fallback, shouldn't happen
         localized_name = name;
