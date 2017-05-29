@@ -16,11 +16,9 @@ N.wire.on('navigate.preload:' + module.apiPath, function load_deps(preload) {
 N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
   const ko = require('knockout');
 
-  view = {};
-
-  view.hasError = ko.observable(false);
-  view.message  = ko.observable(null);
-  view.help     = ko.computed(() => view.message() || t('password_help'));
+  view = {
+    error: ko.observable(null)
+  };
 
   ko.applyBindings(view, $('#content')[0]);
 });
@@ -50,8 +48,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         window.location = N.router.linkTo('users.auth.reset_password.change_done_show');
       })
       .catch(err => {
-        view.hasError(err.bad_password || err.message);
-        view.message(err.message);
+        view.error(err.message || err.bad_password);
       });
   });
 });

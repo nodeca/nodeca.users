@@ -18,12 +18,11 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
   const ko = require('knockout');
 
   view = {
-    message: ko.observable(null),
+    error: ko.observable(null),
 
     recaptcha_response_field: {
       visible:  Boolean(N.runtime.recaptcha),
-      hasError: ko.observable(false),
-      message:  ko.observable(null)
+      error:    ko.observable(null)
     }
   };
 
@@ -79,7 +78,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         // Force captcha on every attempt.
         N.wire.emit('common.blocks.recaptcha.update');
 
-        view.message(err.message);
+        view.error(err.message);
       });
   });
 });

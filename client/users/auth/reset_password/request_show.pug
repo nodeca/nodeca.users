@@ -12,8 +12,8 @@
 
           form.card-block(data-on-submit='users.auth.reset_password.request_exec')
 
-            .form-group(data-bind='visible: message', style='display: none')
-              p.text-danger(data-bind='text: message')
+            .form-group(data-bind='visible: error', style='display: none')
+              p.text-danger(data-bind='text: error')
 
             .form-group
               label(for='reset_password_email')= self.t('email')

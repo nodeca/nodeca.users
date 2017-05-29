@@ -63,7 +63,7 @@ module.exports = function (N, apiPath) {
     if (!validate(env.params)) {
       _.forEach(validate.errors, function (error) {
         // Don't customize form text, just highlight the field.
-        env.data.errors[error.field.replace(/^data[.]/, '')] = null;
+        env.data.errors[error.field.replace(/^data[.]/, '')] = true;
       });
 
       // terminate

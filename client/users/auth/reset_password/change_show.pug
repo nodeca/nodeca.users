@@ -18,7 +18,7 @@
             form.card-block(data-on-submit='users.auth.reset_password.change_exec')
               input(type='hidden' name='secret_key' value=self.secret_key)
 
-              .form-group(data-bind='css: { "has-danger": hasError }')
+              .form-group(data-bind='css: { "has-danger": error }')
                 label(for='password')= self.t('password')
                 input.form-control(
                   id='password'
@@ -26,6 +26,9 @@
                   type='password'
                   placeholder=self.t('password_desc')
                 )
-                small.form-text(data-bind='text: help, css: hasError() ? "text-danger" : "text-muted"')
+                // ko if: error && typeof error() === 'string'
+                .form-control-feedback(data-bind='text: error')
+                // /ko
+                small.form-text.text-muted= self.t('password_help')
 
               button.btn.btn-primary(type='submit')= self.t('ok')

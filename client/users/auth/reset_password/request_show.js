@@ -17,12 +17,11 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
   const ko = require('knockout');
 
   view = {
-    message: ko.observable(null),
+    error: ko.observable(null),
 
     recaptcha_response_field: {
       visible:  Boolean(N.runtime.recaptcha),
-      hasError: ko.observable(false),
-      message:  ko.observable(null)
+      error:    ko.observable(null)
     }
   };
 
@@ -54,7 +53,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
       .then(() => N.wire.emit('navigate.to', { apiPath: 'users.auth.reset_password.request_done_show' }))
       .catch(err => {
         N.wire.emit('common.blocks.recaptcha.update');
-        view.message(err.message);
+        view.error(err.message);
       });
   });
 });

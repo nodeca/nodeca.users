@@ -15,8 +15,8 @@
 
           form.card-block(data-on-submit='users.auth.login.plain_exec')
             //- Message to show on error
-            .form-group(data-bind='visible: message', style='display: none')
-              p.text-danger(data-bind='text: message')
+            .form-group(data-bind='visible: error', style='display: none')
+              p.text-danger(data-bind='text: error')
 
             if self.redirect_id
               input(type='hidden', name='redirect_id', value=self.redirect_id)
@@ -44,7 +44,7 @@
                 type='password'
                 placeholder=self.t('password_desc')
               )
-              p.small.form-text.text-muted= self.t('password_help')
+              small.form-text.text-muted= self.t('password_help')
 
             // ko with: recaptcha_response_field
             != self.partial('@common.blocks.recaptcha')

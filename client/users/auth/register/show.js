@@ -13,15 +13,11 @@ let view = null;
 
 // View model for editable fields of the form: email, pass and nick.
 //
-function Control(defaultHelp) {
+function Control() {
   const ko = require('knockout');
 
-  this.defaultHelp = defaultHelp;
-
-  this.hasError = ko.observable(false);
-  this.message  = ko.observable(null);
+  this.error    = ko.observable(null);
   this.value    = ko.observable('');
-  this.help     = ko.computed(() => this.message() || this.defaultHelp);
 }
 
 
@@ -37,14 +33,13 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
 
   // Root view model.
   view = {
-    email: new Control(t('')),
-    pass:  new Control(t('pass_help')),
-    nick:  new Control(t('')),
+    email: new Control(),
+    pass:  new Control(),
+    nick:  new Control(),
 
     recaptcha_response_field: {
       visible:  Boolean(N.runtime.recaptcha),
-      hasError: ko.observable(false),
-      message:  ko.observable(null)
+      error:    ko.observable(null)
     }
   };
 
@@ -54,8 +49,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
 
   // Reset nick CSS class and message on every change.
   view.nick.value.subscribe(() => {
-    view.nick.hasError(false);
-    view.nick.message(null);
+    view.nick.error(null);
   });
 
   // Setup automatic nick validation on input.
@@ -64,8 +58,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
 
     N.io.rpc('users.auth.check_nick', { nick: text })
       .then(res => {
-        view.nick.hasError(!!res.error);
-        view.nick.message(res.message);
+        view.nick.error(res.error ? res.message : null);
       });
   }, CHECK_NICK_DELAY));
 
@@ -106,8 +99,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
         // Update classes and messages on all input fields.
         _.forEach(view, (field, name) => {
-          field.hasError(_.has(err.data, name));
-          field.message(err.data[name]);
+          field.error(err.data[name]);
         });
 
         // Update ReCaptcha if there is a ReCaptcha error.
