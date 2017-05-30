@@ -221,8 +221,10 @@ N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
       return medium.getBoundingClientRect().bottom;
     });
 
-    if (currentIdx === 0 && media[currentIdx].getBoundingClientRect().top > mediaThreshold) {
-      currentIdx--;
+    if (currentIdx === 0) {
+      if (!media.length || media[currentIdx].getBoundingClientRect().top > mediaThreshold) {
+        currentIdx--;
+      }
     }
 
     if (currentIdx >= media.length) { currentIdx = media.length - 1; }

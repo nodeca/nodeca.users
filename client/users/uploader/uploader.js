@@ -291,8 +291,8 @@ function startUpload(data) {
       $progressInfo.find('.progress-bar').addClass('bg-danger');
 
       // Client error
-      if (err.status === N.io.CLIENT_ERROR) {
-        N.wire.emit('notify', err.responseText);
+      if (err.code === N.io.CLIENT_ERROR) {
+        N.wire.emit('notify', err.message);
       } else {
         N.wire.emit('notify', t('err_upload', { file_name: data.file.name }));
       }

@@ -18,14 +18,13 @@
 //     - sm
 //       - ...
 //
-// - callback(
-//     err,
-//     {
-//       id: ObjectId,
-//       size: Number,
-//       images: { orig: { width: Number , height: Number } }
-//     }
-//   )
+// Returns Promise:
+//
+// {
+//   id: ObjectId,
+//   size: Number,
+//   images: { orig: { width: Number , height: Number } }
+// }
 //
 'use strict';
 
@@ -81,9 +80,7 @@ function filter_jpeg_stream(options) {
 //   - skip_size
 // - imageType - gif, jpeg, png, etc
 //
-// - callback - function (err, { path, type })
-//
-const createPreview = Promise.coroutine(function* (image, resizeConfig, imageType) {
+async function createPreview(image, resizeConfig, imageType) {
   // To scale image, we calculate new width and height,
   // resize image by height, and crop by width
   let scaledHeight, scaledWidth, saveAsIs = false;
@@ -206,18 +203,13 @@ const createPreview = Promise.coroutine(function* (image, resizeConfig, imageTyp
     sharpInstance.withoutEnlargement().crop(sharp.strategy.attention);
   }
 
-  let res = yield new Promise((resolve, reject) => {
-    // using callback interface instead of promises here,
-    // because promises don't return `info` object
-    sharpInstance.toFormat(outType, formatOptions).withMetadata().toBuffer(function (err, buffer, info) {
-      if (err) reject(err);
-      else resolve({ buffer, info });
-    });
-  });
+  let res = await sharpInstance.toFormat(outType, formatOptions)
+                               .withMetadata()
+                               .toBuffer({ resolveWithObject: true });
 
   return {
     image: {
-      buffer: res.buffer,
+      buffer: res.data,
       length: res.info.size,
       width:  res.info.width,
       height: res.info.height,
@@ -225,7 +217,7 @@ const createPreview = Promise.coroutine(function* (image, resizeConfig, imageTyp
     },
     type: outType
   };
-});
+}
 
 
 // Save buffered images to database
@@ -236,7 +228,7 @@ const createPreview = Promise.coroutine(function* (image, resizeConfig, imageTyp
 //
 // - callback - function (err, originalFileId)
 //
-const saveImages = Promise.coroutine(function* (previews, options) {
+async function saveImages(previews, options) {
   let keys = Object.keys(previews);
 
   //
@@ -275,7 +267,7 @@ const saveImages = Promise.coroutine(function* (previews, options) {
                  through2();
 
     /* eslint-disable no-loop-func */
-    yield Promise.fromCallback(cb => pump(
+    await Promise.fromCallback(cb => pump(
       from2([ data.image.buffer ]),
       filter,
       File.createWriteStream(params),
@@ -284,10 +276,10 @@ const saveImages = Promise.coroutine(function* (previews, options) {
   }
 
   return origId;
-});
+}
 
 
-module.exports = Promise.coroutine(function* (src, options) {
+module.exports = async function (src, options) {
   File = options.store;
 
   let previews = {};
@@ -295,13 +287,13 @@ module.exports = Promise.coroutine(function* (src, options) {
   //
   // Read image from file, determine its size
   //
-  let data = yield fs.readFile(src);
+  let data = await fs.readFile(src);
   let streamBuffer = new stream.Transform();
 
   streamBuffer.push(data);
   streamBuffer.end();
 
-  let imgSz = yield probe(streamBuffer);
+  let imgSz = await probe(streamBuffer);
 
   let origImage = {
     buffer: data,
@@ -325,13 +317,13 @@ module.exports = Promise.coroutine(function* (src, options) {
     let from = (previews[resizeConfig.from || ''] || previews.orig || {});
     let image = from.image || origImage;
 
-    let newImage = yield createPreview(image, resizeConfig, from.type || options.ext);
+    let newImage = await createPreview(image, resizeConfig, from.type || options.ext);
 
     previews[resizeConfigKey] = newImage;
   }
 
   // Save all previews
-  let origId = yield saveImages(previews, options);
+  let origId = await saveImages(previews, options);
 
   return {
     id: origId,
@@ -342,4 +334,4 @@ module.exports = Promise.coroutine(function* (src, options) {
       length: preview.image.length
     }))
   };
-});
+};
