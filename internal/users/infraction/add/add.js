@@ -13,12 +13,12 @@ module.exports = function (N, apiPath) {
 
   // Apply penalty action if needed
   //
-  N.wire.on(apiPath, function* apply_penalty(infraction) {
+  N.wire.on(apiPath, async function apply_penalty(infraction) {
     let penalties = _.get(N.config, 'users.infractions.penalties', []);
     // Rules sorted by `points` in desc order
     let rules = penalties.sort((a, b) => b.points - a.points);
 
-    let infractions = yield N.models.users.Infraction.find()
+    let infractions = await N.models.users.Infraction.find()
                                 .where('for').equals(infraction.for)
                                 .where('exists').equals(true)
                                 .or([ { expire: null }, { expire: { $gt: Date.now() } } ])
@@ -42,8 +42,8 @@ module.exports = function (N, apiPath) {
 
   // Notify user via PM (via dialogs)
   //
-  N.wire.on(apiPath, function* notify_user(infraction) {
-    let to = yield userInfo(N, infraction.for);
+  N.wire.on(apiPath, async function notify_user(infraction) {
+    let to = await userInfo(N, infraction.for);
     let locale = to.locale || N.config.locales[0];
 
 
@@ -51,7 +51,7 @@ module.exports = function (N, apiPath) {
     //
     let info_env = { infractions: [ infraction ], user_info: to, info: {} };
 
-    yield N.wire.emit('internal:users.infraction.info', info_env);
+    await N.wire.emit('internal:users.infraction.info', info_env);
 
 
     // Dialog title
@@ -61,11 +61,16 @@ module.exports = function (N, apiPath) {
 
     // Fetch moderator nick
     //
-    let moderator = yield N.models.users.User.findOne()
+    let moderator = await N.models.users.User.findOne()
                               .where('_id').equals(infraction.from)
                               .select('nick')
                               .lean(true);
 
+    // Fetch user to send messages from
+    //
+    let bot = await N.models.users.User.findOne()
+                        .where('hid').equals(N.config.bots.default_bot_hid)
+                        .lean(true);
 
     // Infraction description
     //
@@ -129,14 +134,14 @@ module.exports = function (N, apiPath) {
       sup:            true
     };
 
-    let parse_result = yield N.parser.md2html({
+    let parse_result = await N.parser.md2html({
       text,
       attachments: [],
       options,
       user_info: to
     });
 
-    let preview_data = yield N.parser.md2preview({
+    let preview_data = await N.parser.md2preview({
       text,
       limit: 500,
       link2text: true
@@ -147,7 +152,7 @@ module.exports = function (N, apiPath) {
     //
     let message_data = {
       ts:           Date.now(),
-      user:         infraction.from,
+      user:         bot._id,
       html:         parse_result.html,
       md:           text,
       attach:       [],
@@ -168,10 +173,10 @@ module.exports = function (N, apiPath) {
     };
 
 
-    // Create moderator dialog and message
+    // Create bot dialog and message
     //
     let from_dialog = new N.models.users.Dialog(_.merge({
-      user: infraction.from,
+      user: bot._id,
       to:   infraction.for
     }, dialog_data));
 
@@ -187,7 +192,7 @@ module.exports = function (N, apiPath) {
     //
     let to_dialog = new N.models.users.Dialog(_.merge({
       user:   infraction.for,
-      to:     infraction.from,
+      to:     bot._id,
       unread: 1
     }, dialog_data));
 
@@ -201,7 +206,7 @@ module.exports = function (N, apiPath) {
 
     // Save dialogs and messages
     //
-    yield Promise.all([
+    await Promise.all([
       from_dialog.save(),
       from_msg.save(),
       to_dialog.save(),
@@ -211,10 +216,10 @@ module.exports = function (N, apiPath) {
 
     // Notify user
     //
-    let dialogs_notify = yield N.settings.get('dialogs_notify', { user_id: to_dialog.user });
+    let dialogs_notify = await N.settings.get('dialogs_notify', { user_id: to_dialog.user });
 
     if (dialogs_notify) {
-      yield N.wire.emit('internal:users.notify', {
+      await N.wire.emit('internal:users.notify', {
         src:  to_dialog._id,
         to:   to_dialog.user,
         type: 'USERS_MESSAGE'
