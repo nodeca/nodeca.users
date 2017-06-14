@@ -1,0 +1,7 @@
+en-US:
+  title: Question about infraction
+  description: >
+    Your question about infraction at #{date} will be sent to
+    a moderator who issued it
+  success: Your question has been sent
+  submit: Send

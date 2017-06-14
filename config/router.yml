@@ -30,6 +30,11 @@ router:
         message_id:
           match: /[0-9a-f]{24}/
 
+    users.infraction_ask_about:
+      "/infraction_ask_about/{infraction_id}":
+        infraction_id:
+          match: /[0-9a-f]{24}/
+
     users.settings.general:
       "/settings": ~
 

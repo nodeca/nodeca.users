@@ -1,0 +1,34 @@
+#content
+  != self.partial('@common.blocks.navbar.logo_apps')
+
+  .layout__container.container-fluid.space-top
+    != self.partial('@users.blocks.announces')
+
+    // ko ifnot: submitted
+    header.page-head
+      h1.page-head__title= self.head.title
+      p.page-head__descr.hidden-xs-down(itemprop='description')
+        = self.t('description', { date: self.date(self.infraction.ts, 'datetime') })
+
+    if self.t.exists('notice')
+      .alert.alert-warning.pb-0.mb-4
+        != self.t('notice')
+
+    form.mb-4(data-on-submit='users.infraction_ask_about:submit')
+      input(type='hidden', name='infraction_id', value=self.infraction._id)
+
+      // ko with: message
+      .form-group(data-bind='css: { "has-danger": error }')
+        textarea.form-control.contact-form-textarea(
+          name='message'
+          data-bind='value: value'
+        )
+      // /ko
+
+      button.btn.btn-primary.mt-3(type='submit')= self.t('submit')
+    // /ko
+
+    .row(style='display: none', data-bind='visible: submitted')
+      .col-md-6.offset-md-3.col-sm-8.offset-sm-2
+        .card.card-block
+          = self.t('success')

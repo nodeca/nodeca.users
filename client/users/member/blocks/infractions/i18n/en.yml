@@ -9,6 +9,7 @@ en-US:
   reason: Reason
   points: Points
   expires: Expires
+  ask_question: Ask a question about this infraction
   delete: Delete
   add: Add infraction
   infraction_added: Infraction added

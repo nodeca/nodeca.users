@@ -10,8 +10,8 @@ module.exports = function (N) {
 
   // Fill infractions
   //
-  N.wire.after('server:users.member', function* fill_infractions(env) {
-    let can_see_infractions = yield env.extras.settings.fetch('can_see_infractions');
+  N.wire.after('server:users.member', async function fill_infractions(env) {
+    let can_see_infractions = await env.extras.settings.fetch('can_see_infractions');
 
     // Allow if permitted and if owner
     if (!can_see_infractions && String(env.data.user._id) !== env.user_info.user_id) return;
@@ -26,7 +26,7 @@ module.exports = function (N) {
       query.where('exists').equals(true);
     }
 
-    let infractions = yield query;
+    let infractions = await query;
 
 
     // Hide infractions older than half year for owner
@@ -54,7 +54,7 @@ module.exports = function (N) {
     //
     let info_env = { infractions, user_info: env.user_info, info: {} };
 
-    yield N.wire.emit('internal:users.infraction.info', info_env);
+    await N.wire.emit('internal:users.infraction.info', info_env);
 
 
     // Fetch moderators info
@@ -68,9 +68,9 @@ module.exports = function (N) {
 
     // Fetch settings
     //
-    let users_mod_can_add_infractions = yield env.extras.settings.fetch('users_mod_can_add_infractions');
-    let can_delete_infractions = yield env.extras.settings.fetch('can_delete_infractions');
-    let cannot_receive_infractions = yield N.settings.get('cannot_receive_infractions', {
+    let users_mod_can_add_infractions = await env.extras.settings.fetch('users_mod_can_add_infractions');
+    let can_delete_infractions = await env.extras.settings.fetch('can_delete_infractions');
+    let cannot_receive_infractions = await N.settings.get('cannot_receive_infractions', {
       user_id: env.data.user._id,
       usergroup_ids: env.data.user.usergroups
     }, {});
@@ -87,5 +87,9 @@ module.exports = function (N) {
         content_info: info_env.info
       });
     }
+
+    env.res.settings = env.res.settings || {};
+
+    env.res.settings.can_create_dialogs = await env.extras.settings.fetch('can_create_dialogs');
   });
 };

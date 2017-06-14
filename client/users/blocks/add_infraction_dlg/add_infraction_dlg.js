@@ -84,9 +84,14 @@ N.wire.once(module.apiPath, function init_handlers() {
     if (!valid) return;
 
     params.type = data.fields.type;
-    params.expire = +data.fields.expire;
     params.points = +data.fields.points;
     params.reason = data.fields.reason;
+
+    if (data.fields.expire) {
+      params.expire = +data.fields.expire;
+    } else {
+      params.expire = -1;
+    }
 
     result = params;
     $dialog.modal('hide');

@@ -95,13 +95,6 @@
                   =infraction.points
 
                 td.member-infractions-item__expire.text-nowrap
-                  if infraction.exists && !expired && (self.blocks.infractions.settings.can_delete_infractions || infraction.from === self.runtime.user_id)
-                    a(href='#'
-                      data-on-click='users.member.blocks.infractions:delete'
-                      data-infraction-id=infraction._id
-                      title=self.t('delete')
-                    ).member-infractions-item__remove.float-right: span.icon.icon-x
-
                   if !infraction.exists
                     =self.t('deleted')
                   else if expired
@@ -110,3 +103,20 @@
                     !=self.timetag(infraction.expire, 'compact')
                   else
                     =self.t('never')
+
+                td.member-infractions-item__send-pm.text-nowrap
+                  if infraction.exists && infraction.from !== self.runtime.user_id
+                    if self.settings.can_create_dialogs
+                      a.icon.icon-edit(
+                        href=self.link_to('users.infraction_ask_about', { infraction_id: infraction._id })
+                        title=self.t('ask_question')
+                      )
+
+                td.member-infractions-item__remove.text-nowrap
+                  if infraction.exists && !expired && (self.blocks.infractions.settings.can_delete_infractions || infraction.from === self.runtime.user_id)
+                    a.icon.icon-x(
+                      href='#'
+                      data-on-click='users.member.blocks.infractions:delete'
+                      data-infraction-id=infraction._id
+                      title=self.t('delete')
+                    )
