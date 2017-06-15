@@ -7,6 +7,13 @@ exports.up = async function (N) {
     is_protected: true
   }).save();
 
+  let store = N.settings.getStore('usergroup');
+
+  await store.set({
+    is_bot: { value: true }
+  }, { usergroup_id: usergroup._id });
+
+
   let hid = N.config.bots.default_bot_hid;
 
   if (await N.models.users.User.findOne({ hid })) {
@@ -16,7 +23,6 @@ exports.up = async function (N) {
   await new N.models.users.User({
     hid,
     nick:       'autopilot',
-    email:      'no_reply@localhost',
     usergroups: [ usergroup._id ]
   }).save();
 

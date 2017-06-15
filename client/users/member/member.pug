@@ -33,10 +33,11 @@
                 title=self.t('ignored')
               )
             = self.users[self.user._id].name
-          p.page-head__descr.member__last-visit(itemprop='description')
-            =self.t('last_active')
-            | 
-            != self.timetag(self.user.last_active_ts, 'relative_full')
+          if self.user.last_active_ts
+            p.page-head__descr.member__last-visit(itemprop='description')
+              =self.t('last_active')
+              | 
+              != self.timetag(self.user.last_active_ts, 'relative_full')
 
           if self.user_is_hb
             p.page-head__descr.member__hb.text-danger(itemprop='description')=self.t('hellbanned')
@@ -51,6 +52,10 @@
               =self.t('blocked_until')
               | 
               !=self.timetag(self.penalty_expire, 'compact')
+
+          if self.is_bot
+            p.page-head__descr.member__bot.text-danger(itemprop='description')
+              =self.t('is_bot')
 
         //- Nav menu (wide screens)
         if self.runtime.is_member

@@ -188,15 +188,14 @@ module.exports = function (N, apiPath) {
 
   // Fill response
   //
-  N.wire.on(apiPath, function* fetch_user_by_hid(env) {
+  N.wire.on(apiPath, async function fetch_user_by_hid(env) {
     env.res.user = {};
     env.res.user._id = env.data.user._id;
     env.res.user.hid = env.data.user.hid;
     env.res.user.last_active_ts = env.data.user.last_active_ts;
-
     env.res.avatar_exists = env.data.user.avatar_id ? true : false;
 
-    let can_use_dialogs = yield env.extras.settings.fetch('can_use_dialogs');
+    let can_use_dialogs = await env.extras.settings.fetch('can_use_dialogs');
 
     env.res.menu_ordered = menu.filter(item => {
       // Show "Messages" menu item only if permitted
@@ -246,5 +245,23 @@ module.exports = function (N, apiPath) {
     }
 
     env.res.actions_ordered = env.data.actions;
+  });
+
+
+  // Hide most of the profile for bots
+  //
+  N.wire.after(apiPath, { priority: 100 }, async function cleanup_bot_profile(env) {
+    let is_bot = await N.settings.get('is_bot', {
+      user_id: env.data.user._id,
+      usergroup_ids: env.data.user.usergroups
+    }, {});
+
+    if (!is_bot) return;
+
+    delete env.res.user.last_active_ts;
+
+    env.res.actions_ordered = [];
+    env.res.blocks = [];
+    env.res.is_bot = true;
   });
 };

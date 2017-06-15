@@ -12,3 +12,4 @@ en-US:
   send_message_help: Send message
   mod_notes: "Moderator's notes (#{count})"
   hellbanned: Hellbanned
+  is_bot: This account is automated. It works by itself and doing various useful things.

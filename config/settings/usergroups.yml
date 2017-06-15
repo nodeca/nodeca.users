@@ -60,6 +60,12 @@ setting_schemas:
       type: boolean
       default: false
 
+    is_bot:
+      priority: 1120
+      category_key: perm_users
+      type: boolean
+      default: false
+
     can_access_acp:
       priority: 1990
       category_key: perm_admin

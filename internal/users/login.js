@@ -15,6 +15,25 @@
 
 module.exports = function (N, apiPath) {
 
+  // Forbid login for bots
+  //
+  N.wire.before(apiPath, async function check_usergroup(env) {
+    if (!env.data.user) return;
+
+    let is_bot = await N.settings.get('is_bot', {
+      user_id: env.data.user._id,
+      usergroup_ids: env.data.user.usergroups
+    }, {});
+
+    if (is_bot) {
+      throw {
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('@users.auth.login.plain_exec.err_login_failed')
+      };
+    }
+  });
+
+
   N.wire.on(apiPath, function* user_internal_login(env) {
 
     // delete old session (don't wait until complete)

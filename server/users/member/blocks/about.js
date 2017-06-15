@@ -10,8 +10,8 @@ module.exports = function (N) {
 
   // Fetch permissions
   //
-  N.wire.after('server:users.member', function* fetch_permissions(env) {
-    let can_edit_profile = yield env.extras.settings.fetch('can_edit_profile');
+  N.wire.after('server:users.member', async function fetch_permissions(env) {
+    let can_edit_profile = await env.extras.settings.fetch('can_edit_profile');
 
     env.res.settings = env.res.settings || {};
     env.res.settings.can_edit_profile = can_edit_profile;
@@ -19,7 +19,7 @@ module.exports = function (N) {
 
   // Fill contacts
   //
-  N.wire.after('server:users.member', function* fill_about(env) {
+  N.wire.after('server:users.member', async function fill_about(env) {
     let about = env.data.user.about || {};
     let own_page = String(env.data.user._id) === env.user_info.user_id;
 
@@ -57,7 +57,7 @@ module.exports = function (N) {
         name:     'location',
         value:    env.data.user.location ? {
           location: env.data.user.location,
-          name:     (yield N.models.core.Location.info([ env.data.user.location ], env.user_info.locale))[0]
+          name:     (await N.models.core.Location.info([ env.data.user.location ], env.user_info.locale))[0]
         } : null,
         priority: 30
       });
