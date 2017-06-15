@@ -53,6 +53,7 @@
               tr.member-infractions-item(
                 class=expired ? 'member-infractions-item__m-expired' : ''
                 class=!infraction.exists ? 'member-infractions-item__m-deleted' : ''
+                id='infraction'+infraction._id
               )
 
                 td.member-infractions-item__ts.text-nowrap

@@ -30,3 +30,24 @@ N.wire.once('navigate.done:users.member', function init_infractions() {
       .then(() => N.wire.emit('navigate.reload'));
   });
 });
+
+
+// Highlight and scroll to infraction for /memberX#infractionY links
+//
+N.wire.on('navigate.done:users.member', function highlight_infraction(data) {
+  let anchor = data.anchor || '';
+  let m = anchor.match(/^#infraction([0-9a-f]{24})$/);
+
+  if (m) {
+    let el = $('#infraction' + m[1]);
+
+    if (el.length) {
+      // override automatic scroll to an anchor in the navigator
+      data.no_scroll = true;
+
+      el[0].scrollIntoView();
+      el.addClass('member-infractions-item__m-highlight');
+      return;
+    }
+  }
+});
