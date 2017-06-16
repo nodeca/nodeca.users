@@ -17,6 +17,18 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Forbid access to pages owned by bots
+  //
+  N.wire.before(apiPath, async function bot_member_pages_forbid_access(env) {
+    let is_bot = await N.settings.get('is_bot', {
+      user_id: env.data.user._id,
+      usergroup_ids: env.data.user.usergroups
+    }, {});
+
+    if (is_bot) throw N.io.NOT_FOUND;
+  });
+
+
   // Find and processes user albums
   //
   N.wire.on(apiPath, function* get_user_albums(env) {
