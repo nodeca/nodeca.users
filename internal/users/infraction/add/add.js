@@ -173,21 +173,6 @@ module.exports = function (N, apiPath) {
     };
 
 
-    // Create bot dialog and message
-    //
-    let from_dialog = new N.models.users.Dialog(_.merge({
-      user: bot._id,
-      to:   infraction.for
-    }, dialog_data));
-
-    let from_msg = new N.models.users.DlgMessage(_.assign({
-      parent: from_dialog._id
-    }, message_data));
-
-    from_dialog.cache.last_message = from_msg._id;
-    from_dialog.cache.is_reply     = String(from_msg.user) === String(message_data.user);
-
-
     // Create violator dialog and message
     //
     let to_dialog = new N.models.users.Dialog(_.merge({
@@ -207,8 +192,6 @@ module.exports = function (N, apiPath) {
     // Save dialogs and messages
     //
     await Promise.all([
-      from_dialog.save(),
-      from_msg.save(),
       to_dialog.save(),
       to_msg.save()
     ]);

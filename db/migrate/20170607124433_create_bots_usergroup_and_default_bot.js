@@ -10,7 +10,9 @@ exports.up = async function (N) {
   let store = N.settings.getStore('usergroup');
 
   await store.set({
-    is_bot: { value: true }
+    is_bot:                        { value: true },
+    cannot_receive_infractions:    { value: true },
+    cannot_be_ignored:             { value: true }
   }, { usergroup_id: usergroup._id });
 
 
