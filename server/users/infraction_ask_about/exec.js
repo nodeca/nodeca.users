@@ -4,9 +4,13 @@
 'use strict';
 
 const _          = require('lodash');
-const $          = require('nodeca.core/lib/parser/cheequery');
 const ObjectId   = require('mongoose').Types.ObjectId;
 const validator  = require('is-my-json-valid');
+
+const parse_options = {
+  hr:   true,
+  link: true
+};
 
 
 module.exports = function (N, apiPath) {
@@ -106,13 +110,6 @@ module.exports = function (N, apiPath) {
         message: env.t('err_user_not_found')
       };
     }
-
-    if (String(env.data.to._id) === env.user_info.user_id) {
-      throw {
-        code: N.io.CLIENT_ERROR,
-        message: env.t('err_write_to_self')
-      };
-    }
   });
 
 
@@ -172,19 +169,6 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Prepare parse options
-  //
-  N.wire.before(apiPath, async function prepare_options(env) {
-    let settings = await N.settings.getByCategory(
-      'dialogs_markup',
-      { usergroup_ids: env.user_info.usergroups },
-      { alias: true }
-    );
-
-    env.data.parse_options = settings;
-  });
-
-
   // Prepare dialog text
   //
   N.wire.before(apiPath, function prepare_text(env) {
@@ -196,11 +180,15 @@ module.exports = function (N, apiPath) {
       reason = env.data.infraction.reason;
     }
 
+    // escape markdown characters (user is only allowed to post plain text),
+    // punctuation character set is the same as in markdown-it `text` rule
+    let message = env.params.message.replace(/([!#$%&*+\-:<=>@[\\\]^_`{}~])/g, '\\$1');
+
     env.data.text = env.t('message_text', {
       reason,
       link:    N.router.linkTo('users.member', { user_hid: env.user_info.user_hid }) +
                '#infraction' + env.data.infraction._id,
-      message: env.params.message
+      message
     });
   });
 
@@ -210,7 +198,7 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, async function parse_text(env) {
     env.data.parse_result = await N.parser.md2html({
       text:        env.data.text,
-      options:     env.data.parse_options,
+      options:     parse_options,
       attachments: [],
       user_info:   env.user_info
     });
@@ -230,43 +218,6 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Limit an amount of images in the message
-  //
-  N.wire.after(apiPath, async function check_images_count(env) {
-    let max_images = await env.extras.settings.fetch('users_message_max_images');
-
-    if (max_images <= 0) return;
-
-    let ast         = $.parse(env.data.parse_result.html);
-    let images      = ast.find('.image').length;
-    let attachments = ast.find('.attach').length;
-    let tail        = env.data.parse_result.tail.length;
-
-    if (images + attachments + tail > max_images) {
-      throw {
-        code: N.io.CLIENT_ERROR,
-        message: env.t('err_too_many_images', max_images)
-      };
-    }
-  });
-
-
-  // Limit an amount of emoticons in the post
-  //
-  N.wire.after(apiPath, async function check_emoji_count(env) {
-    let max_emojis = await env.extras.settings.fetch('users_message_max_emojis');
-
-    if (max_emojis < 0) return;
-
-    if ($.parse(env.data.parse_result.html).find('.emoji').length > max_emojis) {
-      throw {
-        code: N.io.CLIENT_ERROR,
-        message: env.t('err_too_many_emojis', max_emojis)
-      };
-    }
-  });
-
-
   // Create dialog
   //
   N.wire.after(apiPath, async function create_dialog(env) {
@@ -275,7 +226,7 @@ module.exports = function (N, apiPath) {
       user:         env.user_info.user_id,
       html:         env.data.parse_result.html,
       md:           env.data.text,
-      params:       env.data.parse_options,
+      params:       parse_options,
       imports:      env.data.parse_result.imports,
       import_users: env.data.parse_result.import_users,
       tail:         env.data.parse_result.tail
