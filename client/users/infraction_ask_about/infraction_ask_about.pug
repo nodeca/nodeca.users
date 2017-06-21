@@ -17,6 +17,10 @@
     form.mb-4(data-on-submit='users.infraction_ask_about:submit')
       input(type='hidden', name='infraction_id', value=self.infraction._id)
 
+      //- Message to show on error
+      .form-group(data-bind='visible: error', style='display: none')
+        p.text-danger(data-bind='text: error')
+
       // ko with: message
       .form-group(data-bind='css: { "has-danger": error }')
         textarea.form-control.contact-form-textarea(

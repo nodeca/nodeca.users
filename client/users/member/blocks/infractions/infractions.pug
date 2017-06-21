@@ -1,3 +1,5 @@
+- var own_page = (self.runtime.user_hid === self.user.hid)
+
 #member-infractions.member-block
 
   .member-block__header
@@ -106,7 +108,7 @@
                     =self.t('never')
 
                 td.member-infractions-item__send-pm.text-nowrap
-                  if infraction.exists && infraction.from !== self.runtime.user_id
+                  if own_page && infraction.exists && infraction.from !== self.runtime.user_id
                     if self.settings.can_create_dialogs
                       a.icon.icon-edit(
                         href=self.link_to('users.infraction_ask_about', { infraction_id: infraction._id })

@@ -32,6 +32,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
   view = {};
   view.message = new Control();
   view.submitted = ko.observable(false);
+  view.error = ko.observable(null);
 
   // Apply root view model.
   ko.applyBindings(view, $('#content')[0]);
@@ -67,9 +68,12 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         // Update classes and messages on all input fields.
         _.forEach(view, (field, name) => {
           if (name === 'submitted') return;
+          if (name === 'error') return;
 
-          field.error(err.data[name]);
+          field.error(_.get(err.data, name));
         });
+
+        view.error(err.message);
       });
   });
 });
