@@ -1,0 +1,23 @@
+i18n:
+  en-US:
+    l10n:
+      # Custom formats. If you do translation - make sure to override ALL root
+      # names (variations of the same format are not mandatory)
+      =date_formats:
+        last_active:
+          future_24h:  'Just now'
+          past_60s:    'Just now'
+          past_60m:    '#{minutes} ((minute|minutes)):minutes ago'
+          past_24h:    '#{hours} ((hour|hours)):hours ago'
+          past_30d:    '#{days} ((day|days)):days ago'
+          past_365d:   '#{months} ((month|months)):months ago'
+          past:        '#{years} ((year|years)):years ago'
+          default:     '%=b %Y'
+
+        registered_time:
+          future_24h:  'Today'
+          past_24h:    'Today'
+          past_30d:    '#{days} ((day|days)):days ago'
+          past_365d:   '#{months} ((month|months)):months ago'
+          past:        '#{years} ((year|years)):years ago'
+          default:     '%=b %Y'

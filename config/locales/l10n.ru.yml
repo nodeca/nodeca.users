@@ -1,0 +1,23 @@
+i18n:
+  ru-RU:
+    l10n:
+      # Custom formats. If you do translation - make sure to override ALL root
+      # names (variations of the same format are not mandatory)
+      =date_formats:
+        last_active:
+          future_24h:  'Сейчас'
+          past_60s:    'Сейчас'
+          past_60m:    '#{minutes} ((минуту|минуты|минут)):minutes назад'
+          past_24h:    '#{hours} ((час|часа|часов)):hours назад'
+          past_30d:    '#{days} ((день|дня|дней)):days назад'
+          past_365d:   '#{months} ((месяц|месяца|месяцев)):months назад'
+          past:        '#{years} ((год|года|лет)):years назад'
+          default:     '%=b %Y'
+
+        registered_time:
+          future_24h:  'Сегодня'
+          past_24h:    'Сегодня'
+          past_30d:    '#{days} ((день|дня|дней)):days назад'
+          past_365d:   '#{months} ((месяц|месяца|месяцев)):months назад'
+          past:        '#{years} ((год|года|лет)):years назад'
+          default:     '%=b %Y'

@@ -65,7 +65,7 @@ module.exports = function (N) {
 
     env.res.blocks.about.list.push({
       name:     'joined',
-      value:    env.helpers.date(env.data.user.joined_ts, 'date'),
+      value:    env.data.user.joined_ts,
       priority: 40
     });
 

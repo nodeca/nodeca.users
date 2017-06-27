@@ -50,7 +50,7 @@
             = self.location_name
 
       dt.ucard-info__dt= self.t('joined')
-      dd.ucard-info__dd= self.date(self.user.joined_ts, 'relative_full')
+      dd.ucard-info__dd!= self.timetag(self.user.joined_ts, 'registered_time')
 
       dt.ucard-info__dt= self.t('last_active')
-      dd.ucard-info__dd= self.date(self.user.last_active_ts, 'relative_full')
+      dd.ucard-info__dd!= self.timetag(self.user.last_active_ts, 'last_active')
