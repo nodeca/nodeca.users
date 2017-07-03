@@ -107,15 +107,15 @@
                   else
                     =self.t('never')
 
-                td.member-infractions-item__send-pm.text-nowrap
-                  if own_page && infraction.exists && infraction.from !== self.runtime.user_id
+                td.member-infractions-item__send-pm.text-nowrap.text-right
+                  if own_page && infraction.exists
                     if self.settings.can_create_dialogs
                       a.icon.icon-edit(
                         href=self.link_to('users.infraction_ask_about', { infraction_id: infraction._id })
                         title=self.t('ask_question')
                       )
 
-                td.member-infractions-item__remove.text-nowrap
+                td.member-infractions-item__remove.text-nowrap.text-right
                   if infraction.exists && !expired && (self.blocks.infractions.settings.can_delete_infractions || infraction.from === self.runtime.user_id)
                     a.icon.icon-x(
                       href='#'

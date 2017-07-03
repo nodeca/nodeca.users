@@ -80,9 +80,7 @@ module.exports = function (N, apiPath) {
     if (!infraction) throw N.io.NOT_FOUND;
 
     // Allow to ask questions only about infractions issued to current user
-    // by someone else
     //
-    if (String(infraction.from) === String(env.user_info.user_id)) throw N.io.NOT_FOUND;
     if (String(infraction.for) !== String(env.user_info.user_id)) throw N.io.NOT_FOUND;
 
     // Allow to ask questions only about infractions issued to user within
