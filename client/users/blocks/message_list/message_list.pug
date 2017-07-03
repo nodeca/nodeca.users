@@ -16,7 +16,7 @@ each message in self.messages
           else
             span.user-messages-list-item__avatar-image.av-anon
 
-        .user-messages-list-item__message.message
+        .user-messages-list-item__message.markup
           !=message.html
 
           if (message.tail && message.tail.length)
@@ -61,7 +61,7 @@ each message in self.messages
           else
             span.user-messages-list-item__avatar-image.av-anon
 
-        .user-messages-list-item__message.message
+        .user-messages-list-item__message.markup
           !=message.html
 
           if (message.tail && message.tail.length)
