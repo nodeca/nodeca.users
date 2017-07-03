@@ -11,3 +11,6 @@ en-US:
     #{message_url}
 
     #{message_text}
+
+    You can check the list of your infractions and ask questions in
+    [your profile](#{infraction_link}).

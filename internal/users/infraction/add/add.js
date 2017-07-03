@@ -115,7 +115,9 @@ module.exports = function (N, apiPath) {
       reason: infraction.reason || N.i18n.t(locale, 'users.infractions.types.' + infraction.type),
       description,
       message_url,
-      message_text
+      message_text,
+      infraction_link: N.router.linkTo('users.member', { user_hid: to.user_hid }) +
+                       '#infraction' + infraction._id
     });
 
     let options = {

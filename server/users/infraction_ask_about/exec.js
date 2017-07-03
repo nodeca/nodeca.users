@@ -245,19 +245,22 @@ module.exports = function (N, apiPath) {
 
     // Create own dialog and message
     //
-    let own_dialog = new N.models.users.Dialog(_.merge({
-      user: env.user_info.user_id,
-      to:   env.data.to._id
-    }, dialog_data));
+    // check current user to avoid creating 2 identical dialogs
+    if (String(env.data.infraction.from) !== String(env.user_info.user_id)) {
+      let own_dialog = new N.models.users.Dialog(_.merge({
+        user: env.user_info.user_id,
+        to:   env.data.to._id
+      }, dialog_data));
 
-    let own_msg = new N.models.users.DlgMessage(_.assign({
-      parent: own_dialog._id
-    }, message_data));
+      let own_msg = new N.models.users.DlgMessage(_.assign({
+        parent: own_dialog._id
+      }, message_data));
 
-    own_dialog.cache.last_message = own_msg._id;
-    own_dialog.cache.is_reply     = String(own_msg.user) === String(message_data.user);
+      own_dialog.cache.last_message = own_msg._id;
+      own_dialog.cache.is_reply     = String(own_msg.user) === String(message_data.user);
 
-    models_to_save = models_to_save.concat([ own_dialog, own_msg ]);
+      models_to_save = models_to_save.concat([ own_dialog, own_msg ]);
+    }
 
 
     // Create opponent's dialog and message if:
