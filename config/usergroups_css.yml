@@ -1,0 +1,5 @@
+# "usergroup -> css class" mapping, see actual css definitions in:
+# nodeca.users/client/common/usergroups_styles.styl
+users:
+  usergroups_css:
+    banned: user__m-banned
