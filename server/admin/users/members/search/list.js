@@ -94,31 +94,36 @@ module.exports = function (N, apiPath) {
         }
       }
     }
-
-    if (search_params.start) {
-      search_query.nick = search_query.nick || {};
-      search_query.nick.$gt = search_params.start;
-    }
   });
 
 
   // Do the actual search
   //
-  N.wire.on(apiPath, function* members_search(env) {
+  N.wire.on(apiPath, async function members_search(env) {
     if (!env.data.search_query) return;
+
+    // - sort list of all users by hid in reverse
+    // - sort any searches by nick
+    let sort_field     = _.isEmpty(env.data.search_query) ? 'hid' : 'nick';
+    let sort_backwards = _.isEmpty(env.data.search_query) ? true  : false;
+
+    if (env.data.search_params.start) {
+      env.data.search_query[sort_field] = env.data.search_query[sort_field] || {};
+      env.data.search_query[sort_field][sort_backwards ? '$lt' : '$gt'] = env.data.search_params.start;
+    }
 
     let load_count = env.data.search_params.limit || 100;
 
-    let search_results = yield N.models.users.User
+    let search_results = await N.models.users.User
                                    .find(env.data.search_query)
-                                   .sort('nick')
+                                   .sort((sort_backwards ? '-' : '') + sort_field)
                                    .limit(load_count + 1)
                                    .lean(true);
 
     // check if more results are available
     if (search_results.length > load_count) {
       search_results.pop();
-      env.res.prefetch_start = search_results[search_results.length - 1].nick;
+      env.res.prefetch_start = String(search_results[search_results.length - 1][sort_field]);
     }
 
     env.res.search_results = search_results.map(user => ({
