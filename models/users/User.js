@@ -68,6 +68,9 @@ module.exports = function (N, collectionName) {
   //  - count users in group
   User.index({ usergroups: 1 });
 
+  // Find user by hid
+  User.index({ hid: 1 });
+
   // Needed for nick search
   User.index({ nick: 1 });
 
