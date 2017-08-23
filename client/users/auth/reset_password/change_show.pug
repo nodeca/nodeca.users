@@ -4,18 +4,18 @@
   .layout__container.container-fluid.space-top
     unless self.valid_token
       .row
-        .col-md-6.offset-md-3.col-sm-8.offset-sm-2
-          .card.card-block.text-danger
+        .col-md-6.col-sm-8.m-auto
+          .card.card-body.text-danger
             = self.t('err_invalid_token')
     else
       .row
-        .col-md-6.offset-md-3.col-sm-8.offset-sm-2
+        .col-md-6.col-sm-8.m-auto
           .card
 
             h1.card-header.h3
               = self.head.title
 
-            form.card-block(data-on-submit='users.auth.reset_password.change_exec')
+            form.card-body(data-on-submit='users.auth.reset_password.change_exec')
               input(type='hidden' name='secret_key' value=self.secret_key)
 
               .form-group(data-bind='css: { "has-danger": error }')

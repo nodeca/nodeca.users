@@ -78,11 +78,11 @@
                 = self.t.exists(name) ? self.t(name) : self.t('@admin.users.about.' + name)
               .col-4.control-value
                 if typeof(item.text) !== 'undefined'
-                  .form-control-static= item.text
+                  .form-control-plaintext= item.text
                 else
                   input.form-control(type='text', name=item.name, value=item.value)
 
       .form-group.row
-        .col-9.col-offset-3
+        .col-9.ml-auto
           button.btn.btn-primary(type='submit')
             = self.t('button_save')

@@ -51,7 +51,7 @@
 
     else
       .dialog-list__loading-prev.nojs-hide(
-        class=(self.pagination.chunk_offset === 0 || !first_message_id ? 'hidden-xs-up' : '')
+        class=(self.pagination.chunk_offset === 0 || !first_message_id ? 'd-none' : '')
       )
         span.icon.icon-loading-placeholder
 
@@ -69,6 +69,6 @@
       )!=self.partial('@users.blocks.dialog_list')
 
       .dialog-list__loading-next.nojs-hide(
-        class=(!self.dialogs || self.dialogs.length === 0 || String(self.dialogs[self.dialogs.length - 1]._id) === String(self.last_dialog_id) || !last_message_id ? 'hidden-xs-up' : '')
+        class=(!self.dialogs || self.dialogs.length === 0 || String(self.dialogs[self.dialogs.length - 1]._id) === String(self.last_dialog_id) || !last_message_id ? 'd-none' : '')
       )
         span.icon.icon-loading-placeholder

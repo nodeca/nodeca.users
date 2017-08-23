@@ -235,24 +235,24 @@ function reset_loading_placeholders() {
 
   // if topmost dialog is loaded, hide top placeholder
   if (dlgListState.reached_start) {
-    if (!prev.hasClass('hidden-xs-up')) {
+    if (!prev.hasClass('d-none')) {
       $window.scrollTop($window.scrollTop() - prev.outerHeight(true));
     }
 
-    prev.addClass('hidden-xs-up');
+    prev.addClass('d-none');
   } else {
-    if (prev.hasClass('hidden-xs-up')) {
+    if (prev.hasClass('d-none')) {
       $window.scrollTop($window.scrollTop() + prev.outerHeight(true));
     }
 
-    prev.removeClass('hidden-xs-up');
+    prev.removeClass('d-none');
   }
 
   // if last dialog is loaded, hide bottom placeholder
   if (dlgListState.reached_end) {
-    next.addClass('hidden-xs-up');
+    next.addClass('d-none');
   } else {
-    next.removeClass('hidden-xs-up');
+    next.removeClass('d-none');
   }
 }
 

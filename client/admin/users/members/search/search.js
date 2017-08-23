@@ -51,7 +51,7 @@ N.wire.once('navigate.done:' + module.apiPath, function init_handlers() {
 
       prefetch_start = res.prefetch_start;
 
-      if (!prefetch_start) $('.members-search__loading-next').addClass('hidden-xs-up');
+      if (!prefetch_start) $('.members-search__loading-next').addClass('d-none');
 
       if (res.search_results.length === 0) return;
 

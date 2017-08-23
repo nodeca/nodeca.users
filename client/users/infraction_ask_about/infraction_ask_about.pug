@@ -7,7 +7,7 @@
     // ko ifnot: submitted
     header.page-head
       h1.page-head__title= self.head.title
-      p.page-head__descr.hidden-xs-down(itemprop='description')
+      p.page-head__descr.d-none.d-sm-block(itemprop='description')
         = self.t('description', { date: self.date(self.infraction.ts, 'datetime') })
 
     if self.t.exists('notice')
@@ -33,6 +33,6 @@
     // /ko
 
     .row(style='display: none', data-bind='visible: submitted')
-      .col-md-6.offset-md-3.col-sm-8.offset-sm-2
-        .card.card-block
+      .col-md-6.col-sm-8.m-auto
+        .card.card-body
           = self.t('success')

@@ -13,7 +13,7 @@
 
     header.page-head
       h1.page-head__title(itemprop='name')= self.t('title')
-      p.page-head__descr.hidden-xs-down(itemprop='description')
+      p.page-head__descr.d-none.d-sm-block(itemprop='description')
         = self.t('description')
 
     .user-settings-location__map-container

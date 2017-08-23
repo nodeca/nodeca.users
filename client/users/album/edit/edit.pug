@@ -12,12 +12,12 @@
     != self.partial('@users.blocks.announces')
 
     .row
-      .col-sm-8.offset-sm-2
+      .col-sm-8.m-auto
         .card
 
           h1.card-header.h3= self.head.title
 
-          form.card-block(data-on-submit='users.album.edit:save')
+          form.card-body(data-on-submit='users.album.edit:save')
             input(
               type='hidden'
               value=self.album._id

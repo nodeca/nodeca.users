@@ -45,7 +45,7 @@
 
     else
       .user-messages-list__loading-prev.nojs-hide(
-        class=(self.pagination.chunk_offset === 0 ? 'hidden-xs-up' : '')
+        class=(self.pagination.chunk_offset === 0 ? 'd-none' : '')
       )
         span.icon.icon-loading-placeholder
 
@@ -63,6 +63,6 @@
       )!=self.partial('@users.blocks.message_list')
 
       .user-messages-list__loading-next.nojs-hide(
-        class=(!self.messages || self.messages.length === 0 || String(self.messages[self.messages.length - 1]._id) === String(self.last_message_id) ? 'hidden-xs-up': '')
+        class=(!self.messages || self.messages.length === 0 || String(self.messages[self.messages.length - 1]._id) === String(self.last_message_id) ? 'd-none': '')
       )
         span.icon.icon-loading-placeholder

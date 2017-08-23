@@ -3,13 +3,13 @@
 
   .layout__container.container-fluid.space-top
     .row
-      .col-md-6.offset-md-3.col-sm-8.offset-sm-2
+      .col-md-6.col-sm-8.m-auto
         .card
 
           h1.card-header.h3
             =self.head.title
 
-          form.card-block(data-on-submit='users.dialogs_root.unsubscribe.index:confirm')
+          form.card-body(data-on-submit='users.dialogs_root.unsubscribe.index:confirm')
 
             .form-group
               =self.t('confirmation')

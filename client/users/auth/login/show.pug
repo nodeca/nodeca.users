@@ -5,7 +5,7 @@
 
   .layout__container.container-fluid.space-top
     .row
-      .col-md-6.offset-md-3.col-sm-8.offset-sm-2
+      .col-md-6.col-sm-8.m-auto
         .card
 
           .card-header.d-flex.justify-content-between.align-items-center
@@ -13,7 +13,7 @@
             a(href=self.link_to('users.auth.register.show'))
               = self.t('register')
 
-          form.card-block(data-on-submit='users.auth.login.plain_exec')
+          form.card-body(data-on-submit='users.auth.login.plain_exec')
             //- Message to show on error
             .form-group(data-bind='visible: error', style='display: none')
               p.text-danger(data-bind='text: error')

@@ -8,14 +8,14 @@ if (self.email)
 
   .layout__container.container-fluid.space-top
     .row
-      .col-md-6.offset-md-3.col-sm-8.offset-sm-2
+      .col-md-6.col-sm-8.m-auto
         .card
 
           .card-header.d-flex.justify-content-between.align-items-center
             h1.h3.mb-0= self.head.title
             a(href=self.link_to('users.auth.login.show'))= self.t('login')
 
-          form.card-block(data-on-submit='users.auth.register.exec')
+          form.card-body(data-on-submit='users.auth.register.exec')
             if self.oauth && Object.keys(self.oauth).length
               .form-group
                 != self.partial('@common.blocks.oauth_buttons')

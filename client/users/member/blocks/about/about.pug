@@ -12,11 +12,11 @@
         = self.t('title')
         if own_page && self.settings.can_edit_profile
           | 
-          a.btn.btn-outline-secondary.btn-sm.hidden-xs-down.icon.icon-edit(
+          a.btn.btn-outline-secondary.btn-sm.d-none.d-sm-inline-block.icon.icon-edit(
             href=self.link_to('users.settings.about')
           )
           span
-          a.btn.btn-outline-secondary.btn-xs.hidden-sm-up.icon.icon-edit(
+          a.btn.btn-outline-secondary.btn-xs.d-sm-none.icon.icon-edit(
             href=self.link_to('users.settings.about')
           )
 

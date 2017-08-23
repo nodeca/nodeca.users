@@ -66,7 +66,7 @@
         p.page-head__descr(itemprop='description')= self.album.description
 
     if own_page && self.album
-      .user-album-upload.text-muted.hidden-sm-down(
+      .user-album-upload.text-muted.d-none.d-md-block(
         data-on-dragdrop='users.album:dd_area'
       )
         = self.t('drag_to_upload')
@@ -75,7 +75,7 @@
     - self.add_raw_data('next_media', self.next_media)
 
     .user-album-root__loading-prev.nojs-hide(
-      class=(!self.prev_media ? 'hidden-xs-up' : '')
+      class=(!self.prev_media ? 'd-none' : '')
     )
       span.icon.icon-loading-placeholder
 
@@ -93,7 +93,7 @@
     )!= self.partial('@users.album.list')
 
     .user-album-root__loading-next.nojs-hide(
-      class=(!self.next_media ? 'hidden-xs-up' : '')
+      class=(!self.next_media ? 'd-none' : '')
     )
       span.icon.icon-loading-placeholder
 
