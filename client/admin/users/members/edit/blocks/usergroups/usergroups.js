@@ -9,7 +9,7 @@ N.wire.on('navigate.done:admin.users.members.edit', function initialize_multisel
     nonSelectedText: t('none_selected'),
     nSelectedText:   t('selected'),
     allSelectedText: t('all_selected'),
-    buttonClass:     'btn btn-secondary user-edit-usergroup-select__btn',
+    buttonClass:     'form-control user-edit-usergroup-select__btn',
     buttonWidth:     '100%',
     templates: {
       li: '<li><a tabindex="0" class="dropdown-item"><label></label></a></li>'
