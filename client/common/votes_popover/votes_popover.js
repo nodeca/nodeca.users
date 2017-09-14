@@ -28,7 +28,7 @@ N.wire.on('common.votes_popover', function show_votes_popover(data) {
     data.$this.popover({
       template: N.runtime.render('common.votes_popover.template'),
       html: true,
-      placement: data.$this.data('placement') || 'left',
+      placement: data.$this.data('votes-popover-placement') || 'left',
       content: N.runtime.render('common.votes_popover', res),
       trigger: 'focus'
     }).on('hidden.bs.popover', function () {
