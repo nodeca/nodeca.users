@@ -2,7 +2,7 @@
 
 
 const randomBytes   = require('crypto').randomBytes;
-const pbkdf2        = require('mz/crypto').pbkdf2;
+const pbkdf2        = require('util').promisify(require('crypto').pbkdf2);
 const iterations    = 50000;
 
 

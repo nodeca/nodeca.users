@@ -4,7 +4,7 @@
 'use strict';
 
 const Promise     = require('bluebird');
-const fs          = require('mz/fs');
+const stat        = require('util').promisify(require('fs').stat);
 const extname     = require('path').extname;
 const Mongoose    = require('mongoose');
 const Schema      = Mongoose.Schema;
@@ -130,7 +130,7 @@ module.exports = function (N, collectionName) {
 
 
   const saveFile = Promise.coroutine(function* (path, name, maxSize) {
-    let stats = yield fs.stat(path);
+    let stats = yield stat(path);
 
     if (stats.size > maxSize) {
       return new Error("Can't save file: max size exceeded");

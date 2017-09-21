@@ -30,7 +30,7 @@
 
 const _           = require('lodash');
 const from2       = require('from2');
-const fs          = require('mz/fs');
+const readFile    = require('util').promisify(require('fs').readFile);
 const mime        = require('mime-types').lookup;
 const Mongoose    = require('mongoose');
 const pump        = require('pump');
@@ -287,7 +287,7 @@ module.exports = async function (src, options) {
   //
   // Read image from file, determine its size
   //
-  let data = await fs.readFile(src);
+  let data = await readFile(src);
   let streamBuffer = new stream.Transform();
 
   streamBuffer.push(data);
