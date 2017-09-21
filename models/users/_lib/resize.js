@@ -33,13 +33,13 @@ const from2       = require('from2');
 const readFile    = require('util').promisify(require('fs').readFile);
 const mime        = require('mime-types').lookup;
 const Mongoose    = require('mongoose');
-const pump        = require('pump');
+const pump        = require('util').promisify(require('pump'));
 const stream      = require('readable-stream');
 const sharp       = require('sharp');
 const through2    = require('through2');
 const filter_jpeg = require('nodeca.users/lib/filter_jpeg');
 const probe       = require('probe-image-size');
-const Promise     = require('bluebird');
+
 
 let File;
 
@@ -266,12 +266,10 @@ async function saveImages(previews, options) {
                  }) :
                  through2();
 
-    /* eslint-disable no-loop-func */
-    await Promise.fromCallback(cb => pump(
+    await pump(
       from2([ data.image.buffer ]),
       filter,
-      File.createWriteStream(params),
-      cb)
+      File.createWriteStream(params)
     );
   }
 
