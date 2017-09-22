@@ -2,7 +2,6 @@
 
 
 const assert      = require('assert');
-const Promise     = require('bluebird');
 const randomBytes = require('crypto').randomBytes;
 const simplesmtp  = require('simplesmtp');
 
@@ -16,13 +15,13 @@ describe('Reset password', function () {
   let smtp;
 
 
-  before(Promise.coroutine(function* () {
+  before(async function () {
     user = new TEST.N.models.users.User({
       nick: login,
       email
     });
 
-    yield user.save();
+    await user.save();
 
     let authProvider = new TEST.N.models.users.AuthProvider({
       type: 'plain',
@@ -32,19 +31,21 @@ describe('Reset password', function () {
       last_ip: '127.0.0.1'
     });
 
-    yield authProvider.setPass(old_password);
-    yield authProvider.save();
+    await authProvider.setPass(old_password);
+    await authProvider.save();
 
     smtp = simplesmtp.createServer({ disableDNSValidation: true });
 
     smtp.on('startData', connection => { connection.body = ''; });
     smtp.on('data', (connection, chunk) => { connection.body += chunk; });
 
-    yield Promise.fromCallback(cb => smtp.listen(2525, cb));
-  }));
+    await new Promise((resolve, reject) => {
+      smtp.listen(2525, err => (err ? reject(err) : resolve()));
+    });
+  });
 
 
-  it('should send email with password reset link', Promise.coroutine(function* () {
+  it('should send email with password reset link', async function () {
     let get_email = new Promise(resolve => {
       smtp.once('dataReady', (connection, cb) => {
         cb();
@@ -52,7 +53,7 @@ describe('Reset password', function () {
       });
     });
 
-    yield TEST.browser
+    await TEST.browser
       // Request password
       .do.auth()
       .do.open(TEST.N.router.linkTo('users.auth.reset_password.request_show'))
@@ -63,21 +64,21 @@ describe('Reset password', function () {
       .close()
       .run();
 
-    let email_body = yield get_email;
+    let email_body = await get_email;
     let route = TEST.N.router.match(/http:\/\/localhost:3005\/[^\s]+/.exec(email_body)[0]);
 
     assert.equal(route.meta.methods.get, 'users.auth.reset_password.change_show');
 
-    let token = yield TEST.N.models.users.TokenResetPassword.findOne({
+    let token = await TEST.N.models.users.TokenResetPassword.findOne({
       secret_key: route.params.secret_key
     });
 
     assert.equal(String(token.user), String(user._id));
-  }));
+  });
 
 
-  it('should send email after password reset', Promise.coroutine(function* () {
-    let token = yield TEST.N.models.users.TokenResetPassword.create({
+  it('should send email after password reset', async function () {
+    let token = await TEST.N.models.users.TokenResetPassword.create({
       user: user._id,
       ip:   '127.0.0.1'
     });
@@ -89,7 +90,7 @@ describe('Reset password', function () {
       });
     });
 
-    yield TEST.browser
+    await TEST.browser
       // Change password
       .do.open(() => TEST.N.router.linkTo('users.auth.reset_password.change_show', {
         secret_key: token.secret_key
@@ -101,18 +102,18 @@ describe('Reset password', function () {
       .close()
       .run();
 
-    let email_body = yield get_email;
+    let email_body = await get_email;
 
     assert(email_body.indexOf(login) !== -1);
 
-    let authProvider = yield TEST.N.models.users.AuthProvider.findOne({
+    let authProvider = await TEST.N.models.users.AuthProvider.findOne({
       email,
       type: 'plain',
       exists: true
     });
 
-    assert.strictEqual(yield authProvider.checkPass(new_password), true);
-  }));
+    assert.strictEqual(await authProvider.checkPass(new_password), true);
+  });
 
 
   after(done => smtp.end(done));

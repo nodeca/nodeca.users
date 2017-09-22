@@ -1,10 +1,10 @@
 'use strict';
 
+
 const prompt  = require('prompt');
-const Promise = require('bluebird');
 
 
-module.exports = Promise.coroutine(function* (N) {
+module.exports = async function (N) {
 
   let user         = new N.models.users.User();
   let authProvider = new N.models.users.AuthProvider();
@@ -18,7 +18,9 @@ module.exports = Promise.coroutine(function* (N) {
     { name: 'password', description: 'Administrator password? (admin)', hidden: true }
   ];
 
-  let result = yield Promise.fromCallback(cb => prompt.get(schema, cb));
+  let result = await new Promise((resolve, reject) => {
+    prompt.get(schema, err => (err ? reject(err) : resolve()));
+  });
 
   let login = result.login || 'admin';
   let password = result.password || 'admin';
@@ -26,7 +28,7 @@ module.exports = Promise.coroutine(function* (N) {
 
   // create admin user
 
-  let adminGroupId = yield N.models.users.UserGroup.findIdByName('administrators');
+  let adminGroupId = await N.models.users.UserGroup.findIdByName('administrators');
 
   user.nick = login;
   user.email = email;
@@ -37,18 +39,18 @@ module.exports = Promise.coroutine(function* (N) {
   user.first_name = 'Admin';
   user.last_name = 'Adminovski';
 
-  yield user.save();
+  await user.save();
 
   // create auth link
 
   authProvider.type = 'plain';
   authProvider.email = email;
 
-  yield authProvider.setPass(password);
+  await authProvider.setPass(password);
 
   authProvider.user = user._id;
   authProvider.ip = '127.0.0.1';
   authProvider.last_ip = '127.0.0.1';
 
-  yield authProvider.save();
-});
+  await authProvider.save();
+};

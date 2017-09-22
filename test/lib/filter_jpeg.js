@@ -6,7 +6,7 @@ const fs          = require('fs');
 const glob        = require('glob').sync;
 const path        = require('path');
 const filter_jpeg = require('nodeca.users/lib/filter_jpeg');
-const Promise     = require('bluebird');
+
 
 function addTestBlock(TypedArray) {
   let fixtures = {};
@@ -102,17 +102,19 @@ function addTestBlock(TypedArray) {
       'FF D8 FF 44': 'unknown marker: 0x44 (offset 0x03)'
     };
 
-    return Promise.map(Object.keys(errors), hex => Promise.fromCallback(cb => {
-      let filter = filter_jpeg();
+    return Promise.all(
+      Object.keys(errors).map(hex => new Promise(resolve => {
+        let filter = filter_jpeg();
 
-      filter.onError = function (err) {
-        assert.equal(err.message, errors[hex]);
-        cb();
-      };
+        filter.onError = function (err) {
+          assert.equal(err.message, errors[hex]);
+          resolve();
+        };
 
-      filter.push(new TypedArray((hex.match(/[0-9a-f]{2}/gi) || []).map(i => parseInt(i, 16))));
-      filter.end();
-    }));
+        filter.push(new TypedArray((hex.match(/[0-9a-f]{2}/gi) || []).map(i => parseInt(i, 16))));
+        filter.end();
+      }))
+    );
   });
 }
 
