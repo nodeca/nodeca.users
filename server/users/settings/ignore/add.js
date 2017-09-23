@@ -23,8 +23,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch user
   //
-  N.wire.before(apiPath, function* fetch_user(env) {
-    env.data.user = yield N.models.users.User.findOne({ _id: env.params.user }).lean(true);
+  N.wire.before(apiPath, async function fetch_user(env) {
+    env.data.user = await N.models.users.User.findOne({ _id: env.params.user }).lean(true);
 
     if (!env.data.user) {
       throw { code: N.io.CLIENT_ERROR, message: env.t('err_invalid_user') };
@@ -43,8 +43,8 @@ module.exports = function (N, apiPath) {
 
   // Stop people from ignoring moderators (because it has no effect anyway)
   //
-  N.wire.on(apiPath, function* prevent_ignoring_moderators(env) {
-    let cannot_be_ignored = yield N.settings.get('cannot_be_ignored', {
+  N.wire.on(apiPath, async function prevent_ignoring_moderators(env) {
+    let cannot_be_ignored = await N.settings.get('cannot_be_ignored', {
       user_id: env.data.user._id,
       usergroup_ids: env.data.user.usergroups
     }, {});
@@ -57,7 +57,7 @@ module.exports = function (N, apiPath) {
 
   // Update ignore list
   //
-  N.wire.on(apiPath, function* update_ignore_list(env) {
+  N.wire.on(apiPath, async function update_ignore_list(env) {
     let ignore = new N.models.users.Ignore();
 
     ignore.from = env.user_info.user_id;
@@ -71,11 +71,11 @@ module.exports = function (N, apiPath) {
       ignore.expire = new Date(Date.now() + env.params.period * 24 * 60 * 60 * 1000);
     }
 
-    yield N.models.users.Ignore.remove({
+    await N.models.users.Ignore.remove({
       from: env.user_info.user_id,
       to:   env.data.user._id
     });
 
-    yield ignore.save();
+    await ignore.save();
   });
 };

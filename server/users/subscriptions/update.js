@@ -32,8 +32,8 @@ module.exports = function (N, apiPath) {
 
   // Update subscription
   //
-  N.wire.on(apiPath, function* update_subscription(env) {
-    let res = yield N.models.users.Subscription
+  N.wire.on(apiPath, async function update_subscription(env) {
+    let res = await N.models.users.Subscription
                         .findOneAndUpdate({ type: env.params.type })
                         .where('_id').equals(env.params.subscription_id)
                         .where('user').equals(env.user_info.user_id)

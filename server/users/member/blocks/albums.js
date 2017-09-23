@@ -13,7 +13,7 @@ module.exports = function (N) {
 
   // Fetch last user photos
   //
-  N.wire.after('server:users.member', function* fetch_last_photos(env) {
+  N.wire.after('server:users.member', async function fetch_last_photos(env) {
     let query = N.models.users.Album.find()
                     .where('user').equals(env.data.user._id)
                     .lean(true)
@@ -25,7 +25,7 @@ module.exports = function (N) {
       query.where('count').gt(0);
     }
 
-    let albums = yield query;
+    let albums = await query;
 
     // Try to remove default album, but still show default album for the
     // owner if it's the only album (so user can navigate to his albums page)
@@ -47,7 +47,7 @@ module.exports = function (N) {
 
   // Fetch user albums count
   //
-  N.wire.after('server:users.member', function* fetch_photos_count(env) {
+  N.wire.after('server:users.member', async function fetch_photos_count(env) {
 
     if (!_.get(env.res, 'blocks.albums')) return;
 
@@ -61,6 +61,6 @@ module.exports = function (N) {
       query.where('count').gt(0);
     }
 
-    env.res.blocks.albums.count = yield query;
+    env.res.blocks.albums.count = await query;
   });
 };

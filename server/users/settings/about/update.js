@@ -25,12 +25,12 @@ module.exports = function (N, apiPath) {
 
   // Check permissions
   //
-  N.wire.before(apiPath, { priority: -30 }, function* check_permissions(env) {
+  N.wire.before(apiPath, { priority: -30 }, async function check_permissions(env) {
     if (!env.user_info.is_member) {
       throw N.io.FORBIDDEN;
     }
 
-    let can_edit_profile = yield env.extras.settings.fetch('can_edit_profile');
+    let can_edit_profile = await env.extras.settings.fetch('can_edit_profile');
 
     if (!can_edit_profile) {
       throw N.io.FORBIDDEN;
@@ -40,8 +40,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch current user
   //
-  N.wire.before(apiPath, { priority: -30 }, function* fetch_user(env) {
-    env.data.user = yield N.models.users.User.findById(env.user_info.user_id).lean(false);
+  N.wire.before(apiPath, { priority: -30 }, async function fetch_user(env) {
+    env.data.user = await N.models.users.User.findById(env.user_info.user_id).lean(false);
 
     if (!env.data.user) throw N.io.NOT_FOUND;
   });
@@ -50,7 +50,7 @@ module.exports = function (N, apiPath) {
   // Validate profile fields and copy valid ones to env.data.about
   //
   /* eslint-disable max-depth */
-  N.wire.before(apiPath, function* validate_profile(env) {
+  N.wire.before(apiPath, async function validate_profile(env) {
     env.data.user.about = env.data.user.about || {};
     env.data.errors     = env.data.errors || {};
 
@@ -101,7 +101,7 @@ module.exports = function (N, apiPath) {
         if (N.config.users.about[name].validate) {
           let data = { value };
 
-          yield N.wire.emit(N.config.users.about[name].validate, data);
+          await N.wire.emit(N.config.users.about[name].validate, data);
 
           if (!data.is_valid) {
             env.data.errors[name] = true;
@@ -127,7 +127,7 @@ module.exports = function (N, apiPath) {
 
   // Save profile
   //
-  N.wire.on(apiPath, function* save_profile(env) {
+  N.wire.on(apiPath, async function save_profile(env) {
     if (!_.isEmpty(env.data.errors)) {
       throw {
         code: N.io.CLIENT_ERROR,
@@ -140,6 +140,6 @@ module.exports = function (N, apiPath) {
       env.data.user.about = undefined;
     }
 
-    yield env.data.user.save();
+    await env.data.user.save();
   });
 };

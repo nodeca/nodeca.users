@@ -25,15 +25,15 @@ module.exports = function (N, apiPath) {
 
   // Fetch user
   //
-  N.wire.before(apiPath, function* fetch_user(env) {
-    env.data.user = yield N.models.users.User.findOne({ _id: env.user_info.user_id });
+  N.wire.before(apiPath, async function fetch_user(env) {
+    env.data.user = await N.models.users.User.findOne({ _id: env.user_info.user_id });
   });
 
 
   // Fetch subscriptions for user
   //
-  N.wire.before(apiPath, function* fetch_subscriptions(env) {
-    env.data.subscriptions = yield N.models.users.Subscription
+  N.wire.before(apiPath, async function fetch_subscriptions(env) {
+    env.data.subscriptions = await N.models.users.Subscription
                                       .find()
                                       .where('user').equals(env.user_info.user_id)
                                       .where('type').in(N.models.users.Subscription.types.LIST_SUBSCRIBED)

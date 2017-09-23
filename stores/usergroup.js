@@ -2,7 +2,6 @@
 
 
 const _        = require('lodash');
-const Promise  = require('bluebird');
 const memoize  = require('promise-memoize');
 
 
@@ -52,7 +51,7 @@ module.exports = function (N) {
   // - usergroup_ids (Array)
   //
   let UsergroupStore = N.settings.createStore({
-    get: Promise.coroutine(function* get(keys, params, options) {
+    async get(keys, params, options) {
       let fetch = options.skipCache ? fetchUsrGrpSettings : fetchUsrGrpSettingsCached;
 
       if (!_.isArray(params.usergroup_ids) || _.isEmpty(params.usergroup_ids)) {
@@ -60,7 +59,7 @@ module.exports = function (N) {
               'for getting settings from usergroup store';
       }
 
-      let groups_by_id = _.keyBy(yield fetch(), '_id');
+      let groups_by_id = _.keyBy(await fetch(), '_id');
       let groups = params.usergroup_ids.map(id => groups_by_id[id]).filter(Boolean);
 
       let results = {};
@@ -92,7 +91,7 @@ module.exports = function (N) {
       }
 
       return results;
-    }),
+    },
 
     // ##### Params
     //

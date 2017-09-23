@@ -17,16 +17,16 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function* check_target_user(env) {
-    env.data.target_user = yield N.models.users.User.findOne({ hid: env.params.user_hid });
+  N.wire.on(apiPath, async function check_target_user(env) {
+    env.data.target_user = await N.models.users.User.findOne({ hid: env.params.user_hid });
 
     // user not found
     if (!env.data.target_user) throw N.io.BAD_REQUEST;
   });
 
 
-  N.wire.on(apiPath, function* delete_note(env) {
-    yield N.models.users.UserNote.remove({
+  N.wire.on(apiPath, async function delete_note(env) {
+    await N.models.users.UserNote.remove({
       from: env.user_info.user_id,
       to:   env.data.target_user._id
     });

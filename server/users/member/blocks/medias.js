@@ -13,10 +13,10 @@ module.exports = function (N) {
 
   // Fetch last user medias
   //
-  N.wire.after('server:users.member', function* fetch_last_photos(env) {
+  N.wire.after('server:users.member', async function fetch_last_photos(env) {
     let mTypes = N.models.users.MediaInfo.types;
 
-    let medias = yield N.models.users.MediaInfo
+    let medias = await N.models.users.MediaInfo
                           .find({ user: env.data.user._id, type: { $in: mTypes.LIST_VISIBLE } })
                           .lean(true)
                           .sort('-media_id')
@@ -31,12 +31,12 @@ module.exports = function (N) {
 
   // Fetch user medias count
   //
-  N.wire.after('server:users.member', function* fetch_photos_count(env) {
+  N.wire.after('server:users.member', async function fetch_photos_count(env) {
     let mTypes = N.models.users.MediaInfo.types;
 
     if (!_.get(env.res, 'blocks.medias')) return;
 
-    let count = yield N.models.users.MediaInfo
+    let count = await N.models.users.MediaInfo
                           .find({ user: env.data.user._id, type: { $in: mTypes.LIST_VISIBLE } })
                           .count();
 

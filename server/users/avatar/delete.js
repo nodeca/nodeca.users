@@ -19,8 +19,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch user
   //
-  N.wire.before(apiPath, function* fetch_user(env) {
-    env.data.user = yield N.models.users.User
+  N.wire.before(apiPath, async function fetch_user(env) {
+    env.data.user = await N.models.users.User
                               .findOne({ _id: env.user_info.user_id })
                               .lean(true);
 
@@ -32,16 +32,16 @@ module.exports = function (N, apiPath) {
 
   // Remove avatar
   //
-  N.wire.on(apiPath, function* remove_avatar(env) {
-    yield N.models.users.User.update({ _id: env.data.user._id }, { $unset: { avatar_id: true } });
+  N.wire.on(apiPath, async function remove_avatar(env) {
+    await N.models.users.User.update({ _id: env.data.user._id }, { $unset: { avatar_id: true } });
   });
 
 
   // Remove avatar from file store
   //
-  N.wire.after(apiPath, function* remove_avatar_file(env) {
+  N.wire.after(apiPath, async function remove_avatar_file(env) {
     if (!env.data.user.avatar_id) return;
 
-    yield N.models.core.File.remove(env.data.user.avatar_id, true);
+    await N.models.core.File.remove(env.data.user.avatar_id, true);
   });
 };

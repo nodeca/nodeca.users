@@ -13,8 +13,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch album info (by album_id)
   //
-  N.wire.before(apiPath, function* fetch_album(env) {
-    let album = yield N.models.users.Album
+  N.wire.before(apiPath, async function fetch_album(env) {
+    let album = await N.models.users.Album
                           .findOne({ _id: env.params.album_id })
                           .lean(true);
 
@@ -37,10 +37,10 @@ module.exports = function (N, apiPath) {
 
   // Create media by media_url
   //
-  N.wire.on(apiPath, function* create_media(env) {
+  N.wire.on(apiPath, async function create_media(env) {
     let data = {};
 
-    yield N.wire.emit('internal:users.album.create_embedza', data);
+    await N.wire.emit('internal:users.album.create_embedza', data);
 
 
     // Get thumb url
@@ -48,7 +48,7 @@ module.exports = function (N, apiPath) {
     let thumb;
 
     try {
-      thumb = yield data.embedza.render(env.params.media_url, 'thumb_url');
+      thumb = await data.embedza.render(env.params.media_url, 'thumb_url');
     } catch (__) {
       throw { code: N.io.CLIENT_ERROR, message: env.t('err_cannot_parse') };
     }
@@ -63,7 +63,7 @@ module.exports = function (N, apiPath) {
     let block;
 
     try {
-      block = yield data.embedza.render(env.params.media_url, 'block');
+      block = await data.embedza.render(env.params.media_url, 'block');
     } catch (__) {
       throw { code: N.io.CLIENT_ERROR, message: env.t('err_cannot_parse') };
     }
@@ -88,20 +88,20 @@ module.exports = function (N, apiPath) {
 
     env.res.media = media;
 
-    yield media.save();
+    await media.save();
   });
 
 
   // Update album info
   //
-  N.wire.after(apiPath, function* update_album_info(env) {
-    yield N.models.users.Album.updateInfo(env.data.album._id);
+  N.wire.after(apiPath, async function update_album_info(env) {
+    await N.models.users.Album.updateInfo(env.data.album._id);
   });
 
 
   // Mark user as active
   //
-  N.wire.after(apiPath, function* set_active_flag(env) {
-    yield N.wire.emit('internal:users.mark_user_active', env);
+  N.wire.after(apiPath, async function set_active_flag(env) {
+    await N.wire.emit('internal:users.mark_user_active', env);
   });
 };

@@ -22,21 +22,21 @@ module.exports = function (N, apiPath) {
 
   // Fetch user
   //
-  N.wire.before(apiPath, function* fetch_user(env) {
-    env.data.user = yield N.models.users.User.findOne({ _id: env.user_info.user_id });
+  N.wire.before(apiPath, async function fetch_user(env) {
+    env.data.user = await N.models.users.User.findOne({ _id: env.user_info.user_id });
   });
 
 
   // Fetch subscriptions
   //
-  N.wire.before(apiPath, function* fetch_subscriptions(env) {
+  N.wire.before(apiPath, async function fetch_subscriptions(env) {
     let list_visible = [
       N.models.users.Subscription.types.WATCHING,
       N.models.users.Subscription.types.TRACKING,
       N.models.users.Subscription.types.MUTED
     ];
 
-    env.data.subscriptions = yield N.models.users.Subscription.find()
+    env.data.subscriptions = await N.models.users.Subscription.find()
                                       .where('user').equals(env.user_info.user_id)
                                       .where('type').in(list_visible)
                                       .sort('-_id')
@@ -53,14 +53,14 @@ module.exports = function (N, apiPath) {
 
   // Delete missed subscriptions
   //
-  N.wire.after(apiPath, function* remove_missed_subscriptions(env) {
+  N.wire.after(apiPath, async function remove_missed_subscriptions(env) {
     if (!env.data.missed_subscriptions || !env.data.missed_subscriptions.length) return;
 
     // Exclude from fetched
     env.data.subscriptions = _.difference(env.data.subscriptions, env.data.missed_subscriptions);
 
     // Remove from database
-    yield N.models.users.Subscription.find()
+    await N.models.users.Subscription.find()
               .where('_id').in(_.map(env.data.missed_subscriptions, '_id'))
               .remove();
   });

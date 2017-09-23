@@ -49,8 +49,8 @@ module.exports = function (N, apiPath) {
 
   // Fill penalty info
   //
-  N.wire.before(apiPath, function* fill_penalty_info(env) {
-    let penalty = yield N.models.users.UserPenalty.findOne()
+  N.wire.before(apiPath, async function fill_penalty_info(env) {
+    let penalty = await N.models.users.UserPenalty.findOne()
                             .where('user').equals(env.data.user._id)
                             .lean(true);
 
@@ -62,8 +62,8 @@ module.exports = function (N, apiPath) {
 
   // Check if this user is ignored
   //
-  N.wire.before(apiPath, function* check_ignore(env) {
-    let ignore = yield N.models.users.Ignore.findOne()
+  N.wire.before(apiPath, async function check_ignore(env) {
+    let ignore = await N.models.users.Ignore.findOne()
                            .where('from').equals(env.user_info.user_id)
                            .where('to').equals(env.data.user._id)
                            .lean(true);
@@ -72,7 +72,7 @@ module.exports = function (N, apiPath) {
       env.res.user_is_ignored = true;
     }
 
-    let cannot_be_ignored = yield N.settings.get('cannot_be_ignored', {
+    let cannot_be_ignored = await N.settings.get('cannot_be_ignored', {
       user_id: env.data.user._id,
       usergroup_ids: env.data.user.usergroups
     }, {});
@@ -87,14 +87,14 @@ module.exports = function (N, apiPath) {
 
   // Check user can hellban
   //
-  N.wire.before(apiPath, function* check_hellban(env) {
-    let can_see_hellbanned = yield env.extras.settings.fetch('can_see_hellbanned');
+  N.wire.before(apiPath, async function check_hellban(env) {
+    let can_see_hellbanned = await env.extras.settings.fetch('can_see_hellbanned');
 
     if (can_see_hellbanned) {
       env.res.user_is_hb = env.data.user.hb;
     }
 
-    let can_hellban = yield env.extras.settings.fetch('can_hellban');
+    let can_hellban = await env.extras.settings.fetch('can_hellban');
 
     if (!can_hellban || String(env.data.user._id) === env.user_info.user_id) {
       // Remove hellban action if user can't hellban or it's own page
@@ -105,10 +105,10 @@ module.exports = function (N, apiPath) {
 
   // Fill moderator's notes count and permission
   //
-  N.wire.before(apiPath, function* fill_mod_notes_count(env) {
+  N.wire.before(apiPath, async function fill_mod_notes_count(env) {
     env.res.settings = env.res.settings || {};
 
-    let can_add_mod_notes = env.res.settings.can_add_mod_notes = yield env.extras.settings.fetch('can_add_mod_notes');
+    let can_add_mod_notes = env.res.settings.can_add_mod_notes = await env.extras.settings.fetch('can_add_mod_notes');
 
     if (!can_add_mod_notes) {
       // Remove `add_mod_note` action if user can't add notes
@@ -116,7 +116,7 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    env.res.mod_notes_count = yield N.models.users.ModeratorNote.find()
+    env.res.mod_notes_count = await N.models.users.ModeratorNote.find()
                                         .where('to').equals(env.data.user._id)
                                         .count();
   });
@@ -124,10 +124,10 @@ module.exports = function (N, apiPath) {
 
   // Hide "edit user" link unless user has access to ACP
   //
-  N.wire.before(apiPath, function* fill_edit_user_acp_link(env) {
+  N.wire.before(apiPath, async function fill_edit_user_acp_link(env) {
     env.res.settings = env.res.settings || {};
 
-    let can_access_acp = env.res.settings.can_access_acp = yield env.extras.settings.fetch('can_access_acp');
+    let can_access_acp = env.res.settings.can_access_acp = await env.extras.settings.fetch('can_access_acp');
 
     if (!can_access_acp) {
       // Remove `edit_user` action if user can't access ACP
@@ -138,18 +138,18 @@ module.exports = function (N, apiPath) {
 
   // Update activity info with fresh data if available
   //
-  N.wire.before(apiPath, function* fetch_activity_info(env) {
+  N.wire.before(apiPath, async function fetch_activity_info(env) {
     if (String(env.data.user._id) === env.user_info.user_id) {
       // User is viewing its own profile. Since redis last_active_ts is not
       // yet updated, just show her the current redis time.
       //
-      let time = yield N.redis.timeAsync();
+      let time = await N.redis.timeAsync();
 
       env.data.user.last_active_ts = new Date(Math.floor(time[0] * 1000 + time[1] / 1000));
       return;
     }
 
-    let score = yield N.redis.zscoreAsync('users:last_active', String(env.data.user._id));
+    let score = await N.redis.zscoreAsync('users:last_active', String(env.data.user._id));
 
     // Score not found, use `last_active_ts` from mongodb
     if (!score) {
@@ -163,16 +163,16 @@ module.exports = function (N, apiPath) {
 
   // Check if we can send a message to that user
   //
-  N.wire.before(apiPath, function* fill_dialog_permissions(env) {
+  N.wire.before(apiPath, async function fill_dialog_permissions(env) {
     if (!env.user_info.is_member) return;
     if (String(env.data.user._id) === String(env.user_info.user_id)) return;
 
-    let settings = yield env.extras.settings.fetch([
+    let settings = await env.extras.settings.fetch([
       'can_use_dialogs',
       'can_create_dialogs'
     ]);
 
-    let recipient_can_use_dialogs = yield N.settings.get('can_use_dialogs', {
+    let recipient_can_use_dialogs = await N.settings.get('can_use_dialogs', {
       user_id: env.data.user._id,
       usergroup_ids: env.data.user.usergroups
     }, {});
@@ -211,7 +211,7 @@ module.exports = function (N, apiPath) {
 
   // Fill head and breadcrumbs
   //
-  N.wire.after(apiPath, function* fill_head_and_breadcrumbs(env) {
+  N.wire.after(apiPath, async function fill_head_and_breadcrumbs(env) {
     let user = env.data.user;
     let name = env.user_info.is_member ? user.name : user.nick;
 
@@ -219,7 +219,7 @@ module.exports = function (N, apiPath) {
     env.res.head.title = name;
 
 
-    yield N.wire.emit('internal:users.breadcrumbs.fill_root', env);
+    await N.wire.emit('internal:users.breadcrumbs.fill_root', env);
 
     // Doesn't show avatar in breadcrumbs on member page
     env.data.breadcrumbs[0].show_avatar = false;

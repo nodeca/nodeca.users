@@ -13,12 +13,12 @@ module.exports = function (N, apiPath) {
 
   // Check permissions
   //
-  N.wire.before(apiPath, function* check_permissions(env) {
+  N.wire.before(apiPath, async function check_permissions(env) {
     if (!env.user_info.is_member) {
       throw N.io.FORBIDDEN;
     }
 
-    let can_edit_profile = yield env.extras.settings.fetch('can_edit_profile');
+    let can_edit_profile = await env.extras.settings.fetch('can_edit_profile');
 
     if (!can_edit_profile) {
       throw N.io.FORBIDDEN;
@@ -28,8 +28,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch current user
   //
-  N.wire.before(apiPath, function* fetch_user(env) {
-    env.data.user = yield N.models.users.User.findById(env.user_info.user_id);
+  N.wire.before(apiPath, async function fetch_user(env) {
+    env.data.user = await N.models.users.User.findById(env.user_info.user_id);
 
     if (!env.data.user) throw N.io.NOT_FOUND;
   });
@@ -37,10 +37,10 @@ module.exports = function (N, apiPath) {
 
   // Save location
   //
-  N.wire.on(apiPath, function* save_location(env) {
+  N.wire.on(apiPath, async function save_location(env) {
     env.data.user.location = [ env.params.longitude, env.params.latitude ];
 
-    yield env.data.user.save();
+    await env.data.user.save();
 
     // trigger location name resolution with priority,
     // so user will see their own location name on other pages quicker

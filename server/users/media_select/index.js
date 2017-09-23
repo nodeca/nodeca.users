@@ -24,8 +24,8 @@ module.exports = function (N, apiPath) {
 
   // Find and processes user albums
   //
-  N.wire.on(apiPath, function* get_user_albums(env) {
-    env.res.albums = yield N.models.users.Album
+  N.wire.on(apiPath, async function get_user_albums(env) {
+    env.res.albums = await N.models.users.Album
                               .find({ user: env.data.user._id })
                               .sort('-default -last_ts')
                               .lean(true);
@@ -34,7 +34,7 @@ module.exports = function (N, apiPath) {
 
   // Find and processes user media
   //
-  N.wire.on(apiPath, function* get_user_medias(env) {
+  N.wire.on(apiPath, async function get_user_medias(env) {
     let mTypes = N.models.users.MediaInfo.types;
 
     let criteria = {
@@ -53,7 +53,7 @@ module.exports = function (N, apiPath) {
       criteria.media_id = { $lte: env.params.from_media_id };
     }
 
-    let result = yield N.models.users.MediaInfo
+    let result = await N.models.users.MediaInfo
                           .find(criteria)
                           .lean(true)
                           .sort('-media_id')

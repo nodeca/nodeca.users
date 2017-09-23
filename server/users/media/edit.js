@@ -14,10 +14,10 @@ module.exports = function (N, apiPath) {
 
   // Fetch media
   //
-  N.wire.on(apiPath, function* fetch_media(env) {
+  N.wire.on(apiPath, async function fetch_media(env) {
     let mTypes = N.models.users.MediaInfo.types;
 
-    let media = yield N.models.users.MediaInfo
+    let media = await N.models.users.MediaInfo
                           .findOne({ media_id: env.params.media_id, type: { $in: mTypes.LIST_VISIBLE } })
                           .lean(true);
 
@@ -32,10 +32,10 @@ module.exports = function (N, apiPath) {
 
   // Fetch albums list (_id and title) for album change dropdown
   //
-  N.wire.after(apiPath, function* fetch_albums(env) {
+  N.wire.after(apiPath, async function fetch_albums(env) {
     var media = env.data.media;
 
-    env.res.albums = yield N.models.users.Album
+    env.res.albums = await N.models.users.Album
                               .find({ user: media.user })
                               .sort('-default -last_ts')
                               .select('_id title')

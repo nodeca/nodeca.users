@@ -21,8 +21,8 @@ module.exports = function (N, apiPath) {
 
   // Update ignore list
   //
-  N.wire.on(apiPath, function* update_ignore_list(env) {
-    yield N.models.users.Ignore.remove({
+  N.wire.on(apiPath, async function update_ignore_list(env) {
+    await N.models.users.Ignore.remove({
       from: env.user_info.user_id,
       to:   env.params.user
     });

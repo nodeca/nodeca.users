@@ -22,12 +22,12 @@ module.exports = function (N, apiPath) {
 
   // Fetch album info (by album_id). Fetch default album if album_id not specified
   //
-  N.wire.before(apiPath, function* fetch_album(env) {
+  N.wire.before(apiPath, async function fetch_album(env) {
     let queryParams = env.params.album_id ?
                       { _id: env.params.album_id, user: env.user_info.user_id } :
                       { user: env.user_info.user_id, 'default': true };
 
-    let album = yield N.models.users.Album
+    let album = await N.models.users.Album
                           .findOne(queryParams)
                           .lean(true);
 
@@ -44,8 +44,8 @@ module.exports = function (N, apiPath) {
 
   // Check permissions
   //
-  N.wire.before(apiPath, function* check_permissions(env) {
-    let users_can_upload_media = yield env.extras.settings.fetch('users_can_upload_media');
+  N.wire.before(apiPath, async function check_permissions(env) {
+    let users_can_upload_media = await env.extras.settings.fetch('users_can_upload_media');
 
     if (!users_can_upload_media) {
       throw {
@@ -58,12 +58,12 @@ module.exports = function (N, apiPath) {
 
   // Check quota
   //
-  N.wire.before(apiPath, function* check_quota(env) {
-    let extra = yield N.models.users.UserExtra
+  N.wire.before(apiPath, async function check_quota(env) {
+    let extra = await N.models.users.UserExtra
                           .findOne({ user: env.user_info.user_id })
                           .select('media_size')
                           .lean(true);
-    let users_media_total_quota_mb = yield env.extras.settings.fetch('users_media_total_quota_mb');
+    let users_media_total_quota_mb = await env.extras.settings.fetch('users_media_total_quota_mb');
 
     if (users_media_total_quota_mb * 1024 * 1024 < extra.media_size) {
       throw {
@@ -76,12 +76,12 @@ module.exports = function (N, apiPath) {
 
   // Check file size and type
   //
-  N.wire.before(apiPath, function* upload_media(env) {
+  N.wire.before(apiPath, async function upload_media(env) {
     let fileInfo = env.req.files.file && env.req.files.file[0];
 
     if (!fileInfo) throw new Error('No file was uploaded');
 
-    let users_media_single_quota_kb = yield env.extras.settings.fetch('users_media_single_quota_kb');
+    let users_media_single_quota_kb = await env.extras.settings.fetch('users_media_single_quota_kb');
 
     if (fileInfo.size > users_media_single_quota_kb * 1024) {
       throw {
@@ -116,10 +116,10 @@ module.exports = function (N, apiPath) {
 
   // Create image/binary (for images previews created automatically)
   //
-  N.wire.on(apiPath, function* save_media(env) {
+  N.wire.on(apiPath, async function save_media(env) {
     let fileInfo = env.data.upload_file_info;
 
-    let media = yield N.models.users.MediaInfo.createFile({
+    let media = await N.models.users.MediaInfo.createFile({
       album_id: env.data.album._id,
       user_id: env.user_info.user_id,
       path: fileInfo.path,
@@ -136,14 +136,14 @@ module.exports = function (N, apiPath) {
 
   // Update album info
   //
-  N.wire.after(apiPath, function* update_album_info(env) {
-    yield N.models.users.Album.updateInfo(env.data.album._id);
+  N.wire.after(apiPath, async function update_album_info(env) {
+    await N.models.users.Album.updateInfo(env.data.album._id);
   });
 
 
   // Update cover for default album
   //
-  N.wire.after(apiPath, function* update_default(env) {
+  N.wire.after(apiPath, async function update_default(env) {
     if (!env.data.album.default) {
       return;
     }
@@ -155,13 +155,13 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    yield N.models.users.Album.update({ _id: env.data.album._id }, { cover_id: media.media_id });
+    await N.models.users.Album.update({ _id: env.data.album._id }, { cover_id: media.media_id });
   });
 
 
   // Mark user as active
   //
-  N.wire.after(apiPath, function* set_active_flag(env) {
-    yield N.wire.emit('internal:users.mark_user_active', env);
+  N.wire.after(apiPath, async function set_active_flag(env) {
+    await N.wire.emit('internal:users.mark_user_active', env);
   });
 };

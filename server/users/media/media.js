@@ -43,8 +43,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch permissions
   //
-  N.wire.before(apiPath, function* fetch_permissions(env) {
-    let users_mod_can_delete_media = yield env.extras.settings.fetch('users_mod_can_delete_media');
+  N.wire.before(apiPath, async function fetch_permissions(env) {
+    let users_mod_can_delete_media = await env.extras.settings.fetch('users_mod_can_delete_media');
 
     env.data.settings = env.data.settings || {};
     env.data.settings.users_mod_can_delete_media = users_mod_can_delete_media;
@@ -56,8 +56,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch media
   //
-  N.wire.before(apiPath, function* fetch_media(env) {
-    let result = yield MediaInfo
+  N.wire.before(apiPath, async function fetch_media(env) {
+    let result = await MediaInfo
                             .findOne({ media_id: env.params.media_id })
                             .where({ user: env.data.user._id }) // Make sure that user is real owner
                             .lean(true);
@@ -80,8 +80,8 @@ module.exports = function (N, apiPath) {
 
   // Prepare list of visible comments statuses depending on user permissions
   //
-  N.wire.before(apiPath, function* define_visible_statuses(env) {
-    let settings = yield env.extras.settings.fetch([ 'can_see_hellbanned' ]);
+  N.wire.before(apiPath, async function define_visible_statuses(env) {
+    let settings = await env.extras.settings.fetch([ 'can_see_hellbanned' ]);
 
     env.data.statuses = [ commentStatuses.comment.VISIBLE ];
 
@@ -96,8 +96,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch album
   //
-  N.wire.before(apiPath, function* fetch_media(env) {
-    let result = yield N.models.users.Album
+  N.wire.before(apiPath, async function fetch_media(env) {
+    let result = await N.models.users.Album
                           .findOne({ _id: env.data.media.album })
                           .where({ user: env.data.user._id }) // Make sure that user is real owner
                           .lean(true);
@@ -114,11 +114,11 @@ module.exports = function (N, apiPath) {
 
   // Prepare comments and medias
   //
-  N.wire.on(apiPath, function* prepare_comment(env) {
+  N.wire.on(apiPath, async function prepare_comment(env) {
     env.res.media = env.data.media;
     env.res.user_hid = env.data.user.hid;
 
-    let result = yield N.models.users.Comment
+    let result = await N.models.users.Comment
                           .find({ media_id: env.data.media.media_id }, fields.post_in.join(' '))
                           .where('st').in(env.data.statuses)
                           .lean(true);
@@ -149,8 +149,8 @@ module.exports = function (N, apiPath) {
   // Sanitize response info. We should not show hellbanned status to users
   // that cannot view hellbanned content.
   //
-  N.wire.after(apiPath, function* sanitize_statuses(env) {
-    let settings = yield env.extras.settings.fetch([ 'can_see_hellbanned' ]);
+  N.wire.after(apiPath, async function sanitize_statuses(env) {
+    let settings = await env.extras.settings.fetch([ 'can_see_hellbanned' ]);
 
     // Sanitize commets statuses
     let comments = env.res.comments;
@@ -165,9 +165,9 @@ module.exports = function (N, apiPath) {
 
   // Fill previous media _id
   //
-  N.wire.after(apiPath, function* fill_previous(env) {
+  N.wire.after(apiPath, async function fill_previous(env) {
     let media = env.data.media;
-    let result = yield MediaInfo
+    let result = await MediaInfo
                           .findOne({
                             album: media.album,
                             type: { $in: MediaInfo.types.LIST_VISIBLE },
@@ -192,9 +192,9 @@ module.exports = function (N, apiPath) {
 
   // Fill next media _id
   //
-  N.wire.after(apiPath, function* fill_next(env) {
+  N.wire.after(apiPath, async function fill_next(env) {
     let media = env.data.media;
-    let result = yield MediaInfo
+    let result = await MediaInfo
                           .findOne({
                             album: media.album,
                             type: { $in: MediaInfo.types.LIST_VISIBLE },
@@ -230,10 +230,10 @@ module.exports = function (N, apiPath) {
 
   // Fill breadcrumbs
   //
-  N.wire.after(apiPath, function* fill_breadcrumbs(env) {
-    yield N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
+  N.wire.after(apiPath, async function fill_breadcrumbs(env) {
+    await N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
 
-    let current = yield N.models.users.MediaInfo.count()
+    let current = await N.models.users.MediaInfo.count()
                            .where('album').equals(env.data.media.album)
                            .where('type').in(MediaInfo.types.LIST_VISIBLE)
                            .where('media_id').gte(env.data.media.media_id);

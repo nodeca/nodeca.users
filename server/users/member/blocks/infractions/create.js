@@ -31,19 +31,19 @@ module.exports = function (N, apiPath) {
 
   // Check auth and permissions
   //
-  N.wire.before(apiPath, function* check_permissions(env) {
+  N.wire.before(apiPath, async function check_permissions(env) {
     if (!env.user_info.is_member) throw N.io.FORBIDDEN;
 
-    let users_mod_can_add_infractions = yield env.extras.settings.fetch('users_mod_can_add_infractions');
+    let users_mod_can_add_infractions = await env.extras.settings.fetch('users_mod_can_add_infractions');
 
     if (!users_mod_can_add_infractions) throw N.io.FORBIDDEN;
 
-    let user_info = yield userInfo(N, env.params.user_id);
+    let user_info = await userInfo(N, env.params.user_id);
     let params = {
       user_id: user_info.user_id,
       usergroup_ids: user_info.usergroups
     };
-    let cannot_receive_infractions = yield N.settings.get('cannot_receive_infractions', params, {});
+    let cannot_receive_infractions = await N.settings.get('cannot_receive_infractions', params, {});
 
     // Should never happens - restricted on client
     if (cannot_receive_infractions) throw N.io.BAD_REQUEST;
@@ -52,7 +52,7 @@ module.exports = function (N, apiPath) {
 
   // Save infraction
   //
-  N.wire.on(apiPath, function* add_infraction(env) {
+  N.wire.on(apiPath, async function add_infraction(env) {
     let reason = env.params.reason;
 
     if (env.params.type !== 'custom') {
@@ -73,6 +73,6 @@ module.exports = function (N, apiPath) {
       infraction.expire = new Date(Date.now() + (env.params.expire * 24 * 60 * 60 * 1000));
     }
 
-    yield infraction.save();
+    await infraction.save();
   });
 };

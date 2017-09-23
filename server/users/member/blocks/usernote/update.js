@@ -18,8 +18,8 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function* check_target_user(env) {
-    env.data.target_user = yield N.models.users.User.findOne({ hid: env.params.user_hid });
+  N.wire.on(apiPath, async function check_target_user(env) {
+    env.data.target_user = await N.models.users.User.findOne({ hid: env.params.user_hid });
 
     // user which profile the note is saved on is not found,
     // this should never happen if user is using the site in a browser
@@ -27,7 +27,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function* set_note(env) {
+  N.wire.on(apiPath, async function set_note(env) {
     if (!env.params.txt.trim()) {
       // if text is empty, client should call `delete` instead,
       // so this exception should never appear in practice
@@ -53,14 +53,14 @@ module.exports = function (N, apiPath) {
       sup:            true
     };
 
-    env.data.parse_result = yield N.parser.md2html({
+    env.data.parse_result = await N.parser.md2html({
       text:        env.params.txt,
       options:     parseOptions,
       attachments: [],
       user_info:   env.user_info
     });
 
-    env.data.usernote = yield N.models.users.UserNote.findOneAndUpdate({
+    env.data.usernote = await N.models.users.UserNote.findOneAndUpdate({
       from: env.user_info.user_id,
       to:   env.data.target_user._id
     }, {

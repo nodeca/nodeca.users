@@ -14,9 +14,9 @@ module.exports = function (N, apiPath) {
 
   // Fetch media
   //
-  N.wire.before(apiPath, function* fetch_media(env) {
+  N.wire.before(apiPath, async function fetch_media(env) {
     let mTypes = N.models.users.MediaInfo.types;
-    let media = yield N.models.users.MediaInfo
+    let media = await N.models.users.MediaInfo
                           .findOne({ media_id: env.params.media_id, type: { $in: mTypes.LIST_VISIBLE } })
                           .lean(true);
 
@@ -35,8 +35,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch album
   //
-  N.wire.before(apiPath, function* fetch_album(env) {
-    let album = yield N.models.users.Album.findOne({ _id: env.params.album_id }).lean(true);
+  N.wire.before(apiPath, async function fetch_album(env) {
+    let album = await N.models.users.Album.findOne({ _id: env.params.album_id }).lean(true);
 
     if (!album) {
       throw N.io.NOT_FOUND;
@@ -53,7 +53,7 @@ module.exports = function (N, apiPath) {
 
   // Update media
   //
-  N.wire.on(apiPath, function* update_media(env) {
+  N.wire.on(apiPath, async function update_media(env) {
     let media = env.data.media;
     let album = env.data.album;
 
@@ -62,13 +62,13 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    yield N.models.users.MediaInfo.update({ _id: media._id }, { album: album._id });
+    await N.models.users.MediaInfo.update({ _id: media._id }, { album: album._id });
   });
 
 
   // Update old and new album if changed
   //
-  N.wire.after(apiPath, function* update_albums(env) {
+  N.wire.after(apiPath, async function update_albums(env) {
     let media = env.data.media;
     let album = env.data.album;
 
@@ -78,16 +78,16 @@ module.exports = function (N, apiPath) {
     }
 
     // Full update old album
-    yield N.models.users.Album.updateInfo(media.album, true);
+    await N.models.users.Album.updateInfo(media.album, true);
 
     // Update new album (increment count)
-    yield N.models.users.Album.updateInfo(album._id);
+    await N.models.users.Album.updateInfo(album._id);
   });
 
 
   // Mark user as active
   //
-  N.wire.after(apiPath, function* set_active_flag(env) {
-    yield N.wire.emit('internal:users.mark_user_active', env);
+  N.wire.after(apiPath, async function set_active_flag(env) {
+    await N.wire.emit('internal:users.mark_user_active', env);
   });
 };

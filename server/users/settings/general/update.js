@@ -80,12 +80,12 @@ module.exports = function (N, apiPath) {
 
   // Save settings
   //
-  N.wire.on(apiPath, function* save_settings(env) {
+  N.wire.on(apiPath, async function save_settings(env) {
     let settings = _.reduce(env.params.settings, (res, val, key) => {
       res[key] = { value: val };
       return res;
     }, {});
 
-    yield N.settings.getStore('user').set(settings, { user_id: env.user_info.user_id });
+    await N.settings.getStore('user').set(settings, { user_id: env.user_info.user_id });
   });
 };

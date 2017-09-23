@@ -13,10 +13,10 @@ module.exports = function (N, apiPath) {
 
   // Check permissions
   //
-  N.wire.before(apiPath, function* check_permissions(env) {
+  N.wire.before(apiPath, async function check_permissions(env) {
     if (!env.user_info.is_member) throw N.io.FORBIDDEN;
 
-    let settings = env.res.settings = yield env.extras.settings.fetch([
+    let settings = env.res.settings = await env.extras.settings.fetch([
       'can_add_mod_notes',
       'can_delete_mod_notes',
       'mod_notes_edit_max_time'
@@ -35,8 +35,8 @@ module.exports = function (N, apiPath) {
 
   // Fill notes
   //
-  N.wire.on(apiPath, function* fill_notes(env) {
-    let notes = env.res.notes = yield N.models.users.ModeratorNote.find()
+  N.wire.on(apiPath, async function fill_notes(env) {
+    let notes = env.res.notes = await N.models.users.ModeratorNote.find()
                                           .where('to').equals(env.data.user._id)
                                           .sort({ ts: -1 })
                                           .lean(true);
@@ -65,8 +65,8 @@ module.exports = function (N, apiPath) {
 
   // Fill breadcrumbs
   //
-  N.wire.after(apiPath, function* fill_breadcrumbs(env) {
-    yield N.wire.emit('internal:users.breadcrumbs.fill_root', env);
+  N.wire.after(apiPath, async function fill_breadcrumbs(env) {
+    await N.wire.emit('internal:users.breadcrumbs.fill_root', env);
 
     let user = env.data.user;
 

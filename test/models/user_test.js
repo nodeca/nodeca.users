@@ -2,7 +2,6 @@
 
 
 const assert  = require('assert');
-const Promise = require('bluebird');
 const User    = TEST.N.models.users.User;
 
 
@@ -29,17 +28,17 @@ describe('User', function () {
   });
 
   describe('Auth provider', function () {
-    it('"plain" provider set/check password', Promise.coroutine(function* () {
+    it('"plain" provider set/check password', async function () {
       let authProvider = new TEST.N.models.users.AuthProvider();
       let pass = 'Qwerty123';
 
       authProvider.type = 'plain';
 
-      yield authProvider.setPass(pass);
+      await authProvider.setPass(pass);
 
-      let ok = yield authProvider.checkPass(pass);
+      let ok = await authProvider.checkPass(pass);
 
       assert.equal(ok, true);
-    }));
+    });
   });
 });

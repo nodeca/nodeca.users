@@ -2,7 +2,6 @@
 
 
 const randomBytes = require('crypto').randomBytes;
-const Promise     = require('bluebird');
 
 
 describe('Login', function () {
@@ -14,23 +13,23 @@ describe('Login', function () {
 
   // Create new user
   //
-  before(Promise.coroutine(function* () {
+  before(async function () {
     user = new TEST.N.models.users.User({
       nick: login
     });
 
-    yield user.save();
+    await user.save();
 
     let authProvider = new TEST.N.models.users.AuthProvider();
 
     authProvider.type = 'plain';
     authProvider.email = email;
-    yield authProvider.setPass(password);
+    await authProvider.setPass(password);
     authProvider.user = user._id;
     authProvider.ip = '127.0.0.1';
     authProvider.last_ip = '127.0.0.1';
-    yield authProvider.save();
-  }));
+    await authProvider.save();
+  });
 
 
   it('should redirect to member page if auth page opened by direct url', function (done) {
