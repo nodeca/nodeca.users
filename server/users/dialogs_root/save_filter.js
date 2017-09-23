@@ -19,10 +19,10 @@ module.exports = function (N, apiPath) {
 
   // Store setting if specified, fetch it otherwise
   //
-  N.wire.on(apiPath, function* save_filter(env) {
+  N.wire.on(apiPath, async function save_filter(env) {
     let store = N.settings.getStore('user');
 
-    yield store.set({
+    await store.set({
       dialogs_hide_answered: { value: env.params.hide_answered }
     }, { user_id: env.user_info.user_id });
   });

@@ -17,7 +17,7 @@ module.exports = function (N, apiPath) {
     strict: { type: 'boolean', required: true }
   });
 
-  N.wire.on(apiPath, function* moderator_find_user(env) {
+  N.wire.on(apiPath, async function moderator_find_user(env) {
     if (env.params.nick.length < 3 && !env.params.strict) {
       env.res = [];
       return;
@@ -31,7 +31,7 @@ module.exports = function (N, apiPath) {
       query.where('nick_normalized_lc').regex(new RegExp('^' + escapeRegexp(env.params.nick.toLowerCase())));
     }
 
-    env.res = yield query.limit(10)
+    env.res = await query.limit(10)
                          .select('_id name nick')
                          .sort('nick')
                          .lean(true);

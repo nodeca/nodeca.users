@@ -20,11 +20,11 @@ module.exports = function (N, apiPath) {
 
   // If parent specified, check it's existance
   //
-  N.wire.before(apiPath, function* usergroup_check_parent(env) {
+  N.wire.before(apiPath, async function usergroup_check_parent(env) {
     // This is a root group.
     if (!env.params.parent_group) return;
 
-    let count = yield UserGroup.count({ _id: env.params.parent_group });
+    let count = await UserGroup.count({ _id: env.params.parent_group });
 
     if (count === 0) {
       throw {
@@ -37,9 +37,9 @@ module.exports = function (N, apiPath) {
 
   // Search group
   //
-  N.wire.before(apiPath, function* usergroup_search(env) {
+  N.wire.before(apiPath, async function usergroup_search(env) {
 
-    env.data.userGroup = yield UserGroup.findById(env.params._id);
+    env.data.userGroup = await UserGroup.findById(env.params._id);
 
     if (!env.data.userGroup) {
       throw {
@@ -52,10 +52,10 @@ module.exports = function (N, apiPath) {
 
   // Check circular dependency & update groups
   //
-  N.wire.on(apiPath, function* usergroup_update(env) {
+  N.wire.on(apiPath, async function usergroup_update(env) {
     let group = env.data.userGroup;
 
-    let circularGroup = yield detectCircular(N, group._id, env.params.parent_group);
+    let circularGroup = await detectCircular(N, group._id, env.params.parent_group);
 
     if (circularGroup) {
       throw {
@@ -67,13 +67,13 @@ module.exports = function (N, apiPath) {
     group.short_name   = env.params.short_name;
     group.parent_group = env.params.parent_group;
 
-    yield group.save();
+    await group.save();
 
     // Recalculate store settings of all groups.
     let store = N.settings.getStore('usergroup');
 
     if (!store) throw 'Settings store `usergroup` is not registered.';
 
-    yield store.set(env.params.settings, { usergroup_id: group._id });
+    await store.set(env.params.settings, { usergroup_id: group._id });
   });
 };

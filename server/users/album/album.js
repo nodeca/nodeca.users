@@ -23,8 +23,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch owner
   //
-  N.wire.before(apiPath, function* fetch_user_by_hid(env) {
-    yield N.wire.emit('internal:users.fetch_user_by_hid', env);
+  N.wire.before(apiPath, async function fetch_user_by_hid(env) {
+    await N.wire.emit('internal:users.fetch_user_by_hid', env);
   });
 
 
@@ -42,10 +42,10 @@ module.exports = function (N, apiPath) {
 
   // Fetch album info (by album_id)
   //
-  N.wire.before(apiPath, function* fetch_album(env) {
+  N.wire.before(apiPath, async function fetch_album(env) {
     if (!env.params.album_id) return;
 
-    let album = yield N.models.users.Album
+    let album = await N.models.users.Album
                           .findOne({ _id: env.params.album_id })
                           .lean(true);
 
@@ -63,12 +63,12 @@ module.exports = function (N, apiPath) {
 
   // Fill available embed providers
   //
-  N.wire.before(apiPath, function* fill_providers(env) {
+  N.wire.before(apiPath, async function fill_providers(env) {
     let data = {};
 
     env.res.medialink_providers = [];
 
-    yield N.wire.emit('internal:users.album.create_embedza', data);
+    await N.wire.emit('internal:users.album.create_embedza', data);
 
     data.embedza.forEach(domain => {
       if (!domain.enabled) return;
@@ -83,13 +83,13 @@ module.exports = function (N, apiPath) {
 
   // Get medias list (subcall)
   //
-  N.wire.on(apiPath, function* get_user_albums(env) {
+  N.wire.on(apiPath, async function get_user_albums(env) {
     env.res.album = env.data.album;
 
     env.params.before = LOAD_MEDIA_BEFORE_COUNT;
     env.params.after  = LOAD_MEDIA_AFTER_COUNT;
 
-    yield N.wire.emit('server:users.album.list', env);
+    await N.wire.emit('server:users.album.list', env);
   });
 
 
@@ -123,8 +123,8 @@ module.exports = function (N, apiPath) {
 
   // Fill breadcrumbs
   //
-  N.wire.after(apiPath, function* fill_breadcrumbs(env) {
-    yield N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
+  N.wire.after(apiPath, async function fill_breadcrumbs(env) {
+    await N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
 
     env.res.breadcrumbs = env.data.breadcrumbs;
   });

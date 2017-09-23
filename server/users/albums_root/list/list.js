@@ -31,7 +31,7 @@ module.exports = function (N, apiPath) {
 
   // Find and processes user albums
   //
-  N.wire.on(apiPath, function* get_user_albums(env) {
+  N.wire.on(apiPath, async function get_user_albums(env) {
     let query = N.models.users.Album.find()
                     .where('user').equals(env.data.user._id)
                     .sort('-default -last_ts')
@@ -42,7 +42,7 @@ module.exports = function (N, apiPath) {
       query.where('count').gt(0);
     }
 
-    env.res.albums = yield query;
+    env.res.albums = await query;
 
     // For check is user owner
     env.res.user_hid = env.data.user.hid;

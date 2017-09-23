@@ -19,15 +19,15 @@ module.exports = function (N, apiPath) {
 
   // Unblock user
   //
-  N.wire.on(apiPath, function* unblock(env) {
-    let penalty = yield N.models.users.UserPenalty.findOne()
+  N.wire.on(apiPath, async function unblock(env) {
+    let penalty = await N.models.users.UserPenalty.findOne()
                             .where('user').equals(env.data.user._id)
                             .lean(true);
 
     if (penalty) {
-      yield N.wire.emit(`internal:users.infraction.${penalty.type}.remove`, penalty);
+      await N.wire.emit(`internal:users.infraction.${penalty.type}.remove`, penalty);
 
-      yield N.models.users.UserPenalty.remove({ _id: penalty._id });
+      await N.models.users.UserPenalty.remove({ _id: penalty._id });
     }
   });
 };

@@ -7,7 +7,7 @@
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {});
 
-  N.wire.on(apiPath, function* messages_rebuild_start() {
-    yield N.queue.messages_rebuild().run();
+  N.wire.on(apiPath, async function messages_rebuild_start() {
+    await N.queue.messages_rebuild().run();
   });
 };

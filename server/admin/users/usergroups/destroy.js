@@ -15,9 +15,9 @@ module.exports = function (N, apiPath) {
 
   // Search group & check protection
   //
-  N.wire.before(apiPath, function* usergroup_search(env) {
+  N.wire.before(apiPath, async function usergroup_search(env) {
 
-    let group = yield UserGroup.findById(env.params._id);
+    let group = await UserGroup.findById(env.params._id);
 
     if (!group) {
       throw {
@@ -39,9 +39,9 @@ module.exports = function (N, apiPath) {
 
   // Check that no inherited groups exists
   //
-  N.wire.before(apiPath, function* usergroup_check_childs(env) {
+  N.wire.before(apiPath, async function usergroup_check_childs(env) {
 
-    let child = yield UserGroup.findOne({ parent_group: env.data.userGroup._id }).lean(true);
+    let child = await UserGroup.findOne({ parent_group: env.data.userGroup._id }).lean(true);
 
     if (child) {
       throw {
@@ -52,11 +52,11 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function* usergroup_delete(env) {
+  N.wire.on(apiPath, async function usergroup_delete(env) {
     let group = env.data.userGroup;
 
     // Delete only if no users in group.
-    let usersCount = yield User.count({ usergroups: group._id });
+    let usersCount = await User.count({ usergroups: group._id });
 
     if (usersCount !== 0) {
       throw {
@@ -65,6 +65,6 @@ module.exports = function (N, apiPath) {
       };
     }
 
-    yield group.remove();
+    await group.remove();
   });
 };

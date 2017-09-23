@@ -19,15 +19,15 @@ module.exports = function (N, apiPath) {
 
   // Redirect guests to login page
   //
-  N.wire.before(apiPath, function* force_login_guest(env) {
-    yield N.wire.emit('internal:users.force_login_guest', env);
+  N.wire.before(apiPath, async function force_login_guest(env) {
+    await N.wire.emit('internal:users.force_login_guest', env);
   });
 
 
   // Fetch user
   //
-  N.wire.before(apiPath, function* fetch_user(env) {
-    env.data.user = yield N.models.users.User.findOne({ _id: env.user_info.user_id });
+  N.wire.before(apiPath, async function fetch_user(env) {
+    env.data.user = await N.models.users.User.findOne({ _id: env.user_info.user_id });
   });
 
 
@@ -46,8 +46,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch recipient
   //
-  N.wire.after(apiPath, function* fetch_recipient(env) {
-    env.data.to = yield N.models.users.User.findOne()
+  N.wire.after(apiPath, async function fetch_recipient(env) {
+    env.data.to = await N.models.users.User.findOne()
                             .where('_id').equals(env.data.dialog.to)
                             .lean(true);
   });
@@ -55,16 +55,16 @@ module.exports = function (N, apiPath) {
 
   // Check if we can send a message to that user
   //
-  N.wire.after(apiPath, function* fill_dialog_permissions(env) {
+  N.wire.after(apiPath, async function fill_dialog_permissions(env) {
     // can't send messages to deleted users
     if (!env.data.to || !env.data.to.exists) return;
 
-    let settings = yield env.extras.settings.fetch([
+    let settings = await env.extras.settings.fetch([
       'can_use_dialogs',
       'can_create_dialogs'
     ]);
 
-    let recipient_can_use_dialogs = yield N.settings.get('can_use_dialogs', {
+    let recipient_can_use_dialogs = await N.settings.get('can_use_dialogs', {
       user_id: env.data.to._id,
       usergroup_ids: env.data.to.usergroups
     }, {});
@@ -80,8 +80,8 @@ module.exports = function (N, apiPath) {
 
   // Fill pagination (progress)
   //
-  N.wire.after(apiPath, function* fill_pagination(env) {
-    let messages_total = yield N.models.users.DlgMessage
+  N.wire.after(apiPath, async function fill_pagination(env) {
+    let messages_total = await N.models.users.DlgMessage
                                   .where('parent').equals(env.data.dialog._id)
                                   .where('exists').equals(true)
                                   .count();
@@ -90,7 +90,7 @@ module.exports = function (N, apiPath) {
 
     // Count an amount of visible dialogs before the first one
     if (env.data.messages.length) {
-      message_offset = yield N.models.users.DlgMessage
+      message_offset = await N.models.users.DlgMessage
                                 .where('parent').equals(env.data.dialog._id)
                                 .where('exists').equals(true)
                                 .where('_id').gt(env.data.messages[0]._id)
@@ -107,8 +107,8 @@ module.exports = function (N, apiPath) {
 
   // Mark dialog as read
   //
-  N.wire.after(apiPath, function* mark_read(env) {
-    yield N.models.users.Dialog.update({ _id: env.data.dialog._id }, { unread: 0 });
+  N.wire.after(apiPath, async function mark_read(env) {
+    await N.models.users.Dialog.update({ _id: env.data.dialog._id }, { unread: 0 });
   });
 
 
@@ -125,10 +125,10 @@ module.exports = function (N, apiPath) {
 
   // Fill breadcrumbs
   //
-  N.wire.after(apiPath, function* fill_breadcrumbs(env) {
+  N.wire.after(apiPath, async function fill_breadcrumbs(env) {
     env.data.breadcrumbs = env.data.breadcrumbs || [];
 
-    yield N.wire.emit('internal:users.breadcrumbs.fill_root', env);
+    await N.wire.emit('internal:users.breadcrumbs.fill_root', env);
 
     env.data.breadcrumbs.push({
       text: env.t('breadcrumbs_title'),

@@ -7,14 +7,13 @@
 
 
 const _       = require('lodash');
-const Promise = require('bluebird');
 
 
-module.exports = Promise.coroutine(function* detectCircular(N, groupId, parentId) {
+module.exports = async function detectCircular(N, groupId, parentId) {
   // No parent - skip.
   if (!parentId) return null;
 
-  let groups = yield N.models.users.UserGroup.find().select('_id parent_group');
+  let groups = await N.models.users.UserGroup.find().select('_id parent_group');
 
   let descendants = [ String(groupId) ];
 
@@ -37,4 +36,4 @@ module.exports = Promise.coroutine(function* detectCircular(N, groupId, parentId
   }
 
   return checkGroup(String(parentId));
-});
+};

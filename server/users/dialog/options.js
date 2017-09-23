@@ -18,8 +18,8 @@ module.exports = function (N, apiPath) {
 
   // Fill parse options
   //
-  N.wire.on(apiPath, function* fill_parse_options(env) {
-    env.res.parse_options = yield N.settings.getByCategory(
+  N.wire.on(apiPath, async function fill_parse_options(env) {
+    env.res.parse_options = await N.settings.getByCategory(
       'dialogs_markup',
       { usergroup_ids: env.user_info.usergroups },
       { alias: true }

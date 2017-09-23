@@ -11,8 +11,8 @@ module.exports = function (N, apiPath) {
 
   // Fill votes and collect users
   //
-  N.wire.on(apiPath, function* fill_votes(env) {
-    let votes = yield N.models.users.Vote
+  N.wire.on(apiPath, async function fill_votes(env) {
+    let votes = await N.models.users.Vote
                           .find({ 'for': env.params.for, value: { $in: [ 1, -1 ] } })
                           .select('from value')
                           .lean(true);

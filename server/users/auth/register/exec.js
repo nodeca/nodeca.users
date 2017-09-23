@@ -6,7 +6,6 @@
 
 
 const _           = require('lodash');
-const Promise     = require('bluebird');
 const validator   = require('is-my-json-valid');
 const email_regex = require('email-regex');
 const url         = require('url');
@@ -77,16 +76,16 @@ module.exports = function (N, apiPath) {
 
   // Check email uniqueness. User email and oauth provider email should be unique
   //
-  N.wire.before(apiPath, function* check_email_uniqueness(env) {
+  N.wire.before(apiPath, async function check_email_uniqueness(env) {
 
-    if (yield N.models.users.AuthProvider.similarEmailExists(env.params.email)) {
+    if (await N.models.users.AuthProvider.similarEmailExists(env.params.email)) {
       env.data.errors.email = env.t('err_busy_email');
       return;
     }
 
     // If we use oauth for registration, provider email should be unique too.
     if (env.session.oauth && env.session.oauth.info) {
-      if (yield N.models.users.AuthProvider.similarEmailExists(env.session.oauth.info.email)) {
+      if (await N.models.users.AuthProvider.similarEmailExists(env.session.oauth.info.email)) {
         env.data.errors.email = env.t('err_busy_email');
         return;
       }
@@ -96,8 +95,8 @@ module.exports = function (N, apiPath) {
 
   // Check nick uniqueness
   //
-  N.wire.before(apiPath, function* check_nick_uniqueness(env) {
-    if (yield N.models.users.User.similarExists(env.params.nick)) {
+  N.wire.before(apiPath, async function check_nick_uniqueness(env) {
+    if (await N.models.users.User.similarExists(env.params.nick)) {
       env.data.errors.nick = env.t('err_busy_nick');
     }
   });
@@ -133,7 +132,7 @@ module.exports = function (N, apiPath) {
 
   // Check recaptcha
   //
-  N.wire.before(apiPath, function* validate_recaptcha(env) {
+  N.wire.before(apiPath, async function validate_recaptcha(env) {
     if (!N.config.options.recaptcha) return;
 
     // Skip if some other fields are incorrect in order to not change
@@ -144,7 +143,7 @@ module.exports = function (N, apiPath) {
         clientIp   = env.req.ip,
         response   = env.params['g-recaptcha-response'];
 
-    let valid = yield recaptcha.verify(privateKey, clientIp, response);
+    let valid = await recaptcha.verify(privateKey, clientIp, response);
 
     if (!valid) {
       env.data.errors.recaptcha_response_field = env.t('err_wrong_captcha');
@@ -163,8 +162,8 @@ module.exports = function (N, apiPath) {
 
   // Check if need email validation step or should create user directly
   //
-  N.wire.before(apiPath, function* check_need_validation(env) {
-    let validate_email = yield N.settings.get('validate_email');
+  N.wire.before(apiPath, async function check_need_validation(env) {
+    let validate_email = await N.settings.get('validate_email');
 
     env.data.validate_email = validate_email;
 
@@ -186,26 +185,26 @@ module.exports = function (N, apiPath) {
 
   // Create user record and login
   //
-  let create_user = Promise.coroutine(function* _create_user(env) {
-    yield N.wire.emit('internal:users.user_create', env);
+  async function create_user(env) {
+    await N.wire.emit('internal:users.user_create', env);
 
     // authProvider info is needed to create AuthSession
     //
     // TODO: when we will have oauth registration, it should select link based on
     //       env.data.oauth_info
     //
-    env.data.authProvider = yield N.models.users.AuthProvider.findOne({ user: env.data.user._id });
+    env.data.authProvider = await N.models.users.AuthProvider.findOne({ user: env.data.user._id });
 
-    yield N.wire.emit('internal:users.login', env);
+    await N.wire.emit('internal:users.login', env);
 
     env.res.redirect_url = env.data.redirect_url;
-  });
+  }
 
 
   // If the user have to confirm email, create token and send it by email.
   //
-  let send_activation = Promise.coroutine(function* _send_activation(env) {
-    let token = yield N.models.users.TokenActivationEmail.create({
+  async function send_activation(env) {
+    let token = await N.models.users.TokenActivationEmail.create({
       ip: env.req.ip,
       reg_info: env.data.reg_info,
       oauth_info: env.data.oauth_info
@@ -217,9 +216,9 @@ module.exports = function (N, apiPath) {
       secret_key: token.secret_key
     });
 
-    let general_project_name = yield N.settings.get('general_project_name');
+    let general_project_name = await N.settings.get('general_project_name');
 
-    yield N.mailer.send({
+    await N.mailer.send({
       to:         env.data.reg_info.email,
       subject:    env.t('email_subject', { project_name: general_project_name }),
       text:       env.t('email_text',    {
@@ -229,7 +228,7 @@ module.exports = function (N, apiPath) {
       }),
       safe_error: true
     });
-  });
+  }
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -237,12 +236,12 @@ module.exports = function (N, apiPath) {
   // If user need to activate email, create token and send activation email.
   // Else create user immediately.
   //
-  N.wire.on(apiPath, function* finish_registration(env) {
+  N.wire.on(apiPath, async function finish_registration(env) {
 
     env.data.reg_info = {
       nick:      env.params.nick,
       email:     env.params.email,
-      pass_hash: yield password.hash(env.params.pass)
+      pass_hash: await password.hash(env.params.pass)
     };
 
     env.data.oauth_info = (env.session.oauth || {}).info;
@@ -252,10 +251,10 @@ module.exports = function (N, apiPath) {
     env.session = _.omit(env.session, [ 'oauth' ]);
 
     if (env.data.validate_email) {
-      yield send_activation(env);
+      await send_activation(env);
       return;
     }
 
-    yield create_user(env);
+    await create_user(env);
   });
 };

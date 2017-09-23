@@ -16,8 +16,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch album info
   //
-  N.wire.before(apiPath, function* fetch_album(env) {
-    env.data.album = yield N.models.users.Album
+  N.wire.before(apiPath, async function fetch_album(env) {
+    env.data.album = await N.models.users.Album
                               .findOne({ _id: env.params.album_id })
                               .lean(true);
 
@@ -30,13 +30,13 @@ module.exports = function (N, apiPath) {
 
   // Fetch cover
   //
-  N.wire.before(apiPath, function* fetch_cover(env) {
+  N.wire.before(apiPath, async function fetch_cover(env) {
     var mTypes = N.models.users.MediaInfo.types;
 
     // Skip if cover_id isn't set
     if (!env.params.cover_id) return;
 
-    let cover = yield N.models.users.MediaInfo
+    let cover = await N.models.users.MediaInfo
                           .findOne({
                             media_id: env.params.cover_id,
                             type: mTypes.IMAGE,
@@ -61,7 +61,7 @@ module.exports = function (N, apiPath) {
 
   // Update album info
   //
-  N.wire.on(apiPath, function* update_album(env) {
+  N.wire.on(apiPath, async function update_album(env) {
     var cover = env.data.cover;
     var album = env.data.album;
 
@@ -74,6 +74,6 @@ module.exports = function (N, apiPath) {
       data.cover_id = cover.media_id;
     }
 
-    yield N.models.users.Album.update({ _id: album._id }, data);
+    await N.models.users.Album.update({ _id: album._id }, data);
   });
 };

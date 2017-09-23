@@ -17,8 +17,8 @@ module.exports = function (N, apiPath) {
 
   // Update subscription status
   //
-  N.wire.on(apiPath, function* update_subscription_status(env) {
-    yield N.settings.getStore('user').set(
+  N.wire.on(apiPath, async function update_subscription_status(env) {
+    await N.settings.getStore('user').set(
       { dialogs_notify: { value: false } },
       { user_id: env.user_info.user_id }
     );

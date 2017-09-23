@@ -12,14 +12,14 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function* usergroup_edit(env) {
+  N.wire.on(apiPath, async function usergroup_edit(env) {
     let res = env.res;
 
     // Fill Default settings and their configuration
     res.setting_schemas = N.config.setting_schemas.usergroup || {};
 
     // We always fetch all groups, to calculate inheritances on client
-    let groups = yield N.models.users.UserGroup.find().sort('_id');
+    let groups = await N.models.users.UserGroup.find().sort('_id');
 
     let currentGroup = _.find(groups, g => String(g._id) === env.params._id);
 

@@ -22,7 +22,7 @@ module.exports = function (N, apiPath) {
 
   // check captcha
   //
-  N.wire.before(apiPath, function* verify_captcha(env) {
+  N.wire.before(apiPath, async function verify_captcha(env) {
     if (!N.config.options.recaptcha) return;
 
     let privateKey = N.config.options.recaptcha.private_key,
@@ -31,7 +31,7 @@ module.exports = function (N, apiPath) {
 
     if (!N.config.options.recaptcha) return;
 
-    let valid = yield recaptcha.verify(privateKey, clientIp, response);
+    let valid = await recaptcha.verify(privateKey, clientIp, response);
 
     if (!valid) {
       throw {
@@ -44,9 +44,9 @@ module.exports = function (N, apiPath) {
 
   // Search for user
   //
-  N.wire.before(apiPath, function* fetch_user(env) {
+  N.wire.before(apiPath, async function fetch_user(env) {
 
-    let user = yield N.models.users.User
+    let user = await N.models.users.User
                               .findOne({ email: env.params.email })
                               .lean(true);
 
@@ -63,19 +63,19 @@ module.exports = function (N, apiPath) {
 
   // Create token & send email
   //
-  N.wire.on(apiPath, function* create_reset_confirmation(env) {
-    let token = yield N.models.users.TokenResetPassword.create({
+  N.wire.on(apiPath, async function create_reset_confirmation(env) {
+    let token = await N.models.users.TokenResetPassword.create({
       user: env.data.user._id,
       ip:   env.req.ip
     });
 
-    let general_project_name = yield N.settings.get('general_project_name');
+    let general_project_name = await N.settings.get('general_project_name');
 
     let link = env.helpers.link_to('users.auth.reset_password.change_show', {
       secret_key: token.secret_key
     });
 
-    yield N.mailer.send({
+    await N.mailer.send({
       to:         env.data.user.email,
       subject:    env.t('email_subject', { project_name: general_project_name }),
       text:       env.t('email_text',    { link, ip: env.req.ip }),

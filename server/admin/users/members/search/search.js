@@ -38,7 +38,7 @@ module.exports = function (N, apiPath) {
 
   // Prepare profile fields for the search form
   //
-  N.wire.after(apiPath, function* create_search_form(env) {
+  N.wire.after(apiPath, async function create_search_form(env) {
     let search_params = env.data.search_params;
 
     env.res.fields = env.res.fields || [];
@@ -52,7 +52,7 @@ module.exports = function (N, apiPath) {
     env.res.fields.push({
       name:     'usergroup',
       value:    search_params.usergroup,
-      values:   yield N.settings.customizers.usergroups(),
+      values:   await N.settings.customizers.usergroups(),
       priority: 20
     });
 

@@ -5,8 +5,8 @@
 
 
 module.exports = function (N) {
-  N.wire.after('server:admin.core.rebuild', { priority: 50 }, function* rebuild_messages_widget(env) {
-    let task = yield N.queue.getTask('messages_rebuild');
+  N.wire.after('server:admin.core.rebuild', { priority: 50 }, async function rebuild_messages_widget(env) {
+    let task = await N.queue.getTask('messages_rebuild');
     let task_info = {};
 
     if (task && task.state !== 'finished') {

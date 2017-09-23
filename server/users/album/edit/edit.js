@@ -21,8 +21,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch album info
   //
-  N.wire.before(apiPath, function* fetch_album(env) {
-    let album = yield N.models.users.Album.findOne({ _id: env.params.album_id }).lean(true);
+  N.wire.before(apiPath, async function fetch_album(env) {
+    let album = await N.models.users.Album.findOne({ _id: env.params.album_id }).lean(true);
 
     if (!album) {
       throw N.io.NOT_FOUND;
@@ -64,11 +64,11 @@ module.exports = function (N, apiPath) {
 
   // Fill breadcrumbs
   //
-  N.wire.after(apiPath, function* fill_breadcrumbs(env) {
+  N.wire.after(apiPath, async function fill_breadcrumbs(env) {
     let user = env.data.user;
     let album = env.data.album;
 
-    yield N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
+    await N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
 
     env.data.breadcrumbs.push({
       text:   album.title,

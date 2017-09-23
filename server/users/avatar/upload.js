@@ -26,8 +26,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch user
   //
-  N.wire.before(apiPath, function* fetch_user(env) {
-    env.data.user = yield N.models.users.User
+  N.wire.before(apiPath, async function fetch_user(env) {
+    env.data.user = await N.models.users.User
                               .findOne({ _id: env.user_info.user_id })
                               .lean(true);
 
@@ -37,7 +37,7 @@ module.exports = function (N, apiPath) {
 
   // Create image/binary (for images previews created automatically)
   //
-  N.wire.on(apiPath, function* save_media(env) {
+  N.wire.on(apiPath, async function save_media(env) {
     let fileInfo = env.req.files.avatar && env.req.files.avatar[0];
 
     if (!fileInfo) throw new Error('No file was uploaded');
@@ -47,7 +47,7 @@ module.exports = function (N, apiPath) {
 
     if (!typeConfig) throw new Error('Wrong file type on avatar upload');
 
-    let data = yield resize(fileInfo.path, {
+    let data = await resize(fileInfo.path, {
       store: N.models.core.File,
       ext,
       maxSize: typeConfig.max_size,
@@ -57,7 +57,7 @@ module.exports = function (N, apiPath) {
     env.data.old_avatar = env.data.user.avatar_id;
     env.res.avatar_id = data.id;
 
-    yield N.models.users.User.update(
+    await N.models.users.User.update(
       { _id: env.data.user._id },
       { $set: { avatar_id: data.id } }
     );
@@ -66,16 +66,16 @@ module.exports = function (N, apiPath) {
 
   // Remove old avatar
   //
-  N.wire.after(apiPath, function* save_media(env) {
+  N.wire.after(apiPath, async function save_media(env) {
     if (!env.data.old_avatar) return;
 
-    yield N.models.core.File.remove(env.data.old_avatar, true);
+    await N.models.core.File.remove(env.data.old_avatar, true);
   });
 
 
   // Mark user as active
   //
-  N.wire.after(apiPath, function* set_active_flag(env) {
-    yield N.wire.emit('internal:users.mark_user_active', env);
+  N.wire.after(apiPath, async function set_active_flag(env) {
+    await N.wire.emit('internal:users.mark_user_active', env);
   });
 };

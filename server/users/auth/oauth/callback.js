@@ -54,11 +54,11 @@ module.exports = function (N, apiPath) {
 
   // Registration only - check oauth email uniqueness
   //
-  N.wire.before(apiPath, { priority: -5 }, function* check_email_uniqueness(env) {
+  N.wire.before(apiPath, { priority: -5 }, async function check_email_uniqueness(env) {
 
     if (env.session.oauth.action !== 'register') return;
 
-    if (yield N.models.users.AuthProvider.similarEmailExists(env.data.oauth.email)) {
+    if (await N.models.users.AuthProvider.similarEmailExists(env.data.oauth.email)) {
       // reset oauth state
       env.session = _.omit(env.session, 'oauth');
       throw createRedirect('users.auth.oauth.error_show');
@@ -68,10 +68,10 @@ module.exports = function (N, apiPath) {
 
   // We should try to login user for registration too
   //
-  N.wire.on(apiPath, function* finish_auth(env) {
+  N.wire.on(apiPath, async function finish_auth(env) {
 
     // Find authprovider for oauth data
-    let authProvider = yield N.models.users.AuthProvider
+    let authProvider = await N.models.users.AuthProvider
                             .findOne({
                               provider_user_id: env.data.oauth.provider_user_id,
                               type:             env.params.provider,
@@ -87,7 +87,7 @@ module.exports = function (N, apiPath) {
     }
 
       // Find user for oauth data
-    let user = yield N.models.users.User
+    let user = await N.models.users.User
                         .findOne({ _id: authProvider.user, exists: true })
                         .lean(true);
 
@@ -101,7 +101,7 @@ module.exports = function (N, apiPath) {
     env.data.authProvider = authProvider;
     env.data.redirect_id = (env.session.oauth || {}).redirect_id;
 
-    yield N.wire.emit('internal:users.login', env);
+    await N.wire.emit('internal:users.login', env);
 
     throw {
       code: N.io.REDIRECT,

@@ -20,8 +20,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch album info
   //
-  N.wire.before(apiPath, function* fetch_album(env) {
-    let album = yield N.models.users.Album
+  N.wire.before(apiPath, async function fetch_album(env) {
+    let album = await N.models.users.Album
       .findOne({ _id: env.params.album_id })
       .lean(false); // Use as mongoose model
 
@@ -47,8 +47,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch album media
   //
-  N.wire.before(apiPath, function* fetch_media(env) {
-    env.data.album_media = yield N.models.users.MediaInfo
+  N.wire.before(apiPath, async function fetch_media(env) {
+    env.data.album_media = await N.models.users.MediaInfo
       .find({ album: env.data.album._id })
       .lean(false); // Use as mongoose model
   });
@@ -56,13 +56,13 @@ module.exports = function (N, apiPath) {
 
   // Delete album with all photos
   //
-  N.wire.on(apiPath, function* delete_album(env) {
-    yield Promise.map(
+  N.wire.on(apiPath, async function delete_album(env) {
+    await Promise.map(
       env.data.album_media,
       media => N.models.users.MediaInfo.markDeleted(media.media_id, false),
       { concurrency: numCPUs }
     );
 
-    yield env.data.album.remove();
+    await env.data.album.remove();
   });
 };

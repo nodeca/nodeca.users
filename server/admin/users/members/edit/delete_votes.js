@@ -19,7 +19,7 @@ module.exports = function (N, apiPath) {
 
   // Delete votes
   //
-  N.wire.on(apiPath, function* delete_votes(env) {
-    yield N.models.users.Vote.remove({ from: env.data.user._id });
+  N.wire.on(apiPath, async function delete_votes(env) {
+    await N.models.users.Vote.remove({ from: env.data.user._id });
   });
 };

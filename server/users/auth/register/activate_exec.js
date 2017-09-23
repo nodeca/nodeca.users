@@ -27,9 +27,9 @@ module.exports = function (N, apiPath) {
 
   // Check auth token
   //
-  N.wire.before(apiPath, function* check_activation_token_and_user(env) {
+  N.wire.before(apiPath, async function check_activation_token_and_user(env) {
 
-    env.data.token = yield N.models.users.TokenActivationEmail
+    env.data.token = await N.models.users.TokenActivationEmail
                               .findOne({ secret_key: env.params.secret_key, ip: env.req.ip })
                               .lean(true); // because we use model's instance method 'isExpired'
 
@@ -37,7 +37,7 @@ module.exports = function (N, apiPath) {
     if (!env.data.token) return;
 
     // Token can be used only once.
-    yield N.models.users.TokenActivationEmail.remove({ secret_key: env.params.secret_key });
+    await N.models.users.TokenActivationEmail.remove({ secret_key: env.params.secret_key });
   });
 
   //
@@ -48,13 +48,13 @@ module.exports = function (N, apiPath) {
 
   // Check nick uniqueness
   //
-  N.wire.before(apiPath, function* check_nick_uniqueness(env) {
+  N.wire.before(apiPath, async function check_nick_uniqueness(env) {
 
     let token = env.data.token;
 
     if (!token) return;
 
-    if (yield N.models.users.User.similarExists(token.reg_info.nick)) {
+    if (await N.models.users.User.similarExists(token.reg_info.nick)) {
       // Need to terminate chain without 500 error.
       // If user exists - kill fetched token as invalid.
       env.data.token = null;
@@ -65,13 +65,13 @@ module.exports = function (N, apiPath) {
 
   // Check email uniqueness. User email and oauth provider email should be unique
   //
-  N.wire.before(apiPath, function* check_email_uniqueness(env) {
+  N.wire.before(apiPath, async function check_email_uniqueness(env) {
 
     let token = env.data.token;
 
     if (!token) return;
 
-    if (yield N.models.users.AuthProvider.similarEmailExists(token.reg_info.email)) {
+    if (await N.models.users.AuthProvider.similarEmailExists(token.reg_info.email)) {
       // Need to terminate chain without 500 error.
       // If email(s) occupied - kill fetched token as invalid.
       env.data.token = null;
@@ -79,7 +79,7 @@ module.exports = function (N, apiPath) {
     }
 
     if (token.oauth_info) {
-      if (yield N.models.users.AuthProvider.similarEmailExists(token.oauth_info.email)) {
+      if (await N.models.users.AuthProvider.similarEmailExists(token.oauth_info.email)) {
         // Need to terminate chain without 500 error.
         // If email(s) occupied - kill fetched token as invalid.
         env.data.token = null;
@@ -91,7 +91,7 @@ module.exports = function (N, apiPath) {
 
   // Create user record and login
   //
-  N.wire.on(apiPath, function* create_user(env) {
+  N.wire.on(apiPath, async function create_user(env) {
 
     let token = env.data.token;
 
@@ -100,16 +100,16 @@ module.exports = function (N, apiPath) {
     env.data.reg_info = token.reg_info;
     env.data.oauth_info = token.oauth_info; // -> oauth_info
 
-    yield N.wire.emit('internal:users.user_create', env);
+    await N.wire.emit('internal:users.user_create', env);
 
     // authProvider info is needed to create AuthSession
     //
     // TODO: when we will have oauth registration, it should select link based on
     //       env.data.oauth_info
     //
-    env.data.authProvider = yield N.models.users.AuthProvider.findOne({ user: env.data.user._id });
+    env.data.authProvider = await N.models.users.AuthProvider.findOne({ user: env.data.user._id });
 
-    yield N.wire.emit('internal:users.login', env);
+    await N.wire.emit('internal:users.login', env);
 
     // Use redirect instead of direct page rendering, because
     // we need to reload client environment with the new user data

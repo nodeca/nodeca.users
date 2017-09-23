@@ -26,9 +26,9 @@ module.exports = function (N, apiPath) {
 
   // Remove avatar from file store
   //
-  N.wire.after(apiPath, function* remove_avatar_file(env) {
+  N.wire.after(apiPath, async function remove_avatar_file(env) {
     if (!env.data.user.avatar_id) return;
 
-    yield N.models.core.File.remove(env.data.user.avatar_id, true);
+    await N.models.core.File.remove(env.data.user.avatar_id, true);
   });
 };

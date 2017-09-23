@@ -20,11 +20,11 @@ module.exports = function (N, apiPath) {
 
   // Fetch infractions info
   //
-  N.wire.before(apiPath, function* fetch_infractions(env) {
+  N.wire.before(apiPath, async function fetch_infractions(env) {
 
     // Fill penalty info
     //
-    let penalty = yield N.models.users.UserPenalty.findOne()
+    let penalty = await N.models.users.UserPenalty.findOne()
                             .where('user').equals(env.data.user._id)
                             .lean(true);
 
@@ -35,11 +35,11 @@ module.exports = function (N, apiPath) {
 
     // Fill infractions info
     //
-    let can_see_infractions = yield env.extras.settings.fetch('can_see_infractions');
+    let can_see_infractions = await env.extras.settings.fetch('can_see_infractions');
 
     if (!can_see_infractions) return;
 
-    let infractions = yield N.models.users.Infraction.find()
+    let infractions = await N.models.users.Infraction.find()
                                 .where('for').equals(env.data.user._id)
                                 .where('exists').equals(true)
                                 .select('points expire')
@@ -56,18 +56,18 @@ module.exports = function (N, apiPath) {
 
   // Update activity info with fresh data if available
   //
-  N.wire.before(apiPath, function* fetch_activity_info(env) {
+  N.wire.before(apiPath, async function fetch_activity_info(env) {
     if (String(env.data.user._id) === env.user_info.user_id) {
       // User is viewing her own profile. Since redis last_active_ts is not
       // yet updated, just show her the current redis time.
       //
-      let time = yield N.redis.timeAsync();
+      let time = await N.redis.timeAsync();
 
       env.data.user.last_active_ts = new Date(Math.floor(time[0] * 1000 + time[1] / 1000));
       return;
     }
 
-    let score = yield N.redis.zscoreAsync('users:last_active', String(env.data.user._id));
+    let score = await N.redis.zscoreAsync('users:last_active', String(env.data.user._id));
 
     // Score not found, use `last_active_ts` from mongodb
     if (!score) return;
@@ -79,16 +79,16 @@ module.exports = function (N, apiPath) {
 
   // Check if we can send a message to that user
   //
-  N.wire.before(apiPath, function* fill_dialog_permissions(env) {
+  N.wire.before(apiPath, async function fill_dialog_permissions(env) {
     if (!env.user_info.is_member) return;
     if (String(env.data.user._id) === String(env.user_info.user_id)) return;
 
-    let settings = yield env.extras.settings.fetch([
+    let settings = await env.extras.settings.fetch([
       'can_use_dialogs',
       'can_create_dialogs'
     ]);
 
-    let recipient_can_use_dialogs = yield N.settings.get('can_use_dialogs', {
+    let recipient_can_use_dialogs = await N.settings.get('can_use_dialogs', {
       user_id: env.data.user._id,
       usergroup_ids: env.data.user.usergroups
     }, {});
@@ -104,7 +104,7 @@ module.exports = function (N, apiPath) {
 
   // Fill user
   //
-  N.wire.on(apiPath, function* fill_user(env) {
+  N.wire.on(apiPath, async function fill_user(env) {
     env.res.user = _.pick(env.data.user, [
       '_id',
       'hid',
@@ -140,7 +140,7 @@ module.exports = function (N, apiPath) {
 
     if (env.data.user.location && show_contacts) {
       env.res.location      = env.data.user.location;
-      env.res.location_name = (yield N.models.core.Location.info([ env.data.user.location ], env.user_info.locale))[0];
+      env.res.location_name = (await N.models.core.Location.info([ env.data.user.location ], env.user_info.locale))[0];
     }
   });
 };

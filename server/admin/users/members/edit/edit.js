@@ -22,8 +22,8 @@ module.exports = function (N, apiPath) {
 
   // Fill penalty info
   //
-  N.wire.before(apiPath, function* fill_penalty_info(env) {
-    let penalty = yield N.models.users.UserPenalty.findOne()
+  N.wire.before(apiPath, async function fill_penalty_info(env) {
+    let penalty = await N.models.users.UserPenalty.findOne()
                             .where('user').equals(env.data.user._id)
                             .lean(true);
 
@@ -35,7 +35,7 @@ module.exports = function (N, apiPath) {
 
   // Fill user
   //
-  N.wire.on(apiPath, function* fill_user(env) {
+  N.wire.on(apiPath, async function fill_user(env) {
     env.res.head = env.res.head || {};
     env.res.head.title = env.data.user.name;
 
@@ -67,7 +67,7 @@ module.exports = function (N, apiPath) {
     env.res.fields.push({
       name:     'usergroups',
       value:    user.usergroups,
-      values:   yield N.settings.customizers.usergroups(),
+      values:   await N.settings.customizers.usergroups(),
       priority: 30
     });
 
@@ -94,7 +94,7 @@ module.exports = function (N, apiPath) {
         name:     'location',
         value:    env.data.user.location ? {
           location: env.data.user.location,
-          name:     (yield N.models.core.Location.info([ env.data.user.location ], env.user_info.locale))[0]
+          name:     (await N.models.core.Location.info([ env.data.user.location ], env.user_info.locale))[0]
         } : null,
         priority: 210
       });

@@ -18,8 +18,8 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function* attachments_check(env) {
-    let res = yield N.models.users.MediaInfo.find()
+  N.wire.on(apiPath, async function attachments_check(env) {
+    let res = await N.models.users.MediaInfo.find()
                         .where('media_id').in(env.params.media_ids)
                         .where('user').equals(env.user_info.user_id)
                         .where('type').in(N.models.users.MediaInfo.types.LIST_VISIBLE)

@@ -25,10 +25,10 @@ module.exports = function (N, apiPath) {
 
   // Check user permissions
   //
-  N.wire.before(apiPath, function* check_permissions(env) {
+  N.wire.before(apiPath, async function check_permissions(env) {
     if (!env.user_info.is_member) return N.io.NOT_FOUND;
 
-    let can_create_dialogs = yield env.extras.settings.fetch('can_create_dialogs');
+    let can_create_dialogs = await env.extras.settings.fetch('can_create_dialogs');
 
     if (!can_create_dialogs) throw N.io.FORBIDDEN;
   });
@@ -36,8 +36,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch dialog
   //
-  N.wire.before(apiPath, function* check_title_length(env) {
-    env.data.dialog = yield N.models.users.Dialog.findOne()
+  N.wire.before(apiPath, async function check_title_length(env) {
+    env.data.dialog = await N.models.users.Dialog.findOne()
                                 .where('_id').equals(env.params.dialog_id)
                                 .where('user').equals(env.user_info.user_id)
                                 .lean(true);
@@ -48,8 +48,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch to user
   //
-  N.wire.before(apiPath, function* fetch_receiver(env) {
-    env.data.to = yield N.models.users.User.findOne()
+  N.wire.before(apiPath, async function fetch_receiver(env) {
+    env.data.to = await N.models.users.User.findOne()
                             .where('_id').equals(env.data.dialog.to)
                             .lean(true);
 
@@ -59,8 +59,8 @@ module.exports = function (N, apiPath) {
 
   // Check if recipient is able to use dialogs
   //
-  N.wire.before(apiPath, function* check_recipient_permissions(env) {
-    let can_use_dialogs = yield N.settings.get('can_use_dialogs', {
+  N.wire.before(apiPath, async function check_recipient_permissions(env) {
+    let can_use_dialogs = await N.settings.get('can_use_dialogs', {
       user_id: env.data.to._id,
       usergroup_ids: env.data.to.usergroups
     }, {});
@@ -76,18 +76,18 @@ module.exports = function (N, apiPath) {
 
   // Check if people are ignoring each other
   //
-  N.wire.before(apiPath, function* check_ignore(env) {
+  N.wire.before(apiPath, async function check_ignore(env) {
     let ignore_data;
 
     // Check if recipient ignores us (except for moderators)
     //
-    ignore_data = yield N.models.users.Ignore.findOne()
+    ignore_data = await N.models.users.Ignore.findOne()
                             .where('from').equals(env.data.to._id)
                             .where('to').equals(env.user_info.user_id)
                             .lean(true);
 
     if (ignore_data) {
-      let cannot_be_ignored = yield env.extras.settings.fetch('cannot_be_ignored');
+      let cannot_be_ignored = await env.extras.settings.fetch('cannot_be_ignored');
 
       if (!cannot_be_ignored) {
         throw {
@@ -99,7 +99,7 @@ module.exports = function (N, apiPath) {
 
     // Check we ignoring recipient to make sure he can reply
     //
-    ignore_data = yield N.models.users.Ignore.findOne()
+    ignore_data = await N.models.users.Ignore.findOne()
                             .where('to').equals(env.data.to._id)
                             .where('from').equals(env.user_info.user_id)
                             .lean(true);
@@ -115,8 +115,8 @@ module.exports = function (N, apiPath) {
 
   // Prepare parse options
   //
-  N.wire.before(apiPath, function* prepare_options(env) {
-    let settings = yield N.settings.getByCategory(
+  N.wire.before(apiPath, async function prepare_options(env) {
+    let settings = await N.settings.getByCategory(
       'dialogs_markup',
       { usergroup_ids: env.user_info.usergroups },
       { alias: true }
@@ -141,8 +141,8 @@ module.exports = function (N, apiPath) {
 
   // Parse user input to HTML
   //
-  N.wire.on(apiPath, function* parse_text(env) {
-    env.data.parse_result = yield N.parser.md2html({
+  N.wire.on(apiPath, async function parse_text(env) {
+    env.data.parse_result = await N.parser.md2html({
       text: env.params.txt,
       attachments: env.params.attach,
       options: env.data.parse_options,
@@ -153,8 +153,8 @@ module.exports = function (N, apiPath) {
 
   // Parse user input to preview
   //
-  N.wire.after(apiPath, function* parse_to_preview(env) {
-    let preview_data = yield N.parser.md2preview({
+  N.wire.after(apiPath, async function parse_to_preview(env) {
+    let preview_data = await N.parser.md2preview({
       text: env.params.txt,
       limit: 250,
       link2text: true
@@ -166,8 +166,8 @@ module.exports = function (N, apiPath) {
 
   // Limit an amount of images in the message
   //
-  N.wire.after(apiPath, function* check_images_count(env) {
-    let max_images = yield env.extras.settings.fetch('users_message_max_images');
+  N.wire.after(apiPath, async function check_images_count(env) {
+    let max_images = await env.extras.settings.fetch('users_message_max_images');
 
     if (max_images <= 0) return;
 
@@ -187,8 +187,8 @@ module.exports = function (N, apiPath) {
 
   // Limit an amount of emoticons in the post
   //
-  N.wire.after(apiPath, function* check_emoji_count(env) {
-    let max_emojis = yield env.extras.settings.fetch('users_message_max_emojis');
+  N.wire.after(apiPath, async function check_emoji_count(env) {
+    let max_emojis = await env.extras.settings.fetch('users_message_max_emojis');
 
     if (max_emojis < 0) return;
 
@@ -203,7 +203,7 @@ module.exports = function (N, apiPath) {
 
   // Create message
   //
-  N.wire.after(apiPath, function* create_message(env) {
+  N.wire.after(apiPath, async function create_message(env) {
     let message_data = {
       ts:           Date.now(),
       user:         env.user_info.user_id,
@@ -231,7 +231,7 @@ module.exports = function (N, apiPath) {
       parent: env.data.dialog._id
     }, message_data));
 
-    yield Promise.all([
+    await Promise.all([
       own_msg.save(),
       N.models.users.Dialog.update({ _id: own_msg.parent }, _.merge({
         unread: 0,
@@ -245,7 +245,7 @@ module.exports = function (N, apiPath) {
 
     // Fetch related dialog
     //
-    let dialogs = yield N.models.users.Dialog.find()
+    let dialogs = await N.models.users.Dialog.find()
                             .where('common_id').equals(env.data.dialog.common_id)
                             .lean(true);
     let related_dialog = _.find(dialogs, d => String(d.user) !== env.user_info.user_id);
@@ -262,7 +262,7 @@ module.exports = function (N, apiPath) {
         parent: related_dialog._id
       }, message_data));
 
-      yield Promise.all([
+      await Promise.all([
         opponent_msg.save(),
         N.models.users.Dialog.update({ _id: opponent_msg.parent }, _.merge({
           exists:       true, // force undelete
@@ -274,11 +274,11 @@ module.exports = function (N, apiPath) {
         }, dlg_update_data))
       ]);
 
-      let dialogs_notify = yield N.settings.get('dialogs_notify', { user_id: related_dialog.user });
+      let dialogs_notify = await N.settings.get('dialogs_notify', { user_id: related_dialog.user });
 
       if (dialogs_notify) {
         // Notify opponent
-        yield N.wire.emit('internal:users.notify', {
+        await N.wire.emit('internal:users.notify', {
           src: related_dialog._id,
           to: related_dialog.user,
           type: 'USERS_MESSAGE'
@@ -296,7 +296,7 @@ module.exports = function (N, apiPath) {
 
   // Mark user as active
   //
-  N.wire.after(apiPath, function* set_active_flag(env) {
-    yield N.wire.emit('internal:users.mark_user_active', env);
+  N.wire.after(apiPath, async function set_active_flag(env) {
+    await N.wire.emit('internal:users.mark_user_active', env);
   });
 };

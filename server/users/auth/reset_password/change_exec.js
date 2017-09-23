@@ -21,8 +21,8 @@ module.exports = function (N, apiPath) {
 
   // Check token
   //
-  N.wire.before(apiPath, function* check_new_pass_token(env) {
-    let token = yield N.models.users.TokenResetPassword
+  N.wire.before(apiPath, async function check_new_pass_token(env) {
+    let token = await N.models.users.TokenResetPassword
                           .findOne({ secret_key: env.params.secret_key })
                           .lean(true);
 
@@ -48,10 +48,10 @@ module.exports = function (N, apiPath) {
 
   // Search for user
   //
-  N.wire.before(apiPath, function* fetch_user(env) {
+  N.wire.before(apiPath, async function fetch_user(env) {
     let token = env.data.token;
 
-    env.data.user = yield N.models.users.User.findById(token.user);
+    env.data.user = await N.models.users.User.findById(token.user);
 
     if (!env.data.user) {
       throw {
@@ -110,8 +110,8 @@ module.exports = function (N, apiPath) {
 
   // Update password & remove used token
   //
-  N.wire.on(apiPath, function* update_password(env) {
-    let authProvider = yield N.models.users.AuthProvider.findOne({
+  N.wire.on(apiPath, async function update_password(env) {
+    let authProvider = await N.models.users.AuthProvider.findOne({
       user: env.data.user._id,
       type: 'plain',
       exists: true
@@ -127,8 +127,8 @@ module.exports = function (N, apiPath) {
       });
     }
 
-    yield authProvider.setPass(env.params.password);
-    yield authProvider.save();
+    await authProvider.setPass(env.params.password);
+    await authProvider.save();
 
     // keep it for logging in later on
     env.data.authProvider = authProvider;
@@ -137,24 +137,24 @@ module.exports = function (N, apiPath) {
 
   // Remove current and all other password reset tokens for this user
   //
-  N.wire.after(apiPath, function* remove_token(env) {
-    yield N.models.users.TokenResetPassword.remove({ user: env.data.user._id });
+  N.wire.after(apiPath, async function remove_token(env) {
+    await N.models.users.TokenResetPassword.remove({ user: env.data.user._id });
   });
 
 
   // Auto login after password change
   //
-  N.wire.after(apiPath, function* autologin(env) {
-    yield N.wire.emit('internal:users.login', env);
+  N.wire.after(apiPath, async function autologin(env) {
+    await N.wire.emit('internal:users.login', env);
   });
 
 
   // Send email
   //
-  N.wire.after(apiPath, function* send_email(env) {
-    let general_project_name = yield N.settings.get('general_project_name');
+  N.wire.after(apiPath, async function send_email(env) {
+    let general_project_name = await N.settings.get('general_project_name');
 
-    yield N.mailer.send({
+    await N.mailer.send({
       to: env.data.user.email,
       subject: env.t('email_subject', { project_name: general_project_name }),
       html: env.t('email_text', {

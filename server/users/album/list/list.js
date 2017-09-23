@@ -42,7 +42,7 @@ module.exports = function (N, apiPath) {
 
   // Find and processes user media
   //
-  N.wire.on(apiPath, function* get_user_medias(env) {
+  N.wire.on(apiPath, async function get_user_medias(env) {
     var criteria = {
       type: { $in: N.models.users.MediaInfo.types.LIST_VISIBLE }
     };
@@ -61,7 +61,7 @@ module.exports = function (N, apiPath) {
     if (env.params.before && env.params.media_id) {
       let query = _.assign({ media_id: { $gt: env.params.media_id } }, criteria);
 
-      result = yield N.models.users.MediaInfo.find(query)
+      result = await N.models.users.MediaInfo.find(query)
                                              .lean(true)
                                              .sort('media_id')
                                              .limit(env.params.before + 1);
@@ -92,7 +92,7 @@ module.exports = function (N, apiPath) {
         query = criteria;
       }
 
-      result = yield N.models.users.MediaInfo.find(query)
+      result = await N.models.users.MediaInfo.find(query)
                                              .lean(true)
                                              .sort('-media_id')
                                              .limit(env.params.after + 1);

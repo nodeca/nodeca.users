@@ -44,7 +44,7 @@ module.exports = function (N, apiPath) {
   // That can cause too hight CPU use in bcrypt.
   // Do soft limit - ask user to enter captcha to make sure he is not a bot.
   //
-  N.wire.before(apiPath, function* check_total_rate_limit(env) {
+  N.wire.before(apiPath, async function check_total_rate_limit(env) {
     if (!N.config.options.recaptcha) return;
 
     let privateKey = N.config.options.recaptcha.private_key,
@@ -58,7 +58,7 @@ module.exports = function (N, apiPath) {
       };
     }
 
-    let valid = yield recaptcha.verify(privateKey, clientIp, response);
+    let valid = await recaptcha.verify(privateKey, clientIp, response);
 
     if (!valid) {
       throw {
@@ -71,13 +71,13 @@ module.exports = function (N, apiPath) {
 
   // Try to find auth data using `email_or_nick` as an email.
   //
-  N.wire.on(apiPath, function* find_authprovider_by_email(env) {
+  N.wire.on(apiPath, async function find_authprovider_by_email(env) {
     // user already verified by hooks, nothing left to do
     if (env.data.authProvider) return;
 
     if (env.data.user && env.data.authProvider_plain) return;
 
-    let authProvider = yield N.models.users.AuthProvider
+    let authProvider = await N.models.users.AuthProvider
                             .findOne({
                               email: env.params.email_or_nick,
                               type: 'plain',
@@ -86,7 +86,7 @@ module.exports = function (N, apiPath) {
 
     if (!authProvider) return;
 
-    let user = yield N.models.users.User
+    let user = await N.models.users.User
                         .findOne({ _id: authProvider.user })
                         .lean(true);
 
@@ -100,20 +100,20 @@ module.exports = function (N, apiPath) {
 
   // Try to find auth data using `email_or_nick` as a nick.
   //
-  N.wire.on(apiPath, function* find_authprovider_by_nick(env) {
+  N.wire.on(apiPath, async function find_authprovider_by_nick(env) {
     // user already verified by hooks, nothing left to do
     if (env.data.authProvider) return;
 
     if (env.data.user && env.data.authProvider_plain) return;
 
-    let user = yield N.models.users.User
+    let user = await N.models.users.User
       .findOne({ nick: env.params.email_or_nick })
       .lean(true);
 
     // There is no error - let next hooks do their job.
     if (!user) return;
 
-    let authProvider = yield N.models.users.AuthProvider
+    let authProvider = await N.models.users.AuthProvider
       .findOne({ user: user._id, type: 'plain', exists: true });
 
     // There is no error - let next hooks do their job.
@@ -126,7 +126,7 @@ module.exports = function (N, apiPath) {
 
   // If password is empty, send an email with a one-time link to log in
   //
-  N.wire.on(apiPath, function* create_otp_email_token(env) {
+  N.wire.on(apiPath, async function create_otp_email_token(env) {
     if (!env.data.user || !env.data.authProvider_plain) return;
 
     // user already verified by other hooks, nothing left to do
@@ -134,20 +134,20 @@ module.exports = function (N, apiPath) {
 
     if (!_.isEmpty(env.params.pass)) return;
 
-    let token = yield N.models.users.TokenLoginByEmail.create({
+    let token = await N.models.users.TokenLoginByEmail.create({
       user:        env.data.user._id,
       ip:          env.req.ip,
       redirect_id: env.params.redirect_id,
       authprovider:    env.data.authProvider_plain._id
     });
 
-    let general_project_name = yield N.settings.get('general_project_name');
+    let general_project_name = await N.settings.get('general_project_name');
 
     let link = env.helpers.link_to('users.auth.login.by_email_exec', {
       secret_key: token.secret_key
     });
 
-    yield N.mailer.send({
+    await N.mailer.send({
       to:         env.data.authProvider_plain.email,
       subject:    env.t('email_subject', { project_name: general_project_name }),
       text:       env.t('email_text',    { link, ip: env.req.ip }),
@@ -165,10 +165,10 @@ module.exports = function (N, apiPath) {
 
   // Try to login using plain authprovider
   //
-  N.wire.on(apiPath, function* verify_authprovider(env) {
+  N.wire.on(apiPath, async function verify_authprovider(env) {
     if (!env.data.user || !env.data.authProvider_plain) return;
 
-    let success = yield env.data.authProvider_plain.checkPass(env.params.pass);
+    let success = await env.data.authProvider_plain.checkPass(env.params.pass);
 
     if (success) {
       env.data.authProvider = env.data.authProvider_plain;
@@ -178,7 +178,7 @@ module.exports = function (N, apiPath) {
 
   // Do login
   //
-  N.wire.after(apiPath, function* login_do(env) {
+  N.wire.after(apiPath, async function login_do(env) {
     // if env.data.authProvider variable is set, it means this authprovider
     // has been verified, and password matches
     if (!env.data.authProvider) {
@@ -191,7 +191,7 @@ module.exports = function (N, apiPath) {
     // Set login redirect URL.
     env.data.redirect_id = env.params.redirect_id;
 
-    yield N.wire.emit('internal:users.login', env);
+    await N.wire.emit('internal:users.login', env);
 
     env.res.redirect_url = env.data.redirect_url;
   });

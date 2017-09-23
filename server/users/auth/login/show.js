@@ -23,7 +23,7 @@ module.exports = function (N, apiPath) {
 
   // Save referrer as link to redirect after login
   //
-  N.wire.before(apiPath, function* save_redirect(env) {
+  N.wire.before(apiPath, async function save_redirect(env) {
     let referer = env.origin.req.headers.referer;
     if (!referer) return;
 
@@ -41,7 +41,7 @@ module.exports = function (N, apiPath) {
     loginRedirect.url = url;
     loginRedirect.ip  = env.req.ip;
 
-    let res = yield loginRedirect.save();
+    let res = await loginRedirect.save();
 
     env.params.redirect_id = res._id;
   });

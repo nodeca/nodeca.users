@@ -19,14 +19,14 @@ module.exports = function (N, apiPath) {
 
   // Delete dialogs
   //
-  N.wire.on(apiPath, function* delete_dialogs(env) {
-    yield N.models.users.Dialog.update(
+  N.wire.on(apiPath, async function delete_dialogs(env) {
+    await N.models.users.Dialog.update(
       { user: env.data.user._id },
       { $set: { exists: false } },
       { multi: true }
     );
 
-    yield N.models.users.Dialog.update(
+    await N.models.users.Dialog.update(
       { to: env.data.user._id },
       { $set: { exists: false } },
       { multi: true }

@@ -12,10 +12,10 @@ module.exports = function (N, apiPath) {
 
   // Find and processes user media
   //
-  N.wire.on(apiPath, function* get_user_medias(env) {
+  N.wire.on(apiPath, async function get_user_medias(env) {
     let mTypes = N.models.users.MediaInfo.types;
 
-    env.res.medias = yield N.models.users.MediaInfo
+    env.res.medias = await N.models.users.MediaInfo
                               .find({ type: mTypes.IMAGE, album: env.params.album_id })
                               .lean(true)
                               .sort('-media_id');

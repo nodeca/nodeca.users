@@ -24,7 +24,6 @@
 
 
 const _       = require('lodash');
-const Promise = require('bluebird');
 
 
 module.exports = function (N) {
@@ -76,11 +75,11 @@ module.exports = function (N) {
   }
 
 
-  return Promise.coroutine(function* buildDialogsIds(env) {
+  return async function buildDialogsIds(env) {
     // Run both functions in parallel and concatenate results
     //
-    let results = yield Promise.all([ select_visible_before(env), select_visible_after(env) ]);
+    let results = await Promise.all([ select_visible_before(env), select_visible_after(env) ]);
 
     env.data.messages_ids = Array.prototype.concat.apply([], results);
-  });
+  };
 };

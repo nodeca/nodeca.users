@@ -42,8 +42,8 @@ module.exports = function (N, apiPath) {
 
   // Redirect guests to login page
   //
-  N.wire.before(apiPath, function* force_login_guest(env) {
-    yield N.wire.emit('internal:users.force_login_guest', env);
+  N.wire.before(apiPath, async function force_login_guest(env) {
+    await N.wire.emit('internal:users.force_login_guest', env);
   });
 
 
@@ -65,10 +65,10 @@ module.exports = function (N, apiPath) {
 
   // Fetch "hide answered dialogs" setting
   //
-  N.wire.on(apiPath, function* fetch_filter_setting(env) {
+  N.wire.on(apiPath, async function fetch_filter_setting(env) {
     let store = N.settings.getStore('user');
 
-    let setting = yield store.get(
+    let setting = await store.get(
       'dialogs_hide_answered',
       { user_id: env.user_info.user_id }
     );
@@ -89,14 +89,14 @@ module.exports = function (N, apiPath) {
 
   // Fill pagination (progress)
   //
-  N.wire.after(apiPath, function* fill_pagination(env) {
+  N.wire.after(apiPath, async function fill_pagination(env) {
     let query = N.models.users.Dialog
                     .where('user').equals(env.data.user._id)
                     .where('exists').equals(true);
 
     if (env.data.dialogs_hide_answered) query = query.where('cache.is_reply').equals(false);
 
-    let dialogs_total = yield query.count();
+    let dialogs_total = await query.count();
 
     let dialog_offset = 0;
 
@@ -109,7 +109,7 @@ module.exports = function (N, apiPath) {
 
       if (env.data.dialogs_hide_answered) query = query.where('cache.is_reply').equals(false);
 
-      dialog_offset = yield query.count();
+      dialog_offset = await query.count();
     }
 
     env.res.pagination = {
@@ -130,10 +130,10 @@ module.exports = function (N, apiPath) {
 
   // Fill breadcrumbs
   //
-  N.wire.after(apiPath, function* fill_breadcrumbs(env) {
+  N.wire.after(apiPath, async function fill_breadcrumbs(env) {
     env.data.breadcrumbs = env.data.breadcrumbs || [];
 
-    yield N.wire.emit('internal:users.breadcrumbs.fill_root', env);
+    await N.wire.emit('internal:users.breadcrumbs.fill_root', env);
 
     env.data.breadcrumbs.push({
       text: env.t('breadcrumbs_title'),
