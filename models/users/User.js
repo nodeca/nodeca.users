@@ -8,6 +8,7 @@ const unhomoglyph   = require('unhomoglyph');
 const xregexp       = require('xregexp');
 const zxcvbn        = require('zxcvbn');
 const configReader  = require('../../server/_lib/resize_parse');
+const { callbackify } = require('util');
 
 
 module.exports = function (N, collectionName) {
@@ -253,13 +254,11 @@ module.exports = function (N, collectionName) {
       return;
     }
 
-    var self = this;
+    let p = N.settings.get('registered_user_group').then(registered_user_group => {
+      this.usergroups = [ registered_user_group ];
+    });
 
-    N.settings.get('registered_user_group')
-      .then(registered_user_group => {
-        self.usergroups = [ registered_user_group ];
-      })
-      .asCallback(callback);
+    Promise.resolve(p).asCallback(callback);
   });
 
 
@@ -324,24 +323,22 @@ module.exports = function (N, collectionName) {
 
   // Clean up settings on user deletion (not deleting any actual content)
   //
+  const onRemoveCleanup = callbackify(async function (id) {
+    await N.models.users.Album.remove({ user: id });
+    await N.models.users.AnnounceHideMark.remove({ user: id });
+    await N.models.users.AuthProvider.remove({ user: id });
+    await N.models.users.Ignore.remove({ from: id });
+    await N.models.users.Ignore.remove({ to: id });
+    await N.models.users.Subscription.remove({ user: id });
+    await N.models.users.UserExtra.remove({ user: id });
+    await N.models.users.UserPenalty.remove({ user: id });
+    await N.models.users.UserSettings.remove({ user: id });
+    await N.models.users.AuthSession.remove({ user: id });
+    await N.models.users.TokenResetPassword.remove({ user: id });
+  });
+
   User.pre('remove', function (callback) {
-    var self = this;
-
-    Promise.coroutine(function* () {
-
-      yield N.models.users.Album.remove({ user: self._id });
-      yield N.models.users.AnnounceHideMark.remove({ user: self._id });
-      yield N.models.users.AuthProvider.remove({ user: self._id });
-      yield N.models.users.Ignore.remove({ from: self._id });
-      yield N.models.users.Ignore.remove({ to: self._id });
-      yield N.models.users.Subscription.remove({ user: self._id });
-      yield N.models.users.UserExtra.remove({ user: self._id });
-      yield N.models.users.UserPenalty.remove({ user: self._id });
-      yield N.models.users.UserSettings.remove({ user: self._id });
-      yield N.models.users.AuthSession.remove({ user: self._id });
-      yield N.models.users.TokenResetPassword.remove({ user: self._id });
-
-    })().asCallback(callback);
+    onRemoveCleanup(this._id, callback);
   });
 
 
