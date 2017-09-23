@@ -26,8 +26,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch and fill permissions
   //
-  N.wire.before(apiPath, function* fetch_and_fill_permissions(env) {
-    env.res.settings = env.data.settings = yield env.extras.settings.fetch([
+  N.wire.before(apiPath, async function fetch_and_fill_permissions(env) {
+    env.res.settings = env.data.settings = await env.extras.settings.fetch([
       'can_use_dialogs',
       'can_create_dialogs'
     ]);
@@ -44,15 +44,15 @@ module.exports = function (N, apiPath) {
 
   // Get dialogs ids
   //
-  N.wire.before(apiPath, function* get_dialogs_ids(env) {
-    yield env.data.build_dialogs_ids(env);
+  N.wire.before(apiPath, async function get_dialogs_ids(env) {
+    await env.data.build_dialogs_ids(env);
   });
 
 
   // Fetch and sort dialogs
   //
-  N.wire.on(apiPath, function* fetch_and_sort_dialogs(env) {
-    let dialogs = yield N.models.users.Dialog.find()
+  N.wire.on(apiPath, async function fetch_and_sort_dialogs(env) {
+    let dialogs = await N.models.users.Dialog.find()
                             .where('user').equals(env.data.user._id)
                             .where('exists').equals(true)
                             .where('_id').in(env.data.dialogs_ids)
@@ -77,8 +77,8 @@ module.exports = function (N, apiPath) {
 
   // Fill last dialog _id
   //
-  N.wire.after(apiPath, function* fill_last_dialog(env) {
-    let last_dlg = yield N.models.users.Dialog.findOne()
+  N.wire.after(apiPath, async function fill_last_dialog(env) {
+    let last_dlg = await N.models.users.Dialog.findOne()
                             .where('user').equals(env.data.user._id)
                             .where('exists').equals(true)
                             .sort('cache.last_message')

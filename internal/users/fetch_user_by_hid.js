@@ -11,8 +11,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch permission to see deleted users
   //
-  N.wire.before(apiPath, function* fetch_can_see_deleted_users(env) {
-    let can_see_deleted_users = yield env.extras.settings.fetch('can_see_deleted_users');
+  N.wire.before(apiPath, async function fetch_can_see_deleted_users(env) {
+    let can_see_deleted_users = await env.extras.settings.fetch('can_see_deleted_users');
 
     env.data.settings = env.data.settings || {};
     env.data.settings.can_see_deleted_users = can_see_deleted_users;
@@ -21,7 +21,7 @@ module.exports = function (N, apiPath) {
 
   // Fetch user by hid
   //
-  N.wire.on(apiPath, function* fetch_user_by_hid(env) {
+  N.wire.on(apiPath, async function fetch_user_by_hid(env) {
     // This method can be called multiple times (from page & subcalls).
     // Check if data already loaded.
     if (env.data.user) return;
@@ -33,7 +33,7 @@ module.exports = function (N, apiPath) {
       query.where({ exists: true });
     }
 
-    env.data.user = yield query.exec();
+    env.data.user = await query.exec();
 
     if (!env.data.user) throw N.io.NOT_FOUND;
   });

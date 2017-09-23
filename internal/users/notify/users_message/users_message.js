@@ -8,11 +8,11 @@ const user_info = require('nodeca.users/lib/user_info');
 
 
 module.exports = function (N) {
-  N.wire.on('internal:users.notify.deliver', function* notify_deliver_users_message(local_env) {
+  N.wire.on('internal:users.notify.deliver', async function notify_deliver_users_message(local_env) {
     if (local_env.type !== 'USERS_MESSAGE') return;
 
     // Fetch dialog
-    let dialog = yield N.models.users.Dialog.findOne()
+    let dialog = await N.models.users.Dialog.findOne()
                           .where('_id').equals(local_env.src)
                           .where('exists').equals(true)
                           .lean(true);
@@ -23,12 +23,12 @@ module.exports = function (N) {
     if (!dialog.unread) return;
 
     // Fetch opponent
-    let opponent = yield N.models.users.User.findOne()
+    let opponent = await N.models.users.User.findOne()
                             .where('_id').equals(dialog.to)
                             .lean(true);
 
     // Fetch last message
-    let message = yield N.models.users.DlgMessage.findOne()
+    let message = await N.models.users.DlgMessage.findOne()
                             .where('_id').equals(dialog.cache.last_message)
                             .where('exists').equals(true)
                             .lean(true);
@@ -38,8 +38,8 @@ module.exports = function (N) {
 
     // Render notification
     //
-    let general_project_name = yield N.settings.get('general_project_name');
-    let to = yield user_info(N, dialog.user);
+    let general_project_name = await N.settings.get('general_project_name');
+    let to = await user_info(N, dialog.user);
 
     let locale = to.locale || N.config.locales[0];
     let helpers = {};

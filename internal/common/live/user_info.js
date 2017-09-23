@@ -7,23 +7,22 @@
 'use strict';
 
 
-const Promise  = require('bluebird');
 const userInfo = require('nodeca.users/lib/user_info');
 
 
 module.exports = function (N) {
   N.wire.before('internal.live.*', { priority: -100 }, function add_user_loader(data) {
-    data.getUserInfo = Promise.coroutine(function* () {
+    data.getUserInfo = async function () {
       // If `user_info` already loaded - skip
       if (data.__user_info__ || data.__user_info__ === null) {
         return data.__user_info__;
       }
 
       // Fetch session ID from token record
-      let session_id = yield N.redis.getAsync('token_live:' + data.message.token);
+      let session_id = await N.redis.getAsync('token_live:' + data.message.token);
 
       // Fetch session
-      let authSession = yield N.models.users.AuthSession.findOne()
+      let authSession = await N.models.users.AuthSession.findOne()
                                   .where('session_id').equals(session_id)
                                   .select('_id user')
                                   .lean(true);
@@ -34,9 +33,9 @@ module.exports = function (N) {
         return data.__user_info__;
       }
 
-      data.__user_info__ = yield userInfo(N, authSession.user);
+      data.__user_info__ = await userInfo(N, authSession.user);
 
       return data.__user_info__;
-    });
+    };
   });
 };

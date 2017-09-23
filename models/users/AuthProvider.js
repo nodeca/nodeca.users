@@ -8,7 +8,6 @@
 
 
 const _               = require('lodash');
-const Promise         = require('bluebird');
 const Mongoose        = require('mongoose');
 const Schema          = Mongoose.Schema;
 const password        = require('./_lib/password');
@@ -138,15 +137,15 @@ module.exports = function (N, collectionName) {
    *
    * Check if similar email address is already registered
    **/
-  AuthProvider.statics.similarEmailExists = Promise.coroutine(function* similarEmailExists(email) {
-    let authProvider = yield N.models.users.AuthProvider
+  AuthProvider.statics.similarEmailExists = async function similarEmailExists(email) {
+    let authProvider = await N.models.users.AuthProvider
                              .findOne({ exists: true })
                              .where('email_normalized').equals(normalize_email(email))
                              .select('_id')
                              .lean(true);
 
     return authProvider ? true : false;
-  });
+  };
 
 
   // Set normalized authprovider

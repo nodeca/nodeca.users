@@ -7,11 +7,11 @@
 
 module.exports = function (N, apiPath) {
 
-  N.wire.on(apiPath, function* mark_user_active(env) {
+  N.wire.on(apiPath, async function mark_user_active(env) {
     if (!env.user_info.active) {
       env.user_info.active = true;
 
-      yield N.models.users.User.update(
+      await N.models.users.User.update(
         { _id: env.user_info.user_id },
         { $set: { active: true } }
       );

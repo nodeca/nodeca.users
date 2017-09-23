@@ -8,14 +8,14 @@ const render    = require('nodeca.core/lib/system/render/common');
 
 
 module.exports = function (N) {
-  N.wire.after('internal:users.notify.deliver', function* notify_deliver_email(local_env) {
+  N.wire.after('internal:users.notify.deliver', async function notify_deliver_email(local_env) {
 
     // TODO: filter offline users
 
 
     // Fetch users emails
     //
-    let users_email = yield N.models.users.User.find()
+    let users_email = await N.models.users.User.find()
                                 .where('_id').in(Object.keys(local_env.messages))
                                 .select('_id email')
                                 .lean(true);
@@ -27,11 +27,11 @@ module.exports = function (N) {
 
     // Fetch user info
     //
-    let users_info = yield user_info(N, Object.keys(local_env.messages));
+    let users_info = await user_info(N, Object.keys(local_env.messages));
 
     // Remove users without email and send email to the rest
     //
-    yield Promise.all(Object.keys(local_env.messages).filter(user_id => emails[user_id]).map(user_id => {
+    await Promise.all(Object.keys(local_env.messages).filter(user_id => emails[user_id]).map(user_id => {
       let params = {
         user_id,
         usergroup_ids: users_info[user_id].usergroups

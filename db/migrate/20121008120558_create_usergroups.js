@@ -1,10 +1,7 @@
 'use strict';
 
 
-const Promise = require('bluebird');
-
-
-exports.up = Promise.coroutine(function* (N) {
+exports.up = async function (N) {
   let names = [ 'administrators', 'guests', 'members', 'violators', 'banned' ];
 
   for (let i = 0; i < names.length; i++) {
@@ -14,6 +11,6 @@ exports.up = Promise.coroutine(function* (N) {
       is_protected: true
     });
 
-    yield usergroup.save();
+    await usergroup.save();
   }
-});
+};

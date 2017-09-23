@@ -15,14 +15,14 @@
 
 module.exports = function (N, apiPath) {
 
-  N.wire.on(apiPath, function* get_attachments(data) {
+  N.wire.on(apiPath, async function get_attachments(data) {
     data.attachments = data.attachments || {};
 
     let ids = data.ids.map(String).filter(id => !data.attachments[id]);
 
     if (!ids.length) return;
 
-    let result = yield N.models.users.MediaInfo
+    let result = await N.models.users.MediaInfo
                           .where('media_id').in(ids)
                           .where('type').in(N.models.users.MediaInfo.types.LIST_VISIBLE)
                           .lean(true);

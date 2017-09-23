@@ -3,13 +3,14 @@
 /* eslint no-bitwise: 0 */
 'use strict';
 
-const Promise     = require('bluebird');
+
 const stat        = require('util').promisify(require('fs').stat);
 const extname     = require('path').extname;
 const Mongoose    = require('mongoose');
 const Schema      = Mongoose.Schema;
 const resize      = require('./_lib/resize');
 const resizeParse = require('../../server/_lib/resize_parse');
+
 
 module.exports = function (N, collectionName) {
 
@@ -96,8 +97,8 @@ module.exports = function (N, collectionName) {
   // - revert - revert deleted media (default false)
   // - callback
   //
-  MediaInfo.statics.markDeleted = Promise.coroutine(function* (media_id, revert) {
-    let media = yield N.models.users.MediaInfo
+  MediaInfo.statics.markDeleted = async function (media_id, revert) {
+    let media = await N.models.users.MediaInfo
                           .findOneAndUpdate({
                             media_id,
                             type: { $in: (revert ? types.LIST_DELETED : types.LIST_VISIBLE) }
@@ -110,11 +111,11 @@ module.exports = function (N, collectionName) {
 
     if (!media) return;
 
-    yield N.models.users.UserExtra.update(
+    await N.models.users.UserExtra.update(
       { user: media.user },
       { $inc: { media_size: media.file_size * (revert ? 1 : -1) } }
     );
-  });
+  };
 
 
   // Remove files with previews
@@ -129,8 +130,8 @@ module.exports = function (N, collectionName) {
   });
 
 
-  const saveFile = Promise.coroutine(function* (path, name, maxSize) {
-    let stats = yield stat(path);
+  async function saveFile(path, name, maxSize) {
+    let stats = await stat(path);
 
     if (stats.size > maxSize) {
       return new Error("Can't save file: max size exceeded");
@@ -142,10 +143,10 @@ module.exports = function (N, collectionName) {
       }
     };
 
-    let info = yield N.models.core.File.put(path, storeOptions);
+    let info = await N.models.core.File.put(path, storeOptions);
 
     return { id: info._id, size: stats.size };
-  });
+  }
 
 
   // Create media with original image with previews or binary file
@@ -159,7 +160,7 @@ module.exports = function (N, collectionName) {
   //
   // - callback(err, media)
   //
-  MediaInfo.statics.createFile = Promise.coroutine(function* (options) {
+  MediaInfo.statics.createFile = async function (options) {
     let media = new N.models.users.MediaInfo();
     media._id = new Mongoose.Types.ObjectId();
     media.user = options.user_id;
@@ -188,7 +189,7 @@ module.exports = function (N, collectionName) {
         throw new Error("Can't save file: you must specify options.name for binary files");
       }
 
-      let data = yield saveFile(options.path, options.name, typeConfig.max_size || mediaConfig.max_size);
+      let data = await saveFile(options.path, options.name, typeConfig.max_size || mediaConfig.max_size);
 
       media.type = types.BINARY;
       media.media_id = data.id;
@@ -198,7 +199,7 @@ module.exports = function (N, collectionName) {
       let comment;
 
       if (options.user_id) {
-        let user = yield N.models.users.User.findById(options.user_id);
+        let user = await N.models.users.User.findById(options.user_id);
         let date = new Date().toISOString().slice(0, 10);
 
         if (user) {
@@ -208,7 +209,7 @@ module.exports = function (N, collectionName) {
         }
       }
 
-      let data = yield resize(
+      let data = await resize(
         options.path,
         {
           store:   N.models.core.File,
@@ -225,14 +226,14 @@ module.exports = function (N, collectionName) {
       media.file_size = data.size;
     }
 
-    yield media.save();
-    yield N.models.users.UserExtra.update(
+    await media.save();
+    await N.models.users.UserExtra.update(
       { user: media.user },
       { $inc: { media_size: media.file_size } }
     );
 
     return media;
-  });
+  };
 
 
   N.wire.on('init:models', function emit_init_MediaInfo() {

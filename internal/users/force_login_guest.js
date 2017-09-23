@@ -15,7 +15,7 @@ module.exports = function (N, apiPath) {
     };
   }
 
-  N.wire.on(apiPath, function* force_login_guest(env) {
+  N.wire.on(apiPath, async function force_login_guest(env) {
     if (env.user_info.is_member) return;
 
     let backUrl = N.router.linkTo(env.method, env.params);
@@ -32,7 +32,7 @@ module.exports = function (N, apiPath) {
     loginRedirect.url = backUrl;
     loginRedirect.ip  = env.req.ip;
 
-    let res = yield loginRedirect.save();
+    let res = await loginRedirect.save();
 
     // Redirect to login page with id of url (of target page)
     throw createRedirect(res._id);

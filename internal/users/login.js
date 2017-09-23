@@ -34,7 +34,7 @@ module.exports = function (N, apiPath) {
   });
 
 
-  N.wire.on(apiPath, function* user_internal_login(env) {
+  N.wire.on(apiPath, async function user_internal_login(env) {
 
     // delete old session (don't wait until complete)
     if (env.session_id) {
@@ -48,7 +48,7 @@ module.exports = function (N, apiPath) {
       authprovider: env.data.authProvider._id
     });
 
-    yield authSession.save();
+    await authSession.save();
 
     env.session_id = authSession.session_id;
 
@@ -62,7 +62,7 @@ module.exports = function (N, apiPath) {
     if (!env.data.redirect_id) return;
 
     // Try to find active redirect bound to this ip
-    let link = yield N.models.users.LoginRedirect
+    let link = await N.models.users.LoginRedirect
                         .findOne({ _id: env.data.redirect_id, used: false, ip: env.req.ip })
                         .lean(true);
 
@@ -73,19 +73,19 @@ module.exports = function (N, apiPath) {
     env.data.redirect_url = link.url;
 
     // mark redirect as used
-    yield N.models.users.LoginRedirect
+    await N.models.users.LoginRedirect
               .update({ _id: link._id }, { $set: { used: true } });
   });
 
 
   // Remember login ip and date in used AuthProvider
   //
-  N.wire.after(apiPath, function* remember_auth_data(env) {
+  N.wire.after(apiPath, async function remember_auth_data(env) {
     // authProvider is not filled for (register + autologin)
     // Just skip update for this case.
     if (!env.data.authProvider) return;
 
-    yield N.models.users.AuthProvider.update(
+    await N.models.users.AuthProvider.update(
               { _id: env.data.authProvider._id },
               { $set: { last_ts: Date.now(), last_ip: env.req.ip } });
   });

@@ -3,7 +3,6 @@
 'use strict';
 
 
-const Promise   = require('bluebird');
 const charlatan = require('charlatan');
 
 
@@ -16,7 +15,7 @@ let parser;
 let markup_options;
 
 
-const createNotes = Promise.coroutine(function* (to) {
+async function createNotes(to) {
   for (let i = 0; i < NOTES_COUNT; i++) {
     let from = new models.users.User({
       first_name: charlatan.Name.firstName(),
@@ -26,10 +25,10 @@ const createNotes = Promise.coroutine(function* (to) {
       joined_ts:  new Date()
     });
 
-    yield from.save();
+    await from.save();
 
     let md = charlatan.Lorem.paragraphs(charlatan.Helpers.rand(3, 1)).join('\n\n');
-    let parsed = yield parser.md2html({
+    let parsed = await parser.md2html({
       text: md,
       attachments: [],
       options: markup_options
@@ -45,31 +44,31 @@ const createNotes = Promise.coroutine(function* (to) {
       ts
     });
 
-    yield note.save();
+    await note.save();
   }
-});
+}
 
 
-module.exports = Promise.coroutine(function* (N) {
+module.exports = async function (N) {
   models   = N.models;
   settings = N.settings;
   parser   = N.parser;
 
   // Get administrators group _id
-  let adm_group_id = yield models.users.UserGroup.findIdByName('administrators');
+  let adm_group_id = await models.users.UserGroup.findIdByName('administrators');
 
-  let users = yield models.users.User.find()
+  let users = await models.users.User.find()
                       .where('usergroups').equals(adm_group_id)
                       .select('_id')
                       .lean(true);
 
   if (!users.length) return;
 
-  markup_options = yield settings.getByCategory(
+  markup_options = await settings.getByCategory(
     'dialogs_markup',
     { usergroup_ids: [ adm_group_id ] },
     { alias: true }
   );
 
-  yield Promise.all(users.map(u => createNotes(u)));
-});
+  await Promise.all(users.map(u => createNotes(u)));
+};

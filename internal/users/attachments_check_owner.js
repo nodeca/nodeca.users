@@ -10,12 +10,12 @@ const _ = require('lodash');
 
 module.exports = function (N, apiPath) {
 
-  N.wire.on(apiPath, function* attachments_check_owner(env) {
+  N.wire.on(apiPath, async function attachments_check_owner(env) {
 
     let mediaIds = _.uniq(env.params.attach);
 
     // Find media info by `media_id` (from params) and `user_id`
-    let result = yield N.models.users.MediaInfo
+    let result = await N.models.users.MediaInfo
                           .where('media_id').in(mediaIds)
                           .where('user').equals(env.user_info.user_id)
                           .select('media_id')

@@ -4,7 +4,6 @@
 
 
 const _         = require('lodash');
-const Promise   = require('bluebird');
 const charlatan = require('charlatan');
 const ObjectId  = require('mongoose').Types.ObjectId;
 
@@ -26,7 +25,7 @@ let msg_day = 0;
 let markup_options;
 
 
-const createDemoUsers = Promise.coroutine(function* () {
+async function createDemoUsers() {
   for (let i = 0; i < USER_COUNT; i++) {
     let user = new models.users.User({
       first_name: charlatan.Name.firstName(),
@@ -36,15 +35,15 @@ const createDemoUsers = Promise.coroutine(function* () {
       joined_ts:  new Date()
     });
 
-    yield user.save();
+    await user.save();
 
     // add user to store
     users.push(user);
   }
-});
+}
 
 
-const createMessages = Promise.coroutine(function* (dlg1, dlg2, msg_count) {
+async function createMessages(dlg1, dlg2, msg_count) {
   if (msg_count <= 0) return;
 
   let msg1, msg2, md;
@@ -52,7 +51,7 @@ const createMessages = Promise.coroutine(function* (dlg1, dlg2, msg_count) {
   for (let i = 0; i < msg_count; i++) {
     md = charlatan.Lorem.paragraphs(charlatan.Helpers.rand(5, 1)).join('\n\n');
 
-    let result = yield parser.md2html({
+    let result = await parser.md2html({
       text: md,
       attachments: [],
       options: markup_options
@@ -76,10 +75,10 @@ const createMessages = Promise.coroutine(function* (dlg1, dlg2, msg_count) {
       parent: dlg2._id
     }, msg_data));
 
-    yield Promise.all([ msg1.save(), msg2.save() ]);
+    await Promise.all([ msg1.save(), msg2.save() ]);
   }
 
-  let preview_data = yield parser.md2preview({ text: md, limit: 250, link2text: true });
+  let preview_data = await parser.md2preview({ text: md, limit: 250, link2text: true });
 
   dlg1.cache = {
     last_user:    msg1.user,
@@ -96,10 +95,10 @@ const createMessages = Promise.coroutine(function* (dlg1, dlg2, msg_count) {
     preview:      preview_data.preview,
     last_message: msg2._id
   };
-});
+}
 
 
-const createDialogs = Promise.coroutine(function* (owner) {
+async function createDialogs(owner) {
   for (let i = 0; i < DLG_COUNT; i++) {
     let dlg_data = {
       common_id: new ObjectId(),
@@ -120,33 +119,33 @@ const createDialogs = Promise.coroutine(function* (owner) {
     // The last dialog will be big
     let msg_count = (i === DLG_COUNT - 1) ? MSG_COUNT_IN_BIG_DLG : charlatan.Helpers.rand(MIN_MSG_COUNT, MAX_MSG_COUNT);
 
-    yield createMessages(own, opp, msg_count);
-    yield Promise.all([ own.save(), opp.save() ]);
+    await createMessages(own, opp, msg_count);
+    await Promise.all([ own.save(), opp.save() ]);
   }
-});
+}
 
 
-module.exports = Promise.coroutine(function* (N) {
+module.exports = async function (N) {
   models   = N.models;
   settings = N.settings;
   parser   = N.parser;
 
   // Get administrators group _id
-  let adm_group_id = yield models.users.UserGroup.findIdByName('administrators');
+  let adm_group_id = await models.users.UserGroup.findIdByName('administrators');
 
-  let users = yield models.users.User.find()
+  let users = await models.users.User.find()
                       .where('usergroups').equals(adm_group_id)
                       .select('_id')
                       .lean(true);
 
   if (!users.length) return;
 
-  markup_options = yield settings.getByCategory(
+  markup_options = await settings.getByCategory(
     'dialogs_markup',
     { usergroup_ids: [ adm_group_id ] },
     { alias: true }
   );
 
-  yield createDemoUsers();
-  yield Promise.all(users.map(u => createDialogs(u)));
-});
+  await createDemoUsers();
+  await Promise.all(users.map(u => createDialogs(u)));
+};

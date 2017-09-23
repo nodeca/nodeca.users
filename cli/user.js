@@ -4,7 +4,6 @@
 
 
 const _       = require('lodash');
-const Promise = require('bluebird');
 
 
 module.exports.parserParameters = {
@@ -67,9 +66,9 @@ module.exports.commandLineArguments = [
 ];
 
 
-module.exports.run = Promise.coroutine(function* (N, args) {
+module.exports.run = async function (N, args) {
 
-  yield N.wire.emit('init:models', N);
+  await N.wire.emit('init:models', N);
 
   let user = null;
   let toAdd = {};
@@ -84,7 +83,7 @@ module.exports.run = Promise.coroutine(function* (N, args) {
   // fetch usergroups
   //
   let UserGroup = N.models.users.UserGroup;
-  let docs = yield UserGroup.find().select('_id short_name');
+  let docs = await UserGroup.find().select('_id short_name');
 
   docs.forEach(group => {
     if (args.mark_to_remove.indexOf(group.short_name) !== -1) {
@@ -99,7 +98,7 @@ module.exports.run = Promise.coroutine(function* (N, args) {
   // find or create user
   //
   let User = N.models.users.User;
-  let doc = yield User.findOne({ nick: args.user });
+  let doc = await User.findOne({ nick: args.user });
 
   if (args.action === 'add') {
     if (doc) throw 'User with that name already exists';
@@ -119,7 +118,7 @@ module.exports.run = Promise.coroutine(function* (N, args) {
   //
   if (args.pass) {
     // disable all other passwords
-    yield N.models.users.AuthProvider.update(
+    await N.models.users.AuthProvider.update(
       { user: user._id, type: 'plain', exists: true },
       { $set: { exists: false } },
       { multi: true }
@@ -130,20 +129,20 @@ module.exports.run = Promise.coroutine(function* (N, args) {
     authProvider.type = 'plain';
     authProvider.email = args.email || user.email;
 
-    yield authProvider.setPass(args.pass);
+    await authProvider.setPass(args.pass);
 
     authProvider.user = user._id;
     authProvider.ip = '127.0.0.1';
     authProvider.last_ip = '127.0.0.1';
 
-    yield authProvider.save();
+    await authProvider.save();
   }
 
 
   // set email and check that it's unique
   //
   if (args.email) {
-    doc = yield User.findOne({ email: args.email });
+    doc = await User.findOne({ email: args.email });
 
     if (doc && String(doc._id) !== String(user._id)) throw 'User with that email already exists';
 
@@ -169,7 +168,7 @@ module.exports.run = Promise.coroutine(function* (N, args) {
     }
   }
 
-  yield user.save();
+  await user.save();
 
-  yield N.wire.emit('exit.shutdown');
-});
+  await N.wire.emit('exit.shutdown');
+};

@@ -22,7 +22,6 @@
 'use strict';
 
 
-const Promise = require('bluebird');
 const _       = require('lodash');
 
 
@@ -42,16 +41,16 @@ module.exports = function (N, collectionName) {
   // - categoryId (ObjectId)
   // - currentCut (Number)
   //
-  Marker.gc = Promise.coroutine(function* (type, userId, categoryId, currentCut) {
+  Marker.gc = async function (type, userId, categoryId, currentCut) {
     if (!gcHandlers[type]) return;
 
-    let contentInfo = yield gcHandlers[type](userId, categoryId, currentCut);
+    let contentInfo = await gcHandlers[type](userId, categoryId, currentCut);
 
     if (!contentInfo.length) return;
 
     contentInfo = _.sortBy(contentInfo, 'lastPostTs');
 
-    let marks = yield Marker.info(userId, contentInfo);
+    let marks = await Marker.info(userId, contentInfo);
 
     let updatedCut = currentCut;
     let mark;
@@ -65,9 +64,9 @@ module.exports = function (N, collectionName) {
     }
 
     if (updatedCut !== currentCut) {
-      yield Marker.markAll(userId, categoryId, updatedCut);
+      await Marker.markAll(userId, categoryId, updatedCut);
     }
-  });
+  };
 
 
   // Add handler to load content data for `.gc()`
@@ -97,22 +96,22 @@ module.exports = function (N, collectionName) {
   // - categoryId (ObjectId)
   // - type (String) - content type
   //
-  Marker.mark = Promise.coroutine(function* (userId, contentId, categoryId, type) {
+  Marker.mark = async function (userId, contentId, categoryId, type) {
     if (!userId || String(userId) === '000000000000000000000000') {
       return;
     }
 
-    let res = yield Marker.cuts(userId, [ categoryId ]);
+    let res = await Marker.cuts(userId, [ categoryId ]);
 
     // Don't mark old content
     if (contentId.getTimestamp() < res[categoryId]) return;
 
-    yield Promise.all([
+    await Promise.all([
       N.redis.saddAsync('marker_marks_items', String(userId)),
       N.redis.zaddAsync('marker_marks:' + userId, +contentId.getTimestamp(), String(contentId))
     ]);
-    yield Marker.gc(type, userId, categoryId, res[categoryId]);
-  });
+    await Marker.gc(type, userId, categoryId, res[categoryId]);
+  };
 
 
   // Mark all topics before now as read
@@ -121,7 +120,7 @@ module.exports = function (N, collectionName) {
   // - categoryId (ObjectId)
   // - ts (Number) - optional, cut off timestamp, `Date.now()` by default
   //
-  Marker.markAll = Promise.coroutine(function* (userId, categoryId, ts) {
+  Marker.markAll = async function (userId, categoryId, ts) {
     if (!userId || String(userId) === '000000000000000000000000') {
       return;
     }
@@ -135,24 +134,24 @@ module.exports = function (N, collectionName) {
     // If `ts` bigger than now plus one hour or more - stop here
     if (ts > 1000 * 60 * 60 + Date.now()) return;
 
-    yield N.redis.zaddAsync('marker_cut_updates', now, userId + ':' + categoryId);
-    yield N.redis.setAsync('marker_cut:' + userId + ':' + categoryId, ts);
-  });
+    await N.redis.zaddAsync('marker_cut_updates', now, userId + ':' + categoryId);
+    await N.redis.setAsync('marker_cut:' + userId + ':' + categoryId, ts);
+  };
 
 
   // Remove extra position markers if user have more than limit
   //
-  const limitPositionMarkers = Promise.coroutine(function* (userId) {
+  async function limitPositionMarkers(userId) {
     let maxItems = 1000;
     let gcThreshold = maxItems + Math.round(maxItems * 0.10) + 1;
 
     // Get position records count
-    let cnt = yield N.redis.hlenAsync('marker_pos:' + userId);
+    let cnt = await N.redis.hlenAsync('marker_pos:' + userId);
 
     // If count less than limit - skip
     if (cnt <= gcThreshold) return Promise.resolve();
 
-    let items = yield N.redis.hgetallAsync('marker_pos:' + userId);
+    let items = await N.redis.hgetallAsync('marker_pos:' + userId);
     let query = N.redis.multi();
 
     _(items)
@@ -177,7 +176,7 @@ module.exports = function (N, collectionName) {
       });
 
     return query.execAsync();
-  });
+  }
 
 
   // Set current scroll position in topic
@@ -189,13 +188,13 @@ module.exports = function (N, collectionName) {
   // - categoryId (ObjectId)
   // - type (String) - content type
   //
-  Marker.setPos = Promise.coroutine(function* (userId, contentId, position, max, categoryId, type) {
+  Marker.setPos = async function (userId, contentId, position, max, categoryId, type) {
     if (!userId || String(userId) === '000000000000000000000000') {
       return;
     }
 
     let now = Date.now();
-    let posJson = yield N.redis.hgetAsync('marker_pos:' + userId, String(contentId));
+    let posJson = await N.redis.hgetAsync('marker_pos:' + userId, String(contentId));
     let pos;
     let maxUpdated = false;
 
@@ -215,16 +214,16 @@ module.exports = function (N, collectionName) {
       maxUpdated = true;
     }
 
-    yield N.redis.zaddAsync('marker_pos_updates', now, userId + ':' + contentId);
-    yield N.redis.hsetAsync('marker_pos:' + userId, String(contentId), JSON.stringify(pos));
-    yield limitPositionMarkers(userId);
+    await N.redis.zaddAsync('marker_pos_updates', now, userId + ':' + contentId);
+    await N.redis.hsetAsync('marker_pos:' + userId, String(contentId), JSON.stringify(pos));
+    await limitPositionMarkers(userId);
 
     if (!maxUpdated) return;
 
-    let res = yield Marker.cuts(userId, [ categoryId ]);
+    let res = await Marker.cuts(userId, [ categoryId ]);
 
-    yield Marker.gc(type, userId, categoryId, res[categoryId]);
-  });
+    await Marker.gc(type, userId, categoryId, res[categoryId]);
+  };
 
 
   // Get cuts ts for categories
@@ -234,7 +233,7 @@ module.exports = function (N, collectionName) {
   //
   // returns (Hash) - key is `categoryId` value is number
   //
-  Marker.cuts = Promise.coroutine(function* (userId, categoriesIds) {
+  Marker.cuts = async function (userId, categoriesIds) {
     if (categoriesIds.length === 0) {
       return [];
     }
@@ -248,7 +247,7 @@ module.exports = function (N, collectionName) {
       }, {});
     }
 
-    let content_read_marks_expire = yield N.settings.get('content_read_marks_expire');
+    let content_read_marks_expire = await N.settings.get('content_read_marks_expire');
 
     let defaultCut = Date.now() - (content_read_marks_expire * 24 * 60 * 60 * 1000);
     let result = categoriesIds.reduce((acc, id) => {
@@ -258,14 +257,14 @@ module.exports = function (N, collectionName) {
 
     let cutKeys = Object.keys(result).map(id => 'marker_cut:' + userId + ':' + id);
 
-    let res = yield N.redis.mgetAsync(cutKeys);
+    let res = await N.redis.mgetAsync(cutKeys);
 
     Object.keys(result).forEach((id, i) => {
       result[id] = +res[i] || defaultCut;
     });
 
     return result;
-  });
+  };
 
 
   // Build content info
@@ -283,7 +282,7 @@ module.exports = function (N, collectionName) {
   // - next (Number) - hid of first unread post in topic or `-1` if not set
   // - position (Number) - last read post position or `-1` if not set
   //
-  Marker.info = Promise.coroutine(function* (userId, contentInfo) {
+  Marker.info = async function (userId, contentInfo) {
     let result = {};
 
     contentInfo.forEach(item => {
@@ -295,7 +294,7 @@ module.exports = function (N, collectionName) {
     }
 
     // Fetch cuts
-    let cuts = yield Marker.cuts(userId, _.map(contentInfo, 'categoryId'));
+    let cuts = await Marker.cuts(userId, _.map(contentInfo, 'categoryId'));
 
     // Set `isNew` flag by cut
     contentInfo.forEach(item => {
@@ -317,7 +316,7 @@ module.exports = function (N, collectionName) {
       }
     });
 
-    let res = yield query.execAsync();
+    let res = await query.execAsync();
 
     _.forEach(newCandidates, (id, n) => {
       if (res[n] !== null) {
@@ -335,7 +334,7 @@ module.exports = function (N, collectionName) {
 
     contentIds.forEach(id => query.hget('marker_pos:' + userId, id));
 
-    let posInfo = yield query.execAsync();
+    let posInfo = await query.execAsync();
 
     posInfo = posInfo.map(json => {
       let result;
@@ -361,7 +360,7 @@ module.exports = function (N, collectionName) {
     });
 
     return result;
-  });
+  };
 
 
   // Cleanup deprecated markers (older than 30 days):
@@ -370,13 +369,13 @@ module.exports = function (N, collectionName) {
   // - remove old `marker_cut:*` using `marker_cut_updates`
   // - for each user (stored in `marker_marks_items`) remove old `marker_marks:<user_id>`
   //
-  Marker.cleanup = Promise.coroutine(function* () {
-    let content_read_marks_expire = yield N.settings.get('content_read_marks_expire');
+  Marker.cleanup = async function () {
+    let content_read_marks_expire = await N.settings.get('content_read_marks_expire');
     let lastTs = Date.now() - (content_read_marks_expire * 24 * 60 * 60 * 1000);
 
     // Cleanup position markers
     //
-    let posItems = yield N.redis.zrangebyscoreAsync('marker_pos_updates', '-inf', lastTs);
+    let posItems = await N.redis.zrangebyscoreAsync('marker_pos_updates', '-inf', lastTs);
     let posQuery = N.redis.multi();
 
     posItems.forEach(item => {
@@ -386,12 +385,12 @@ module.exports = function (N, collectionName) {
       posQuery.zrem('marker_pos_updates', item);
     });
 
-    yield posQuery.execAsync();
+    await posQuery.execAsync();
 
 
     // Cleanup cut markers
     //
-    let cutItems = yield N.redis.zrangebyscoreAsync('marker_cut_updates', '-inf', lastTs);
+    let cutItems = await N.redis.zrangebyscoreAsync('marker_cut_updates', '-inf', lastTs);
     let cutQuery = N.redis.multi();
 
     cutItems.forEach(item => {
@@ -399,14 +398,14 @@ module.exports = function (N, collectionName) {
       cutQuery.zrem('marker_cut_updates', item);
     });
 
-    yield cutQuery.execAsync();
+    await cutQuery.execAsync();
 
 
     // Cleanup read markers
     //
     // TODO: cut by script if number of active users per month became too big
     //
-    let marksItems = yield N.redis.smembersAsync('marker_marks_items');
+    let marksItems = await N.redis.smembersAsync('marker_marks_items');
     let marksQuery = N.redis.multi();
 
     marksItems.forEach(item => {
@@ -415,7 +414,7 @@ module.exports = function (N, collectionName) {
       marksQuery.zcard('marker_marks:' + item);
     });
 
-    let res = yield marksQuery.execAsync();
+    let res = await marksQuery.execAsync();
     let query = N.redis.multi();
 
     marksItems.forEach((item, i) => {
@@ -424,8 +423,8 @@ module.exports = function (N, collectionName) {
       }
     });
 
-    yield query.execAsync();
-  });
+    await query.execAsync();
+  };
 
 
   N.wire.on('init:models', function emit_init_Marker(__, callback) {

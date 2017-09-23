@@ -3,7 +3,6 @@
 'use strict';
 
 
-const Promise  = require('bluebird');
 const Mongoose = require('mongoose');
 const Schema   = Mongoose.Schema;
 
@@ -46,27 +45,27 @@ module.exports = function (N, collectionName) {
 
   // Update media count in album
   //
-  let updateCount = Promise.coroutine(function* (albumId, full) {
+  async function updateCount(albumId, full) {
     let mTypes = N.models.users.MediaInfo.types;
 
     if (!full) {
-      yield N.models.users.Album.update({ _id: albumId }, { $inc: { count: 1 } });
+      await N.models.users.Album.update({ _id: albumId }, { $inc: { count: 1 } });
       return;
     }
 
-    let result = yield N.models.users.MediaInfo.count({ album: albumId, type: { $in: mTypes.LIST_VISIBLE } });
+    let result = await N.models.users.MediaInfo.count({ album: albumId, type: { $in: mTypes.LIST_VISIBLE } });
 
-    yield N.models.users.Album.update({ _id: albumId }, { count: result });
-  });
+    await N.models.users.Album.update({ _id: albumId }, { count: result });
+  }
 
 
   // Update album cover
   //
-  let updateCover = Promise.coroutine(function* (albumId) {
+  async function updateCover(albumId) {
     let mTypes = N.models.users.MediaInfo.types;
-    let album = yield N.models.users.Album.findOne({ _id: albumId }).lean(true);
+    let album = await N.models.users.Album.findOne({ _id: albumId }).lean(true);
     let fileId = album.cover_id || '000000000000000000000000';
-    let cover = yield N.models.users.MediaInfo
+    let cover = await N.models.users.MediaInfo
                           // album_id used to check if media moved to another album
                           .findOne({ media_id: fileId, type: mTypes.IMAGE, album: album._id })
                           .select('media_id')
@@ -75,14 +74,14 @@ module.exports = function (N, collectionName) {
     // Do nothing if cover exists
     if (cover) return;
 
-    let result = yield N.models.users.MediaInfo
+    let result = await N.models.users.MediaInfo
       .findOne({ album: album._id, type: mTypes.IMAGE })
       .sort('-ts')
       .lean(true);
 
     // Update cover with latest available image
-    yield N.models.users.Album.update({ _id: albumId }, { cover_id: result ? result.media_id : null });
-  });
+    await N.models.users.Album.update({ _id: albumId }, { cover_id: result ? result.media_id : null });
+  }
 
 
   // Update album info (count, last_ts, cover)

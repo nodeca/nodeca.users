@@ -30,8 +30,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch and fill permissions
   //
-  N.wire.before(apiPath, function* fetch_and_fill_permissions(env) {
-    env.res.settings = env.data.settings = yield env.extras.settings.fetch([
+  N.wire.before(apiPath, async function fetch_and_fill_permissions(env) {
+    env.res.settings = env.data.settings = await env.extras.settings.fetch([
       'can_use_dialogs',
       'can_create_dialogs'
     ]);
@@ -48,8 +48,8 @@ module.exports = function (N, apiPath) {
 
   // Fetch dialog
   //
-  N.wire.before(apiPath, function* fetch_dialog(env) {
-    let dialog = yield N.models.users.Dialog.findOne()
+  N.wire.before(apiPath, async function fetch_dialog(env) {
+    let dialog = await N.models.users.Dialog.findOne()
                           .where('user').equals(env.user_info.user_id)
                           .where('exists').equals(true)
                           .where('_id').equals(env.data.dialog_id)
@@ -63,15 +63,15 @@ module.exports = function (N, apiPath) {
 
   // Get messages ids
   //
-  N.wire.before(apiPath, function* get_messages_ids(env) {
-    yield env.data.build_messages_ids(env);
+  N.wire.before(apiPath, async function get_messages_ids(env) {
+    await env.data.build_messages_ids(env);
   });
 
 
   // Fetch and sort messages
   //
-  N.wire.on(apiPath, function* fetch_and_sort_messages(env) {
-    let messages = yield N.models.users.DlgMessage.find()
+  N.wire.on(apiPath, async function fetch_and_sort_messages(env) {
+    let messages = await N.models.users.DlgMessage.find()
                             .where('parent').equals(env.data.dialog._id)
                             .where('exists').equals(true)
                             .where('_id').in(env.data.messages_ids)
@@ -96,15 +96,15 @@ module.exports = function (N, apiPath) {
 
   // Fill first and last message _id
   //
-  N.wire.after(apiPath, function* fill_first_and_last_message_id(env) {
-    let last_msg = yield N.models.users.DlgMessage.findOne()
+  N.wire.after(apiPath, async function fill_first_and_last_message_id(env) {
+    let last_msg = await N.models.users.DlgMessage.findOne()
                             .where('parent').equals(env.data.dialog._id)
                             .where('exists').equals(true)
                             .sort('_id')
                             .select('_id')
                             .lean(true);
 
-    let first_msg = yield N.models.users.DlgMessage.findOne()
+    let first_msg = await N.models.users.DlgMessage.findOne()
                               .where('parent').equals(env.data.dialog._id)
                               .where('exists').equals(true)
                               .sort('-_id')

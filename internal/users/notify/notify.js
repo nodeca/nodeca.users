@@ -14,12 +14,12 @@ const _ = require('lodash');
 
 
 module.exports = function (N, apiPath) {
-  N.wire.on(apiPath, function* notification_add(params) {
+  N.wire.on(apiPath, async function notification_add(params) {
     let taskData = _.assign({}, params, { to: Array.isArray(params.to) ? params.to : [ params.to ] });
 
     // Cancel previous task if exists (reset delay for send)
-    yield N.queue.cancel(`notify_${taskData.type}_${taskData.src}`);
+    await N.queue.cancel(`notify_${taskData.type}_${taskData.src}`);
     // Add new task with delay
-    yield N.queue.notify(taskData).postpone();
+    await N.queue.notify(taskData).postpone();
   });
 };

@@ -15,7 +15,7 @@ module.exports = function (N, apiPath) {
 
   // Create user record
   //
-  N.wire.on(apiPath, function* user_create(env) {
+  N.wire.on(apiPath, async function user_create(env) {
     let user = new N.models.users.User();
 
     user.nick       = env.data.reg_info.nick;
@@ -23,7 +23,7 @@ module.exports = function (N, apiPath) {
     user.locale     = env.user_info.locale || N.config.locales[0];
     user.email      = env.data.reg_info.email;
 
-    yield user.save();
+    await user.save();
 
     env.data.user = user;
   });
@@ -31,7 +31,7 @@ module.exports = function (N, apiPath) {
 
   // Create plain auth record (nick + password record)
   //
-  N.wire.after(apiPath, function* create_user_provider(env) {
+  N.wire.after(apiPath, async function create_user_provider(env) {
     let user = env.data.user;
     let authProvider = new N.models.users.AuthProvider({
       user:    user._id,
@@ -42,18 +42,18 @@ module.exports = function (N, apiPath) {
     });
 
     try {
-      yield authProvider.setPassHash(env.data.reg_info.pass_hash);
-      yield authProvider.save();
+      await authProvider.setPassHash(env.data.reg_info.pass_hash);
+      await authProvider.save();
     } catch (__) {
-      yield N.models.users.User.remove({ _id: user._id });
-      yield N.models.users.AuthProvider.remove({ user: user._id });
+      await N.models.users.User.remove({ _id: user._id });
+      await N.models.users.AuthProvider.remove({ user: user._id });
     }
   });
 
 
   // Create oauth provider record, if data filled
   //
-  N.wire.after(apiPath, function* create_oauth_provider(env) {
+  N.wire.after(apiPath, async function create_oauth_provider(env) {
     if (!env.data.oauth_info) return;
 
     let user = env.data.user;
@@ -64,10 +64,10 @@ module.exports = function (N, apiPath) {
     authProvider.last_ip = env.req.ip;
 
     try {
-      yield authProvider.save();
+      await authProvider.save();
     } catch (__) {
-      yield N.models.users.User.remove({ _id: user._id });
-      yield N.models.users.AuthProvider.remove({ user: user._id });
+      await N.models.users.User.remove({ _id: user._id });
+      await N.models.users.AuthProvider.remove({ user: user._id });
     }
   });
 };

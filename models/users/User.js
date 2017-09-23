@@ -145,11 +145,11 @@ module.exports = function (N, collectionName) {
    *   - written in a different case (ADMIN vs admin)
    *   - visually similar (ADMIN vs ADM1N)
    **/
-  User.statics.similarExists = Promise.coroutine(function* similarExists(nick) {
+  User.statics.similarExists = async function similarExists(nick) {
     let user;
 
     // check for same nick in different case (admin vs ADMIN)
-    user = yield N.models.users.User
+    user = await N.models.users.User
                         .findOne({ nick_normalized_lc: nick.toLowerCase() })
                         .select('_id')
                         .lean(true);
@@ -157,7 +157,7 @@ module.exports = function (N, collectionName) {
     if (user) return true;
 
     // check for similarly looking nick (ADMIN vs ADMlN)
-    user = yield N.models.users.User
+    user = await N.models.users.User
                         .findOne({ nick_normalized: unhomoglyph(nick) })
                         .select('_id')
                         .lean(true);
@@ -165,7 +165,7 @@ module.exports = function (N, collectionName) {
     if (user) return true;
 
     return false;
-  });
+  };
 
 
   /**
@@ -173,11 +173,11 @@ module.exports = function (N, collectionName) {
    *
    *  Resolve name for user location with 5 second delay used for deduplication
    **/
-  User.statics.resolveLocation = Promise.coroutine(function* resolveLocation(user_id, locale) {
-    yield N.redis.zaddAsync('geo:member', Date.now(), String(user_id) + ':' + locale);
+  User.statics.resolveLocation = async function resolveLocation(user_id, locale) {
+    await N.redis.zaddAsync('geo:member', Date.now(), String(user_id) + ':' + locale);
 
     N.queue.geo_member_location_process().postpone();
-  });
+  };
 
 
   // List of important property names (changes should be logged for those)
