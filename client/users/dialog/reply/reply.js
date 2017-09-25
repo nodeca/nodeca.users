@@ -53,12 +53,9 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
 
   $editor
     .on('show.nd.mdedit', () => {
-      $editor.find('.mdedit-header__caption').html(t('reply', {
-        dialog_url: N.router.linkTo('users.dialog', {
-          dialog_id: data.dialog_id,
-          message_id: data.dialog_last_message
-        }),
-        dialog_title: data.dialog_title
+      $editor.find('.mdedit-header__caption').html(t('title_with_nick', {
+        nick: data.to_nick,
+        url: N.router.linkTo('users.member', { user_hid: data.to_hid })
       }));
 
       $editor.find('.mdedit-footer').append(N.runtime.render(module.apiPath + '.options_btn'));

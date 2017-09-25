@@ -39,8 +39,7 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, async function check_title_length(env) {
     env.data.dialog = await N.models.users.Dialog.findOne()
                                 .where('_id').equals(env.params.dialog_id)
-                                .where('user').equals(env.user_info.user_id)
-                                .lean(true);
+                                .where('user').equals(env.user_info.user_id);
 
     if (!env.data.dialog) throw N.io.NOT_FOUND;
   });
@@ -217,6 +216,7 @@ module.exports = function (N, apiPath) {
     };
 
     let dlg_update_data = {
+      exists: true, // force dialog to re-appear if it was deleted
       cache: {
         last_user: message_data.user,
         last_ts: message_data.ts,
@@ -224,67 +224,78 @@ module.exports = function (N, apiPath) {
       }
     };
 
+    let models_to_save = [];
+
+
+    // Update own dialog
+    //
+    let own_dialog = env.data.dialog;
+
+    _.merge(own_dialog, dlg_update_data);
+
 
     // Create own message and update dialog
     //
     let own_msg = new N.models.users.DlgMessage(_.assign({
-      parent: env.data.dialog._id
+      parent: own_dialog._id
     }, message_data));
 
-    await Promise.all([
-      own_msg.save(),
-      N.models.users.Dialog.update({ _id: own_msg.parent }, _.merge({
-        unread: 0,
-        cache: {
-          last_message: own_msg._id,
-          is_reply:     String(own_msg.user) === String(message_data.user)
-        }
-      }, dlg_update_data))
-    ]);
+    own_dialog.cache.unread       = 0;
+    own_dialog.cache.last_message = own_msg._id;
+    own_dialog.cache.is_reply     = String(own_msg.user) === String(message_data.user);
 
-
-    // Fetch related dialog
-    //
-    let dialogs = await N.models.users.Dialog.find()
-                            .where('common_id').equals(env.data.dialog.common_id)
-                            .lean(true);
-    let related_dialog = _.find(dialogs, d => String(d.user) !== env.user_info.user_id);
+    models_to_save = models_to_save.concat([ own_dialog, own_msg ]);
 
 
     // Create opponent's message if:
     //
-    // - related dialog exists (current user start this dialog when he was not hellbanned)
     // - both users are hellbanned
     // - both users are not hellbanned
     //
-    if (related_dialog && ((env.user_info.hb && env.data.to.hb) || (!env.user_info.hb && !env.data.to.hb))) {
+    if ((env.user_info.hb && env.data.to.hb) || (!env.user_info.hb && !env.data.to.hb)) {
+
+      // Find opponent's dialog, create if doesn't exist
+      //
+      let opponent_dialog = await N.models.users.Dialog.findOne({
+        user: env.data.to._id,
+        to:   env.user_info.user_id
+      });
+
+      if (!opponent_dialog) {
+        opponent_dialog = new N.models.users.Dialog({
+          user: env.data.to._id,
+          to:   env.user_info.user_id
+        });
+      }
+
+      _.merge(opponent_dialog, dlg_update_data);
+
       let opponent_msg = new N.models.users.DlgMessage(_.assign({
-        parent: related_dialog._id
+        parent: opponent_dialog._id
       }, message_data));
 
-      await Promise.all([
-        opponent_msg.save(),
-        N.models.users.Dialog.update({ _id: opponent_msg.parent }, _.merge({
-          exists:       true, // force undelete
-          $inc:         { unread: 1 }, // increment unread count
-          cache:        {
-            last_message: opponent_msg._id,
-            is_reply:     String(opponent_msg.user) === String(message_data.user)
-          }
-        }, dlg_update_data))
-      ]);
+      opponent_dialog.unread = (opponent_dialog.unread || 0) + 1;
+      opponent_dialog.cache.last_message = opponent_msg._id;
+      opponent_dialog.cache.is_reply     = String(opponent_msg.user) === String(message_data.user);
 
-      let dialogs_notify = await N.settings.get('dialogs_notify', { user_id: related_dialog.user });
+      models_to_save = models_to_save.concat([ opponent_dialog, opponent_msg ]);
+
+      let dialogs_notify = await N.settings.get('dialogs_notify', { user_id: opponent_dialog.user });
 
       if (dialogs_notify) {
         // Notify opponent
         await N.wire.emit('internal:users.notify', {
-          src: related_dialog._id,
-          to: related_dialog.user,
+          src:  opponent_dialog._id,
+          to:   opponent_dialog.user,
           type: 'USERS_MESSAGE'
         });
       }
     }
+
+
+    // Save models
+    //
+    await Promise.all(models_to_save.map(m => m.save()));
 
 
     // Fill response

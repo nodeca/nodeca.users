@@ -8,8 +8,7 @@ const charlatan = require('charlatan');
 const ObjectId  = require('mongoose').Types.ObjectId;
 
 
-const USER_COUNT           = 5;
-const DLG_COUNT            = 200;
+const USER_COUNT           = 50;
 const MSG_COUNT_IN_BIG_DLG = 200;
 const MIN_MSG_COUNT        = 1;
 const MAX_MSG_COUNT        = 5;
@@ -99,12 +98,11 @@ async function createMessages(dlg1, dlg2, msg_count) {
 
 
 async function createDialogs(owner) {
-  for (let i = 0; i < DLG_COUNT; i++) {
-    let dlg_data = {
-      common_id: new ObjectId(),
-      title: charlatan.Lorem.sentence().slice(0, -1)
-    };
-    let opponent = users[charlatan.Helpers.rand(USER_COUNT)];
+  let opponents = charlatan.Helpers.shuffle(users);
+
+  for (let i = 0; i < opponents.length; i++) {
+    let opponent = opponents[i];
+    let dlg_data = {};
 
     let own = new models.users.Dialog(_.assign({
       user: owner._id,
@@ -117,7 +115,9 @@ async function createDialogs(owner) {
     }, dlg_data));
 
     // The last dialog will be big
-    let msg_count = (i === DLG_COUNT - 1) ? MSG_COUNT_IN_BIG_DLG : charlatan.Helpers.rand(MIN_MSG_COUNT, MAX_MSG_COUNT);
+    let msg_count = i === opponents.length - 1 ?
+                    MSG_COUNT_IN_BIG_DLG :
+                    charlatan.Helpers.rand(MIN_MSG_COUNT, MAX_MSG_COUNT);
 
     await createMessages(own, opp, msg_count);
     await Promise.all([ own.save(), opp.save() ]);

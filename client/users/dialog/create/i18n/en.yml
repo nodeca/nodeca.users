@@ -2,7 +2,6 @@ en-US:
   title: New dialog
   title_with_nick: "New dialog with &quot;<a href='#{url}'>#{nick}</a>&quot;"
   inputs:
-    title: Title
     to_label: New dialog with
     to_placeholder: user nick
   options_btn:

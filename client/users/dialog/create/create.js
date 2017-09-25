@@ -55,7 +55,6 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
   let $editor = N.MDEdit.show({
     draftKey: `dialog_create_${N.runtime.user_hid}_${key_tail}`,
     draftCustomFields: {
-      '.dialogs-create__title': 'input',
       // Add `:last` because typeahead create additional field copy
       '.dialogs-create__user-nick-input:last': 'input'
     },
@@ -67,10 +66,6 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
   }));
 
   let $to = $inputs.find('.dialogs-create__user-nick-input');
-  let $title = $inputs.find('.dialogs-create__title');
-
-  // prefill title if needed
-  if (to_user && to_user.title) $title.val(to_user.title);
 
   updateOptions();
 
@@ -149,13 +144,6 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
         $to.parent().removeClass('has-danger');
       }
 
-      if (!$.trim($title.val())) {
-        $title.parent().addClass('has-danger');
-        errors = true;
-      } else {
-        $title.parent().removeClass('has-danger');
-      }
-
       if (errors) {
         $editor.find('.mdedit-btn__submit').removeClass('disabled');
         return false;
@@ -163,7 +151,6 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
 
       let params = {
         to:                       $to.val(),
-        title:                    $title.val(),
         txt:                      N.MDEdit.text(),
         attach:                   _.map(N.MDEdit.attachments(), 'media_id'),
         option_no_mlinks:         options.user_settings.no_mlinks,

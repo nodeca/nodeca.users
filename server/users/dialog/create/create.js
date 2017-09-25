@@ -3,15 +3,13 @@
 'use strict';
 
 
-const _        = require('lodash');
-const $        = require('nodeca.core/lib/parser/cheequery');
-const ObjectId = require('mongoose').Types.ObjectId;
+const _  = require('lodash');
+const $  = require('nodeca.core/lib/parser/cheequery');
 
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     to:                       { type: 'string', required: true },
-    title:                    { type: 'string', required: true },
     txt:                      { type: 'string', required: true },
     attach:                   {
       type: 'array',
@@ -33,14 +31,6 @@ module.exports = function (N, apiPath) {
     let can_create_dialogs = await env.extras.settings.fetch('can_create_dialogs');
 
     if (!can_create_dialogs) throw N.io.FORBIDDEN;
-  });
-
-
-  // Check title length
-  //
-  N.wire.before(apiPath, function check_title_length(env) {
-    // Should never happens - restricted on client
-    if (!env.params.title.trim()) throw N.io.BAD_REQUEST;
   });
 
 
@@ -215,9 +205,9 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Create dialog
+  // Create message
   //
-  N.wire.after(apiPath, async function create_dialog(env) {
+  N.wire.after(apiPath, async function create_message(env) {
     let message_data = {
       ts:           Date.now(),
       user:         env.user_info.user_id,
@@ -230,9 +220,8 @@ module.exports = function (N, apiPath) {
       tail:         env.data.parse_result.tail
     };
 
-    let dialog_data = {
-      common_id: new ObjectId(),
-      title: env.params.title,
+    let dlg_update_data = {
+      exists: true, // force dialog to re-appear if it was deleted
       cache: {
         last_user: message_data.user,
         last_ts: message_data.ts,
@@ -243,13 +232,24 @@ module.exports = function (N, apiPath) {
     let models_to_save = [];
 
 
-    // Create own dialog and message
+    // Find own dialog, create if doesn't exist
     //
-    let own_dialog = new N.models.users.Dialog(_.merge({
+    let own_dialog = await N.models.users.Dialog.findOne({
       user: env.user_info.user_id,
       to:   env.data.to._id
-    }, dialog_data));
+    });
 
+    if (!own_dialog) {
+      own_dialog = new N.models.users.Dialog({
+        user: env.user_info.user_id,
+        to:   env.data.to._id
+      });
+    }
+
+    _.merge(own_dialog, dlg_update_data);
+
+    // Create own message and update dialog
+    //
     let own_msg = new N.models.users.DlgMessage(_.assign({
       parent: own_dialog._id
     }, message_data));
@@ -260,22 +260,34 @@ module.exports = function (N, apiPath) {
     models_to_save = models_to_save.concat([ own_dialog, own_msg ]);
 
 
-    // Create opponent's dialog and message if:
+    // Create opponent's message if:
     //
     // - both users are hellbanned
     // - both users are not hellbanned
     //
     if ((env.user_info.hb && env.data.to.hb) || (!env.user_info.hb && !env.data.to.hb)) {
-      let opponent_dialog = new N.models.users.Dialog(_.merge({
-        user:   env.data.to._id,
-        to:     env.user_info.user_id,
-        unread: 1
-      }, dialog_data));
+
+      // Find opponent's dialog, create if doesn't exist
+      //
+      let opponent_dialog = await N.models.users.Dialog.findOne({
+        user: env.data.to._id,
+        to:   env.user_info.user_id
+      });
+
+      if (!opponent_dialog) {
+        opponent_dialog = new N.models.users.Dialog({
+          user: env.data.to._id,
+          to:   env.user_info.user_id
+        });
+      }
+
+      _.merge(opponent_dialog, dlg_update_data);
 
       let opponent_msg = new N.models.users.DlgMessage(_.assign({
         parent: opponent_dialog._id
       }, message_data));
 
+      opponent_dialog.unread = (opponent_dialog.unread || 0) + 1;
       opponent_dialog.cache.last_message = opponent_msg._id;
       opponent_dialog.cache.is_reply     = String(opponent_msg.user) === String(message_data.user);
 

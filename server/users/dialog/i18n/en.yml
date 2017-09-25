@@ -1,3 +1,3 @@
 en-US:
-  title: "#{dlg_title} - #{user}"
+  title: "Dialogs - #{user}"
   breadcrumbs_title: Dialogs

@@ -6,7 +6,7 @@
 #content
   -
     var navbar_args = {
-      title:    self.dialog.title,
+      title:    self.t('title'),
       level_up: self.link_to('users.dialogs_root', { user_hid: self.runtime.user_hid, dialog_id: self.dialog._id }),
       progress: {
         link_top:    self.link_to('users.dialog', { dialog_id: self.dialog._id, message_id: self.first_message_id }),
@@ -27,17 +27,19 @@
     != self.partial('@users.blocks.announces')
 
     header.page-head
-      h1.page-head__title(itemprop='name')=self.dialog.title
+      h1.page-head__title(itemprop='name')= self.t('title')
       if self.users[self.dialog.to]
         p.page-head__descr(itemprop='description')=self.users[self.dialog.to].name
 
-    if self.can_create_dialog_with_user
+    - var recipient = self.users[self.dialog.to];
+    if recipient && self.can_create_dialog_with_user
       .user-messages-list-reply
         button.btn.btn-block.btn-link(
           data-dialog-id=self.dialog._id
-          data-dialog-title=self.dialog.title
           data-dialog-last-message=self.dialog.cache.last_message
           data-on-click='users.dialog:reply'
+          data-to-nick=recipient.nick
+          data-to-hid=recipient.hid
         )=self.t('reply')
 
     if self.messages.length === 0

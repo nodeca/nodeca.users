@@ -16,15 +16,15 @@ module.exports = function (N, collectionName) {
   };
 
   let Dialog = new Schema({
-    common_id    : Schema.Types.ObjectId, // common _id between personal copies of dialogue
-
-    title        : String,
     user         : Schema.Types.ObjectId, // copy owner's _id
     to           : Schema.Types.ObjectId, // opponent user _id
 
     cache,
 
     unread       : { type: Number, 'default': 0 }, // number of messages unread by owner
+
+    // set to `false` if dialog is deleted by the user,
+    // it'll reset to `true` whenever a new message between two users is created
     exists       : { type: Boolean, 'default': true }
   }, {
     versionKey: false
@@ -41,12 +41,8 @@ module.exports = function (N, collectionName) {
   // Used to remove all dialogs created by a user from ACP
   Dialog.index({ to: 1 });
 
-  // Used to find opponent's dialog copy in:
-  //
-  // - dialogs list
-  // - reply
-  //
-  Dialog.index({ common_id: 1 });
+  // Used to find dialog between users
+  Dialog.index({ user: 1, to: 1 });
 
   /////////////////////////////////////////////////////////////////////////////
 

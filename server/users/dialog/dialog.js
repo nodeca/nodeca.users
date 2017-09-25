@@ -116,10 +116,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function fill_head(env) {
     env.res.head = env.res.head || {};
-    env.res.head.title = env.t('title', {
-      dlg_title: env.data.dialog.title,
-      user: env.user_info.user_name
-    });
+    env.res.head.title = env.t('title', { user: env.data.user.name });
   });
 
 

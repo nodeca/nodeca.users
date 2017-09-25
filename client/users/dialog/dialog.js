@@ -251,8 +251,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
   N.wire.on(module.apiPath + ':reply', function reply(data) {
     return N.wire.emit('users.dialog.reply:begin', {
       dialog_id:           data.$this.data('dialog-id'),
-      dialog_title:        data.$this.data('dialog-title'),
-      dialog_last_message: data.$this.data('dialog-last-message')
+      dialog_last_message: data.$this.data('dialog-last-message'),
+      to_hid:              data.$this.data('to-hid'),
+      to_nick:             data.$this.data('to-nick')
     });
   });
 

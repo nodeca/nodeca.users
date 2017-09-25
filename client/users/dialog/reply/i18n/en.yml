@@ -1,4 +1,4 @@
 en-US:
-  reply: "Add reply to &quot;<a href='#{dialog_url}'>#{dialog_title}</a>&quot;"
+  title_with_nick: "Write reply to &quot;<a href='#{url}'>#{nick}</a>&quot;"
   options_btn:
     options: Options
