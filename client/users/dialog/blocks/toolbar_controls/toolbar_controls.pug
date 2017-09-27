@@ -1,0 +1,18 @@
+- var menu_rnd_id = 'rnd' + String(Math.random()).slice(2, 10)
+
+.page-actions
+  .page-actions__dropdown
+    button.btn.btn-secondary.btn-square.icon.icon-dropdown.dropdown-toggle(
+      type='button'
+      id=menu_rnd_id
+      aria-haspopup='true'
+      aria-expanded='false'
+      data-toggle='dropdown'
+    )
+
+    .dropdown-menu.dropdown-menu-right(aria-labelledby=menu_rnd_id)
+      button.dropdown-item(
+        type='button'
+        data-on-click='users.dialog:delete_dialog'
+        data-dialog-id=self.dialog._id
+      )= self.t('delete')

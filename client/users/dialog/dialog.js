@@ -258,6 +258,21 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
   });
 
 
+  // Delete dialog
+  //
+  N.wire.on(module.apiPath + ':delete_dialog', function delete_dialog(data) {
+    let dialog_id = data.$this.data('dialog-id');
+
+    return Promise.resolve()
+      .then(() => N.wire.emit('common.blocks.confirm', t('delete_confirmation')))
+      .then(() => N.io.rpc('users.dialog.destroy', { dialog_id }))
+      .then(() => N.wire.emit('navigate.to', {
+        apiPath: 'users.dialogs_root',
+        params: { user_hid: N.runtime.user_hid }
+      }));
+  });
+
+
   ///////////////////////////////////////////////////////////////////////////
   // Whenever we are close to beginning/end of dialog list, check if we can
   // load more pages from the server

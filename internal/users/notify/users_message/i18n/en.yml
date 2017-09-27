@@ -1,3 +1,3 @@
 en-US:
-  subject: '#{project_name}: #{user_name} wrote you a message'
+  subject: '#{project_name}: message from #{user_name}'
   reply: Reply
