@@ -6,7 +6,7 @@
 #content
   -
     var navbar_args = {
-      title:    (self.users[self.dialog.to] || {}).name || '',
+      title:    self.t('title', { nick: (self.users[self.dialog.to] || {}).name || '' }),
       level_up: self.link_to('users.dialogs_root', { user_hid: self.runtime.user_hid, dialog_id: self.dialog._id }),
       toolbar:  'users.dialog.blocks.toolbar_controls',
       progress: {
