@@ -1,4 +1,4 @@
-// Show infraction reply
+// Show infraction question form
 //
 
 'use strict';

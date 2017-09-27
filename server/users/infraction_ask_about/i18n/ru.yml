@@ -1,6 +1,5 @@
 en-US:
   exec:
-    message_subject: Вопрос о предупреждении
     message_text: |
       Вопрос о предупреждении "#{reason}"\
       #{link}

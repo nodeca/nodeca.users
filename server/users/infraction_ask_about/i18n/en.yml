@@ -1,6 +1,5 @@
 en-US:
   exec:
-    message_subject: Question about infraction
     message_text: |
       Question about infraction "#{reason}"\
       #{link}

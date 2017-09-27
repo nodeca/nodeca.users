@@ -1,4 +1,4 @@
 en-US:
-  title: Dialogs
+  title: 'Dialogs: #{nick}'
   no_messages: No dialogs
   reply: Write a message

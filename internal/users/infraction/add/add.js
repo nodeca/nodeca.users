@@ -6,7 +6,6 @@
 
 const _        = require('lodash');
 const userInfo = require('nodeca.users/lib/user_info');
-const ObjectId = require('mongoose').Types.ObjectId;
 
 
 module.exports = function (N, apiPath) {
@@ -52,11 +51,6 @@ module.exports = function (N, apiPath) {
     let info_env = { infractions: [ infraction ], user_info: to, info: {} };
 
     await N.wire.emit('internal:users.infraction.info', info_env);
-
-
-    // Dialog title
-    //
-    let title = N.i18n.t(locale, 'users.infraction.add.title', infraction.points);
 
 
     // Fetch moderator nick
@@ -164,9 +158,8 @@ module.exports = function (N, apiPath) {
       tail:         parse_result.tail
     };
 
-    let dialog_data = {
-      common_id: new ObjectId(),
-      title,
+    let dlg_update_data = {
+      exists: true, // force dialog to re-appear if it was deleted
       cache: {
         last_user: message_data.user,
         last_ts: message_data.ts,
@@ -174,39 +167,47 @@ module.exports = function (N, apiPath) {
       }
     };
 
-
-    // Create violator dialog and message
+    // Find opponent's dialog, create if doesn't exist
     //
-    let to_dialog = new N.models.users.Dialog(_.merge({
-      user:   infraction.for,
-      to:     bot._id,
-      unread: 1
-    }, dialog_data));
+    let opponent_dialog = await N.models.users.Dialog.findOne({
+      user: infraction.for,
+      to:   bot._id
+    });
 
-    let to_msg = new N.models.users.DlgMessage(_.assign({
-      parent: to_dialog._id
+    if (!opponent_dialog) {
+      opponent_dialog = new N.models.users.Dialog({
+        user: infraction.for,
+        to:   bot._id
+      });
+    }
+
+    _.merge(opponent_dialog, dlg_update_data);
+
+    let opponent_msg = new N.models.users.DlgMessage(_.assign({
+      parent: opponent_dialog._id
     }, message_data));
 
-    to_dialog.cache.last_message = to_msg._id;
-    to_dialog.cache.is_reply     = String(to_msg.user) === String(message_data.user);
+    opponent_dialog.unread = (opponent_dialog.unread || 0) + 1;
+    opponent_dialog.cache.last_message = opponent_msg._id;
+    opponent_dialog.cache.is_reply     = String(opponent_msg.user) === String(message_data.user);
 
 
     // Save dialogs and messages
     //
     await Promise.all([
-      to_dialog.save(),
-      to_msg.save()
+      opponent_dialog.save(),
+      opponent_msg.save()
     ]);
 
 
     // Notify user
     //
-    let dialogs_notify = await N.settings.get('dialogs_notify', { user_id: to_dialog.user });
+    let dialogs_notify = await N.settings.get('dialogs_notify', { user_id: opponent_dialog.user });
 
     if (dialogs_notify) {
       await N.wire.emit('internal:users.notify', {
-        src:  to_dialog._id,
-        to:   to_dialog.user,
+        src:  opponent_dialog._id,
+        to:   opponent_dialog.user,
         type: 'USERS_MESSAGE'
       });
     }

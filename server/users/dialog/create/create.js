@@ -260,7 +260,7 @@ module.exports = function (N, apiPath) {
     models_to_save = models_to_save.concat([ own_dialog, own_msg ]);
 
 
-    // Create opponent's message if:
+    // Create opponent's dialog and message if:
     //
     // - both users are hellbanned
     // - both users are not hellbanned
