@@ -33,7 +33,8 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, async function fetch_and_fill_permissions(env) {
     env.res.settings = env.data.settings = await env.extras.settings.fetch([
       'can_use_dialogs',
-      'can_create_dialogs'
+      'can_create_dialogs',
+      'can_report_abuse'
     ]);
   });
 

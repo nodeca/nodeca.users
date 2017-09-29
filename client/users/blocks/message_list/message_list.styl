@@ -43,10 +43,20 @@ $space        = 1rem
   & > p:last-child
     margin-bottom .5rem // Compensate line-height 1.5 rem
 
-.user-messages-list-item__date
+.user-messages-list-item__controls
   font-size $font-size-xs
   color $body-color-secondary
   margin-bottom ($space / 4)
+
+.user-messages-list-item__action
+  background-color transparent
+  color $body-color-secondary
+
+  &:hover
+  &:focus
+  &:active
+    color $body-color-secondary - 20%
+    background-color $body-bg-secondary
 
 // Mirrored layout
 .user-messages-list-item__m-self
@@ -55,7 +65,7 @@ $space        = 1rem
     padding-right 0
   .user-messages-list-item__content
     padding: ($space / 2) $space 0 (($avatar-size + $space) * 2 + $sep-width)
-  .user-messages-list-item__date
+  .user-messages-list-item__controls
   .user-messages-list-item__aside-inline
     text-align right
 

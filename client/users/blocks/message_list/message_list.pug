@@ -22,7 +22,19 @@ each message in self.messages
           if (message.tail && message.tail.length)
             .user-messages-list-item__tail.markup-tail!=self.partial('@users.blocks.message_list.attachments', { message: message, author: author })
 
-        .user-messages-list-item__date!=self.timetag(message.ts, 'relative')
+        .user-messages-list-item__controls
+          span.user-messages-list-item__date!=self.timetag(message.ts, 'relative')
+
+          span.user-messages-list-item__dropdown.dropdown.dropup
+            button.user-messages-list-item__action.btn.btn-sm.btn-square.dropdown-toggle(
+              data-toggle='dropdown'
+              role='button'
+            )
+            .dropdown-menu.dropdown-menu-right(role='menu')
+              button.dropdown-item= self.t('delete')
+
+              if self.settings.can_report_abuse
+                button.dropdown-item= self.t('report')
 
       .user-messages-list-item__separator
 
@@ -67,4 +79,16 @@ each message in self.messages
           if (message.tail && message.tail.length)
             .user-messages-list-item__tail.markup-tail!=self.partial('@users.blocks.message_list.attachments', { message: message, author: author })
 
-        .user-messages-list-item__date!=self.timetag(message.ts, 'relative')
+        .user-messages-list-item__controls
+          span.user-messages-list-item__date!=self.timetag(message.ts, 'relative')
+
+          span.user-messages-list-item__dropdown.dropdown.dropup
+            button.user-messages-list-item__action.btn.btn-sm.btn-square.dropdown-toggle(
+              data-toggle='dropdown'
+              role='button'
+            )
+            .dropdown-menu.dropdown-menu-left(role='menu')
+              button.dropdown-item= self.t('delete')
+
+              if self.settings.can_report_abuse
+                button.dropdown-item= self.t('report')

@@ -4,10 +4,6 @@
 'use strict';
 
 
-const Promise = require('bluebird');
-const numCPUs = require('os').cpus().length;
-
-
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
@@ -57,10 +53,10 @@ module.exports = function (N, apiPath) {
   // Delete album with all photos
   //
   N.wire.on(apiPath, async function delete_album(env) {
-    await Promise.map(
-      env.data.album_media,
-      media => N.models.users.MediaInfo.markDeleted(media.media_id, false),
-      { concurrency: numCPUs }
+    await Promise.all(
+      env.data.album_media.map(media =>
+        N.models.users.MediaInfo.markDeleted(media.media_id, false)
+      )
     );
 
     await env.data.album.remove();
