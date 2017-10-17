@@ -53,15 +53,14 @@ each dialog in self.dialogs
               message_id: dialog.cache.last_message
             }))= to.name
 
-          .dialog-list-item__meta
-            .dialog-list-item__date!=self.timetag(dialog.cache.last_ts, 'relative')
+          .dialog-list-item__date!=self.timetag(dialog.cache.last_ts, 'relative')
 
-            .dialog-list-item__controls
-              button.dialog-list-item__delete.btn.btn-sm.btn-link.icon.icon-x(
-                title=self.t('delete')
-                data-dialog-id=dialog._id
-                data-on-click='users.dialogs_root:delete_dialog'
-              )
+        .dialog-list-item__controls
+          button.dialog-list-item__delete.btn.btn-sm.btn-link.icon.icon-x(
+            title=self.t('delete')
+            data-dialog-id=dialog._id
+            data-on-click='users.dialogs_root:delete_dialog'
+          )
 
       a.dialog-list-item__preview(href=self.link_to('users.dialog', {
         dialog_id: dialog._id,
