@@ -1,3 +1,7 @@
+- var show_mod_dropdown = false;
+- show_mod_dropdown = show_mod_dropdown || self.settings.can_see_ip;
+- show_mod_dropdown = show_mod_dropdown || self.settings.users_mod_can_add_infractions;
+
 each message in self.messages
   - var author = self.users[message.user];
 
@@ -26,7 +30,7 @@ each message in self.messages
           span.user-messages-list-item__date!=self.timetag(message.ts, 'relative')
 
           span.user-messages-list-item__dropdown.dropdown.dropup
-            button.user-messages-list-item__action.btn.btn-sm.btn-square.dropdown-toggle(
+            button.user-messages-list-item__action.btn.btn-sm.btn-square.dropdown-toggle.icon.icon-dropdown-local(
               data-toggle='dropdown'
               role='button'
             )
@@ -35,6 +39,19 @@ each message in self.messages
 
               if self.settings.can_report_abuse
                 button.dropdown-item= self.t('report')
+
+          if show_mod_dropdown
+            span.user-messages-list-item__dropdown.dropdown.dropup
+              button.user-messages-list-item__action.btn.btn-sm.btn-square.dropdown-toggle(
+                data-toggle='dropdown'
+                role='button'
+              )
+              .dropdown-menu.dropdown-menu-right(role='menu')
+                if self.settings.users_mod_can_add_infractions
+                  button.dropdown-item= self.t('add_infraction')
+
+                if self.settings.can_see_ip
+                  button.dropdown-item= self.t('ip_info')
 
       .user-messages-list-item__separator
 
@@ -83,7 +100,7 @@ each message in self.messages
           span.user-messages-list-item__date!=self.timetag(message.ts, 'relative')
 
           span.user-messages-list-item__dropdown.dropdown.dropup
-            button.user-messages-list-item__action.btn.btn-sm.btn-square.dropdown-toggle(
+            button.user-messages-list-item__action.btn.btn-sm.btn-square.dropdown-toggle.icon.icon-dropdown-local(
               data-toggle='dropdown'
               role='button'
             )
@@ -92,3 +109,16 @@ each message in self.messages
 
               if self.settings.can_report_abuse
                 button.dropdown-item= self.t('report')
+
+          if show_mod_dropdown
+            span.user-messages-list-item__dropdown.dropdown.dropup
+              button.user-messages-list-item__action.btn.btn-sm.btn-square.dropdown-toggle(
+                data-toggle='dropdown'
+                role='button'
+              )
+              .dropdown-menu.dropdown-menu-right(role='menu')
+                if self.settings.users_mod_can_add_infractions
+                  button.dropdown-item= self.t('add_infraction')
+
+                if self.settings.can_see_ip
+                  button.dropdown-item= self.t('ip_info')

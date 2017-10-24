@@ -34,7 +34,9 @@ module.exports = function (N, apiPath) {
     env.res.settings = env.data.settings = await env.extras.settings.fetch([
       'can_use_dialogs',
       'can_create_dialogs',
-      'can_report_abuse'
+      'can_report_abuse',
+      'can_see_ip',
+      'users_mod_can_add_infractions'
     ]);
   });
 
