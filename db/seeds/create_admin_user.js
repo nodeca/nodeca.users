@@ -19,7 +19,7 @@ module.exports = async function (N) {
   ];
 
   let result = await new Promise((resolve, reject) => {
-    prompt.get(schema, err => (err ? reject(err) : resolve()));
+    prompt.get(schema, (err, data) => (err ? reject(err) : resolve(data)));
   });
 
   let login = result.login || 'admin';
