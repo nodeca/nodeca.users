@@ -3,7 +3,7 @@
 
 const assert      = require('assert');
 const randomBytes = require('crypto').randomBytes;
-const simplesmtp  = require('simplesmtp');
+const SMTPServer  = require('smtp-server').SMTPServer;
 
 
 describe('Reset password', function () {
@@ -13,6 +13,7 @@ describe('Reset password', function () {
   let new_password = randomBytes(10).toString('hex') + 'Abc123';
   let user;
   let smtp;
+  let on_message;
 
 
   before(async function () {
@@ -34,10 +35,19 @@ describe('Reset password', function () {
     await authProvider.setPass(old_password);
     await authProvider.save();
 
-    smtp = simplesmtp.createServer({ disableDNSValidation: true });
+    smtp = new SMTPServer({
+      authOptional: true,
+      onData(stream, session, callback) {
+        let data = '';
+        stream.setEncoding('utf8');
 
-    smtp.on('startData', connection => { connection.body = ''; });
-    smtp.on('data', (connection, chunk) => { connection.body += chunk; });
+        stream.on('data', d => { data += d; });
+        stream.on('end', () => {
+          on_message(session, data);
+          callback();
+        });
+      }
+    });
 
     await new Promise((resolve, reject) => {
       smtp.listen(2525, err => (err ? reject(err) : resolve()));
@@ -47,10 +57,9 @@ describe('Reset password', function () {
 
   it('should send email with password reset link', async function () {
     let get_email = new Promise(resolve => {
-      smtp.once('dataReady', (connection, cb) => {
-        cb();
-        resolve(connection.body.replace(/\=\r\n/g, ''));
-      });
+      on_message = (session, data) => {
+        resolve(data.replace(/\=\r\n/g, ''));
+      };
     });
 
     await TEST.browser
@@ -84,10 +93,9 @@ describe('Reset password', function () {
     });
 
     let get_email = new Promise(resolve => {
-      smtp.once('dataReady', (connection, cb) => {
-        cb();
-        resolve(connection.body.replace(/\=\r\n/g, ''));
-      });
+      on_message = (session, data) => {
+        resolve(data.replace(/\=\r\n/g, ''));
+      };
     });
 
     await TEST.browser
@@ -116,5 +124,5 @@ describe('Reset password', function () {
   });
 
 
-  after(done => smtp.end(done));
+  after(done => smtp.close(done));
 });

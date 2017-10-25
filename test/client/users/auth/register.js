@@ -3,19 +3,29 @@
 
 const assert      = require('assert');
 const randomBytes = require('crypto').randomBytes;
-const simplesmtp  = require('simplesmtp');
+const SMTPServer  = require('smtp-server').SMTPServer;
 const password    = require('nodeca.users/models/users/_lib/password');
 
 
 describe('Register', function () {
   let smtp;
+  let on_message;
 
 
   before(function (done) {
-    smtp = simplesmtp.createServer({ disableDNSValidation: true });
+    smtp = new SMTPServer({
+      authOptional: true,
+      onData(stream, session, callback) {
+        let data = '';
+        stream.setEncoding('utf8');
 
-    smtp.on('startData', connection => { connection.body = ''; });
-    smtp.on('data', (connection, chunk) => { connection.body += chunk; });
+        stream.on('data', d => { data += d; });
+        stream.on('end', () => {
+          on_message(session, data);
+          callback();
+        });
+      }
+    });
 
     smtp.listen(2525, done);
   });
@@ -26,10 +36,9 @@ describe('Register', function () {
     let pass     = randomBytes(10).toString('hex') + 'Abc123';
 
     let get_email = new Promise(resolve => {
-      smtp.once('dataReady', (connection, cb) => {
-        cb();
-        resolve(connection.body.replace(/\=\r\n/g, ''));
-      });
+      on_message = (session, data) => {
+        resolve(data.replace(/\=\r\n/g, ''));
+      };
     });
 
     await TEST.browser
@@ -83,5 +92,5 @@ describe('Register', function () {
   });
 
 
-  after(done => smtp.end(done));
+  after(done => smtp.close(done));
 });
