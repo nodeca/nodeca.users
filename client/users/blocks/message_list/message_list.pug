@@ -38,7 +38,10 @@ each message in self.messages
               button.dropdown-item= self.t('delete')
 
               if self.settings.can_report_abuse
-                button.dropdown-item= self.t('report')
+                button.dropdown-item(
+                  data-message-id=message._id
+                  data-on-click='users.dialog:report'
+                )= self.t('report')
 
           if show_mod_dropdown
             span.user-messages-list-item__dropdown.dropdown.dropup
@@ -108,7 +111,10 @@ each message in self.messages
               button.dropdown-item= self.t('delete')
 
               if self.settings.can_report_abuse
-                button.dropdown-item= self.t('report')
+                button.dropdown-item(
+                  data-message-id=message._id
+                  data-on-click='users.dialog:report'
+                )= self.t('report')
 
           if show_mod_dropdown
             span.user-messages-list-item__dropdown.dropdown.dropup

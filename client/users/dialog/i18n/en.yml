@@ -3,3 +3,4 @@ en-US:
   no_messages: No dialogs
   reply: Write a message
   delete_confirmation: Are you sure want to delete whole conversation? This action is non-cancelable.
+  abuse_reported: Your report has been sent

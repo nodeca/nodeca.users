@@ -258,6 +258,19 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
   });
 
 
+  // Click report button
+  //
+  N.wire.on(module.apiPath + ':report', function dialog_message_report(data) {
+    let params = { messages: t('@users.abuse_report.messages') };
+    let id = data.$this.data('message-id');
+
+    return Promise.resolve()
+      .then(() => N.wire.emit('common.blocks.abuse_report_dlg', params))
+      .then(() => N.io.rpc('users.dialog.abuse_report', { message_id: id, message: params.message }))
+      .then(() => N.wire.emit('notify.info', t('abuse_reported')));
+  });
+
+
   // Delete dialog
   //
   N.wire.on(module.apiPath + ':delete_dialog', function delete_dialog(data) {
