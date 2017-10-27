@@ -213,6 +213,7 @@ module.exports = function (N, apiPath) {
       user:         env.user_info.user_id,
       html:         env.data.parse_result.html,
       md:           env.params.txt,
+      ip:           env.req.ip,
       attach:       env.params.attach,
       params:       env.data.parse_options,
       imports:      env.data.parse_result.imports,

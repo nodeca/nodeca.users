@@ -24,6 +24,7 @@ module.exports = function (N, collectionName) {
     parent       : Schema.Types.ObjectId,
     user         : Schema.Types.ObjectId,
     ts           : { type: Date, 'default': Date.now },
+    ip           : String,  // ip address
     exists       : { type: Boolean, 'default': true },
 
 

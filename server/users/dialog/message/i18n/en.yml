@@ -1,0 +1,3 @@
+en-US:
+  ip_info:
+    err_no_ip: IP address for this message is not specified

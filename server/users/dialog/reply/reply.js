@@ -208,6 +208,7 @@ module.exports = function (N, apiPath) {
       user:         env.user_info.user_id,
       html:         env.data.parse_result.html,
       md:           env.params.txt,
+      ip:           env.req.ip,
       attach:       env.params.attach,
       params:       env.data.parse_options,
       imports:      env.data.parse_result.imports,
@@ -252,8 +253,16 @@ module.exports = function (N, apiPath) {
     // - both users are hellbanned
     // - both users are not hellbanned
     //
-    if ((env.user_info.hb && env.data.to.hb) || (!env.user_info.hb && !env.data.to.hb)) {
+    let create_opponents_message = (env.user_info.hb && env.data.to.hb) || (!env.user_info.hb && !env.data.to.hb);
 
+    // check current user to avoid creating 2 identical messages
+    // (admin could create a dialog with himself using `infraction_ask_about`
+    // and answer to it)
+    if (String(env.data.to._id) === String(env.user_info.user_id)) {
+      create_opponents_message = false;
+    }
+
+    if (create_opponents_message) {
       // Find opponent's dialog, create if doesn't exist
       //
       let opponent_dialog = await N.models.users.Dialog.findOne({

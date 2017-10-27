@@ -57,7 +57,10 @@ each message in self.messages
                   button.dropdown-item= self.t('add_infraction')
 
                 if self.settings.can_see_ip
-                  button.dropdown-item= self.t('ip_info')
+                  button.dropdown-item(
+                    data-message-id=message._id
+                    data-on-click='users.dialog:show_ip'
+                  )= self.t('ip_info')
 
       .user-messages-list-item__separator
 
@@ -133,4 +136,7 @@ each message in self.messages
                   button.dropdown-item= self.t('add_infraction')
 
                 if self.settings.can_see_ip
-                  button.dropdown-item= self.t('ip_info')
+                  button.dropdown-item(
+                    data-message-id=message._id
+                    data-on-click='users.dialog:show_ip'
+                  )= self.t('ip_info')

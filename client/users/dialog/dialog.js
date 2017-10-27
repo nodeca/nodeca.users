@@ -271,6 +271,13 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
   });
 
 
+  // Show message IP
+  //
+  N.wire.on(module.apiPath + ':show_ip', function show_ip(data) {
+    return N.wire.emit('users.dialog.ip_info_dlg', { message_id: data.$this.data('message-id') });
+  });
+
+
   // Delete message
   //
   N.wire.on(module.apiPath + ':delete_message', function delete_message(data) {
