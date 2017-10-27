@@ -35,7 +35,10 @@ each message in self.messages
               role='button'
             )
             .dropdown-menu.dropdown-menu-right(role='menu')
-              button.dropdown-item= self.t('delete')
+              button.dropdown-item(
+                data-message-id=message._id
+                data-on-click='users.dialog:delete_message'
+              )= self.t('delete')
 
               if self.settings.can_report_abuse
                 button.dropdown-item(
@@ -108,7 +111,10 @@ each message in self.messages
               role='button'
             )
             .dropdown-menu.dropdown-menu-left(role='menu')
-              button.dropdown-item= self.t('delete')
+              button.dropdown-item(
+                data-message-id=message._id
+                data-on-click='users.dialog:delete_message'
+              )= self.t('delete')
 
               if self.settings.can_report_abuse
                 button.dropdown-item(

@@ -260,14 +260,46 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
 
   // Click report button
   //
-  N.wire.on(module.apiPath + ':report', function dialog_message_report(data) {
+  N.wire.on(module.apiPath + ':report', function report_message(data) {
     let params = { messages: t('@users.abuse_report.messages') };
     let id = data.$this.data('message-id');
 
     return Promise.resolve()
       .then(() => N.wire.emit('common.blocks.abuse_report_dlg', params))
-      .then(() => N.io.rpc('users.dialog.abuse_report', { message_id: id, message: params.message }))
+      .then(() => N.io.rpc('users.dialog.message.abuse_report', { message_id: id, message: params.message }))
       .then(() => N.wire.emit('notify.info', t('abuse_reported')));
+  });
+
+
+  // Delete message
+  //
+  N.wire.on(module.apiPath + ':delete_message', function delete_message(data) {
+    let message_id = data.$this.data('message-id');
+    let $message = $(`#message${message_id}`);
+
+    return Promise.resolve()
+      .then(() => N.wire.emit('common.blocks.confirm', t('delete_message_confirmation')))
+      .then(() => N.io.rpc('users.dialog.message.destroy', { message_id }))
+      .then(res => {
+        if (res.message_count === 0) {
+          // last message is removed, redirect to dialog list
+          return N.wire.emit('navigate.to', {
+            apiPath: 'users.dialogs_root',
+            params: { user_hid: N.runtime.user_hid }
+          });
+        }
+
+        $message.fadeOut(() => $message.remove());
+
+        //
+        // Update progress bar
+        //
+        dlgState.message_count = res.message_count;
+
+        return N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
+          max: res.message_count
+        });
+      });
   });
 
 
@@ -277,7 +309,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
     let dialog_id = data.$this.data('dialog-id');
 
     return Promise.resolve()
-      .then(() => N.wire.emit('common.blocks.confirm', t('delete_confirmation')))
+      .then(() => N.wire.emit('common.blocks.confirm', t('delete_dialog_confirmation')))
       .then(() => N.io.rpc('users.dialog.destroy', { dialog_id }))
       .then(() => N.wire.emit('navigate.to', {
         apiPath: 'users.dialogs_root',
