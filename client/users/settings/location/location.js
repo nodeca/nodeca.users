@@ -174,10 +174,7 @@ N.wire.on(module.apiPath + ':save', function save_marker() {
                ((latlng.lng + 180) % 360) - 180 :
                ((latlng.lng - 180) % 360) + 180
   }).then(() => {
-    // center map on marker
-    map.flyTo(latlng);
-
-    return N.wire.emit('notify.info', t('saved'));
+    return N.wire.emit('navigate.to', { apiPath: 'users.settings.about' });
   }).catch(err => N.wire.emit('error', err));
 });
 

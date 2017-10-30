@@ -16,6 +16,9 @@
       p.page-head__descr.d-none.d-sm-block(itemprop='description')
         = self.t('description')
 
+    .alert.alert-warning
+      = self.t('notice')
+
     .user-settings-location__map-container
       .user-settings-location__map
 
@@ -24,6 +27,3 @@
         type='submit'
         disabled
       )= self.t('submit')
-
-    .alert.alert-warning
-      = self.t('notice')
