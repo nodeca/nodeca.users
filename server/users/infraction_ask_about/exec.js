@@ -242,26 +242,27 @@ module.exports = function (N, apiPath) {
     let models_to_save = [];
 
 
-    // Find own dialog, create if doesn't exist
+    // Create own message and update dialog
     //
-    let own_dialog = await N.models.users.Dialog.findOne({
-      user: env.user_info.user_id,
-      to:   env.data.to._id
-    });
+    // check current user to avoid creating 2 identical messages
+    if (String(env.data.infraction.from) !== String(env.user_info.user_id)) {
 
-    if (!own_dialog) {
-      own_dialog = new N.models.users.Dialog({
+      // Find own dialog, create if doesn't exist
+      //
+      let own_dialog = await N.models.users.Dialog.findOne({
         user: env.user_info.user_id,
         to:   env.data.to._id
       });
-    }
 
-    _.merge(own_dialog, dlg_update_data);
+      if (!own_dialog) {
+        own_dialog = new N.models.users.Dialog({
+          user: env.user_info.user_id,
+          to:   env.data.to._id
+        });
+      }
 
-    // Create own message and update dialog
-    //
-    // check current user to avoid creating 2 identical dialogs
-    if (String(env.data.infraction.from) !== String(env.user_info.user_id)) {
+      _.merge(own_dialog, dlg_update_data);
+
       let own_msg = new N.models.users.DlgMessage(_.assign({
         parent: own_dialog._id
       }, message_data));

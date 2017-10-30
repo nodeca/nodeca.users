@@ -49,14 +49,6 @@ module.exports = function (N, apiPath) {
         message: env.t('err_user_not_found')
       };
     }
-
-    if (String(env.data.to._id) === env.user_info.user_id) {
-      throw {
-        type: 'BAD_NICK',
-        code: N.io.CLIENT_ERROR,
-        message: env.t('err_write_to_self')
-      };
-    }
   });
 
 
@@ -231,37 +223,43 @@ module.exports = function (N, apiPath) {
     };
 
     let models_to_save = [];
+    let saved_msg;
 
-
-    // Find own dialog, create if doesn't exist
-    //
-    let own_dialog = await N.models.users.Dialog.findOne({
-      user: env.user_info.user_id,
-      to:   env.data.to._id
-    });
-
-    if (!own_dialog) {
-      own_dialog = new N.models.users.Dialog({
-        user: env.user_info.user_id,
-        to:   env.data.to._id
-      });
-    }
-
-    _.merge(own_dialog, dlg_update_data);
 
     // Create own message and update dialog
     //
-    let own_msg = new N.models.users.DlgMessage(_.assign({
-      parent: own_dialog._id
-    }, message_data));
+    // check current user to avoid creating 2 identical messages
+    if (String(env.data.to._id) !== String(env.user_info.user_id)) {
 
-    own_dialog.cache.last_message = own_msg._id;
-    own_dialog.cache.is_reply     = String(own_msg.user) === String(message_data.user);
+      // Find own dialog, create if doesn't exist
+      //
+      let own_dialog = await N.models.users.Dialog.findOne({
+        user: env.user_info.user_id,
+        to:   env.data.to._id
+      });
 
-    models_to_save = models_to_save.concat([ own_dialog, own_msg ]);
+      if (!own_dialog) {
+        own_dialog = new N.models.users.Dialog({
+          user: env.user_info.user_id,
+          to:   env.data.to._id
+        });
+      }
+
+      _.merge(own_dialog, dlg_update_data);
+
+      let own_msg = new N.models.users.DlgMessage(_.assign({
+        parent: own_dialog._id
+      }, message_data));
+
+      own_dialog.cache.last_message = own_msg._id;
+      own_dialog.cache.is_reply     = String(own_msg.user) === String(message_data.user);
+
+      models_to_save = models_to_save.concat([ own_dialog, own_msg ]);
+      saved_msg = own_msg;
+    }
 
 
-    // Create opponent's dialog and message if:
+    // Create opponent's message if:
     //
     // - both users are hellbanned
     // - both users are not hellbanned
@@ -304,6 +302,9 @@ module.exports = function (N, apiPath) {
           type: 'USERS_MESSAGE'
         });
       }
+
+      // user sends message to himself
+      if (!saved_msg) saved_msg = opponent_msg;
     }
 
 
@@ -314,8 +315,8 @@ module.exports = function (N, apiPath) {
 
     // Fill response
     //
-    env.res.dialog_id  = own_msg.parent;
-    env.res.message_id = own_msg._id;
+    env.res.dialog_id  = saved_msg.parent;
+    env.res.message_id = saved_msg._id;
   });
 
 
