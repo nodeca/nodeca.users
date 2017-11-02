@@ -23,8 +23,9 @@
 'use strict';
 
 
-const _           = require('lodash');
-const filter_jpeg = require('nodeca.users/lib/filter_jpeg');
+const _              = require('lodash');
+const filter_jpeg    = require('nodeca.users/lib/filter_jpeg');
+const resize_outline = require('nodeca.users/lib/resize_outline');
 
 
 let settings;
@@ -106,36 +107,9 @@ function resizeImage(data) {
       $progressStatus.show(0);
 
       img.onload = () => {
-        // To scale image we calculate new width and height, resize image by height and crop by width
-        let scaledHeight, scaledWidth;
-
-        if (resizeConfig.height && !resizeConfig.width) {
-          // If only height defined - scale to fit height,
-          // and crop by max_width
-          scaledHeight = resizeConfig.height;
-
-          let proportionalWidth = Math.floor(img.width * scaledHeight / img.height);
-
-          scaledWidth = (!resizeConfig.max_width || resizeConfig.max_width > proportionalWidth) ?
-                        proportionalWidth :
-                        resizeConfig.max_width;
-
-        } else if (!resizeConfig.height && resizeConfig.width) {
-          // If only width defined - scale to fit width,
-          // and crop by max_height
-          scaledWidth = resizeConfig.width;
-
-          let proportionalHeight = Math.floor(img.height * scaledWidth / img.width);
-
-          scaledHeight = (!resizeConfig.max_height || resizeConfig.max_height > proportionalHeight) ?
-                         proportionalHeight :
-                         resizeConfig.max_height;
-
-        } else {
-          // If determine both width and height
-          scaledWidth = resizeConfig.width;
-          scaledHeight = resizeConfig.height;
-        }
+        let u = resize_outline(img.width, img.height, resizeConfig);
+        let scaledWidth = u.crop_width;
+        let scaledHeight = u.crop_height;
 
         /*eslint-disable no-undefined*/
         let quality = (ext === 'jpeg' || ext === 'jpg') ? resizeConfig.jpeg_quality : undefined;

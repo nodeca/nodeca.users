@@ -28,17 +28,18 @@
 //
 'use strict';
 
-const _           = require('lodash');
-const from2       = require('from2');
-const readFile    = require('util').promisify(require('fs').readFile);
-const mime        = require('mime-types').lookup;
-const Mongoose    = require('mongoose');
-const pump        = require('util').promisify(require('pump'));
-const stream      = require('readable-stream');
-const sharp       = require('sharp');
-const through2    = require('through2');
-const filter_jpeg = require('nodeca.users/lib/filter_jpeg');
-const probe       = require('probe-image-size');
+const _              = require('lodash');
+const from2          = require('from2');
+const readFile       = require('util').promisify(require('fs').readFile);
+const mime           = require('mime-types').lookup;
+const Mongoose       = require('mongoose');
+const pump           = require('util').promisify(require('pump'));
+const stream         = require('readable-stream');
+const sharp          = require('sharp');
+const through2       = require('through2');
+const filter_jpeg    = require('nodeca.users/lib/filter_jpeg');
+const probe          = require('probe-image-size');
+const resize_outline = require('nodeca.users/lib/resize_outline');
 
 
 let File;
@@ -83,63 +84,11 @@ function filter_jpeg_stream(options) {
 async function createPreview(image, resizeConfig, imageType) {
   // To scale image, we calculate new width and height,
   // resize image by height, and crop by width
-  let scaledHeight, scaledWidth, saveAsIs = false;
+  let saveAsIs = false;
 
-  if (resizeConfig.height && !resizeConfig.width) {
-    // If only height is defined, scale to fit height
-    // and crop by max_width
-    scaledHeight = resizeConfig.height;
-
-    let proportionalWidth = Math.floor(image.width * scaledHeight / image.height);
-
-    if (!resizeConfig.max_width || resizeConfig.max_width > proportionalWidth) {
-      scaledWidth = proportionalWidth;
-    } else {
-      scaledWidth = resizeConfig.max_width;
-    }
-  } else if (!resizeConfig.height && resizeConfig.width) {
-    // If only width is defined, scale to fit width
-    // and crop by max_height
-    scaledWidth = resizeConfig.width;
-
-    let proportionalHeight = Math.floor(image.height * scaledWidth / image.width);
-
-    if (!resizeConfig.max_height || resizeConfig.max_height > proportionalHeight) {
-      scaledHeight = proportionalHeight;
-    } else {
-      scaledHeight = resizeConfig.max_height;
-    }
-  } else if (resizeConfig.width && resizeConfig.height) {
-    // Both width and height are defined, so we scale the image to fit
-    // both width and height at the same time.
-    //
-    // As an example, 1000x200 image with max_width=170 and max_height=150
-    // would be scaled down to 170x34
-    //
-    let aspectRatio = image.width / image.height;
-
-    scaledWidth = image.width;
-    scaledHeight = image.height;
-
-    if (resizeConfig.width) {
-      scaledWidth = Math.min(scaledWidth, resizeConfig.width);
-      scaledHeight = scaledWidth / aspectRatio;
-    }
-
-    if (resizeConfig.height) {
-      scaledHeight = Math.min(scaledHeight, resizeConfig.height);
-      scaledWidth = scaledHeight * aspectRatio;
-    }
-  } else if (resizeConfig.max_width && resizeConfig.max_height) {
-    // Neither width nor height are defined, so we scale to fit
-    // either max_width or max_height (not necessarily both)
-    //
-    // As an example, 1000x200 image with max_width=170 and max_height=150
-    // would be scaled down to 750x150, and then cropped to 170x150
-    //
-    scaledWidth = resizeConfig.max_width;
-    scaledHeight = resizeConfig.max_height;
-  }
+  let u = resize_outline(image.width, image.height, resizeConfig);
+  let scaledWidth = u.crop_width;
+  let scaledHeight = u.crop_height;
 
   let outType = resizeConfig.type || imageType;
 
@@ -186,17 +135,6 @@ async function createPreview(image, resizeConfig, imageType) {
   if (!saveAsIs) {
     if (resizeConfig.unsharp) {
       sharpInstance.sharpen();
-    }
-
-    // Prevent scaled image to be larger than the original;
-    // this prevents "Invalid height (1 to 16383)" error
-    // caused by thin vertical images
-    //
-    if (scaledWidth > image.width || scaledHeight > image.height) {
-      let factor = Math.max(scaledWidth / image.width, scaledHeight / image.height);
-
-      scaledWidth /= factor;
-      scaledHeight /= factor;
     }
 
     sharpInstance.resize(Math.round(scaledWidth), Math.round(scaledHeight));
