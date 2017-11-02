@@ -22,47 +22,49 @@ if (self.email)
                 small.text-muted
                   =self.t('oauth_info')
             // ko with: email
-            .form-group(data-bind='css: { "has-danger": error }')
+            .form-group
               label(for='register_email')= self.t('email')
               input.form-control(
                 id='register_email'
                 name='email'
                 type='email'
                 placeholder= self.t('email_desc')
-                data-bind='value: value'
+                data-bind='value: value, css: { "is-invalid": error }'
               )
               // ko if: error && typeof error() === 'string'
-              .form-control-feedback(data-bind='text: error')
+              .invalid-feedback(data-bind='text: error')
               // /ko
             // /ko
 
             // ko with: pass
-            .form-group(data-bind='css: { "has-danger": error }')
+            .form-group
               label(for='register_pass')= self.t('pass')
               input.form-control(
                 id='register_pass'
                 name='pass'
                 type='password'
                 placeholder= self.t('pass_desc')
-                data-bind='value: value')
+                data-bind='value: value, css: { "is-invalid": error }'
+              )
               // ko if: error && typeof error() === 'string'
-              .form-control-feedback(data-bind='text: error')
+              .invalid-feedback(data-bind='text: error')
               // /ko
               small.form-text.text-muted= self.t('pass_help')
             // /ko
 
 
             // ko with: nick
-            .form-group(data-bind='css: { "has-danger": error }')
+            .form-group
               label(for='register_nick') #{self.t('nick')}
               input.form-control(
                 id='register_nick',
                 name='nick',
                 type='text',
                 placeholder= self.t('nick_desc')
-                data-bind='value: value, valueUpdate: "afterkeydown"')
+                data-bind='value: value, valueUpdate: "afterkeydown", css: { "is-invalid": error }'
+              )
               // ko if: error && typeof error() === 'string'
-              .form-control-feedback(data-bind='text: error')
+              .invalid-feedback(data-bind='text: error')
               // /ko
             // /ko
 

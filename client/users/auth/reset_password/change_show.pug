@@ -18,16 +18,17 @@
             form.card-body(data-on-submit='users.auth.reset_password.change_exec')
               input(type='hidden' name='secret_key' value=self.secret_key)
 
-              .form-group(data-bind='css: { "has-danger": error }')
+              .form-group
                 label(for='password')= self.t('password')
                 input.form-control(
                   id='password'
                   name='password'
                   type='password'
                   placeholder=self.t('password_desc')
+                  data-bind='css: { "is-invalid": error }'
                 )
                 // ko if: error && typeof error() === 'string'
-                .form-control-feedback(data-bind='text: error')
+                .invalid-feedback(data-bind='text: error')
                 // /ko
                 small.form-text.text-muted= self.t('password_help')
 

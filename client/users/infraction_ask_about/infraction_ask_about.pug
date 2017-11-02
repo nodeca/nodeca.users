@@ -22,10 +22,10 @@
         p.text-danger(data-bind='text: error')
 
       // ko with: message
-      .form-group(data-bind='css: { "has-danger": error }')
+      .form-group
         textarea.form-control.contact-form-textarea(
           name='message'
-          data-bind='value: value'
+          data-bind='value: value, css: { "is-invalid": error }'
         )
       // /ko
 

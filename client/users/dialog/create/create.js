@@ -138,10 +138,10 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
       let errors = false;
 
       if (!$.trim($to.val())) {
-        $to.parent().addClass('has-danger');
+        $to.addClass('is-invalid');
         errors = true;
       } else {
-        $to.parent().removeClass('has-danger');
+        $to.removeClass('is-invalid');
       }
 
       if (errors) {
@@ -173,7 +173,7 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
           $editor.find('.mdedit-btn__submit').removeClass('disabled');
 
           if (err.type === 'BAD_NICK') {
-            $to.parent().addClass('has-danger');
+            $to.addClass('is-invalid');
           }
 
           return N.wire.emit('error', err);

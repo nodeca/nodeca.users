@@ -4,7 +4,7 @@ label.user-settings-about-field__label=self.t('birthday')
 // ko if: readonly
 input.form-control(
   type='text',
-  data-bind='value: value, valueUpdate: "keyup"',
+  data-bind='value: value, valueUpdate: "keyup", css: { "is-invalid": hasError }',
   disabled
 )
 // /ko
@@ -13,7 +13,7 @@ input.form-control(
 .input-group.user-settings-about-birthday
   input.form-control(
     type='text',
-    data-bind='value: value, valueUpdate: "keyup"',
+    data-bind='value: value, valueUpdate: "keyup", css: { "is-invalid": hasError }',
     readonly
   )
 // /ko

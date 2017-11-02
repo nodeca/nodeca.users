@@ -48,37 +48,37 @@ N.wire.once(module.apiPath, function init_handlers() {
   //
   N.wire.on(module.apiPath + ':submit', function submit_add_infraction_dlg(data) {
     let valid = true;
-    let $type_group = $('.add-infraction-type');
-    let $reason_group = $('.add-infraction-reason');
-    let $expire_group = $('.add-infraction-expire');
-    let $points_group = $('.add-infraction-points');
+    let $type = $('.add-infraction-type__input');
+    let $reason = $('.add-infraction-reason__input');
+    let $expire = $('.add-infraction-expire__input');
+    let $points = $('.add-infraction-points__input');
 
     if (!data.fields.type) {
-      $type_group.addClass('has-danger');
+      $type.addClass('is-invalid');
       valid = false;
     } else {
-      $type_group.removeClass('has-danger');
+      $type.removeClass('is-invalid');
     }
 
     if (!data.fields.reason && data.fields.type === 'custom') {
-      $reason_group.addClass('has-danger');
+      $reason.addClass('is-invalid');
       valid = false;
     } else {
-      $reason_group.removeClass('has-danger');
+      $reason.removeClass('is-invalid');
     }
 
     if (data.fields.expire === '') {
-      $expire_group.addClass('has-danger');
+      $expire.addClass('is-invalid');
       valid = false;
     } else {
-      $expire_group.removeClass('has-danger');
+      $expire.removeClass('is-invalid');
     }
 
     if (data.fields.points === '') {
-      $points_group.addClass('has-danger');
+      $points.addClass('is-invalid');
       valid = false;
     } else {
-      $points_group.removeClass('has-danger');
+      $points.removeClass('is-invalid');
     }
 
     if (!valid) return;
