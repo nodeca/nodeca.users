@@ -26,10 +26,11 @@ each message in self.messages
           if (message.tail && message.tail.length)
             .user-messages-list-item__tail.markup-tail!=self.partial('@users.blocks.message_list.attachments', { message: message, author: author })
 
-        .user-messages-list-item__controls
-          span.user-messages-list-item__date!=self.timetag(message.ts, 'relative')
+        ul.user-messages-list-item__controls
+          li.user-messages-list-item__controls-item
+            !=self.timetag(message.ts, 'relative')
 
-          span.user-messages-list-item__dropdown.dropdown.dropup
+          li.user-messages-list-item__controls-item.dropdown.dropup
             button.user-messages-list-item__action.btn.btn-sm.btn-square.dropdown-toggle.icon.icon-dropdown-local(
               data-toggle='dropdown'
               role='button'
@@ -47,7 +48,7 @@ each message in self.messages
                 )= self.t('report')
 
           if show_mod_dropdown
-            span.user-messages-list-item__dropdown.dropdown.dropup
+            li.user-messages-list-item__controls-item.dropdown.dropup
               button.user-messages-list-item__action.btn.btn-sm.btn-square.dropdown-toggle(
                 data-toggle='dropdown'
                 role='button'
@@ -105,10 +106,11 @@ each message in self.messages
           if (message.tail && message.tail.length)
             .user-messages-list-item__tail.markup-tail!=self.partial('@users.blocks.message_list.attachments', { message: message, author: author })
 
-        .user-messages-list-item__controls
-          span.user-messages-list-item__date!=self.timetag(message.ts, 'relative')
+        ul.user-messages-list-item__controls
+          li.user-messages-list-item__controls-item
+            !=self.timetag(message.ts, 'relative')
 
-          span.user-messages-list-item__dropdown.dropdown.dropup
+          li.user-messages-list-item__controls-item.dropdown.dropup
             button.user-messages-list-item__action.btn.btn-sm.btn-square.dropdown-toggle.icon.icon-dropdown-local(
               data-toggle='dropdown'
               role='button'
@@ -126,7 +128,7 @@ each message in self.messages
                 )= self.t('report')
 
           if show_mod_dropdown
-            span.user-messages-list-item__dropdown.dropdown.dropup
+            li.user-messages-list-item__controls-item.dropdown.dropup
               button.user-messages-list-item__action.btn.btn-sm.btn-square.dropdown-toggle(
                 data-toggle='dropdown'
                 role='button'

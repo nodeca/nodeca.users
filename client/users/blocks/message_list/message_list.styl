@@ -38,7 +38,7 @@ $space        = 1rem
 .user-messages-list-item__message
   //margin-top ($space / 4)
   & > p:first-child
-    margin-top -.375rem // Compensate line-height 1.5 rem
+    margin-top -.25rem // Compensate line-height 1.5 rem
 
   & > p:last-child
     margin-bottom .5rem // Compensate line-height 1.5 rem
@@ -46,7 +46,16 @@ $space        = 1rem
 .user-messages-list-item__controls
   font-size $font-size-xs
   color $body-color-secondary
-  margin-bottom ($space / 4)
+  margin 0
+  padding 0
+  list-style none
+
+.user-messages-list-item__controls-item
+  display inline-block
+  margin-right: .25rem
+  &:last-child
+    margin-right: 0
+
 
 .user-messages-list-item__action
   background-color transparent
