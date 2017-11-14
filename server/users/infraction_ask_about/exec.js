@@ -5,6 +5,7 @@
 
 const _          = require('lodash');
 const validator  = require('is-my-json-valid');
+const ObjectId   = require('mongoose').Types.ObjectId;
 
 const parse_options = {
   hr:   true,
@@ -219,6 +220,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, async function create_message(env) {
     let message_data = {
+      common_id:    new ObjectId(),
       ts:           Date.now(),
       user:         env.user_info.user_id,
       html:         env.data.parse_result.html,

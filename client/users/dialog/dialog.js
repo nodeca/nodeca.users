@@ -278,6 +278,29 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
   });
 
 
+  // Add infraction
+  //
+  N.wire.on(module.apiPath + ':add_infraction', function add_infraction(data) {
+    let message_id = data.$this.data('message-id');
+    let params = { message_id };
+
+    return Promise.resolve()
+      .then(() => N.wire.emit('users.blocks.add_infraction_dlg', params))
+      .then(() => N.io.rpc('users.dialog.message.add_infraction', params))
+      .then(() => N.io.rpc('users.dialog.list.by_ids', { dialog_id: dlgState.dialog_id, messages_ids: [ message_id ] }))
+      .then(res => {
+        let $result = $(N.runtime.render('users.blocks.message_list', res));
+
+        return N.wire.emit('navigate.update', {
+          $: $result,
+          locals: res,
+          $replace: $(`#message${message_id}`)
+        });
+      })
+      .then(() => N.wire.emit('notify.info', t('infraction_added')));
+  });
+
+
   // Delete message
   //
   N.wire.on(module.apiPath + ':delete_message', function delete_message(data) {

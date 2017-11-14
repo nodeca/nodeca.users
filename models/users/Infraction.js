@@ -24,6 +24,8 @@ module.exports = function (N, collectionName) {
     src: Schema.Types.ObjectId,
     // N.shared.content_type (FORUM_POST, BLOG_ENTRY, ...)
     src_type: Number,
+    // for dialogs
+    src_common_id: Schema.Types.ObjectId,
 
     ts: { type: Date, 'default': Date.now },
 
@@ -43,6 +45,9 @@ module.exports = function (N, collectionName) {
 
   // Used on forum in posts list
   Infraction.index({ src: 1, exists: 1 });
+
+  // Used to find infractions in dialogs
+  Infraction.index({ src_common_id: 1, exists: 1 }, { sparse: true });
 
 
   Infraction.pre('save', function (next) {

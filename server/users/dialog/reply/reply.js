@@ -3,8 +3,9 @@
 'use strict';
 
 
-const _ = require('lodash');
-const $ = require('nodeca.core/lib/parser/cheequery');
+const _        = require('lodash');
+const $        = require('nodeca.core/lib/parser/cheequery');
+const ObjectId = require('mongoose').Types.ObjectId;
 
 
 module.exports = function (N, apiPath) {
@@ -204,6 +205,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, async function create_message(env) {
     let message_data = {
+      common_id:    new ObjectId(),
       ts:           Date.now(),
       user:         env.user_info.user_id,
       html:         env.data.parse_result.html,

@@ -5,3 +5,4 @@ en-US:
   delete_dialog_confirmation: Are you sure you want to delete this entire conversation? This action cannot be undone.
   delete_message_confirmation: Are you sure you want to delete this message? This action cannot be undone.
   abuse_reported: Your report has been sent
+  infraction_added: Infraction added

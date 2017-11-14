@@ -5,6 +5,7 @@
 
 
 const _        = require('lodash');
+const ObjectId = require('mongoose').Types.ObjectId;
 const userInfo = require('nodeca.users/lib/user_info');
 
 
@@ -147,6 +148,7 @@ module.exports = function (N, apiPath) {
     // Prepare message and dialog data
     //
     let message_data = {
+      common_id:    new ObjectId(),
       ts:           Date.now(),
       user:         bot._id,
       html:         parse_result.html,

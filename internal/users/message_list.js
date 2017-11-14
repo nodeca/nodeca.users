@@ -15,6 +15,7 @@
 //       settings: {}
 //       last_message_id
 //       first_message_id
+//       infractions: ...
 //     data:
 //       dialog
 //       messages: []
@@ -116,6 +117,29 @@ module.exports = function (N, apiPath) {
 
     env.res.first_message_id = first_msg ? first_msg._id : null;
     env.res.last_message_id = last_msg ? last_msg._id : null;
+  });
+
+
+  // Fetch infractions
+  //
+  N.wire.after(apiPath, async function fetch_infractions(env) {
+    let settings = await env.extras.settings.fetch([
+      'users_mod_can_add_infractions',
+      'can_see_infractions'
+    ]);
+
+    if (!settings.can_see_infractions && !settings.users_mod_can_add_infractions) return;
+
+    let infractions = await N.models.users.Infraction.find()
+                                .where('src_common_id').in(_.map(env.data.messages, 'common_id'))
+                                .where('exists').equals(true)
+                                .select('src points ts src_common_id')
+                                .lean(true);
+
+    env.res.infractions = infractions.reduce((acc, infraction) => {
+      acc[infraction.src_common_id] = infraction;
+      return acc;
+    }, {});
   });
 
 

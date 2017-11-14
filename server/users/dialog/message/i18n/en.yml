@@ -1,3 +1,7 @@
 en-US:
   ip_info:
     err_no_ip: IP address for this message is not specified
+
+  add_infraction:
+    err_perm_receive: You can't add infractions to this user
+    err_infraction_exists: Can't give infraction twice

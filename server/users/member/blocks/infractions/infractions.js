@@ -50,7 +50,7 @@ module.exports = function (N) {
     //
     // Out:
     //
-    // - info (Object) - key is `src`, value { url, title }
+    // - info (Object) - key is `src`, value { url, title, text }
     //
     let info_env = { infractions, user_info: env.user_info, info: {} };
 
@@ -77,6 +77,9 @@ module.exports = function (N) {
 
 
     if (infractions.length || (users_mod_can_add_infractions && !cannot_receive_infractions)) {
+      // filter out infraction texts
+      let content_info = _.mapValues(info_env.info, infraction => _.pick(infraction, [ 'url', 'title' ]));
+
       _.set(env.res, 'blocks.infractions', {
         list: infractions,
         settings: {
@@ -84,7 +87,7 @@ module.exports = function (N) {
           cannot_receive_infractions,
           can_delete_infractions
         },
-        content_info: info_env.info
+        content_info
       });
     }
 

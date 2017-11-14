@@ -1,3 +1,5 @@
+- self.infractions = self.infractions || {};
+
 - var show_mod_dropdown = false;
 - show_mod_dropdown = show_mod_dropdown || self.settings.can_see_ip;
 - show_mod_dropdown = show_mod_dropdown || self.settings.users_mod_can_add_infractions;
@@ -27,6 +29,17 @@ each message in self.messages
             .user-messages-list-item__tail.markup-tail!=self.partial('@users.blocks.message_list.attachments', { message: message, author: author })
 
         ul.user-messages-list-item__controls
+          -var infraction = self.infractions[message.common_id];
+          if infraction
+            li.user-messages-list-item__controls-item.user-messages-list-item__infraction(
+              class=infraction.points === 0 ? 'user-messages-list-item__infraction-m-warning' : ''
+            )
+              a.user-messages-list-item__action.btn.btn-sm(
+                title=self.t('infraction_title', { points: infraction.points, date: self.date(infraction.ts, 'datetime') })
+                href=self.link_to('users.member', { user_hid: author && author.hid }) + '#infraction' + infraction._id
+              )
+                span.icon.icon-infraction
+
           li.user-messages-list-item__controls-item
             !=self.timetag(message.ts, 'relative')
 
@@ -54,8 +67,11 @@ each message in self.messages
                 role='button'
               )
               .dropdown-menu.dropdown-menu-right(role='menu')
-                if self.settings.users_mod_can_add_infractions
-                  button.dropdown-item= self.t('add_infraction')
+                if self.settings.users_mod_can_add_infractions && !self.infractions[message._id]
+                  button.dropdown-item(
+                    data-message-id=message._id
+                    data-on-click='users.dialog:add_infraction'
+                  )= self.t('add_infraction')
 
                 if self.settings.can_see_ip
                   button.dropdown-item(
@@ -107,6 +123,17 @@ each message in self.messages
             .user-messages-list-item__tail.markup-tail!=self.partial('@users.blocks.message_list.attachments', { message: message, author: author })
 
         ul.user-messages-list-item__controls
+          -var infraction = self.infractions[message.common_id];
+          if infraction
+            li.user-messages-list-item__controls-item.user-messages-list-item__infraction(
+              class=infraction.points === 0 ? 'user-messages-list-item__infraction-m-warning' : ''
+            )
+              a.user-messages-list-item__action.btn.btn-sm(
+                title=self.t('infraction_title', { points: infraction.points, date: self.date(infraction.ts, 'datetime') })
+                href=self.link_to('users.member', { user_hid: author && author.hid }) + '#infraction' + infraction._id
+              )
+                span.icon.icon-infraction
+
           li.user-messages-list-item__controls-item
             !=self.timetag(message.ts, 'relative')
 
@@ -134,8 +161,11 @@ each message in self.messages
                 role='button'
               )
               .dropdown-menu.dropdown-menu-right(role='menu')
-                if self.settings.users_mod_can_add_infractions
-                  button.dropdown-item= self.t('add_infraction')
+                if self.settings.users_mod_can_add_infractions && !self.infractions[message._id]
+                  button.dropdown-item(
+                    data-message-id=message._id
+                    data-on-click='users.dialog:add_infraction'
+                  )= self.t('add_infraction')
 
                 if self.settings.can_see_ip
                   button.dropdown-item(

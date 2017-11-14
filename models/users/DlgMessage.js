@@ -26,6 +26,7 @@ module.exports = function (N, collectionName) {
     ts           : { type: Date, 'default': Date.now },
     ip           : String,  // ip address
     exists       : { type: Boolean, 'default': true },
+    common_id    : Schema.Types.ObjectId,
 
 
     html         : String,

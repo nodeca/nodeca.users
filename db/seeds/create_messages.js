@@ -59,6 +59,7 @@ async function createMessages(dlg1, dlg2, msg_count) {
 
     let msg_data = {
       user: Math.random() > 0.5 ? dlg1.user : dlg2.user,
+      common_id: new ObjectId(Math.round(ts / 1000)),
       ts,
       /*eslint-disable new-cap*/
       ip:   charlatan.Internet.IPv4(),
