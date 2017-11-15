@@ -61,7 +61,9 @@ i18n:
 
           can_report_abuse: Can report abuses
 
-          users_mod_can_add_infractions: Can give infractions in profile
+          users_mod_can_add_infractions_profile: Can give infractions in profile
+
+          users_mod_can_add_infractions_dialogs: Can give infractions in dialogs
 
           can_delete_infractions: Can delete infractions
 

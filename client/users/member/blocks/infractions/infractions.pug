@@ -20,7 +20,7 @@
           | 
           small.member-block__header-counter= self.t('counter', points)
 
-        if self.blocks.infractions.settings.users_mod_can_add_infractions && !self.blocks.infractions.settings.cannot_receive_infractions
+        if self.blocks.infractions.settings.users_mod_can_add_infractions_profile && !self.blocks.infractions.settings.cannot_receive_infractions
           | 
           button.btn.btn-outline-secondary.btn-sm.d-none.d-sm-inline-block.icon.icon-plus(
             title=self.t('add')

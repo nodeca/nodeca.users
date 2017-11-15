@@ -37,7 +37,15 @@ module.exports = function (N, apiPath) {
                             .where('_id').in(_.map(messages, 'parent'))
                             .lean(true);
 
-    dialogs = dialogs.filter(dialog => String(dialog.user) === String(info_env.user_info.user_id));
+    let params = {
+      user_id: info_env.user_info.user_id,
+      usergroup_ids: info_env.user_info.usergroups
+    };
+
+    // users who can give out infractions could also see all dialogs
+    if (!await N.settings.get('users_mod_can_add_infractions_dialogs', params, {})) {
+      dialogs = dialogs.filter(dialog => String(dialog.user) === String(info_env.user_info.user_id));
+    }
 
     // Fetch opponents
     //

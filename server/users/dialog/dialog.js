@@ -24,13 +24,6 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Fetch user
-  //
-  N.wire.before(apiPath, async function fetch_user(env) {
-    env.data.user = await N.models.users.User.findOne({ _id: env.user_info.user_id });
-  });
-
-
   // Subcall users.message_list
   //
   N.wire.on(apiPath, function subcall_dialogs_list(env) {
@@ -44,11 +37,18 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Fetch dialog owner (used in breadcrumbs)
+  //
+  N.wire.after(apiPath, async function fetch_user(env) {
+    env.data.user = await N.models.users.User.findById(env.data.dialog.user)
+                              .lean(true);
+  });
+
+
   // Fetch recipient
   //
   N.wire.after(apiPath, async function fetch_recipient(env) {
-    env.data.to = await N.models.users.User.findOne()
-                            .where('_id').equals(env.data.dialog.to)
+    env.data.to = await N.models.users.User.findById(env.data.dialog.to)
                             .lean(true);
   });
 

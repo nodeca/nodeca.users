@@ -34,7 +34,7 @@
         = (self.users[self.dialog.to] || {}).name || ''
 
     - var recipient = self.users[self.dialog.to];
-    if recipient && self.can_create_dialog_with_user
+    if recipient && self.can_create_dialog_with_user && self.dialog.user === self.runtime.user_id
       .user-messages-list-reply
         button.btn.btn-block.btn-link(
           data-dialog-id=self.dialog._id

@@ -34,9 +34,9 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, async function check_permissions(env) {
     if (!env.user_info.is_member) throw N.io.FORBIDDEN;
 
-    let users_mod_can_add_infractions = await env.extras.settings.fetch('users_mod_can_add_infractions');
+    let can_add_infractions = await env.extras.settings.fetch('users_mod_can_add_infractions_profile');
 
-    if (!users_mod_can_add_infractions) throw N.io.FORBIDDEN;
+    if (!can_add_infractions) throw N.io.FORBIDDEN;
 
     let user_info = await userInfo(N, env.params.user_id);
     let params = {

@@ -10,19 +10,20 @@ module.exports.up = async function (N) {
 
   await usergroupStore.set({
     // admin-specific settings
-    can_access_acp:                { value: true },
-    can_delete_infractions:        { value: true },
-    can_see_deleted_users:         { value: true },
-    can_hellban:                   { value: true },
-    can_see_hellbanned:            { value: true },
-    can_see_infractions:           { value: true },
-    can_see_ip:                    { value: true },
-    can_add_mod_notes:             { value: true },
-    can_delete_mod_notes:          { value: true },
-    cannot_receive_infractions:    { value: true },
-    cannot_be_ignored:             { value: true },
-    users_mod_can_add_infractions: { value: true },
-    users_mod_can_delete_media:    { value: true },
+    can_access_acp:                        { value: true },
+    can_delete_infractions:                { value: true },
+    can_see_deleted_users:                 { value: true },
+    can_hellban:                           { value: true },
+    can_see_hellbanned:                    { value: true },
+    can_see_infractions:                   { value: true },
+    can_see_ip:                            { value: true },
+    can_add_mod_notes:                     { value: true },
+    can_delete_mod_notes:                  { value: true },
+    cannot_receive_infractions:            { value: true },
+    cannot_be_ignored:                     { value: true },
+    users_mod_can_add_infractions_dialogs: { value: true },
+    users_mod_can_add_infractions_profile: { value: true },
+    users_mod_can_delete_media:            { value: true },
 
     // same as members
     can_edit_profile:       { value: true },

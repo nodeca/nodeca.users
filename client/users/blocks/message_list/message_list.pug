@@ -2,12 +2,14 @@
 
 - var show_mod_dropdown = false;
 - show_mod_dropdown = show_mod_dropdown || self.settings.can_see_ip;
-- show_mod_dropdown = show_mod_dropdown || self.settings.users_mod_can_add_infractions;
+- show_mod_dropdown = show_mod_dropdown || self.settings.users_mod_can_add_infractions_dialogs;
+
+- var own_page = self.dialog.user === self.runtime.user_id;
 
 each message in self.messages
   - var author = self.users[message.user];
 
-  if (author && author._id === N.runtime.user_id)
+  if (author && author._id === self.dialog.user)
     .user-messages-list-item.user-messages-list-item__m-self(
       id='message' + message._id
       data-message-id=message._id
@@ -44,21 +46,22 @@ each message in self.messages
             !=self.timetag(message.ts, 'relative')
 
           li.user-messages-list-item__controls-item.dropdown.dropup
-            button.user-messages-list-item__action.btn.btn-sm.btn-square.dropdown-toggle.icon.icon-dropdown-local(
-              data-toggle='dropdown'
-              role='button'
-            )
-            .dropdown-menu.dropdown-menu-right(role='menu')
-              button.dropdown-item(
-                data-message-id=message._id
-                data-on-click='users.dialog:delete_message'
-              )= self.t('delete')
-
-              if self.settings.can_report_abuse
+            if own_page
+              button.user-messages-list-item__action.btn.btn-sm.btn-square.dropdown-toggle.icon.icon-dropdown-local(
+                data-toggle='dropdown'
+                role='button'
+              )
+              .dropdown-menu.dropdown-menu-right(role='menu')
                 button.dropdown-item(
                   data-message-id=message._id
-                  data-on-click='users.dialog:report'
-                )= self.t('report')
+                  data-on-click='users.dialog:delete_message'
+                )= self.t('delete')
+
+                if self.settings.can_report_abuse
+                  button.dropdown-item(
+                    data-message-id=message._id
+                    data-on-click='users.dialog:report'
+                  )= self.t('report')
 
           if show_mod_dropdown
             li.user-messages-list-item__controls-item.dropdown.dropup
@@ -67,7 +70,7 @@ each message in self.messages
                 role='button'
               )
               .dropdown-menu.dropdown-menu-right(role='menu')
-                if self.settings.users_mod_can_add_infractions && !self.infractions[message._id]
+                if self.settings.users_mod_can_add_infractions_dialogs && !self.infractions[message._id]
                   button.dropdown-item(
                     data-message-id=message._id
                     data-on-click='users.dialog:add_infraction'
@@ -137,22 +140,23 @@ each message in self.messages
           li.user-messages-list-item__controls-item
             !=self.timetag(message.ts, 'relative')
 
-          li.user-messages-list-item__controls-item.dropdown.dropup
-            button.user-messages-list-item__action.btn.btn-sm.btn-square.dropdown-toggle.icon.icon-dropdown-local(
-              data-toggle='dropdown'
-              role='button'
-            )
-            .dropdown-menu.dropdown-menu-left(role='menu')
-              button.dropdown-item(
-                data-message-id=message._id
-                data-on-click='users.dialog:delete_message'
-              )= self.t('delete')
-
-              if self.settings.can_report_abuse
+          if own_page
+            li.user-messages-list-item__controls-item.dropdown.dropup
+              button.user-messages-list-item__action.btn.btn-sm.btn-square.dropdown-toggle.icon.icon-dropdown-local(
+                data-toggle='dropdown'
+                role='button'
+              )
+              .dropdown-menu.dropdown-menu-left(role='menu')
                 button.dropdown-item(
                   data-message-id=message._id
-                  data-on-click='users.dialog:report'
-                )= self.t('report')
+                  data-on-click='users.dialog:delete_message'
+                )= self.t('delete')
+
+                if self.settings.can_report_abuse
+                  button.dropdown-item(
+                    data-message-id=message._id
+                    data-on-click='users.dialog:report'
+                  )= self.t('report')
 
           if show_mod_dropdown
             li.user-messages-list-item__controls-item.dropdown.dropup
@@ -161,7 +165,7 @@ each message in self.messages
                 role='button'
               )
               .dropdown-menu.dropdown-menu-right(role='menu')
-                if self.settings.users_mod_can_add_infractions && !self.infractions[message._id]
+                if self.settings.users_mod_can_add_infractions_dialogs && !self.infractions[message._id]
                   button.dropdown-item(
                     data-message-id=message._id
                     data-on-click='users.dialog:add_infraction'

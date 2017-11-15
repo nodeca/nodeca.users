@@ -37,7 +37,7 @@ module.exports = function (N, apiPath) {
       'can_create_dialogs',
       'can_report_abuse',
       'can_see_ip',
-      'users_mod_can_add_infractions'
+      'users_mod_can_add_infractions_dialogs'
     ]);
   });
 
@@ -54,12 +54,20 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, async function fetch_dialog(env) {
     let dialog = await N.models.users.Dialog.findOne()
-                          .where('user').equals(env.user_info.user_id)
-                          .where('exists').equals(true)
                           .where('_id').equals(env.data.dialog_id)
+                          .where('exists').equals(true)
                           .lean(true);
 
     if (!dialog) throw N.io.NOT_FOUND;
+
+    // permission checks:
+    //  - allow dialog owner to see messages in dialog
+    //  - allow anyone who can give infractions to see all messages
+    if (String(dialog.user) !== env.user_info.user_id &&
+        !env.data.settings.users_mod_can_add_infractions_dialogs) {
+
+      throw N.io.NOT_FOUND;
+    }
 
     env.res.dialog = env.data.dialog = dialog;
   });
@@ -124,11 +132,11 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, async function fetch_infractions(env) {
     let settings = await env.extras.settings.fetch([
-      'users_mod_can_add_infractions',
+      'users_mod_can_add_infractions_dialogs',
       'can_see_infractions'
     ]);
 
-    if (!settings.can_see_infractions && !settings.users_mod_can_add_infractions) return;
+    if (!settings.can_see_infractions && !settings.users_mod_can_add_infractions_dialogs) return;
 
     let infractions = await N.models.users.Infraction.find()
                                 .where('src_common_id').in(_.map(env.data.messages, 'common_id'))

@@ -62,9 +62,9 @@ module.exports = function (N, apiPath) {
   // Check permissions
   //
   N.wire.before(apiPath, async function check_permissions(env) {
-    let users_mod_can_add_infractions = await env.extras.settings.fetch('users_mod_can_add_infractions');
+    let can_add_infractions_dialogs = await env.extras.settings.fetch('users_mod_can_add_infractions_dialogs');
 
-    if (!users_mod_can_add_infractions) throw N.io.FORBIDDEN;
+    if (!can_add_infractions_dialogs) throw N.io.FORBIDDEN;
 
     let user_info = await userInfo(N, env.data.message.user);
     let params = {

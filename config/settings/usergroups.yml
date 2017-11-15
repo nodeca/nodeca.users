@@ -120,8 +120,14 @@ setting_schemas:
       type: boolean
       default: false
 
-    users_mod_can_add_infractions:
+    users_mod_can_add_infractions_profile:
       priority: 2030
+      category_key: perm_infractions
+      type: boolean
+      default: false
+
+    users_mod_can_add_infractions_dialogs:
+      priority: 2040
       category_key: perm_infractions
       type: boolean
       default: false

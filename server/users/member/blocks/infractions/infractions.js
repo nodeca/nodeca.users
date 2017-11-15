@@ -68,7 +68,7 @@ module.exports = function (N) {
 
     // Fetch settings
     //
-    let users_mod_can_add_infractions = await env.extras.settings.fetch('users_mod_can_add_infractions');
+    let can_add_infractions = await env.extras.settings.fetch('users_mod_can_add_infractions_profile');
     let can_delete_infractions = await env.extras.settings.fetch('can_delete_infractions');
     let cannot_receive_infractions = await N.settings.get('cannot_receive_infractions', {
       user_id: env.data.user._id,
@@ -76,14 +76,14 @@ module.exports = function (N) {
     }, {});
 
 
-    if (infractions.length || (users_mod_can_add_infractions && !cannot_receive_infractions)) {
+    if (infractions.length || (can_add_infractions && !cannot_receive_infractions)) {
       // filter out infraction texts
       let content_info = _.mapValues(info_env.info, infraction => _.pick(infraction, [ 'url', 'title' ]));
 
       _.set(env.res, 'blocks.infractions', {
         list: infractions,
         settings: {
-          users_mod_can_add_infractions,
+          can_add_infractions,
           cannot_receive_infractions,
           can_delete_infractions
         },
