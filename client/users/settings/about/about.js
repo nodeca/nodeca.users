@@ -3,6 +3,8 @@
 
 const _  = require('lodash');
 
+let form;
+
 
 function Setting(field) {
   const ko = require('knockout');
@@ -111,7 +113,8 @@ N.wire.on('navigate.preload:' + module.apiPath, function load_deps(preload) {
 N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
   const ko = require('knockout');
 
-  ko.applyBindings(new Form(N.runtime.page_data), $('#user-settings-about').get(0));
+  form = new Form(N.runtime.page_data);
+  ko.applyBindings(form, $('#user-settings-about').get(0));
 });
 
 
@@ -119,4 +122,14 @@ N.wire.on('navigate.exit:' + module.apiPath, function page_exit() {
   const ko = require('knockout');
 
   ko.cleanNode($('#user-settings-about').get(0));
+  form = null;
+});
+
+
+N.wire.on(module.apiPath + ':location_edit', function location_edit(data) {
+  let confirm = form.isDirty() ?
+                N.wire.emit('common.blocks.confirm', t('leave_confirmation')) :
+                Promise.resolve();
+
+  return confirm.then(() => N.wire.emit('navigate.to', data.$this.attr('href')));
 });

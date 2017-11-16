@@ -1,7 +1,10 @@
 <!-- ko with: about.#{self.name} -->
 label.user-settings-about-field__label=self.t('location')
 .form-group
-  a.form-control-plaintext(href=self.link_to('users.settings.location'))
+  a.form-control-plaintext(
+    href=self.link_to('users.settings.location')
+    data-on-click='users.settings.about:location_edit'
+  )
     if self.value
       span.icon.icon-location.icon-space-after
 
