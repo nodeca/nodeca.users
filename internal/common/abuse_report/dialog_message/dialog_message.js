@@ -47,17 +47,46 @@ module.exports = function (N, apiPath) {
   // Fetch recipients
   //
   N.wire.before(apiPath, async function fetch_recipients(params) {
-    // send message to all administrators
-    let admin_group_id = await N.models.users.UserGroup.findIdByName('administrators');
+    // send message to all users with infraction permissions
+    let groups = await N.models.users.UserGroup.find().select('_id');
+
+    let allowed_groups = [];
+
+    for (let usergroup of groups) {
+      let params = {
+        usergroup_ids: [ usergroup._id ]
+      };
+
+      let can_add_infractions = await N.settings.get('users_mod_can_add_infractions_dialogs', params, {});
+
+      if (can_add_infractions) allowed_groups.push(usergroup._id);
+    }
 
     let recipients = await N.models.users.User.find()
-                               .where('usergroups').equals(admin_group_id)
+                               .where('usergroups').in(allowed_groups)
                                .select('_id')
                                .lean(true);
 
-    let recipients_ids = _.map(recipients, '_id');
+    let user_infos = await userInfo(N, _.map(recipients, '_id'));
 
-    params.recipients = await userInfo(N, recipients_ids);
+    let allowed_userinfos = {};
+
+    // double-check all permissions in case a user is disallowed from another
+    // group with force=true
+    for (let user_id of Object.keys(user_infos)) {
+      let user_info = user_infos[user_id];
+
+      let params = {
+        user_id: user_info.user_id,
+        usergroup_ids: user_info.usergroups
+      };
+
+      let can_add_infractions = await N.settings.get('users_mod_can_add_infractions_dialogs', params, {});
+
+      if (can_add_infractions) allowed_userinfos[user_id] = user_info;
+    }
+
+    params.recipients = allowed_userinfos;
   });
 
 
