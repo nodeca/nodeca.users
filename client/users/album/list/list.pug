@@ -20,6 +20,13 @@ each media in self.media
                 span.thumb-caption__inline.icon.icon-space-after.icon-comment
                   = media.comments_count
 
+              label.thumb__select.float-right(title=self.t('multiselect_hint'))
+                input.thumb__select-cb(
+                  type='checkbox'
+                  data-media-id=media.media_id
+                  data-on-change='users.album:image_check'
+                )
+
       else if mType === mTypes.MEDIALINK
         .thumb
           a.thumb__inner(href=href)

@@ -1,8 +1,5 @@
--
-  var own_page = (self.runtime.user_hid === self.user_hid)
-  var menu_rnd_id = 'rnd' + String(Math.random()).slice(2, 10)
-
-  self.add_raw_data('profile_tab', own_page)
+- var own_page = (self.runtime.user_hid === self.user_hid)
+- self.add_raw_data('profile_tab', own_page)
 
 #content.user-album-root(class=self.media.length === 0 ? 'no-files' : '')
   - var navbar_args = { level_up: self.link_to('users.albums_root', { user_hid: self.user_hid }) };
@@ -17,48 +14,8 @@
 
     header.page-head
       h1.page-head__title(itemprop='name')
-        .page-actions.float-right
-          //- Hidden
-          input#user-album-upload__files(
-            name='files[]'
-            type='file'
-            style='position: absolute; left: -2000px'
-            multiple
-          )
-
-          //- Should 'click' file input in context of current action
-          if own_page && self.album
-            button.btn.btn-secondary(
-              onClick='document.getElementById("user-album-upload__files").click()'
-            )= self.t('select_files')
-
-          if own_page && self.album
-            .page-actions__dropdown
-
-              button.btn.btn-secondary.btn-square.icon.icon-dropdown.dropdown-toggle(
-                type='button'
-                id=menu_rnd_id
-                aria-haspopup='true'
-                aria-expanded='false'
-                data-toggle='dropdown'
-              )
-
-              .dropdown-menu.dropdown-menu-right(aria-labelledby=menu_rnd_id)
-                button.dropdown-item(
-                  data-on-click='users.album:add_medialink'
-                  data-providers=self.medialink_providers
-                )= self.t('add_medialink')
-
-                if !self.album.default
-                  .dropdown-divider
-
-                  a.dropdown-item(
-                    href=self.link_to('users.album.edit', { 'user_hid': self.user_hid, 'album_id': self.album._id })
-                  )=self.t('edit')
-
-                  a.dropdown-item(href='#'
-                    data-on-click='users.album:delete'
-                  )=self.t('delete')
+        .float-right
+          != self.partial('@users.album.blocks.toolbar_controls')
 
         = self.album ? self.album.title : self.t('title_all_files')
 

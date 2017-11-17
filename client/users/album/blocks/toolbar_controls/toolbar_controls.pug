@@ -1,0 +1,105 @@
+- self.add_raw_data('album', self.album)
+- self.add_raw_data('user_hid', self.user_hid)
+- self.add_raw_data('medialink_providers', self.medialink_providers)
+
+- var own_page = (self.runtime.user_hid === self.user_hid)
+- var menu_rnd_id = 'rnd' + String(Math.random()).slice(2, 10)
+
+- var items = [];
+
+if own_page && self.album
+  - items.push('add_medialink')
+
+  if !self.album.default
+    - items.push('divider')
+    - items.push('album_edit')
+    - items.push('album_delete')
+
+if self.selection_started
+  if items.length > 0
+    - items.push('divider')
+  - items.push('many_header')
+  - items.push('many_unselect')
+  - items.push('many_move')
+  - items.push('many_delete')
+else
+  if items.length > 0
+    - items.push('divider')
+  - items.push('many_select')
+
+.page-actions.user-album-root__toolbar-controls
+  //- Hidden
+  input#user-album-upload__files(
+    name='files[]'
+    type='file'
+    style='position: absolute; left: -2000px'
+    multiple
+  )
+
+  //- Should 'click' file input in context of current action
+  if own_page && self.album
+    button.btn.btn-secondary(
+      onClick='document.getElementById("user-album-upload__files").click()'
+    )= self.t('select_files')
+
+  if items.length > 0
+    .page-actions__dropdown
+      button.btn.btn-secondary.btn-square.icon.icon-dropdown.dropdown-toggle(
+        type='button'
+        id=menu_rnd_id
+        aria-haspopup='true'
+        aria-expanded='false'
+        data-toggle='dropdown'
+      )
+
+      .dropdown-menu.dropdown-menu-right(aria-labelledby=menu_rnd_id)
+
+        each item in items
+          case item
+
+            when 'divider'
+              .dropdown-divider
+
+            when 'add_medialink'
+              button.dropdown-item(
+                data-on-click='users.album:add_medialink'
+                data-providers=self.medialink_providers
+              )= self.t('add_medialink')
+
+            when 'album_edit'
+              a.dropdown-item(
+                href=self.link_to('users.album.edit', { 'user_hid': self.user_hid, 'album_id': self.album._id })
+              )= self.t('edit')
+
+            when 'album_delete'
+              a.dropdown-item(
+                href='#'
+                data-on-click='users.album:delete'
+              )= self.t('delete')
+
+            when 'many_header'
+              .dropdown-header=self.t('many_header', { count: self.selection_ids.length })
+
+            when 'many_select'
+              button.dropdown-item(
+                type='button'
+                data-on-click='users.album:selection_start'
+              )= self.t('many_select')
+
+            when 'many_unselect'
+              button.dropdown-item(
+                type='button'
+                data-on-click='users.album:selection_stop'
+              )= self.t('many_unselect')
+
+            when 'many_move'
+              button.dropdown-item(
+                type='button'
+                data-on-click='users.album:move_many'
+              )= self.t('many_move')
+
+            when 'many_delete'
+              button.dropdown-item(
+                type='button'
+                data-on-click='users.album:delete_many'
+              )= self.t('many_delete')

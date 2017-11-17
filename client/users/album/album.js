@@ -12,6 +12,8 @@ const _ = require('lodash');
 // - reached_end:        true if no more pages exist below last loaded one
 // - prev_loading_start: time when current xhr request for the previous page is started
 // - next_loading_start: time when current xhr request for the next page is started
+// - selection_ids:      array of currently selected images
+// - selection_started:  true if user is currently in select mode (checkboxes are shown)
 //
 let mediaState = {};
 
@@ -36,6 +38,9 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
 
   mediaState.prev_loading_start = 0;
   mediaState.next_loading_start = 0;
+
+  mediaState.selection_ids      = null;
+  mediaState.selection_started  = false;
 
   // disable automatic scroll to an anchor in the navigator
   data.no_scroll = true;
@@ -468,5 +473,53 @@ N.wire.once('navigate.done:' + module.apiPath, function prefetch_handler_setup()
     }).catch(err => {
       N.wire.emit('error', err);
     });
+  });
+});
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Multiselect
+//
+
+function updateSelectionState() {
+  $('.user-album-root__toolbar-controls')
+    .replaceWith(N.runtime.render(module.apiPath + '.blocks.toolbar_controls', {
+      album:               N.runtime.page_data.album,
+      user_hid:            N.runtime.page_data.user_hid,
+      medialink_providers: N.runtime.page_data.medialink_providers,
+      selection_ids:       mediaState.selection_ids,
+      selection_started:   mediaState.selection_started
+    }));
+
+  $('.user-medialist').toggleClass('user-medialist__m-selection', mediaState.selection_started);
+}
+
+
+// Init handlers
+//
+N.wire.once('navigate.done:' + module.apiPath, function album_selection_init() {
+
+  // User starts selection: show checkboxes, etc.
+  //
+  N.wire.on(module.apiPath + ':selection_start', function selection_start() {
+    mediaState.selection_ids = [];
+    mediaState.selection_started = true;
+    updateSelectionState();
+  });
+
+
+  // User stops selection: hide checkboxes, reset selection state
+  //
+  N.wire.on(module.apiPath + ':selection_stop', function selection_stop() {
+    mediaState.selection_ids = null;
+    mediaState.selection_started = false;
+    updateSelectionState();
+  });
+
+
+  // User toggles checkbox near an image
+  //
+  N.wire.on(module.apiPath + ':image_check', function image_check() {
+    // TODO
   });
 });
