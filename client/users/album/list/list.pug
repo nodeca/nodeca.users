@@ -24,7 +24,8 @@ each media in self.media
                 input.thumb__select-cb(
                   type='checkbox'
                   data-media-id=media.media_id
-                  data-on-change='users.album:image_check'
+                  onClick='event.stopPropagation();'
+                  data-on-change='users.album:media_check'
                 )
 
       else if mType === mTypes.MEDIALINK
@@ -40,14 +41,30 @@ each media in self.media
                 span.thumb-caption__inline.icon.icon-space-after.icon-comment
                   = media.comments_count
 
+              label.thumb__select.float-right(title=self.t('multiselect_hint'))
+                input.thumb__select-cb(
+                  type='checkbox'
+                  data-media-id=media.media_id
+                  onClick='event.stopPropagation();'
+                  data-on-change='users.album:media_check'
+                )
+
       else if mType === mTypes.BINARY
         a.thumb(href=href)
           .thumb__icon.icon.icon-binary
           .thumb__content= media.file_name
 
           .thumb-caption.thumb-caption__m-secondary
-              span.thumb-caption__inline
-                != self.timetag(media.ts, 'relative')
-              if media.comments_count > 0
-                span.thumb-caption__inline.icon.icon-space-after.icon-comment
-                  = media.comments_count
+            span.thumb-caption__inline
+              != self.timetag(media.ts, 'relative')
+            if media.comments_count > 0
+              span.thumb-caption__inline.icon.icon-space-after.icon-comment
+                = media.comments_count
+
+            label.thumb__select.float-right(title=self.t('multiselect_hint'))
+              input.thumb__select-cb(
+                type='checkbox'
+                data-media-id=media.media_id
+                onClick='event.stopPropagation();'
+                data-on-change='users.album:media_check'
+              )

@@ -519,7 +519,16 @@ N.wire.once('navigate.done:' + module.apiPath, function album_selection_init() {
 
   // User toggles checkbox near an image
   //
-  N.wire.on(module.apiPath + ':image_check', function image_check() {
-    // TODO
+  N.wire.on(module.apiPath + ':media_check', function media_check(data) {
+    let media_id = data.$this.data('media-id');
+
+    if (data.$this.is(':checked') && mediaState.selection_ids.indexOf(media_id) === -1) {
+      mediaState.selection_ids.push(media_id);
+
+    } else if (!data.$this.is(':checked') && mediaState.selection_ids.indexOf(media_id) !== -1) {
+      mediaState.selection_ids = _.without(mediaState.selection_ids, media_id);
+    }
+
+    updateSelectionState();
   });
 });
