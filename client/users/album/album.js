@@ -521,11 +521,14 @@ N.wire.once('navigate.done:' + module.apiPath, function album_selection_init() {
   //
   N.wire.on(module.apiPath + ':media_check', function media_check(data) {
     let media_id = data.$this.data('media-id');
+    let $checkbox = data.$this.find('.thumb-grid__select-cb');
 
-    if (data.$this.is(':checked') && mediaState.selection_ids.indexOf(media_id) === -1) {
+    $checkbox.prop('checked', !$checkbox.prop('checked'));
+
+    if ($checkbox.is(':checked') && mediaState.selection_ids.indexOf(media_id) === -1) {
       mediaState.selection_ids.push(media_id);
 
-    } else if (!data.$this.is(':checked') && mediaState.selection_ids.indexOf(media_id) !== -1) {
+    } else if (!$checkbox.is(':checked') && mediaState.selection_ids.indexOf(media_id) !== -1) {
       mediaState.selection_ids = _.without(mediaState.selection_ids, media_id);
     }
 

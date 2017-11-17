@@ -20,14 +20,6 @@ each media in self.media
                 span.thumb-caption__inline.icon.icon-space-after.icon-comment
                   = media.comments_count
 
-              label.thumb__select.float-right(title=self.t('multiselect_hint'))
-                input.thumb__select-cb(
-                  type='checkbox'
-                  data-media-id=media.media_id
-                  onClick='event.stopPropagation();'
-                  data-on-change='users.album:media_check'
-                )
-
       else if mType === mTypes.MEDIALINK
         .thumb
           a.thumb__inner(href=href)
@@ -41,14 +33,6 @@ each media in self.media
                 span.thumb-caption__inline.icon.icon-space-after.icon-comment
                   = media.comments_count
 
-              label.thumb__select.float-right(title=self.t('multiselect_hint'))
-                input.thumb__select-cb(
-                  type='checkbox'
-                  data-media-id=media.media_id
-                  onClick='event.stopPropagation();'
-                  data-on-change='users.album:media_check'
-                )
-
       else if mType === mTypes.BINARY
         a.thumb(href=href)
           .thumb__icon.icon.icon-binary
@@ -61,10 +45,8 @@ each media in self.media
               span.thumb-caption__inline.icon.icon-space-after.icon-comment
                 = media.comments_count
 
-            label.thumb__select.float-right(title=self.t('multiselect_hint'))
-              input.thumb__select-cb(
-                type='checkbox'
-                data-media-id=media.media_id
-                onClick='event.stopPropagation();'
-                data-on-change='users.album:media_check'
-              )
+      label.thumb-grid__select(
+        data-on-click='users.album:media_check'
+        data-media-id=media.media_id
+      )
+        input.thumb-grid__select-cb(type='checkbox')
