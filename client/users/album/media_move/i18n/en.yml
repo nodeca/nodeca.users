@@ -1,0 +1,6 @@
+en-US:
+  title: Change album
+  default_album_name: Unsorted
+  album_input_name: 'Move to:'
+  ok: OK
+  cancel: Cancel

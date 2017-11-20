@@ -7,7 +7,7 @@ const _ = require('lodash');
 // Media state
 //
 // - user_hid:           user hid
-// - album_hid:          album hid
+// - album_id:           album id
 // - reached_start:      true if no more pages exist above first loaded one
 // - reached_end:        true if no more pages exist below last loaded one
 // - prev_loading_start: time when current xhr request for the previous page is started
@@ -547,5 +547,24 @@ N.wire.once('navigate.done:' + module.apiPath, function album_selection_init() {
 
     check_media(media_id, checked);
     update_toolbar();
+  });
+
+
+  // Mass-move media
+  //
+  N.wire.on('users.album:move_many', function media_move() {
+    let data = {
+      from_album: mediaState.album_id,
+      media_ids:  mediaState.selection_ids || []
+    };
+
+    return N.wire.emit('users.album.media_move', data)
+      .then(() => N.wire.emit('navigate.to', {
+        apiPath: 'users.album',
+        params: {
+          user_hid: mediaState.user_hid,
+          album_id: data.to_album
+        }
+      }));
   });
 });
