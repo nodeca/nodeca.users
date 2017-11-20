@@ -481,7 +481,8 @@ N.wire.once('navigate.done:' + module.apiPath, function prefetch_handler_setup()
 // Multiselect
 //
 
-function updateSelectionState() {
+// Update toolbar, hide/show all checkboxes
+function update_toolbar() {
   $('.user-album-root__toolbar-controls')
     .replaceWith(N.runtime.render(module.apiPath + '.blocks.toolbar_controls', {
       album:               N.runtime.page_data.album,
@@ -490,8 +491,22 @@ function updateSelectionState() {
       selection_ids:       mediaState.selection_ids,
       selection_started:   mediaState.selection_started
     }));
+}
 
-  $('.user-medialist').toggleClass('user-medialist__m-selection', mediaState.selection_started);
+// Check or uncheck media
+function check_media(media_id, checked) {
+  let container = $('#media' + media_id);
+  let checkbox  = container.find('.user-medialist-item__select-cb');
+
+  checkbox.prop('checked', checked);
+  container.toggleClass('selected', checked);
+
+  if (checked && mediaState.selection_ids.indexOf(media_id) === -1) {
+    mediaState.selection_ids.push(media_id);
+
+  } else if (!checked && mediaState.selection_ids.indexOf(media_id) !== -1) {
+    mediaState.selection_ids = _.without(mediaState.selection_ids, media_id);
+  }
 }
 
 
@@ -504,34 +519,33 @@ N.wire.once('navigate.done:' + module.apiPath, function album_selection_init() {
   N.wire.on(module.apiPath + ':selection_start', function selection_start() {
     mediaState.selection_ids = [];
     mediaState.selection_started = true;
-    updateSelectionState();
+    update_toolbar();
+    $('.user-medialist').addClass('user-medialist__m-selection');
   });
 
 
   // User stops selection: hide checkboxes, reset selection state
   //
   N.wire.on(module.apiPath + ':selection_stop', function selection_stop() {
+    for (let media_id of mediaState.selection_ids) {
+      check_media(media_id, false);
+    }
+
     mediaState.selection_ids = null;
     mediaState.selection_started = false;
-    updateSelectionState();
+    update_toolbar();
+    $('.user-medialist').removeClass('user-medialist__m-selection');
   });
 
 
   // User toggles checkbox near an image
   //
   N.wire.on(module.apiPath + ':media_check', function media_check(data) {
-    let media_id = data.$this.data('media-id');
-    let $checkbox = data.$this.find('.thumb-grid__select-cb');
+    let media_id = data.$this.closest('.user-medialist__item').data('media-id');
+    let checkbox = data.$this.find('.user-medialist-item__select-cb');
+    let checked  = !checkbox.prop('checked');
 
-    $checkbox.prop('checked', !$checkbox.prop('checked'));
-
-    if ($checkbox.is(':checked') && mediaState.selection_ids.indexOf(media_id) === -1) {
-      mediaState.selection_ids.push(media_id);
-
-    } else if (!$checkbox.is(':checked') && mediaState.selection_ids.indexOf(media_id) !== -1) {
-      mediaState.selection_ids = _.without(mediaState.selection_ids, media_id);
-    }
-
-    updateSelectionState();
+    check_media(media_id, checked);
+    update_toolbar();
   });
 });

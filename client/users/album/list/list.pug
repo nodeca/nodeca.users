@@ -3,7 +3,7 @@
 each media in self.media
   - var href = self.link_to('users.media', { user_hid: self.user_hid, media_id: media.media_id })
 
-  li.thumb-grid__item(id='media' + media.media_id, data-media-id=media.media_id)
+  li.user-medialist__item.thumb-grid__item(id='media' + media.media_id, data-media-id=media.media_id)
     .thumb-grid__item-inner
       - var mType = media.type & ~mTypes.MASK_DELETED
 
@@ -20,6 +20,9 @@ each media in self.media
                 span.thumb-caption__inline.icon.icon-space-after.icon-comment
                   = media.comments_count
 
+        label.user-medialist-item__select-overlay(data-on-click='users.album:media_check')
+          input.user-medialist-item__select-cb(type='checkbox')
+
       else if mType === mTypes.MEDIALINK
         .thumb
           a.thumb__inner(href=href)
@@ -33,6 +36,9 @@ each media in self.media
                 span.thumb-caption__inline.icon.icon-space-after.icon-comment
                   = media.comments_count
 
+        label.user-medialist-item__select-overlay(data-on-click='users.album:media_check')
+          input.user-medialist-item__select-cb(type='checkbox')
+
       else if mType === mTypes.BINARY
         a.thumb(href=href)
           .thumb__icon.icon.icon-binary
@@ -45,8 +51,5 @@ each media in self.media
               span.thumb-caption__inline.icon.icon-space-after.icon-comment
                 = media.comments_count
 
-      label.thumb-grid__select(
-        data-on-click='users.album:media_check'
-        data-media-id=media.media_id
-      )
-        input.thumb-grid__select-cb(type='checkbox')
+        label.user-medialist-item__select-overlay(data-on-click='users.album:media_check')
+          input.user-medialist-item__select-cb(type='checkbox')

@@ -15,17 +15,17 @@ if own_page && self.album
     - items.push('album_edit')
     - items.push('album_delete')
 
-if self.selection_started
-  if items.length > 0
-    - items.push('divider')
-  - items.push('many_header')
-  - items.push('many_unselect')
-  - items.push('many_move')
-  - items.push('many_delete')
-else
-  if items.length > 0
-    - items.push('divider')
-  - items.push('many_select')
+  if self.selection_started
+    if items.length > 0
+      - items.push('divider')
+    - items.push('many_header')
+    - items.push('many_unselect')
+    - items.push('many_move')
+    - items.push('many_delete')
+  else
+    if items.length > 0
+      - items.push('divider')
+    - items.push('many_select')
 
 .page-actions.user-album-root__toolbar-controls
   //- Hidden
