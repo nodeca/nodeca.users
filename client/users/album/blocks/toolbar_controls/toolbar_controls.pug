@@ -96,10 +96,12 @@ if own_page && self.album
               button.dropdown-item(
                 type='button'
                 data-on-click='users.album:move_many'
+                disabled=self.selection_ids.length === 0
               )= self.t('many_move')
 
             when 'many_delete'
               button.dropdown-item(
                 type='button'
                 data-on-click='users.album:delete_many'
+                disabled=self.selection_ids.length === 0
               )= self.t('many_delete')

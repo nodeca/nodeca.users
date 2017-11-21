@@ -25,7 +25,7 @@ N.wire.before(module.apiPath, function load_media_info(options) {
 N.wire.on(module.apiPath, function show_media_edit_dlg(options, callback) {
   doneCallback = callback;
   $dialog = $(N.runtime.render(module.apiPath, {
-    current_album_id: params.from_album,
+    current_album_id: params.src_album,
     albums: data.albums
   }));
 
@@ -48,12 +48,12 @@ N.wire.on(module.apiPath, function show_media_edit_dlg(options, callback) {
 N.wire.on(module.apiPath + ':submit', function submit_media_edit_dlg(data) {
   N.io.rpc('users.album.media_move.update', {
     media_ids: params.media_ids,
-    from_album: params.from_album,
-    to_album: data.fields.album_id
+    src_album: params.src_album,
+    dst_album: data.fields.album_id
   })
     .then(function () {
       $dialog.modal('hide');
-      params.to_album = data.fields.album_id;
+      params.dst_album = data.fields.album_id;
       doneCallback();
     });
 });

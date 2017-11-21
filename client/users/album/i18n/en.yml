@@ -1,7 +1,8 @@
 en-US:
   title_all_files: All files
   drag_to_upload: Drag photos here to upload.
-  delete_confirmation: Are you sure want to delete this album and all it's photos?
+  delete_album_confirm: Are you sure want to delete this album and all its photos?
+  delete_media_confirm: 'Are you sure want to delete #{count} ((file|files))?'
   no_files: No files
   next_page: Older
   prev_page: Newer

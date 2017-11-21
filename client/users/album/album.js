@@ -196,7 +196,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   // Delete
   //
   N.wire.before(module.apiPath + ':delete', function confirm_delete_album() {
-    return N.wire.emit('common.blocks.confirm', t('delete_confirmation'));
+    return N.wire.emit('common.blocks.confirm', t('delete_album_confirm'));
   });
 
   N.wire.on(module.apiPath + ':delete', function delete_album() {
@@ -542,10 +542,9 @@ N.wire.once('navigate.done:' + module.apiPath, function album_selection_init() {
   //
   N.wire.on(module.apiPath + ':media_check', function media_check(data) {
     let media_id = data.$this.closest('.user-medialist__item').data('media-id');
-    let checkbox = data.$this.find('.user-medialist-item__select-cb');
-    let checked  = !checkbox.prop('checked');
+    let checkbox = data.$this;
 
-    check_media(media_id, checked);
+    check_media(media_id, checkbox.prop('checked'));
     update_toolbar();
   });
 
@@ -554,8 +553,8 @@ N.wire.once('navigate.done:' + module.apiPath, function album_selection_init() {
   //
   N.wire.on('users.album:move_many', function media_move() {
     let data = {
-      from_album: mediaState.album_id,
-      media_ids:  mediaState.selection_ids || []
+      src_album: mediaState.album_id,
+      media_ids: mediaState.selection_ids
     };
 
     return N.wire.emit('users.album.media_move', data)
@@ -563,8 +562,30 @@ N.wire.once('navigate.done:' + module.apiPath, function album_selection_init() {
         apiPath: 'users.album',
         params: {
           user_hid: mediaState.user_hid,
-          album_id: data.to_album
+          album_id: data.dst_album
         }
       }));
+  });
+
+
+  // Mass-delete media
+  //
+  N.wire.before(module.apiPath + ':delete_many', function confirm_media_delete() {
+    return N.wire.emit('common.blocks.confirm', t('delete_media_confirm', {
+      count: mediaState.selection_ids.length
+    }));
+  });
+
+  N.wire.on(module.apiPath + ':delete_many', function media_delete() {
+    return N.io.rpc('users.album.media_destroy', {
+      media_ids: mediaState.selection_ids,
+      src_album: mediaState.album_id
+    }).then(() => {
+      let media = $(mediaState.selection_ids.map(id => '#media' + id).join(','));
+      mediaState.selection_ids = [];
+      update_toolbar();
+
+      media.fadeOut(() => media.remove());
+    });
   });
 });

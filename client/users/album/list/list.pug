@@ -20,8 +20,8 @@ each media in self.media
                 span.thumb-caption__inline.icon.icon-space-after.icon-comment
                   = media.comments_count
 
-        label.user-medialist-item__select-overlay(data-on-click='users.album:media_check')
-          input.user-medialist-item__select-cb(type='checkbox')
+        label.user-medialist-item__select-overlay
+          input.user-medialist-item__select-cb(type='checkbox', data-on-change='users.album:media_check')
 
       else if mType === mTypes.MEDIALINK
         .thumb
@@ -36,8 +36,8 @@ each media in self.media
                 span.thumb-caption__inline.icon.icon-space-after.icon-comment
                   = media.comments_count
 
-        label.user-medialist-item__select-overlay(data-on-click='users.album:media_check')
-          input.user-medialist-item__select-cb(type='checkbox')
+        label.user-medialist-item__select-overlay
+          input.user-medialist-item__select-cb(type='checkbox', data-on-change='users.album:media_check')
 
       else if mType === mTypes.BINARY
         a.thumb(href=href)
@@ -51,5 +51,5 @@ each media in self.media
               span.thumb-caption__inline.icon.icon-space-after.icon-comment
                 = media.comments_count
 
-        label.user-medialist-item__select-overlay(data-on-click='users.album:media_check')
-          input.user-medialist-item__select-cb(type='checkbox')
+        label.user-medialist-item__select-overlay
+          input.user-medialist-item__select-cb(type='checkbox', data-on-change='users.album:media_check')

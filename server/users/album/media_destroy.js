@@ -1,4 +1,4 @@
-// Move media between albums
+// Delete media
 //
 
 'use strict';
@@ -8,8 +8,7 @@ module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
     media_ids: { type: 'array', required: true, uniqueItems: true, items: { format: 'mongo' } },
-    src_album: { format: 'mongo', required: true },
-    dst_album: { format: 'mongo', required: true }
+    src_album: { format: 'mongo', required: true }
   });
 
 
@@ -29,25 +28,6 @@ module.exports = function (N, apiPath) {
     }
 
     env.data.src_album = album;
-  });
-
-
-  // Fetch destination album
-  //
-  N.wire.before(apiPath, async function fetch_destination_album(env) {
-    let album = await N.models.users.Album.findById(env.params.dst_album)
-                          .lean(true);
-
-    if (!album) {
-      throw N.io.NOT_FOUND;
-    }
-
-    // Check album owner
-    if (env.user_info.user_id !== String(album.user)) {
-      throw N.io.FORBIDDEN;
-    }
-
-    env.data.album = album;
   });
 
 
@@ -72,36 +52,16 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Update media
+  // Delete media
   //
-  N.wire.on(apiPath, async function update_media(env) {
-    if (env.data.src_album._id.toString() === env.data.album._id.toString()) {
-      // Album not changed
-      return;
-    }
+  N.wire.on(apiPath, async function delete_media(env) {
+    await Promise.all(
+      env.data.media.map(media =>
+        N.models.users.MediaInfo.markDeleted(media.media_id, false)
+      )
+    );
 
-    let bulk = N.models.users.MediaInfo.collection.initializeUnorderedBulkOp();
-
-    for (let file of env.data.media) {
-      bulk.find({ _id: file._id })
-          .updateOne({ $set: { album: env.data.album._id } });
-    }
-
-    if (bulk.length) await bulk.execute();
-  });
-
-
-  // Update old and new album if changed
-  //
-  N.wire.after(apiPath, async function update_albums(env) {
-    if (env.data.src_album._id.toString() === env.data.album._id.toString()) {
-      // Album not changed
-      return;
-    }
-
-    // Update albums
     await N.models.users.Album.updateInfo(env.data.src_album, true);
-    await N.models.users.Album.updateInfo(env.data.album, true);
   });
 
 
