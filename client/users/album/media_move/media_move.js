@@ -53,7 +53,6 @@ N.wire.on(module.apiPath + ':submit', function submit_media_edit_dlg(data) {
   })
     .then(function () {
       $dialog.modal('hide');
-      params.dst_album = data.fields.album_id;
       doneCallback();
     });
 });

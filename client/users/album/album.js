@@ -481,7 +481,6 @@ N.wire.once('navigate.done:' + module.apiPath, function prefetch_handler_setup()
 // Multiselect
 //
 
-// Update toolbar, hide/show all checkboxes
 function update_toolbar() {
   $('.user-album-root__toolbar-controls')
     .replaceWith(N.runtime.render(module.apiPath + '.blocks.toolbar_controls', {
@@ -509,6 +508,17 @@ function check_media(media_id, checked) {
   }
 }
 
+function stop_selection() {
+  for (let media_id of mediaState.selection_ids) {
+    check_media(media_id, false);
+  }
+
+  mediaState.selection_ids = null;
+  mediaState.selection_started = false;
+  update_toolbar();
+  $('.user-medialist').removeClass('user-medialist__m-selection');
+}
+
 
 // Init handlers
 //
@@ -527,14 +537,7 @@ N.wire.once('navigate.done:' + module.apiPath, function album_selection_init() {
   // User stops selection: hide checkboxes, reset selection state
   //
   N.wire.on(module.apiPath + ':selection_stop', function selection_stop() {
-    for (let media_id of mediaState.selection_ids) {
-      check_media(media_id, false);
-    }
-
-    mediaState.selection_ids = null;
-    mediaState.selection_started = false;
-    update_toolbar();
-    $('.user-medialist').removeClass('user-medialist__m-selection');
+    stop_selection();
   });
 
 
@@ -552,19 +555,19 @@ N.wire.once('navigate.done:' + module.apiPath, function album_selection_init() {
   // Mass-move media
   //
   N.wire.on('users.album:move_many', function media_move() {
-    let data = {
-      src_album: mediaState.album_id,
-      media_ids: mediaState.selection_ids
-    };
+    let media_ids = mediaState.selection_ids.slice(0);
 
-    return N.wire.emit('users.album.media_move', data)
-      .then(() => N.wire.emit('navigate.to', {
-        apiPath: 'users.album',
-        params: {
-          user_hid: mediaState.user_hid,
-          album_id: data.dst_album
-        }
-      }));
+    return N.wire.emit('users.album.media_move', {
+      src_album: mediaState.album_id,
+      media_ids
+    }).then(() => {
+      stop_selection();
+
+      let media = $(media_ids.map(id => '#media' + id).join(','));
+      media.fadeOut(() => media.remove());
+
+      return N.wire.emit('notify.info', t('media_move_done', { count: media_ids.length }));
+    });
   });
 
 
@@ -577,15 +580,18 @@ N.wire.once('navigate.done:' + module.apiPath, function album_selection_init() {
   });
 
   N.wire.on(module.apiPath + ':delete_many', function media_delete() {
-    return N.io.rpc('users.album.media_destroy', {
-      media_ids: mediaState.selection_ids,
-      src_album: mediaState.album_id
-    }).then(() => {
-      let media = $(mediaState.selection_ids.map(id => '#media' + id).join(','));
-      mediaState.selection_ids = [];
-      update_toolbar();
+    let media_ids = mediaState.selection_ids.slice(0);
 
+    return N.io.rpc('users.album.media_destroy', {
+      src_album: mediaState.album_id,
+      media_ids
+    }).then(() => {
+      stop_selection();
+
+      let media = $(media_ids.map(id => '#media' + id).join(','));
       media.fadeOut(() => media.remove());
+
+      return N.wire.emit('notify.info', t('media_delete_done', { count: media_ids.length }));
     });
   });
 });

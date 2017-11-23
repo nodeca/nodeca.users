@@ -3,6 +3,8 @@ en-US:
   drag_to_upload: Drag photos here to upload.
   delete_album_confirm: Are you sure want to delete this album and all its photos?
   delete_media_confirm: 'Are you sure want to delete #{count} ((file|files))?'
+  media_move_done: '#{count} ((file has|files have)) been moved'
+  media_delete_done: '#{count} ((file has|files have)) been deleted'
   no_files: No files
   next_page: Older
   prev_page: Newer
