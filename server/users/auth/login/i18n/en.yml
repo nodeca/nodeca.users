@@ -14,6 +14,10 @@ en-US:
 
       #{link}
 
+      Or enter this code:
+
+      #{code}
+
       If you did not try to log in or changed your mind,
       just ignore this letter.
 

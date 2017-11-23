@@ -18,7 +18,7 @@ module.exports = function (N, apiPath) {
                           .findOne({ secret_key: env.params.secret_key })
                           .lean(true);
 
-    if (!token || token.ip !== env.req.ip) {
+    if (!token || token.session_id !== env.session_id) {
       throw {
         code:    N.io.CLIENT_ERROR,
         message: env.t('err_bad_token')

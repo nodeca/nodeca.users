@@ -9,21 +9,25 @@
 'use strict';
 
 
-const Mongoose = require('mongoose');
-const Schema   = Mongoose.Schema;
+const BigNumber   = require('bignumber.js');
+const Mongoose    = require('mongoose');
+const Schema      = Mongoose.Schema;
 const createToken = require('nodeca.core/lib/app/random_token');
 
-
 const TOKEN_EXPIRE_TIMEOUT = 5 * 60; // 5 minutes
+
+function createDecimalToken() {
+  return new BigNumber('0x' + createToken()).toString(10);
+}
 
 
 module.exports = function (N, collectionName) {
 
   let TokenLoginByEmail = new Schema({
-    secret_key:   { type: String, 'default': createToken },
+    secret_key:   { type: String, 'default': createDecimalToken },
     create_ts:    { type: Date,   'default': Date, expires: TOKEN_EXPIRE_TIMEOUT },
+    session_id:   { type: String },
     user:         Schema.Types.ObjectId,
-    ip:           { type: String },
     authprovider: Schema.Types.ObjectId,
     redirect_id:  Schema.Types.ObjectId
   }, {

@@ -4,5 +4,20 @@
   .layout__container.container-fluid.space-top
     .row
       .col-md-6.col-sm-8.m-auto
-        .card.card-body
-          = self.t('message')
+        .card
+          form.card-body(data-on-submit='users.auth.login.by_email_show:submit')
+            .form-group
+              = self.t('message')
+
+            .form-group
+              label(for='code')= self.t('code')
+              input.form-control(
+                id='code'
+                name='secret_key'
+                data-bind='css: { "is-invalid": error }'
+              )
+              // ko if: error
+              .invalid-feedback(data-bind='text: error')
+              // /ko
+
+            button.btn.btn-primary(type='submit')= self.t('submit')

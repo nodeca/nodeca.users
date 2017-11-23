@@ -15,3 +15,6 @@ en-US:
     title: Login
     message:
       One-time login link has been sent to your email address.
+    code:
+      'You can log in using the code you received in email:'
+    submit: Login

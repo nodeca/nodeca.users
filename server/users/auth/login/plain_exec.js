@@ -135,10 +135,10 @@ module.exports = function (N, apiPath) {
     if (!_.isEmpty(env.params.pass)) return;
 
     let token = await N.models.users.TokenLoginByEmail.create({
-      user:        env.data.user._id,
-      ip:          env.req.ip,
-      redirect_id: env.params.redirect_id,
-      authprovider:    env.data.authProvider_plain._id
+      user:         env.data.user._id,
+      session_id:   env.session_id,
+      redirect_id:  env.params.redirect_id,
+      authprovider: env.data.authProvider_plain._id
     });
 
     let general_project_name = await N.settings.get('general_project_name');
@@ -150,7 +150,7 @@ module.exports = function (N, apiPath) {
     await N.mailer.send({
       to:         env.data.authProvider_plain.email,
       subject:    env.t('email_subject', { project_name: general_project_name }),
-      text:       env.t('email_text',    { link, ip: env.req.ip }),
+      text:       env.t('email_text',    { link, code: token.secret_key, ip: env.req.ip }),
       safe_error: true
     });
 

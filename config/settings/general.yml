@@ -11,7 +11,7 @@ setting_schemas:
       group_key: general
       category_key: general_common
       type: number
-      default: 7
+      default: 0
 
     users_message_max_images:
       type: number
