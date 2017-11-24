@@ -7,12 +7,10 @@
         .card
           form.card-body(data-on-submit='users.auth.login.by_email_show:submit')
             .form-group
-              = self.t('message')
-
-            .form-group
-              label(for='code')= self.t('code')
+              label(for='secret_key')= self.t('message')
               input.form-control(
-                id='code'
+                id='secret_key'
+                type='number'
                 name='secret_key'
                 data-bind='css: { "is-invalid": error }'
               )

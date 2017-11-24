@@ -13,8 +13,5 @@ en-US:
 
   by_email_show:
     title: Login
-    message:
-      One-time login link has been sent to your email address.
-    code:
-      'You can log in using the code you received in email:'
+    message: "We've sent you email with login link. Click on it or enter a code here:"
     submit: Login

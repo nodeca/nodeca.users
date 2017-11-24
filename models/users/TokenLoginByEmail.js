@@ -17,7 +17,9 @@ const createToken = require('nodeca.core/lib/app/random_token');
 const TOKEN_EXPIRE_TIMEOUT = 5 * 60; // 5 minutes
 
 function createDecimalToken() {
-  return new BigNumber('0x' + createToken()).toString(10);
+  // convert to decimal because it's easier for user to type, get last 30
+  // digits because first few digits don't have uniform distribution
+  return new BigNumber('0x' + createToken()).toString(10).slice(-30);
 }
 
 

@@ -147,10 +147,13 @@ module.exports = function (N, apiPath) {
       secret_key: token.secret_key
     });
 
+    // add a space after each 10th digit for readability
+    let code = token.secret_key.match(/.{1,10}/g).join(' ');
+
     await N.mailer.send({
       to:         env.data.authProvider_plain.email,
       subject:    env.t('email_subject', { project_name: general_project_name }),
-      text:       env.t('email_text',    { link, code: token.secret_key, ip: env.req.ip }),
+      text:       env.t('email_text',    { link, code, ip: env.req.ip }),
       safe_error: true
     });
 
