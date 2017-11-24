@@ -69,6 +69,9 @@ module.exports = function (N, apiPath) {
   });
 
 
+  require('./_plain_exec_no_pass')(N, apiPath);
+
+
   // Try to find auth data using `email_or_nick` as an email.
   //
   N.wire.on(apiPath, async function find_authprovider_by_email(env) {
@@ -121,48 +124,6 @@ module.exports = function (N, apiPath) {
 
     env.data.user = user;
     env.data.authProvider_plain = authProvider;
-  });
-
-
-  // If password is empty, send an email with a one-time link to log in
-  //
-  N.wire.on(apiPath, async function create_otp_email_token(env) {
-    if (!env.data.user || !env.data.authProvider_plain) return;
-
-    // user already verified by other hooks, nothing left to do
-    if (env.data.authProvider) return;
-
-    if (!_.isEmpty(env.params.pass)) return;
-
-    let token = await N.models.users.TokenLoginByEmail.create({
-      user:         env.data.user._id,
-      session_id:   env.session_id,
-      redirect_id:  env.params.redirect_id,
-      authprovider: env.data.authProvider_plain._id
-    });
-
-    let general_project_name = await N.settings.get('general_project_name');
-
-    let link = env.helpers.link_to('users.auth.login.by_email_exec', {
-      secret_key: token.secret_key
-    });
-
-    // add a space after each 10th digit for readability
-    let code = token.secret_key.match(/.{1,10}/g).join(' ');
-
-    await N.mailer.send({
-      to:         env.data.authProvider_plain.email,
-      subject:    env.t('email_subject', { project_name: general_project_name }),
-      text:       env.t('email_text',    { link, code, ip: env.req.ip }),
-      safe_error: true
-    });
-
-    throw {
-      code: N.io.REDIRECT,
-      head: {
-        Location: N.router.linkTo('users.auth.login.by_email_show')
-      }
-    };
   });
 
 

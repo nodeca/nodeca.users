@@ -84,6 +84,9 @@ module.exports = function (N, collectionName) {
   // Search by registration date
   User.index({ joined_ts: 1 });
 
+  // Find user by email (login by email)
+  User.index({ email: 1 });
+
   // For searching by custom fields
   if (N.config.users && N.config.users.about) {
     Object.keys(N.config.users.about).forEach(name => {
