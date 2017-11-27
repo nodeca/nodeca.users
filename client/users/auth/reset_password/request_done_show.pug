@@ -4,5 +4,18 @@
   .layout__container.container-fluid.space-top
     .row
       .col-md-6.col-sm-8.m-auto
-        .card.card-body
-          = self.t('message')
+        .card
+          form.card-body(data-on-submit='users.auth.reset_password.request_done_show:submit')
+            .form-group
+              label(for='secret_key')= self.t('message')
+              input.form-control(
+                id='secret_key'
+                type='number'
+                name='secret_key'
+                data-bind='css: { "is-invalid": error }'
+              )
+              // ko if: error
+              .invalid-feedback(data-bind='text: error')
+              // /ko
+
+            button.btn.btn-primary(type='submit')= self.t('submit')

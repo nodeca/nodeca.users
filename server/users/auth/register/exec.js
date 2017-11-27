@@ -205,8 +205,8 @@ module.exports = function (N, apiPath) {
   //
   async function send_activation(env) {
     let token = await N.models.users.TokenActivationEmail.create({
-      ip: env.req.ip,
-      reg_info: env.data.reg_info,
+      session_id: env.session_id,
+      reg_info:   env.data.reg_info,
       oauth_info: env.data.oauth_info
     });
 
@@ -224,6 +224,7 @@ module.exports = function (N, apiPath) {
       text:       env.t('email_text',    {
         project_name: general_project_name,
         nick:         env.params.nick,
+        code:         token.secret_key,
         link
       }),
       safe_error: true

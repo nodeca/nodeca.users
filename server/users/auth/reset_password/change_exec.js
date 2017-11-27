@@ -34,7 +34,7 @@ module.exports = function (N, apiPath) {
       };
     }
 
-    if (token.ip !== env.req.ip) {
+    if (token.session_id !== env.session_id) {
       throw {
         code:         N.io.CLIENT_ERROR,
         message:      env.t('err_broken_token'),

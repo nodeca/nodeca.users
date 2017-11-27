@@ -72,16 +72,31 @@ describe('Register', function () {
   it('should authorize via confirmation link', async function () {
     let login = randomBytes(10).toString('hex');
     let pass  = randomBytes(10).toString('hex') + 'Abc123';
-    let token = await TEST.N.models.users.TokenActivationEmail.create({
-      ip: '127.0.0.1',
-      reg_info: {
-        pass_hash: password.hash(pass),
-        email:     login + '@example.com',
-        nick:      login
-      }
-    });
+    let token;
 
     await TEST.browser
+      // Request any page just to get session
+      .do.open(() => TEST.N.router.linkTo('users.auth.login.show'))
+      .get.cookies((cookies, callback) => {
+        let sid = cookies.find(c => c.name === 'sid');
+
+        TEST.N.models.users.TokenActivationEmail.create({
+          session_id: sid.value,
+          reg_info: {
+            pass_hash: password.hash(pass),
+            email:     login + '@example.com',
+            nick:      login
+          }
+        }, (err, t) => {
+          if (err) {
+            callback(err);
+            return;
+          }
+
+          token = t;
+          callback();
+        });
+      })
       // Confirm account
       .do.open(() => TEST.N.router.linkTo('users.auth.register.activate_exec', {
         secret_key: token.secret_key

@@ -14,10 +14,8 @@ module.exports = function (N, apiPath) {
   // Check token
   //
   N.wire.before(apiPath, async function check_token(env) {
-    let secret_key = env.params.secret_key.replace(/ /g, '');
-
     let token = await N.models.users.TokenLoginByEmail
-                          .findOne({ secret_key })
+                          .findOne({ secret_key: env.params.secret_key })
                           .lean(true);
 
     if (!token || token.session_id !== env.session_id) {

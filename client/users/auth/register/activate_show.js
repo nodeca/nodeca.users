@@ -1,4 +1,4 @@
-// Log in using code received in email
+// Activate account using code received in email
 //
 'use strict';
 
@@ -42,8 +42,10 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   //
   N.wire.on(module.apiPath + ':submit', function submit_code(data) {
 
-    return N.io.rpc('users.auth.login.by_email_exec', data.fields)
-      .catch(err => {
+    return N.io.rpc('users.auth.register.activate_exec', data.fields)
+      .then(() => {
+        view.error(t('err_invalid_token'));
+      }, err => {
         if (err.code === N.io.REDIRECT) {
           window.location = err.head.Location;
           return;

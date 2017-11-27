@@ -6,7 +6,9 @@ en-US:
     reset_password: Reset password
 
   request_done_show:
-    message: You should receive email with instructions how change password.
+    message: 'You should receive email with a link to change password. Click on it or enter the code here:'
+    err_invalid_token: Invalid security token.
+    submit: ok
 
   change_show:
     err_invalid_token: Invalid security token.

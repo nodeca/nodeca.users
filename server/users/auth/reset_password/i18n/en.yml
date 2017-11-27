@@ -14,6 +14,10 @@ en-US:
 
       #{link}
 
+      Or enter this code:
+
+      #{code}
+
       If you did not request password reset or changed your mind,
       just ignore this letter.
 

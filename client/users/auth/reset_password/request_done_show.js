@@ -1,4 +1,4 @@
-// Log in using code received in email
+// Move to reset password page using code received in email
 //
 'use strict';
 
@@ -42,13 +42,15 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   //
   N.wire.on(module.apiPath + ':submit', function submit_code(data) {
 
-    return N.io.rpc('users.auth.login.by_email_exec', data.fields)
-      .catch(err => {
-        if (err.code === N.io.REDIRECT) {
-          window.location = err.head.Location;
+    return N.io.rpc('users.auth.reset_password.change_show', data.fields)
+      .then(res => {
+        if (!res.valid_token) {
+          view.error(t('err_invalid_token'));
           return;
         }
 
+        return N.wire.emit('navigate.to', { apiPath: 'users.auth.reset_password.change_show', params: data.fields });
+      }, err => {
         view.error(err.message);
       });
   });

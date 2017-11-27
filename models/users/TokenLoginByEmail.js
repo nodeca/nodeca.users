@@ -27,7 +27,7 @@ module.exports = function (N, collectionName) {
 
   let TokenLoginByEmail = new Schema({
     secret_key:   { type: String, 'default': createDecimalToken },
-    create_ts:    { type: Date,   'default': Date, expires: TOKEN_EXPIRE_TIMEOUT },
+    create_ts:    { type: Date,   'default': Date.now, expires: TOKEN_EXPIRE_TIMEOUT },
     session_id:   { type: String },
     user:         Schema.Types.ObjectId,
     authprovider: Schema.Types.ObjectId,

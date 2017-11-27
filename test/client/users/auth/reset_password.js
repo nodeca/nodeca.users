@@ -87,11 +87,7 @@ describe('Reset password', function () {
 
 
   it('should send email after password reset', async function () {
-    let token = await TEST.N.models.users.TokenResetPassword.create({
-      user: user._id,
-      ip:   '127.0.0.1'
-    });
-
+    let token;
     let get_email = new Promise(resolve => {
       on_message = (session, data) => {
         resolve(data.replace(/\=\r\n/g, ''));
@@ -99,6 +95,24 @@ describe('Reset password', function () {
     });
 
     await TEST.browser
+      // Request any page just to get session
+      .do.open(() => TEST.N.router.linkTo('users.auth.login.show'))
+      .get.cookies((cookies, callback) => {
+        let sid = cookies.find(c => c.name === 'sid');
+
+        TEST.N.models.users.TokenResetPassword.create({
+          user: user._id,
+          session_id: sid.value
+        }, (err, t) => {
+          if (err) {
+            callback(err);
+            return;
+          }
+
+          token = t;
+          callback();
+        });
+      })
       // Change password
       .do.open(() => TEST.N.router.linkTo('users.auth.reset_password.change_show', {
         secret_key: token.secret_key

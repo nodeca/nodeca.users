@@ -24,6 +24,10 @@ en-US:
 
       #{link}
 
+      Or enter this code:
+
+      #{code}
+
   activate_show:
     title: Registration
 

@@ -15,9 +15,10 @@ en-US:
     register: Register
 
   activate_show:
-    activate_info:
-      You need to activate your account.
-      Please follow instructions in activation email.
+    message:
+      'You need to activate your account. Please follow the link in activation email or enter the code here:'
+    err_invalid_token: Invalid security token.
+    submit: ok
 
   activate_exec:
     err_invalid_token: Invalid security token.

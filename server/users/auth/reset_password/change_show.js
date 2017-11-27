@@ -12,13 +12,13 @@ module.exports = function (N, apiPath) {
 
   // Check token and show form
   //
-  N.wire.on(apiPath, function change_show(env) {
+  N.wire.on(apiPath, async function change_show(env) {
     env.res.head.title = env.t('title');
     env.res.secret_key = env.params.secret_key;
 
-    let token = N.models.users.TokenResetPassword
-                    .findOne({ secret_key: env.params.secret_key, ip: env.req.ip })
-                    .lean(true);
+    let token = await N.models.users.TokenResetPassword
+                          .findOne({ secret_key: env.params.secret_key, session_id: env.session_id })
+                          .lean(true);
 
     //
     // Don't delete token here, we need it for exec action

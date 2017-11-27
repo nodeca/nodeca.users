@@ -50,6 +50,8 @@ module.exports = function (N, apiPath) {
 
     await authSession.save();
 
+    let old_session_id = env.session_id;
+
     env.session_id = authSession.session_id;
 
     // force all other tabs to reload
@@ -61,13 +63,13 @@ module.exports = function (N, apiPath) {
     // if no specific redirect requested - redirect to default
     if (!env.data.redirect_id) return;
 
-    // Try to find active redirect bound to this ip
+    // Try to find active redirect bound to this session
     let link = await N.models.users.LoginRedirect
-                        .findOne({ _id: env.data.redirect_id, used: false, ip: env.req.ip })
+                        .findOne({ _id: env.data.redirect_id, used: false })
                         .lean(true);
 
     // If redirect requested, but not found - redirect to default.
-    if (!link) return;
+    if (!link || (link.session_id && link.session_id !== old_session_id)) return;
 
     // update redirect url
     env.data.redirect_url = link.url;

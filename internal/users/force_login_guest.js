@@ -30,7 +30,7 @@ module.exports = function (N, apiPath) {
     let loginRedirect = new N.models.users.LoginRedirect();
 
     loginRedirect.url = backUrl;
-    loginRedirect.ip  = env.req.ip;
+    loginRedirect.session_id = env.session_id;
 
     let res = await loginRedirect.save();
 

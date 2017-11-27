@@ -24,6 +24,8 @@ module.exports = function (N, apiPath) {
   // Save referrer as link to redirect after login
   //
   N.wire.before(apiPath, async function save_redirect(env) {
+    if (env.params.redirect_id) return;
+
     let referer = env.origin.req.headers.referer;
     if (!referer) return;
 
@@ -39,7 +41,7 @@ module.exports = function (N, apiPath) {
     let loginRedirect = new N.models.users.LoginRedirect();
 
     loginRedirect.url = url;
-    loginRedirect.ip  = env.req.ip;
+    loginRedirect.session_id = env.session_id;
 
     let res = await loginRedirect.save();
 

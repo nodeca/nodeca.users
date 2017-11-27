@@ -29,12 +29,14 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, async function check_activation_token_and_user(env) {
 
-    env.data.token = await N.models.users.TokenActivationEmail
-                              .findOne({ secret_key: env.params.secret_key, ip: env.req.ip })
-                              .lean(true); // because we use model's instance method 'isExpired'
+    let token = await N.models.users.TokenActivationEmail
+                          .findOne({ secret_key: env.params.secret_key })
+                          .lean(true); // because we use model's instance method 'isExpired'
 
     // No token found or it's expired. Show 'Invalid token' page.
-    if (!env.data.token) return;
+    if (!token || token.session_id !== env.session_id) return;
+
+    env.data.token = token;
 
     // Token can be used only once.
     await N.models.users.TokenActivationEmail.remove({ secret_key: env.params.secret_key });

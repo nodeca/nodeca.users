@@ -65,8 +65,8 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, async function create_reset_confirmation(env) {
     let token = await N.models.users.TokenResetPassword.create({
-      user: env.data.user._id,
-      ip:   env.req.ip
+      user:       env.data.user._id,
+      session_id: env.session_id
     });
 
     let general_project_name = await N.settings.get('general_project_name');
@@ -78,7 +78,7 @@ module.exports = function (N, apiPath) {
     await N.mailer.send({
       to:         env.data.user.email,
       subject:    env.t('email_subject', { project_name: general_project_name }),
-      text:       env.t('email_text',    { link, ip: env.req.ip }),
+      text:       env.t('email_text',    { link, code: token.secret_key, ip: env.req.ip }),
       safe_error: true
     });
   });

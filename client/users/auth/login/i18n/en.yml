@@ -13,5 +13,5 @@ en-US:
 
   by_email_show:
     title: Login
-    message: "We've sent you email with login link. Click on it or enter a code here:"
+    message: "We've sent you email with login link. Click on it or enter the code here:"
     submit: Login
