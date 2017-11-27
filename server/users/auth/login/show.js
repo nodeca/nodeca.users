@@ -23,6 +23,13 @@ module.exports = function (N, apiPath) {
 
   // Save referrer as link to redirect after login
   //
+  //  - if redirect_id is not set, it means user moved to login page himself,
+  //    so we can retrieve return url from referrer.
+  //
+  //  - if redirect_id is set, it means user was previously forced onto login
+  //    page from restricted area (dialogs, tracker, etc.), do nothing in
+  //    this case.
+  //
   N.wire.before(apiPath, async function save_redirect(env) {
     if (env.params.redirect_id) return;
 
