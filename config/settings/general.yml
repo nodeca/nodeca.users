@@ -6,12 +6,12 @@ setting_groups:
 
 setting_schemas:
   global:
-    general_login_expire_days:
-      priority: 40
-      group_key: general
-      category_key: general_common
-      type: number
-      default: 0
+    #general_login_expire_days:
+    #  priority: 40
+    #  group_key: general
+    #  category_key: general_common
+    #  type: number
+    #  default: 0
 
     users_message_max_images:
       type: number

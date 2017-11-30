@@ -16,7 +16,7 @@ const createToken = require('nodeca.core/lib/app/random_token');
 // Reason why this session was terminated
 //
 const logout_types = {
-  EXPIRED: 1, // timed out
+  //EXPIRED: 1, // timed out
   LOGOUT:  2, // user clicked logout button
   REVOKED: 3  // from another device
 };

@@ -16,8 +16,8 @@ i18n:
           perm_mod_notes: Moderator's notes
 
         setting_names:
-          general_login_expire_days: Login expire time (days)
-          general_login_expire_days_help: Force user to relogin after this period. 0 - never expire.
+          #general_login_expire_days: Login expire time (days)
+          #general_login_expire_days_help: Force user to relogin after this period. 0 - never expire.
 
           votes_add_max_time: Max time to add vote after create content (hours)
 
