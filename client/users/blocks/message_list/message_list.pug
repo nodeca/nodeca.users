@@ -27,8 +27,9 @@ each message in self.messages
         .user-messages-list-item__message.markup
           !=message.html
 
-          if (message.tail && message.tail.length)
-            .user-messages-list-item__tail.markup-tail!=self.partial('@users.blocks.message_list.attachments', { message: message, author: author })
+          if message.tail && message.tail.length
+            .user-messages-list-item__tail.markup-tail
+              != self.partial('@users.blocks.attachments', { message: message })
 
         ul.user-messages-list-item__controls
           -var infraction = self.infractions[message.common_id];

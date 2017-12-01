@@ -1,0 +1,34 @@
+//- Display tail for forum posts, dialogs, blogs, etc.
+//-
+//- In:
+//-  - self.users
+//-  - self.message.user
+//-  - self.message.tail
+//-  
+
+- var mTypes = '$$ JSON.stringify(N.models.users.MediaInfo.types) $$'
+- var user   = self.users[self.message.user] || {};
+
+ul.thumb-grid.thumb-grid__m-responsive.thumb-grid__m-tight
+  each media in self.message.tail
+    - var href = self.link_to('users.media', { user_hid: user.hid, media_id: media.media_id })
+
+    li.thumb-grid__item
+      - var mType = media.type & ~mTypes.MASK_DELETED
+
+      if mType === mTypes.IMAGE
+        - var imageUrl = self.link_to('core.gridfs', { bucket: media.media_id + '_sm' })
+        a.attach.attach-img.thumb.thumb__m-responsive(href=href)
+          img.thumb__image(src=imageUrl)
+
+      else if mType === mTypes.BINARY
+        a.attach.attach-bin.thumb.thumb__m-responsive(href=href)
+          .thumb__icon.icon.icon-binary
+          .thumb__content= media.file_name
+
+      else if mType === mTypes.MEDIALINK
+        //- Probably this branch can be stripped
+        .attach.attach-media.thumb.thumb__m-responsive
+          a.thumb__inner(href=href)
+            .thumb__icon.icon.icon-video
+            img.thumb__image(src=media.medialink_meta.thumb)
