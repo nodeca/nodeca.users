@@ -3,14 +3,14 @@
 
 'use strict';
 
-const pump     = require('pump');
+const pumpify  = require('pumpify');
 const through2 = require('through2');
 
 
 module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, function get_users_sitemap(data) {
-    let stream = pump(
+    let stream = pumpify.obj(
       N.models.users.User.collection
                          .find({ exists: true }, { hid: 1, last_active_ts: 1 })
                          .sort({ hid: 1 })
