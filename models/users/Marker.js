@@ -110,6 +110,8 @@ module.exports = function (N, collectionName) {
       N.redis.saddAsync('marker_marks_items', String(userId)),
       N.redis.zaddAsync('marker_marks:' + userId, +contentId.getTimestamp(), String(contentId))
     ]);
+
+    // TODO: consider executing gc randomly with ~10% probablility
     await Marker.gc(type, userId, categoryId, res[categoryId]);
   };
 
