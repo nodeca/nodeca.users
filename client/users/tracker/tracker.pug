@@ -18,7 +18,7 @@
       .user-tracker__no-items=self.t('nothing_new')
 
     else
-      ul.user-tracker-items
+      .user-tracker-items
 
         each item in self.items
           != self.partial('@users.tracker.blocks.' + item.type, { item: item })

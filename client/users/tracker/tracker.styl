@@ -1,14 +1,20 @@
 @import "nodeca.core/client/common/_variables"
 
 .user-tracker-items
-  list-style none
   padding 0
 
 .user-tracker-item
   border-top 1px solid $decorator-color
   padding 1rem 0
+  display flex
   &:first-child
     border-top none
+
+.user-tracker-item__content
+  flex 1 1 auto
+
+.user-tracker-item__controls
+  flex 0 0 30%
 
 .user-tracker-item__title
   //font-family $font-family-sans-serif-wide

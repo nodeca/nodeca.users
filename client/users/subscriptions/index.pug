@@ -55,7 +55,7 @@
           data-block-name=tab.block_name
           id=tab.block_name
         )
-          ul.user-subscriptions-list
+          .user-subscriptions-list
             each item in tab.items
               !=self.partial('@users.subscriptions.blocks.' + tab.block_name, { item: item, block_name: tab.block_name })
           .user-subscriptions-tab-pane__empty=self.t('no_subscriptions')

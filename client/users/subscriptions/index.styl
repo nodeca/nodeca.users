@@ -1,14 +1,20 @@
 @import "nodeca.core/client/common/_variables"
 
 .user-subscriptions-list
-  list-style none
   padding 0
 
 .user-subscriptions-item
   border-top 1px solid $decorator-color
   padding 1rem 0
+  display flex
   &:first-child
     border-top none
+
+.user-subscriptions-item__content
+  flex 1 1 auto
+
+.user-subscriptions-item__controls
+  align-self center
 
 .user-subscriptions-item__title
   font-family $font-family-sans-serif-wide
