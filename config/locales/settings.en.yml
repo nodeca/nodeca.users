@@ -21,6 +21,8 @@ i18n:
 
           votes_add_max_time: Max time to add vote after create content (hours)
 
+          votes_auto_report: Create automatic abuse report after XX downvotes
+
           can_vote: Can vote
 
           validate_email: Should validate email after registration

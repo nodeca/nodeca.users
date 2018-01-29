@@ -10,3 +10,10 @@ setting_schemas:
       category_key: votes_common
       type: number
       default: 168 # one week (24 * 7)
+
+    votes_auto_report:
+      priority: 30
+      group_key: votes
+      category_key: votes_common
+      type: number
+      default: 5

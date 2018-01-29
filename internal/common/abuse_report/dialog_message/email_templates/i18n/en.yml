@@ -5,4 +5,4 @@ en-US:
     header: "Complaint from user #{url}:"
     to: "About [dialog message](#{url}):"
     message_sent_to: "This message sent to: "
-    report_topic: Report topic.
+    report_topic: Topic with report.
