@@ -232,7 +232,6 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function stub(env) {
     _.set(env, 'res.blocks.bookmarks', {});
-    _.set(env, 'res.blocks.blog', {});
   });
 
 

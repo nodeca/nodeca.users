@@ -83,7 +83,7 @@ module.exports = function (N) {
       _.set(env.res, 'blocks.infractions', {
         list: infractions,
         settings: {
-          can_add_infractions,
+          users_mod_can_add_infractions_profile: can_add_infractions,
           cannot_receive_infractions,
           can_delete_infractions
         },
