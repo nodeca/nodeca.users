@@ -192,6 +192,7 @@ module.exports = function (N, apiPath) {
     env.res.user = {};
     env.res.user._id = env.data.user._id;
     env.res.user.hid = env.data.user.hid;
+    env.res.user.exists = env.data.user.exists;
     env.res.user.last_active_ts = env.data.user.last_active_ts;
     env.res.avatar_exists = env.data.user.avatar_id ? true : false;
 

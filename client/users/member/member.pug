@@ -1,7 +1,7 @@
 - var own_page = (self.runtime.user_hid === self.user.hid)
 - self.add_raw_data('profile_tab', own_page)
 
-#content.user-member-page
+#content.user-member-page(class=self.user.exists ? '' : 'user-member-page__m-deleted')
   != self.partial('@common.blocks.navbar.logo_apps')
 
   nav.breadcrumbs-container
