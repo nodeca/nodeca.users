@@ -24,14 +24,26 @@ let msg_day = 0;
 let markup_options;
 
 
-async function createDemoUsers() {
+async function createUsers() {
+  let userGroupsByName = {};
+  let groups = await models.users.UserGroup.find().select('_id short_name');
+
+  // collect usergroups
+  groups.forEach(function (group) {
+    userGroupsByName[group.short_name] = group;
+  });
+
   for (let i = 0; i < USER_COUNT; i++) {
     let user = new models.users.User({
       first_name: charlatan.Name.firstName(),
       last_name:  charlatan.Name.lastName(),
       nick:       charlatan.Internet.userName(),
       email:      charlatan.Internet.email(),
-      joined_ts:  new Date()
+      joined_ts:  new Date(),
+      /*eslint-disable new-cap*/
+      joined_ip:  charlatan.Internet.IPv4(),
+      usergroups: userGroupsByName.members,
+      active:     true
     });
 
     await user.save();
@@ -149,6 +161,6 @@ module.exports = async function (N) {
     { alias: true }
   );
 
-  await createDemoUsers();
+  await createUsers();
   await Promise.all(users.map(u => createDialogs(u)));
 };
