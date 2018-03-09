@@ -41,10 +41,8 @@ users:
     blocks:
       about:
         priority: 20
-      blog:
-        priority: 30
       bookmarks:
-        priority: 40
+        priority: 50
 
       # Second column (priority > 100)
       albums:
