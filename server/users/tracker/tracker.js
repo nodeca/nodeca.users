@@ -9,11 +9,19 @@
 'use strict';
 
 
-var _ = require('lodash');
+const _ = require('lodash');
 
 
 module.exports = function (N, apiPath) {
-  N.validate(apiPath, {});
+  N.validate(apiPath, {
+    $query: {
+      type: 'object',
+      required: false,
+      properties: {
+        type: { type: 'string' }
+      }
+    }
+  });
 
 
   // Redirect guests to login page
@@ -33,33 +41,67 @@ module.exports = function (N, apiPath) {
   // Fetch subscriptions for user
   //
   N.wire.before(apiPath, async function fetch_subscriptions(env) {
-    env.data.subscriptions = await N.models.users.Subscription
-                                      .find()
+    env.data.subscriptions = await N.models.users.Subscription.find()
                                       .where('user').equals(env.user_info.user_id)
                                       .where('type').in(N.models.users.Subscription.types.LIST_SUBSCRIBED)
                                       .lean(true);
   });
 
 
-  // Fetch tracked items subcall
+  // Fetch tracked items
   //
-  N.wire.on(apiPath, function fetch_items_subcall(env) {
-    env.data.items = [];
-    return N.wire.emit('internal:users.tracker.fetch', env);
-  });
+  N.wire.on(apiPath, async function fetch_items(env) {
+    let menu = _.get(N.config, 'users.tracker.menu', {});
+    let tab_types = Object.keys(menu)
+                          .sort((a, b) => (menu[a].priority || 100) - (menu[b].priority || 100));
 
+    let type = env.params.$query && env.params.$query.type || tab_types[0];
 
-  // Sort tracked items
-  //
-  N.wire.after(apiPath, function sort_items(env) {
-    env.data.items = _.orderBy(env.data.items, 'last_ts', 'desc');
-  });
+    // validate tab type
+    if (tab_types.indexOf(type) === -1) {
+      throw N.io.BAD_REQUEST;
+    }
 
+    let fetch_env = {
+      params: {
+        user_info: env.user_info,
+        subscriptions: env.data.subscriptions
+      }
+    };
 
-  // Fill response
-  //
-  N.wire.after(apiPath, function fill_response(env) {
-    env.res.items = env.data.items;
+    await N.wire.emit('internal:users.tracker.fetch.' + type, fetch_env);
+
+    env.data.users = (env.data.users || []).concat(fetch_env.users);
+    env.res = Object.assign(env.res, fetch_env.res);
+
+    // calculate result counts for other tabs
+    let counts = {};
+
+    // set result count for current tab
+    counts[type] = fetch_env.count;
+
+    let other_tabs = _.without(tab_types, type);
+
+    await Promise.all(other_tabs.map(async type => {
+      let sub_env = {
+        params: {
+          user_info: env.user_info,
+          subscriptions: env.data.subscriptions
+        }
+      };
+
+      // TODO: replace with users.tracker.count.X with simplified algorithm
+      await N.wire.emit('internal:users.tracker.fetch.' + type, sub_env);
+
+      counts[type] = sub_env.count;
+    }));
+
+    env.res.tabs = tab_types.map(type => ({
+      type,
+      count: counts[type]
+    }));
+
+    env.res.type = type;
   });
 
 

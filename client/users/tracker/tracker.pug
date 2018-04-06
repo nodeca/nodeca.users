@@ -14,6 +14,17 @@
       a.nav-link.btn.btn-sm.btn-outline-success(href=self.link_to('users.tracker'))= self.t('tracker')
       a.nav-link.btn.btn-sm.btn-outline-secondary(href=self.link_to('users.subscriptions.index'))= self.t('subscriptions')
 
+    ul.nav.nav-tabs-underlined(role='tablist')
+      each tab in self.tabs
+        li.user-tracker-tab.nav-item(role='presentation')
+          a.nav-link(
+            href=self.link_to('users.tracker', { $query: { type: tab.type } })
+            class=(self.type === tab.type ? 'active' : '')
+          )
+            = self.t('@users.tracker.menu.' + tab.type)
+            span.user-tracker__tab-counter(title=tab.count)
+              = '(' + tab.count + ')'
+
     if self.items.length === 0
       .user-tracker__no-items=self.t('nothing_new')
 
