@@ -7,11 +7,7 @@
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
-    title: {
-      type: 'string',
-      minLength: 1,
-      required: true
-    }
+    title: { type: 'string', required: true }
   });
 
 
@@ -20,6 +16,18 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function check_user_auth(env) {
     if (!env.user_info.is_member) throw N.io.FORBIDDEN;
+  });
+
+
+  // Check title length (prevent user from creating albums with whitespace only)
+  //
+  N.wire.before(apiPath, async function check_title_length(env) {
+    if (env.params.title.trim().length === 0) {
+      throw {
+        code: N.io.CLIENT_ERROR,
+        message: env.t('err_name_empty')
+      };
+    }
   });
 
 

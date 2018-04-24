@@ -4,4 +4,3 @@ en-US:
   cancel: Cancel
   input_name: Album name
   input_desc: Name for new album
-  err_empty_name: 'Album name should not be empty'

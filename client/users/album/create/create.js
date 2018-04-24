@@ -15,16 +15,12 @@ N.wire.once(module.apiPath, function init_event_handlers() {
 
   // Listen submit button
   //
-  N.wire.on(module.apiPath + ':submit', function submit_album_create_dlg(form) {
-    let title = form.fields.album_name;
+  N.wire.on(module.apiPath + ':submit', function submit_album_create_dlg(data) {
+    data.$this.addClass('was-validated');
 
-    // Don't allow empty name for albums
-    if (!title || !$.trim(title)) {
-      N.wire.emit('notify', t('err_empty_name'));
-      return;
-    }
+    if (data.$this[0].checkValidity() === false) return;
 
-    params.title = result = title;
+    params.title = result = data.fields.album_name;
     $dialog.modal('hide');
   });
 

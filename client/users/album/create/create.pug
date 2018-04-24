@@ -1,7 +1,7 @@
 .modal.fade(tabindex='-1' role='dialog' aria-hidden='true')
   .modal-dialog(role='document')
     .modal-content
-      form(data-on-submit='users.album.create:submit')
+      form(novalidate, data-on-submit='users.album.create:submit')
 
         .modal-header
           h4.modal-title= self.t('title')
@@ -19,6 +19,8 @@
             name='album_name'
             tabindex='1'
             placeholder=self.t('input_desc')
+            pattern='.*\\S.*'
+            required
           )
 
         .modal-footer
