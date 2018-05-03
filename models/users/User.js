@@ -1,14 +1,12 @@
 'use strict';
 
 
-const Promise       = require('bluebird');
 const Mongoose      = require('mongoose');
 const Schema        = Mongoose.Schema;
 const unhomoglyph   = require('unhomoglyph');
 const xregexp       = require('xregexp');
 const zxcvbn        = require('zxcvbn');
 const configReader  = require('../../server/_lib/resize_parse');
-const { callbackify } = require('util');
 
 
 module.exports = function (N, collectionName) {
@@ -203,12 +201,10 @@ module.exports = function (N, collectionName) {
   // Set `name` equal to `nick` by default,
   // you can override it by adding a custom hook with altered behavior
   //
-  User.pre('save', function (callback) {
+  User.pre('save', function () {
     if (this.isModified('nick')) {
       this.name = this.nick;
     }
-
-    callback();
   });
 
 
@@ -217,17 +213,15 @@ module.exports = function (N, collectionName) {
   //N.wire.before('init:models.users.User', function init_extend_user_model(User) {
   //  User.add({ first_name: String, last_name: String });
   //
-  //  User.pre('save', function (callback) {
+  //  User.pre('save', function () {
   //    this.name = this.first_name + ' (' + this.nick + ') ' + this.last_name;
   //  });
-  //
-  //  callback();
   //});
 
 
   // Set normalized nick
   //
-  User.pre('save', function (callback) {
+  User.pre('save', function () {
     if (this.isModified('nick')) {
       //
       // Use two different fields for homoglyph check and lowercase,
@@ -239,94 +233,61 @@ module.exports = function (N, collectionName) {
       this.nick_normalized    = unhomoglyph(this.nick);
       this.nick_normalized_lc = this.nick.toLowerCase();
     }
-
-    callback();
   });
 
 
   // Set `usergroups` for the new user if not defined
   //
-  User.pre('save', function (callback) {
-    if (!this.isNew) {
-      callback();
-      return;
-    }
+  User.pre('save', async function () {
+    if (!this.isNew) return;
+    if (this.usergroups && this.usergroups.length) return;
 
-    if (this.usergroups && this.usergroups.length) {
-      callback();
-      return;
-    }
+    let registered_user_group = await N.settings.get('registered_user_group');
 
-    let p = N.settings.get('registered_user_group').then(registered_user_group => {
-      this.usergroups = [ registered_user_group ];
-    });
-
-    Promise.resolve(p).asCallback(callback);
+    this.usergroups = [ registered_user_group ];
   });
 
 
   // Creates UserExtra for new user
   //
-  User.pre('save', function (callback) {
-    if (!this.isNew) {
-      callback();
-      return;
-    }
+  User.pre('save', function () {
+    if (!this.isNew) return;
 
     // this._id generates automatically before first pre('save') call
     let extra = new N.models.users.UserExtra({ user: this._id });
 
-    extra.save(callback);
+    return extra.save();
   });
 
 
   // Creates default album for new user
   //
-  User.pre('save', function (callback) {
-    if (!this.isNew) {
-      callback();
-      return;
-    }
+  User.pre('save', function () {
+    if (!this.isNew) return;
 
-    var album = new N.models.users.Album();
+    let album = new N.models.users.Album();
     album.default = true;
     // this._id generates automatically before first pre('save') call
     album.user = this._id;
-    album.save(callback);
+    return album.save();
   });
 
 
   // Set 'hid' for the new user. This hook should always be
   // the last one to avoid counter increment on error
   //
-  User.pre('save', function (callback) {
-    if (!this.isNew) {
-      callback();
-      return;
-    }
+  User.pre('save', async function () {
+    if (!this.isNew) return;
 
-    if (this.hid) {
-      // hid is already defined when this user was created, used in vbconvert;
-      // it's caller responsibility to increase Increment accordingly
-      callback();
-      return;
-    }
+    // hid is already defined when this user was created, used in vbconvert;
+    // it's caller responsibility to increase Increment accordingly
+    if (this.hid) return;
 
-    var self = this;
-    N.models.core.Increment.next('user', function (err, value) {
-      if (err) {
-        callback(err);
-        return;
-      }
-      self.hid = value;
-      callback();
-    });
+    this.hid = await N.models.core.Increment.next('user');
   });
 
 
-  // Clean up settings on user deletion (not deleting any actual content)
-  //
-  const onRemoveCleanup = callbackify(async function (id) {
+  async function onRemoveCleanup(id) {
     await N.models.users.Album.remove({ user: id });
     await N.models.users.AnnounceHideMark.remove({ user: id });
     await N.models.users.AuthProvider.remove({ user: id });
@@ -338,10 +299,12 @@ module.exports = function (N, collectionName) {
     await N.models.users.UserSettings.remove({ user: id });
     await N.models.users.AuthSession.remove({ user: id });
     await N.models.users.TokenResetPassword.remove({ user: id });
-  });
+  }
 
-  User.pre('remove', function (callback) {
-    onRemoveCleanup(this._id, callback);
+  // Clean up settings on user deletion (not deleting any actual content)
+  //
+  User.pre('remove', function () {
+    return onRemoveCleanup(this._id);
   });
 
 

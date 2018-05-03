@@ -56,19 +56,14 @@ module.exports = function (N, collectionName) {
 
   // Store parser options separately and save reference to them
   //
-  DlgMessage.pre('save', function (callback) {
-    if (!this.params) {
-      callback();
-      return;
-    }
+  DlgMessage.pre('save', async function () {
+    if (!this.params) return;
 
-    N.models.core.MessageParams.setParams(this.params)
-      .then(id => {
-        /*eslint-disable no-undefined*/
-        this.params = undefined;
-        this.params_ref = id;
-      })
-      .asCallback(callback);
+    let id = await N.models.core.MessageParams.setParams(this.params);
+
+    /*eslint-disable no-undefined*/
+    this.params = undefined;
+    this.params_ref = id;
   });
 
 

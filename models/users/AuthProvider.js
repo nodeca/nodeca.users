@@ -150,12 +150,10 @@ module.exports = function (N, collectionName) {
 
   // Set normalized authprovider
   //
-  AuthProvider.pre('save', function (callback) {
+  AuthProvider.pre('save', function () {
     if (this.isModified('email')) {
       this.email_normalized = normalize_email(this.email);
     }
-
-    callback();
   });
 
 

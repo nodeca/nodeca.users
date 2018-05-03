@@ -120,13 +120,10 @@ module.exports = function (N, collectionName) {
 
   // Remove files with previews
   //
-  MediaInfo.pre('remove', function (callback) {
-    if ((this.type & ~types.MASK_DELETED) === types.MEDIALINK) {
-      callback();
-      return;
-    }
+  MediaInfo.pre('remove', function () {
+    if ((this.type & ~types.MASK_DELETED) === types.MEDIALINK) return;
 
-    Promise.resolve(N.models.core.File.remove(this.media_id, true)).asCallback(callback);
+    return N.models.core.File.remove(this.media_id, true);
   });
 
 

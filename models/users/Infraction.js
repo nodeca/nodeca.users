@@ -50,10 +50,9 @@ module.exports = function (N, collectionName) {
   Infraction.index({ src_common_id: 1, exists: 1 }, { sparse: true });
 
 
-  Infraction.pre('save', function (next) {
+  Infraction.pre('save', function () {
     // Pass `isNew` flag to post hook. https://github.com/Automattic/mongoose/issues/1474
     this.wasNew = this.isNew;
-    next();
   });
 
 
