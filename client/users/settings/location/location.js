@@ -53,7 +53,7 @@ N.wire.before('navigate.done:' + module.apiPath, function get_user_coordinates()
   if (N.runtime.page_data.location) return;
 
   let jqXhr = $.ajax({
-    url: 'https://freegeoip.net/json/',
+    url: 'https://freegeoip.app/json/',
     type: 'GET',
     dataType: 'json',
     timeout: 2000
