@@ -87,7 +87,7 @@
       if items.length > 0
         .user-media__controls.hidden-deleted
           .user-media__control-item.dropdown.dropup
-            - var menu_rnd_id = 'rnd' + String(Math.random()).slice(2, 10)
+            - var menu_rnd_id = 'rnd' + self.get_label_uid()
 
             button.btn.btn-link.btn-square.icon.icon-dropdown.dropdown-toggle(
               type='button'
@@ -167,7 +167,7 @@
                     = self.date(comment.ts, 'relative')
 
                   .user-media-comment__controls.dropdown
-                    - var local_menu_rnd_id = 'rnd' + String(Math.random()).slice(2, 10)
+                    - var local_menu_rnd_id = 'rnd' + self.get_label_uid()
 
                     a.user-media-comment__dropdown.icon.icon-dropdown-local.dropdown-toggle(
                       href='#'

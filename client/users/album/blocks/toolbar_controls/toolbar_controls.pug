@@ -3,7 +3,7 @@
 - self.add_raw_data('medialink_providers', self.medialink_providers)
 
 - var own_page = (self.runtime.user_hid === self.user_hid)
-- var menu_rnd_id = 'rnd' + String(Math.random()).slice(2, 10)
+- var menu_rnd_id = 'rnd' + self.get_label_uid()
 
 - var items = [];
 
