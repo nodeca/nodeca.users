@@ -75,4 +75,6 @@ i18n:
 
           can_edit_profile: Can edit profile
 
+          can_see_history: Show edit history
+
           is_bot: Is bot?

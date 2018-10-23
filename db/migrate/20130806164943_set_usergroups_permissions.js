@@ -32,6 +32,7 @@ module.exports.up = async function (N) {
     can_create_dialogs:     { value: true },
     can_use_dialogs:        { value: true },
     can_vote:               { value: true },
+    can_see_history:        { value: true },
     users_can_upload_media: { value: true }
   }, { usergroup_id: adminGroupId });
 
@@ -46,6 +47,7 @@ module.exports.up = async function (N) {
     can_create_dialogs:     { value: true },
     can_use_dialogs:        { value: true },
     can_vote:               { value: true },
+    can_see_history:        { value: true },
     users_can_upload_media: { value: true }
   }, { usergroup_id: memberGroupId });
 

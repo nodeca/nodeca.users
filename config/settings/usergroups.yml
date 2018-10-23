@@ -60,8 +60,14 @@ setting_schemas:
       type: boolean
       default: false
 
-    is_bot:
+    can_see_history:
       priority: 1120
+      category_key: perm_users
+      type: boolean
+      default: false
+
+    is_bot:
+      priority: 1130
       category_key: perm_users
       type: boolean
       default: false
