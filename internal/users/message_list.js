@@ -139,7 +139,9 @@ module.exports = function (N, apiPath) {
     if (!settings.can_see_infractions && !settings.users_mod_can_add_infractions_dialogs) return;
 
     let infractions = await N.models.users.Infraction.find()
-                                .where('src_common_id').in(_.map(env.data.messages, 'common_id'))
+                                .where('src_type').equals(N.shared.content_type.DIALOG_MESSAGE)
+                                // filter out messages that don't have common_id (which shouldn't normally happen)
+                                .where('src_common_id').in(_.map(env.data.messages, 'common_id').filter(Boolean))
                                 .where('exists').equals(true)
                                 .select('src points ts src_common_id')
                                 .lean(true);
