@@ -1,8 +1,8 @@
 // Check that all attachments are owned by current user (or return error)
 //
 // Expects:
-// - env.params.attach (Array)
-// - env.user_info.user_id
+// - locals.attachments (Array)
+// - locals.user_id
 //
 'use strict';
 
@@ -10,14 +10,14 @@ const _ = require('lodash');
 
 module.exports = function (N, apiPath) {
 
-  N.wire.on(apiPath, async function attachments_check_owner(env) {
+  N.wire.on(apiPath, async function attachments_check_owner(locals) {
 
-    let mediaIds = _.uniq(env.params.attach);
+    let mediaIds = _.uniq(locals.attachments);
 
     // Find media info by `media_id` (from params) and `user_id`
     let result = await N.models.users.MediaInfo
                           .where('media_id').in(mediaIds)
-                          .where('user').equals(env.user_info.user_id)
+                          .where('user').equals(locals.user_id)
                           .select('media_id')
                           .lean(true);
 
