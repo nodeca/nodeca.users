@@ -1,7 +1,9 @@
 mdedit:
-
-  # buttons list for toolbar
-
+  # Toolbar configuration for usernotes.
+  #
+  # It omits buttons for emoji and image even though they are enabled
+  # (they are rarely useful here, but user can still add them manually).
+  #
   usernote:
     bold: true
     italic: true
