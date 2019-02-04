@@ -128,7 +128,7 @@ async function createPreview(image, resizeConfig, imageType) {
 
     // Jpeg doesn't support alpha channel, so substitute it with white background
     if (imageType === 'gif' || imageType === 'png') {
-      sharpInstance.background('white').flatten();
+      sharpInstance.flatten({ background: 'white' });
     }
   }
 
@@ -137,8 +137,11 @@ async function createPreview(image, resizeConfig, imageType) {
       sharpInstance.sharpen();
     }
 
-    sharpInstance.resize(Math.round(scaledWidth), Math.round(scaledHeight));
-    sharpInstance.withoutEnlargement().crop(sharp.strategy.attention);
+    sharpInstance.resize(Math.round(scaledWidth), Math.round(scaledHeight), {
+      fit: 'cover',
+      position: 'attention',
+      withoutEnlargement: true
+    });
   }
 
   let res = await sharpInstance.toFormat(outType, formatOptions)
