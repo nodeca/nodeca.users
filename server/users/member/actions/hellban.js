@@ -36,6 +36,6 @@ module.exports = function (N, apiPath) {
   // Update hellban status
   //
   N.wire.on(apiPath, async function update_hellban_status(env) {
-    await N.models.users.User.update({ _id: env.params.user_id }, { hb: env.params.hellban });
+    await N.models.users.User.updateOne({ _id: env.params.user_id }, { hb: env.params.hellban });
   });
 };

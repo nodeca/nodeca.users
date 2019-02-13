@@ -39,7 +39,7 @@ module.exports = function (N, apiPath) {
     env.data.token = token;
 
     // Token can be used only once.
-    await N.models.users.TokenActivationEmail.remove({ secret_key: env.params.secret_key });
+    await N.models.users.TokenActivationEmail.deleteOne({ secret_key: env.params.secret_key });
   });
 
   //

@@ -138,7 +138,7 @@ module.exports = function (N, apiPath) {
   // Remove current and all other password reset tokens for this user
   //
   N.wire.after(apiPath, async function remove_token(env) {
-    await N.models.users.TokenResetPassword.remove({ user: env.data.user._id });
+    await N.models.users.TokenResetPassword.deleteMany({ user: env.data.user._id });
   });
 
 

@@ -20,7 +20,7 @@ module.exports = function (N, apiPath) {
   // Remove subscription
   //
   N.wire.on(apiPath, async function remove_subscription(env) {
-    await N.models.users.Subscription.remove()
+    await N.models.users.Subscription.deleteMany()
               .where('_id').equals(env.params.subscription_id)
               .where('user').equals(env.user_info.user_id);
   });

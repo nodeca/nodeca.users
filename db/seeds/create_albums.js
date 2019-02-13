@@ -136,7 +136,7 @@ async function createMultipleComments(mediaId, usersId) {
     await createComment(mediaId, usersId[Charlatan.Helpers.rand(0, usersId.length - 1)]);
   }
 
-  await models.users.MediaInfo.update(
+  await models.users.MediaInfo.updateOne(
     { media_id: mediaId },
     { $inc: { comments_count: commentsCount } }
   );

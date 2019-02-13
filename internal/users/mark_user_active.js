@@ -11,7 +11,7 @@ module.exports = function (N, apiPath) {
     if (!env.user_info.active) {
       env.user_info.active = true;
 
-      await N.models.users.User.update(
+      await N.models.users.User.updateOne(
         { _id: env.user_info.user_id },
         { $set: { active: true } }
       );

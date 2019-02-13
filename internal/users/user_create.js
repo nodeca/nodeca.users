@@ -45,8 +45,8 @@ module.exports = function (N, apiPath) {
       await authProvider.setPassHash(env.data.reg_info.pass_hash);
       await authProvider.save();
     } catch (__) {
-      await N.models.users.User.remove({ _id: user._id });
-      await N.models.users.AuthProvider.remove({ user: user._id });
+      await N.models.users.User.deleteOne({ _id: user._id });
+      await N.models.users.AuthProvider.deleteMany({ user: user._id });
     }
   });
 
@@ -66,8 +66,8 @@ module.exports = function (N, apiPath) {
     try {
       await authProvider.save();
     } catch (__) {
-      await N.models.users.User.remove({ _id: user._id });
-      await N.models.users.AuthProvider.remove({ user: user._id });
+      await N.models.users.User.deleteOne({ _id: user._id });
+      await N.models.users.AuthProvider.deleteMany({ user: user._id });
     }
   });
 };

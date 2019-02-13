@@ -19,7 +19,7 @@ module.exports = function (N, apiPath) {
     // This is a root group.
     if (!env.params.parent_group) return;
 
-    let count = await UserGroup.count({ _id: env.params.parent_group });
+    let count = await UserGroup.countDocuments({ _id: env.params.parent_group });
 
     if (count === 0) {
       throw {
@@ -33,7 +33,7 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, async function usergroup_create(env) {
 
     // Check if any group with the specified name exists.
-    let count = await UserGroup.count({ short_name: env.params.short_name });
+    let count = await UserGroup.countDocuments({ short_name: env.params.short_name });
 
     if (count !== 0) {
       throw {

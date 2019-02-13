@@ -24,7 +24,7 @@ module.exports = function (N, apiPath) {
     // This is a root group.
     if (!env.params.parent_group) return;
 
-    let count = await UserGroup.count({ _id: env.params.parent_group });
+    let count = await UserGroup.countDocuments({ _id: env.params.parent_group });
 
     if (count === 0) {
       throw {

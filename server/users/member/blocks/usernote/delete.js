@@ -26,7 +26,7 @@ module.exports = function (N, apiPath) {
 
 
   N.wire.on(apiPath, async function delete_note(env) {
-    await N.models.users.UserNote.remove({
+    await N.models.users.UserNote.deleteOne({
       from: env.user_info.user_id,
       to:   env.data.target_user._id
     });

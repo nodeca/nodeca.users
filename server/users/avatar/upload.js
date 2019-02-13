@@ -57,7 +57,7 @@ module.exports = function (N, apiPath) {
     env.data.old_avatar = env.data.user.avatar_id;
     env.res.avatar_id = data.id;
 
-    await N.models.users.User.update(
+    await N.models.users.User.updateOne(
       { _id: env.data.user._id },
       { $set: { avatar_id: data.id } }
     );

@@ -20,16 +20,14 @@ module.exports = function (N, apiPath) {
   // Delete dialogs
   //
   N.wire.on(apiPath, async function delete_dialogs(env) {
-    await N.models.users.Dialog.update(
+    await N.models.users.Dialog.updateMany(
       { user: env.data.user._id },
-      { $set: { exists: false } },
-      { multi: true }
+      { $set: { exists: false } }
     );
 
-    await N.models.users.Dialog.update(
+    await N.models.users.Dialog.updateMany(
       { to: env.data.user._id },
-      { $set: { exists: false } },
-      { multi: true }
+      { $set: { exists: false } }
     );
   });
 };

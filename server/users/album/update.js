@@ -74,6 +74,6 @@ module.exports = function (N, apiPath) {
       data.cover_id = cover.media_id;
     }
 
-    await N.models.users.Album.update({ _id: album._id }, data);
+    await N.models.users.Album.updateOne({ _id: album._id }, data);
   });
 };

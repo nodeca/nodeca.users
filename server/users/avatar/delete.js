@@ -33,7 +33,7 @@ module.exports = function (N, apiPath) {
   // Remove avatar
   //
   N.wire.on(apiPath, async function remove_avatar(env) {
-    await N.models.users.User.update({ _id: env.data.user._id }, { $unset: { avatar_id: true } });
+    await N.models.users.User.updateOne({ _id: env.data.user._id }, { $unset: { avatar_id: true } });
   });
 
 

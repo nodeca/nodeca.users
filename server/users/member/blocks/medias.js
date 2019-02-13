@@ -38,7 +38,7 @@ module.exports = function (N) {
 
     let count = await N.models.users.MediaInfo
                           .find({ user: env.data.user._id, type: { $in: mTypes.LIST_VISIBLE } })
-                          .count();
+                          .countDocuments();
 
     env.res.blocks.medias.count = count;
   });

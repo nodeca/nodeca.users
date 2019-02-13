@@ -27,7 +27,7 @@ module.exports = function (N, apiPath) {
     if (penalty) {
       await N.wire.emit(`internal:users.infraction.${penalty.type}.remove`, penalty);
 
-      await N.models.users.UserPenalty.remove({ _id: penalty._id });
+      await N.models.users.UserPenalty.deleteOne({ _id: penalty._id });
     }
   });
 };

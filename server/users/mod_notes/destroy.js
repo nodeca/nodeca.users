@@ -55,6 +55,6 @@ module.exports = function (N, apiPath) {
   // Delete note
   //
   N.wire.on(apiPath, async function delete_note(env) {
-    await N.models.users.ModeratorNote.remove({ _id: env.data.note._id });
+    await N.models.users.ModeratorNote.deleteOne({ _id: env.data.note._id });
   });
 };

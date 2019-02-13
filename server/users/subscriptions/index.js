@@ -60,9 +60,8 @@ module.exports = function (N, apiPath) {
     env.data.subscriptions = _.difference(env.data.subscriptions, env.data.missed_subscriptions);
 
     // Remove from database
-    await N.models.users.Subscription.find()
-              .where('_id').in(_.map(env.data.missed_subscriptions, '_id'))
-              .remove();
+    await N.models.users.Subscription.deleteMany()
+              .where('_id').in(_.map(env.data.missed_subscriptions, '_id'));
   });
 
 

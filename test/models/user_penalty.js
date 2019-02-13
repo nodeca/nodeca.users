@@ -124,7 +124,7 @@ describe('UserPenalty', function () {
     assert.deepStrictEqual(usergroups.toObject(), [ user.usergroups[0], violators_group_id ]);
 
     // Set expire now
-    await TEST.N.models.users.UserPenalty.update(
+    await TEST.N.models.users.UserPenalty.updateOne(
       { user: user._id },
       { expire: new Date() }
     );
@@ -167,7 +167,7 @@ describe('UserPenalty', function () {
 
     let cnt = await TEST.N.models.users.UserPenalty
                             .where('user').equals(user._id)
-                            .count();
+                            .countDocuments();
 
     assert.deepStrictEqual(cnt, 1);
 
@@ -183,7 +183,7 @@ describe('UserPenalty', function () {
 
     cnt = await TEST.N.models.users.UserPenalty
                         .where('user').equals(user._id)
-                        .count();
+                        .countDocuments();
 
     assert.deepStrictEqual(cnt, 0);
   });

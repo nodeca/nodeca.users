@@ -155,7 +155,7 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    await N.models.users.Album.update({ _id: env.data.album._id }, { cover_id: media.media_id });
+    await N.models.users.Album.updateOne({ _id: env.data.album._id }, { cover_id: media.media_id });
   });
 
 

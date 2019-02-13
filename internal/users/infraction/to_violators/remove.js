@@ -29,7 +29,7 @@ module.exports = function (N, apiPath) {
       usergroups = [ registered_group ];
     }
 
-    await N.models.users.User.update(
+    await N.models.users.User.updateOne(
       { _id: user._id },
       { usergroups }
     );

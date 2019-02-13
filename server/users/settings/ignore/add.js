@@ -71,7 +71,7 @@ module.exports = function (N, apiPath) {
       ignore.expire = new Date(Date.now() + env.params.period * 24 * 60 * 60 * 1000);
     }
 
-    await N.models.users.Ignore.remove({
+    await N.models.users.Ignore.deleteOne({
       from: env.user_info.user_id,
       to:   env.data.user._id
     });

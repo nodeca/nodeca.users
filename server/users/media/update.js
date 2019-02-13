@@ -62,7 +62,7 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    await N.models.users.MediaInfo.update({ _id: media._id }, { album: album._id });
+    await N.models.users.MediaInfo.updateOne({ _id: media._id }, { album: album._id });
   });
 
 

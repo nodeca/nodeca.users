@@ -32,6 +32,6 @@ module.exports = function (N, apiPath) {
 
     if (!env.user_info.user_id) return;
 
-    await N.models.users.User.update({ _id: env.user_info.user_id }, { locale });
+    await N.models.users.User.updateOne({ _id: env.user_info.user_id }, { locale });
   });
 };

@@ -288,17 +288,17 @@ module.exports = function (N, collectionName) {
 
 
   async function onRemoveCleanup(id) {
-    await N.models.users.Album.remove({ user: id });
-    await N.models.users.AnnounceHideMark.remove({ user: id });
-    await N.models.users.AuthProvider.remove({ user: id });
-    await N.models.users.Ignore.remove({ from: id });
-    await N.models.users.Ignore.remove({ to: id });
-    await N.models.users.Subscription.remove({ user: id });
-    await N.models.users.UserExtra.remove({ user: id });
-    await N.models.users.UserPenalty.remove({ user: id });
-    await N.models.users.UserSettings.remove({ user: id });
-    await N.models.users.AuthSession.remove({ user: id });
-    await N.models.users.TokenResetPassword.remove({ user: id });
+    await N.models.users.Album.deleteMany({ user: id });
+    await N.models.users.AnnounceHideMark.deleteMany({ user: id });
+    await N.models.users.AuthProvider.deleteMany({ user: id });
+    await N.models.users.Ignore.deleteMany({ from: id });
+    await N.models.users.Ignore.deleteMany({ to: id });
+    await N.models.users.Subscription.deleteMany({ user: id });
+    await N.models.users.UserExtra.deleteMany({ user: id });
+    await N.models.users.UserPenalty.deleteMany({ user: id });
+    await N.models.users.UserSettings.deleteMany({ user: id });
+    await N.models.users.AuthSession.deleteMany({ user: id });
+    await N.models.users.TokenResetPassword.deleteMany({ user: id });
   }
 
   // Clean up settings on user deletion (not deleting any actual content)

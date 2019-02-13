@@ -49,13 +49,13 @@ module.exports = function (N, collectionName) {
     let mTypes = N.models.users.MediaInfo.types;
 
     if (!full) {
-      await N.models.users.Album.update({ _id: albumId }, { $inc: { count: 1 } });
+      await N.models.users.Album.updateOne({ _id: albumId }, { $inc: { count: 1 } });
       return;
     }
 
-    let result = await N.models.users.MediaInfo.count({ album: albumId, type: { $in: mTypes.LIST_VISIBLE } });
+    let result = await N.models.users.MediaInfo.countDocuments({ album: albumId, type: { $in: mTypes.LIST_VISIBLE } });
 
-    await N.models.users.Album.update({ _id: albumId }, { count: result });
+    await N.models.users.Album.updateOne({ _id: albumId }, { count: result });
   }
 
 
@@ -80,7 +80,7 @@ module.exports = function (N, collectionName) {
       .lean(true);
 
     // Update cover with latest available image
-    await N.models.users.Album.update({ _id: albumId }, { cover_id: result ? result.media_id : null });
+    await N.models.users.Album.updateOne({ _id: albumId }, { cover_id: result ? result.media_id : null });
   }
 
 
@@ -93,7 +93,7 @@ module.exports = function (N, collectionName) {
     return Promise.all([
       updateCount(albumId, full),
       updateCover(albumId),
-      N.models.users.Album.update({ _id: albumId }, { last_ts: Date.now() })
+      N.models.users.Album.updateOne({ _id: albumId }, { last_ts: Date.now() })
     ]);
   };
 

@@ -34,10 +34,10 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, async function remove_dialog_and_messages(env) {
     // Remove dialog
-    await N.models.users.Dialog.update({ _id: env.data.dialog._id }, { exists: false });
+    await N.models.users.Dialog.updateOne({ _id: env.data.dialog._id }, { exists: false });
 
     // Remove messages
-    await N.models.users.DlgMessage.update({ parent: env.data.dialog._id }, { exists: false }, { multi: true });
+    await N.models.users.DlgMessage.updateMany({ parent: env.data.dialog._id }, { exists: false });
   });
 
 
@@ -47,6 +47,6 @@ module.exports = function (N, apiPath) {
     env.res.dialog_count = await N.models.users.Dialog
                                     .where('user').equals(env.user_info.user_id)
                                     .where('exists').equals(true)
-                                    .count();
+                                    .countDocuments();
   });
 };

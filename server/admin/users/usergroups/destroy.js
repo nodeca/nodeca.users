@@ -56,7 +56,7 @@ module.exports = function (N, apiPath) {
     let group = env.data.userGroup;
 
     // Delete only if no users in group.
-    let usersCount = await User.count({ usergroups: group._id });
+    let usersCount = await User.countDocuments({ usergroups: group._id });
 
     if (usersCount !== 0) {
       throw {

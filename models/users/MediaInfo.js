@@ -111,7 +111,7 @@ module.exports = function (N, collectionName) {
 
     if (!media) return;
 
-    await N.models.users.UserExtra.update(
+    await N.models.users.UserExtra.updateOne(
       { user: media.user },
       { $inc: { media_size: media.file_size * (revert ? 1 : -1) } }
     );
@@ -224,7 +224,7 @@ module.exports = function (N, collectionName) {
     }
 
     await media.save();
-    await N.models.users.UserExtra.update(
+    await N.models.users.UserExtra.updateOne(
       { user: media.user },
       { $inc: { media_size: media.file_size } }
     );

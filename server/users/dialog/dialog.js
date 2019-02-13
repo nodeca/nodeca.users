@@ -84,7 +84,7 @@ module.exports = function (N, apiPath) {
     let messages_total = await N.models.users.DlgMessage
                                   .where('parent').equals(env.data.dialog._id)
                                   .where('exists').equals(true)
-                                  .count();
+                                  .countDocuments();
 
     let message_offset = 0;
 
@@ -94,7 +94,7 @@ module.exports = function (N, apiPath) {
                                 .where('parent').equals(env.data.dialog._id)
                                 .where('exists').equals(true)
                                 .where('_id').gt(env.data.messages[0]._id)
-                                .count();
+                                .countDocuments();
     }
 
     env.res.pagination = {
@@ -108,7 +108,7 @@ module.exports = function (N, apiPath) {
   // Mark dialog as read
   //
   N.wire.after(apiPath, async function mark_read(env) {
-    await N.models.users.Dialog.update({ _id: env.data.dialog._id }, { unread: 0 });
+    await N.models.users.Dialog.updateOne({ _id: env.data.dialog._id }, { unread: 0 });
   });
 
 

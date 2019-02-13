@@ -21,6 +21,6 @@ module.exports = function (N, apiPath) {
   // Delete account
   //
   N.wire.on(apiPath, function delete_account(env) {
-    return N.models.users.User.update({ _id: env.data.user._id }, { $set: { exists: !env.params.delete } });
+    return N.models.users.User.updateOne({ _id: env.data.user._id }, { $set: { exists: !env.params.delete } });
   });
 };

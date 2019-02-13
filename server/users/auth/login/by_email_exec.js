@@ -71,7 +71,7 @@ module.exports = function (N, apiPath) {
   // Remove current and all other login tokens for this user
   //
   N.wire.after(apiPath, async function remove_token(env) {
-    await N.models.users.TokenLoginByEmail.remove({ user: env.data.user._id });
+    await N.models.users.TokenLoginByEmail.deleteMany({ user: env.data.user._id });
   });
 
 

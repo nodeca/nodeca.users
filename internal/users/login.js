@@ -76,7 +76,7 @@ module.exports = function (N, apiPath) {
 
     // mark redirect as used
     await N.models.users.LoginRedirect
-              .update({ _id: link._id }, { $set: { used: true } });
+              .updateOne({ _id: link._id }, { $set: { used: true } });
   });
 
 
@@ -87,7 +87,7 @@ module.exports = function (N, apiPath) {
     // Just skip update for this case.
     if (!env.data.authProvider) return;
 
-    await N.models.users.AuthProvider.update(
+    await N.models.users.AuthProvider.updateOne(
               { _id: env.data.authProvider._id },
               { $set: { last_ts: Date.now(), last_ip: env.req.ip } });
   });

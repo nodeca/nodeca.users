@@ -20,7 +20,7 @@ module.exports = function (N, apiPath) {
   // Delete avatar
   //
   N.wire.on(apiPath, function delete_avatar(env) {
-    return N.models.users.User.update({ _id: env.data.user._id }, { $unset: { avatar_id: true } });
+    return N.models.users.User.updateOne({ _id: env.data.user._id }, { $unset: { avatar_id: true } });
   });
 
 

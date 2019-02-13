@@ -118,7 +118,7 @@ module.exports = function (N, apiPath) {
 
     env.res.mod_notes_count = await N.models.users.ModeratorNote.find()
                                         .where('to').equals(env.data.user._id)
-                                        .count();
+                                        .countDocuments();
   });
 
 

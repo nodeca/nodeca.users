@@ -47,16 +47,16 @@ module.exports = function (N, apiPath) {
   // Remove message
   //
   N.wire.on(apiPath, async function remove_message(env) {
-    await N.models.users.DlgMessage.update({ _id: env.data.dlg_message._id }, { exists: false });
+    await N.models.users.DlgMessage.updateOne({ _id: env.data.dlg_message._id }, { exists: false });
 
     env.data.message_count = await N.models.users.DlgMessage
                                        .where('parent').equals(env.data.dialog._id)
                                        .where('exists').equals(true)
-                                       .count();
+                                       .countDocuments();
 
     // remove dialog if no messages are left
     if (env.data.message_count === 0) {
-      await N.models.users.Dialog.update({ _id: env.data.dialog._id }, { exists: false });
+      await N.models.users.Dialog.updateOne({ _id: env.data.dialog._id }, { exists: false });
     }
   });
 

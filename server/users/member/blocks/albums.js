@@ -54,7 +54,7 @@ module.exports = function (N) {
     let query = N.models.users.Album.find()
                     .where('user').equals(env.data.user._id)
                     .where('default').equals(false) // don't count default album
-                    .count();
+                    .countDocuments();
 
     if (env.user_info.user_hid !== env.data.user.hid) {
       // Hide empty albums for non-owner

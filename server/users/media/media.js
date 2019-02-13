@@ -233,7 +233,7 @@ module.exports = function (N, apiPath) {
   N.wire.after(apiPath, async function fill_breadcrumbs(env) {
     await N.wire.emit('internal:users.breadcrumbs.fill_albums', env);
 
-    let current = await N.models.users.MediaInfo.count()
+    let current = await N.models.users.MediaInfo.countDocuments()
                            .where('album').equals(env.data.media.album)
                            .where('type').in(MediaInfo.types.LIST_VISIBLE)
                            .where('media_id').gte(env.data.media.media_id);

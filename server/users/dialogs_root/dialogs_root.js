@@ -96,7 +96,7 @@ module.exports = function (N, apiPath) {
 
     if (env.data.dialogs_hide_answered) query = query.where('cache.is_reply').equals(false);
 
-    let dialogs_total = await query.count();
+    let dialogs_total = await query.countDocuments();
 
     let dialog_offset = 0;
 
@@ -109,7 +109,7 @@ module.exports = function (N, apiPath) {
 
       if (env.data.dialogs_hide_answered) query = query.where('cache.is_reply').equals(false);
 
-      dialog_offset = await query.count();
+      dialog_offset = await query.countDocuments();
     }
 
     env.res.pagination = {

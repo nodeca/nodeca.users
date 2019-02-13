@@ -43,7 +43,7 @@ module.exports = function (N, apiPath) {
 
     if (env.params.reason) update.del_reason = env.params.reason;
 
-    await N.models.users.Infraction.update({
+    await N.models.users.Infraction.updateOne({
       _id: env.params.infraction_id,
       exists: true
     }, update);

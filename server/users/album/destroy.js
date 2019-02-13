@@ -70,10 +70,9 @@ module.exports = function (N, apiPath) {
       // "move" all files to default album. It is done to make sure if someone
       // somehow is viewing deleted photo, it'd have an album to go along with.
       // We don't need to update counters here (all files should be deleted).
-      await N.models.users.MediaInfo.update(
+      await N.models.users.MediaInfo.updateMany(
         { album: env.data.album._id },
-        { $set: { album: default_album._id } },
-        { multi: true }
+        { $set: { album: default_album._id } }
       );
     }
   });

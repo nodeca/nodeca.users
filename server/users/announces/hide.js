@@ -16,7 +16,7 @@ module.exports = function (N, apiPath) {
     if (!announce) return;
     if (!announce.hide_days) return;
 
-    await N.models.users.AnnounceHideMark.update(
+    await N.models.users.AnnounceHideMark.updateOne(
       { user: env.user_info.user_id },
       { $set: {
         [`hide.${env.params.announceid}`]: new Date(Date.now() + announce.hide_days * 86400000),

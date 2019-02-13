@@ -118,10 +118,9 @@ module.exports.run = async function (N, args) {
   //
   if (args.pass) {
     // disable all other passwords
-    await N.models.users.AuthProvider.update(
+    await N.models.users.AuthProvider.updateMany(
       { user: user._id, type: 'plain', exists: true },
-      { $set: { exists: false } },
-      { multi: true }
+      { $set: { exists: false } }
     );
 
     let authProvider = new N.models.users.AuthProvider();

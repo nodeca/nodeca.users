@@ -28,7 +28,7 @@ module.exports = function (N, apiPath) {
 
     await Promise.all(res.usergroups.map(
       group => N.models.users.User
-                  .count({ usergroups: group._id })
+                  .countDocuments({ usergroups: group._id })
                   .then(members_count => {
                     res.members_count[group._id] = members_count;
                   })
