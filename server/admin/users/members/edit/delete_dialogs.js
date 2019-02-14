@@ -3,6 +3,8 @@
 
 'use strict';
 
+const _ = require('lodash');
+
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
@@ -20,13 +22,33 @@ module.exports = function (N, apiPath) {
   // Delete dialogs
   //
   N.wire.on(apiPath, async function delete_dialogs(env) {
+    let dialogs_from = await N.models.users.Dialog.find()
+                                 .where({ user: env.data.user._id })
+                                 .select('_id')
+                                 .lean(true);
+
     await N.models.users.Dialog.updateMany(
-      { user: env.data.user._id },
+      { _id: { $in: _.map(dialogs_from, '_id') } },
       { $set: { exists: false } }
     );
 
+    await N.models.users.DlgMessage.updateMany(
+      { parent: { $in: _.map(dialogs_from, '_id') } },
+      { $set: { exists: false } }
+    );
+
+    let dialogs_to = await N.models.users.Dialog.find()
+                               .where({ to: env.data.user._id })
+                               .select('_id')
+                               .lean(true);
+
     await N.models.users.Dialog.updateMany(
-      { to: env.data.user._id },
+      { _id: { $in: _.map(dialogs_to, '_id') } },
+      { $set: { exists: false } }
+    );
+
+    await N.models.users.DlgMessage.updateMany(
+      { parent: { $in: _.map(dialogs_to, '_id') } },
       { $set: { exists: false } }
     );
   });

@@ -21,7 +21,7 @@ module.exports = function (N, collectionName) {
   set_content_type('DIALOG_MESSAGE', 8);
 
   let DlgMessage = new Schema({
-    parent       : Schema.Types.ObjectId,
+    parent       : Schema.Types.ObjectId, // dialog id
     user         : Schema.Types.ObjectId,
     ts           : { type: Date, 'default': Date.now },
     ip           : String,  // ip address
