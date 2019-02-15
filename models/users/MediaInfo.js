@@ -127,6 +127,8 @@ module.exports = function (N, collectionName) {
   });
 
 
+  // Helper used to upload binary files (images are saved via resize elsewhere)
+  //
   async function saveFile(path, name, maxSize) {
     let stats = await stat(path);
 
@@ -140,9 +142,9 @@ module.exports = function (N, collectionName) {
       }
     };
 
-    let info = await N.models.core.File.put(path, storeOptions);
+    let id = await N.models.core.File.put(path, storeOptions);
 
-    return { id: info._id, size: stats.size };
+    return { id, size: stats.size };
   }
 
 
