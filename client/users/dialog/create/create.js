@@ -45,12 +45,19 @@ N.wire.before(module.apiPath + ':begin', function fetch_options() {
 
 // Show editor and add handlers for editor events
 //
-N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
+//  - params (Object) - specify recipient, text, etc. (optional)
+//    - nick (String) - recipient nick
+//    - hid  (Number) - recipient hid
+//    - ref  (String) - used as a part of draft key (optional)
+//    - text (String) - default content of the message box (optional)
+//    - meta (Object) - additional arguments passed into RPC method (optional)
+//
+N.wire.on(module.apiPath + ':begin', function create_dialog(params) {
   const Bloodhound = require('corejs-typeahead/dist/bloodhound.js');
 
   // build draft key tail
   let key_tail = '';
-  if (to_user) key_tail += to_user.ref ? to_user.ref : (to_user.nick || '');
+  if (params) key_tail += params.ref ? params.ref : (params.nick || '');
 
   let $editor = N.MDEdit.show({
     draftKey: `dialog_create_${N.runtime.user_hid}_${key_tail}`,
@@ -58,11 +65,11 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
       // Add `:last` because typeahead create additional field copy
       '.dialogs-create__user-nick-input:last': 'input'
     },
-    text: to_user ? to_user.text || '' : ''
+    text: params ? params.text || '' : ''
   });
 
   let $inputs = $(N.runtime.render(module.apiPath + '.inputs', {
-    to: to_user ? to_user.nick : ''
+    to: params ? params.nick : ''
   }));
 
   let $to = $inputs.find('.dialogs-create__user-nick-input');
@@ -73,15 +80,15 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
     .on('show.nd.mdedit', () => {
       $editor.addClass('dialogs-create-editor');
 
-      if (to_user) {
-        // If to user is specified - show dialog without nick field
+      if (params.nick) {
+        // If user is specified - show dialog without nick field
         //
         // - button in usercard
         // - button on profile page
         //
         $editor.find('.mdedit-header__caption').html(t('title_with_nick', {
-          nick: to_user.nick,
-          url: N.router.linkTo('users.member', { user_hid: to_user.hid })
+          nick: params.nick,
+          url: N.router.linkTo('users.member', { user_hid: params.hid })
         }));
 
       } else {
@@ -149,16 +156,17 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(to_user) {
         return false;
       }
 
-      let params = {
+      let dlg_create_params = {
         to:                       $to.val(),
         txt:                      N.MDEdit.text(),
         attach:                   _.map(N.MDEdit.attachments(), 'media_id'),
+        meta:                     params && params.meta,
         option_no_mlinks:         options.user_settings.no_mlinks,
         option_no_emojis:         options.user_settings.no_emojis,
         option_no_quote_collapse: options.user_settings.no_quote_collapse
       };
 
-      N.io.rpc('users.dialog.create', params)
+      N.io.rpc('users.dialog.create', dlg_create_params)
         .then(res => {
           N.MDEdit.hide({ removeDraft: true });
           N.wire.emit('navigate.to', {

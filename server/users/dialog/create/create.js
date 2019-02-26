@@ -18,6 +18,10 @@ module.exports = function (N, apiPath) {
       uniqueItems: true,
       items: { format: 'mongo', required: true }
     },
+    meta:                     { // only used by external hooks
+      type: 'object',
+      additionalProperties: true
+    },
     option_no_mlinks:         { type: 'boolean', required: true },
     option_no_emojis:         { type: 'boolean', required: true },
     option_no_quote_collapse: { type: 'boolean', required: true }
@@ -234,7 +238,9 @@ module.exports = function (N, apiPath) {
       }
     };
 
-    let models_to_save = [];
+    env.data.dialogs = [];
+    env.data.messages = [];
+
     let saved_msg;
 
 
@@ -266,7 +272,8 @@ module.exports = function (N, apiPath) {
       own_dialog.cache.last_message = own_msg._id;
       own_dialog.cache.is_reply     = String(own_msg.user) === String(message_data.user);
 
-      models_to_save = models_to_save.concat([ own_dialog, own_msg ]);
+      env.data.dialogs.push(own_dialog);
+      env.data.messages.push(own_msg);
       saved_msg = own_msg;
     }
 
@@ -302,7 +309,8 @@ module.exports = function (N, apiPath) {
       opponent_dialog.cache.last_message = opponent_msg._id;
       opponent_dialog.cache.is_reply     = String(opponent_msg.user) === String(message_data.user);
 
-      models_to_save = models_to_save.concat([ opponent_dialog, opponent_msg ]);
+      env.data.dialogs.push(opponent_dialog);
+      env.data.messages.push(opponent_msg);
 
       let dialogs_notify = await N.settings.get('dialogs_notify', { user_id: opponent_dialog.user });
 
@@ -322,7 +330,9 @@ module.exports = function (N, apiPath) {
 
     // Save models
     //
-    await Promise.all(models_to_save.map(m => m.save()));
+    await Promise.all(
+      [].concat(env.data.dialogs).concat(env.data.messages).map(m => m.save())
+    );
 
 
     // Fill response
