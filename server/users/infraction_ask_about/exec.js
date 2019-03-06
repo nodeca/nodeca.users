@@ -197,7 +197,6 @@ module.exports = function (N, apiPath) {
     env.data.parse_result = await N.parser.md2html({
       text:        env.data.text,
       options:     parse_options,
-      attachments: [],
       user_info:   env.user_info
     });
   });
@@ -228,8 +227,7 @@ module.exports = function (N, apiPath) {
       ip:           env.req.ip,
       params:       parse_options,
       imports:      env.data.parse_result.imports,
-      import_users: env.data.parse_result.import_users,
-      tail:         env.data.parse_result.tail
+      import_users: env.data.parse_result.import_users
     };
 
     let dlg_update_data = {

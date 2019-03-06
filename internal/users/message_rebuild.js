@@ -29,7 +29,6 @@ module.exports = function (N, apiPath) {
       let params = await N.models.core.MessageParams.getParams(post.params_ref);
       let result = await N.parser.md2html({
         text:         post.md,
-        attachments:  post.attach,
         options:      params,
         imports:      post.imports,
         import_users: post.import_users
@@ -37,13 +36,11 @@ module.exports = function (N, apiPath) {
 
       let updateData = {
         $set: {
-          tail: result.tail,
           html: result.html
         }
       };
 
-      let needsUpdate = !_.isEqual(result.tail, post.tail) ||
-                        !_.isEqual(result.html, post.html);
+      let needsUpdate = !_.isEqual(result.html, post.html);
 
       for (let field of [ 'imports', 'import_users' ]) {
         if (!_.isEmpty(result[field])) {

@@ -66,7 +66,6 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
       let params = {
         dialog_id:                data.dialog_id,
         txt:                      N.MDEdit.text(),
-        attach:                   _.map(N.MDEdit.attachments(), 'media_id'),
         option_no_mlinks:         options.user_settings.no_mlinks,
         option_no_emojis:         options.user_settings.no_emojis,
         option_no_quote_collapse: options.user_settings.no_quote_collapse

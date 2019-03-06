@@ -159,7 +159,6 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(params) {
       let dlg_create_params = {
         to:                       $to.val(),
         txt:                      N.MDEdit.text(),
-        attach:                   _.map(N.MDEdit.attachments(), 'media_id'),
         meta:                     params && params.meta,
         option_no_mlinks:         options.user_settings.no_mlinks,
         option_no_emojis:         options.user_settings.no_emojis,

@@ -56,7 +56,6 @@ module.exports = function (N, apiPath) {
     env.data.parse_result = await N.parser.md2html({
       text:        env.params.txt,
       options:     parseOptions,
-      attachments: [],
       user_info:   env.user_info
     });
 

@@ -30,7 +30,6 @@ async function createNotes(to) {
     let md = charlatan.Lorem.paragraphs(charlatan.Helpers.rand(3, 1)).join('\n\n');
     let parsed = await parser.md2html({
       text: md,
-      attachments: [],
       options: markup_options
     });
 

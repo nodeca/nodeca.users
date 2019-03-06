@@ -31,15 +31,9 @@ module.exports = function (N, collectionName) {
 
     html         : String,
     md           : String,
-    attach       : [ Schema.Types.ObjectId ],
     params_ref   : Schema.ObjectId,
     imports      : [ String ],
-    import_users : [ Schema.ObjectId ],
-    tail         : [ new Schema({ // explicit definition to remove `_id` field
-      media_id: Schema.ObjectId,
-      file_name: String,
-      type: { type: Number }
-    }, { _id: false }) ]
+    import_users : [ Schema.ObjectId ]
   }, {
     versionKey: false
   });

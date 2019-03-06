@@ -207,7 +207,6 @@ module.exports = function (N, apiPath) {
       let parse_result = await N.parser.md2html({
         text:        md_text,
         options:     parse_options,
-        attachments: [],
         user_info:   env.user_info
       });
 

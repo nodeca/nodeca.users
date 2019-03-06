@@ -133,7 +133,6 @@ module.exports = function (N, apiPath) {
 
     let parse_result = await N.parser.md2html({
       text,
-      attachments: [],
       options,
       user_info: to
     });
@@ -153,11 +152,9 @@ module.exports = function (N, apiPath) {
       user:         bot._id,
       html:         parse_result.html,
       md:           text,
-      attach:       [],
       params:       options,
       imports:      parse_result.imports,
-      import_users: parse_result.import_users,
-      tail:         parse_result.tail
+      import_users: parse_result.import_users
     };
 
     let dlg_update_data = {

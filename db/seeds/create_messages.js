@@ -64,7 +64,6 @@ async function createMessages(dlg1, dlg2, msg_count) {
 
     let result = await parser.md2html({
       text: md,
-      attachments: [],
       options: markup_options
     });
     let ts = new Date(2010, 0, msg_day++);

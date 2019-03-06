@@ -12,12 +12,6 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     to:                       { type: 'string', required: true },
     txt:                      { type: 'string', required: true },
-    attach:                   {
-      type: 'array',
-      required: true,
-      uniqueItems: true,
-      items: { format: 'mongo', required: true }
-    },
     meta:                     { // only used by external hooks
       type: 'object',
       additionalProperties: true
@@ -72,16 +66,6 @@ module.exports = function (N, apiPath) {
         message: env.t('err_recipient_cant_use_dialogs')
       };
     }
-  });
-
-
-  // Check attachments owner
-  //
-  N.wire.before(apiPath, function attachments_check_owner(env) {
-    return N.wire.emit('internal:users.attachments_check_owner', {
-      attachments: env.params.attach,
-      user_id: env.user_info.user_id
-    });
   });
 
 
@@ -155,7 +139,6 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, async function parse_text(env) {
     env.data.parse_result = await N.parser.md2html({
       text: env.params.txt,
-      attachments: env.params.attach,
       options: env.data.parse_options,
       user_info: env.user_info
     });
@@ -185,9 +168,8 @@ module.exports = function (N, apiPath) {
     let ast         = $.parse(env.data.parse_result.html);
     let images      = ast.find('.image').length;
     let attachments = ast.find('.attach').length;
-    let tail        = env.data.parse_result.tail.length;
 
-    if (images + attachments + tail > max_images) {
+    if (images + attachments > max_images) {
       throw {
         code: N.io.CLIENT_ERROR,
         message: env.t('err_too_many_images', max_images)
@@ -222,11 +204,9 @@ module.exports = function (N, apiPath) {
       html:         env.data.parse_result.html,
       md:           env.params.txt,
       ip:           env.req.ip,
-      attach:       env.params.attach,
       params:       env.data.parse_options,
       imports:      env.data.parse_result.imports,
-      import_users: env.data.parse_result.import_users,
-      tail:         env.data.parse_result.tail
+      import_users: env.data.parse_result.import_users
     };
 
     let dlg_update_data = {
