@@ -14,6 +14,8 @@
 module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, async function activity_schedule_recount(bulk_data) {
+    if (!bulk_data.length) return; // nothing to do
+
     await N.redis.saddAsync('activity_update',
       bulk_data.map(([ type, params ]) => JSON.stringify([ type, params ]))
     );

@@ -30,9 +30,13 @@ module.exports = function (N) {
     _.set(env.res, 'blocks.about.list',  _.get(env.res, 'blocks.about.list') || []);
     _.set(env.res, 'blocks.about.extra', _.get(env.res, 'blocks.about.extra') || []);
 
+    // get total activity counter
+    let data = { user_id: env.data.user._id, current_user_info: env.user_info };
+    await N.wire.emit('internal:users.activity.get', data);
+
     env.res.blocks.about.list.push({
-      name:     'post_count',
-      value:    env.data.user.post_count,
+      name:     'activity',
+      value:    data.count,
       priority: 10
     });
 

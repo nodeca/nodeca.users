@@ -34,8 +34,8 @@
         dt.ucard-info__dt= self.t('infractions_title')
         dd.ucard-info__dd= self.t('infractions_text', self.infractions_points)
 
-      dt.ucard-info__dt= self.t('post_count')
-      dd.ucard-info__dd: a(href='#')= self.user.post_count
+      dt.ucard-info__dt= self.t('activity')
+      dd.ucard-info__dd: a(href='#')= self.user_activity
 
       if self.age != null
         dt.ucard-info__dt= self.t('age')

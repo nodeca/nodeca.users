@@ -33,7 +33,6 @@ module.exports = async function (N) {
   user.nick = login;
   user.email = email;
   user.joined_ts = new Date();
-  user.post_count = 1;
   user.usergroups = [ adminGroupId ];
 
   user.first_name = 'Admin';

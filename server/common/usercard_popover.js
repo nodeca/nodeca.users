@@ -110,7 +110,6 @@ module.exports = function (N, apiPath) {
       'hid',
       'joined_ts',
       'nick',
-      'post_count',
       'last_active_ts'
     ]);
 
@@ -142,5 +141,15 @@ module.exports = function (N, apiPath) {
       env.res.location      = env.data.user.location;
       env.res.location_name = (await N.models.core.Location.info([ env.data.user.location ], env.user_info.locale))[0];
     }
+  });
+
+
+  // Fill user activity
+  //
+  N.wire.after(apiPath, async function fill_user_activity(env) {
+    let data = { user_id: env.data.user._id, current_user_info: env.user_info };
+    await N.wire.emit('internal:users.activity.get', data);
+
+    env.res.user_activity = data.count;
   });
 };
