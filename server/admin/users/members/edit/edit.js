@@ -115,9 +115,13 @@ module.exports = function (N, apiPath) {
       priority: 220
     });
 
+    // get total activity counter
+    let data = { user_id: env.data.user._id, current_user_info: env.user_info };
+    await N.wire.emit('internal:users.activity.get', data);
+
     env.res.fields.push({
-      name:     'post_count',
-      text:     user.post_count || 0,
+      name:     'activity',
+      text:     data.count,
       priority: 230
     });
 

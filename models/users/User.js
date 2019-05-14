@@ -39,7 +39,6 @@ module.exports = function (N, collectionName) {
 
     locale         : String,
     name           : String,
-    post_count     : { type: Number, 'default': 0 },
     avatar_id      : Schema.Types.ObjectId,
 
     // coordinates, either [ Number, Number ] or Null

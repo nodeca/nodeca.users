@@ -68,11 +68,11 @@ module.exports = function (N, apiPath) {
       priority: 40
     });
 
-    env.res.fields.push({
-      name:     'post_count',
-      value:    [ search_params.post_count_from, search_params.post_count_to ],
-      priority: 50
-    });
+    //env.res.fields.push({
+    //  name:     'post_count',
+    //  value:    [ search_params.post_count_from, search_params.post_count_to ],
+    //  priority: 50
+    //});
 
     if (N.config.users && N.config.users.about) {
       for (let name of Object.keys(N.config.users.about)) {

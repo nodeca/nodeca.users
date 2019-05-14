@@ -6,4 +6,4 @@ each user in self.search_results
     td= user.email
     td= self.date(user.joined_ts, 'date')
     td= self.date(user.last_active_ts, 'date')
-    td= user.post_count
+    td= self.user_activity[user._id]

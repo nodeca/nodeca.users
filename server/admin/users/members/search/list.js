@@ -20,8 +20,8 @@ module.exports = function (N, apiPath) {
     email:           { type: 'string' },
     reg_date_from:   { type: 'string', pattern: '^(\\d{4}-\\d{2}-\\d{2})?$' },
     reg_date_to:     { type: 'string', pattern: '^(\\d{4}-\\d{2}-\\d{2})?$' },
-    post_count_from: { type: 'string', pattern: '^(\\d+)?$' },
-    post_count_to:   { type: 'string', pattern: '^(\\d+)?$' },
+    //post_count_from: { type: 'string', pattern: '^(\\d+)?$' },
+    //post_count_to:   { type: 'string', pattern: '^(\\d+)?$' },
     start:           { type: 'string' },
     limit:           { type: 'number', minimum: 1, maximum: 100 }
   };
@@ -77,15 +77,15 @@ module.exports = function (N, apiPath) {
       search_query.joined_ts.$lte = new Date(search_params.reg_date_to);
     }
 
-    if (search_params.post_count_from) {
-      search_query.post_count = search_query.post_count || {};
-      search_query.post_count.$gte = Number(search_params.post_count_from);
-    }
+    //if (search_params.post_count_from) {
+    //  search_query.post_count = search_query.post_count || {};
+    //  search_query.post_count.$gte = Number(search_params.post_count_from);
+    //}
 
-    if (search_params.post_count_to) {
-      search_query.post_count = search_query.post_count || {};
-      search_query.post_count.$lte = Number(search_params.post_count_to);
-    }
+    //if (search_params.post_count_to) {
+    //  search_query.post_count = search_query.post_count || {};
+    //  search_query.post_count.$lte = Number(search_params.post_count_to);
+    //}
 
     if (N.config.users && N.config.users.about) {
       for (let name of Object.keys(N.config.users.about)) {
@@ -114,28 +114,45 @@ module.exports = function (N, apiPath) {
 
     let load_count = env.data.search_params.limit || 100;
 
-    let search_results = await N.models.users.User
-                                   .find(env.data.search_query)
-                                   .sort((sort_backwards ? '-' : '') + sort_field)
-                                   .limit(load_count + 1)
-                                   .lean(true);
+    env.data.search_results = await N.models.users.User
+                                        .find(env.data.search_query)
+                                        .sort((sort_backwards ? '-' : '') + sort_field)
+                                        .limit(load_count + 1)
+                                        .lean(true);
 
     // check if more results are available
-    if (search_results.length > load_count) {
-      search_results.pop();
-      env.res.prefetch_start = String(search_results[search_results.length - 1][sort_field]);
+    if (env.data.search_results.length > load_count) {
+      env.data.search_results.pop();
+      env.res.prefetch_start = String(env.data.search_results[env.data.search_results.length - 1][sort_field]);
     }
 
-    env.res.search_results = search_results.map(user => ({
+    env.res.search_results = env.data.search_results.map(user => ({
+      _id:            user._id,
       hid:            user.hid,
       name:           user.name,
       email:          user.email,
       last_active_ts: user.last_active_ts,
       joined_ts:      user.joined_ts,
-      post_count:     user.post_count,
+      //post_count:     user.post_count,
       exists:         user.exists
     }));
 
     env.res.search_query = env.data.search_params;
+  });
+
+
+  // Fill user activity
+  //
+  N.wire.after(apiPath, async function fill_user_activity(env) {
+    let user_ids = _.map(env.data.search_results, '_id');
+
+    let data = { user_id: user_ids, current_user_info: env.user_info };
+    await N.wire.emit('internal:users.activity.get', data);
+
+    env.res.user_activity = {};
+
+    for (let [ user_id, count ] of _.zip(user_ids, data.count)) {
+      env.res.user_activity[user_id] = count;
+    }
   });
 };

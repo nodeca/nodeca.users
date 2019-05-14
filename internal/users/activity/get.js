@@ -10,6 +10,7 @@
 // Used in:
 //  - member profile
 //  - usercard
+//  - admin interface (for multiple users)
 //
 
 'use strict';
@@ -18,6 +19,6 @@
 module.exports = function (N, apiPath) {
 
   N.wire.before(apiPath, { priority: -100 }, function activity_get_setup(data) {
-    data.count = 0;
+    data.count = Array.isArray(data.user_id) ? Array(data.user_id.length).fill(0) : 0;
   });
 };

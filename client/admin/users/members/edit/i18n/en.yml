@@ -5,7 +5,7 @@ en-US:
   nick: Nickname
   registered: Registered
   last_visited: Last visited
-  post_count: Posts
+  activity: Activity
   button_save: Save
   saved: Saved
   blocked_until: Blocked until
