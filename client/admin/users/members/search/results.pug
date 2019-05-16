@@ -6,4 +6,8 @@ each user in self.search_results
     td= user.email
     td= self.date(user.joined_ts, 'date')
     td= self.date(user.last_active_ts, 'date')
-    td= self.user_activity[user._id]
+    td
+      a(
+        href=self.link_to('users.activity', { user_hid: user.hid })
+        target='_blank'
+      )= self.user_activity[user._id]

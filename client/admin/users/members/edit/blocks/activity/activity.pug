@@ -1,0 +1,7 @@
+label.col-form-label.col-3=self.t(self.name)
+.col-4.control-value
+  .form-control-plaintext
+    a(
+      href=self.link_to('users.activity', { user_hid: self.user.hid })
+      target='_blank'
+    )= self.text

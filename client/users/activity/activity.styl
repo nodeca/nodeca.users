@@ -1,0 +1,85 @@
+@import "nodeca.core/client/common/_variables"
+
+// decrease space between items, so they can fit in a single line
+// TODO: find a better fix for this
+.users-activity__nav.nav-tabs-underlined .nav-link + .nav-link
+  margin-left 0.5em
+
+.users-activity__tab-counter
+  color $body-color-secondary
+  margin-left .5rem
+  font-size $font-size-xs
+
+.users-activity__nav
+  margin-bottom 2.5rem
+
+.users-activity__empty
+  color $body-color-secondary
+
+.users-activity__loading-next
+  padding 2rem
+  font-size 4rem
+  line-height 1.1em
+  text-align center
+  background-color $body-bg-secondary
+  color $body-color-secondary + 50%
+  border-radius 4px
+  margin-bottom 2rem
+
+//
+// Single result styles
+//
+.users-activity-item
+  margin-bottom 1.5rem
+
+.users-activity-item__header
+  border-bottom 1px solid $decorator-color
+  padding-bottom .25rem
+  margin-bottom .75rem
+
+.users-activity-item__title
+  color $body-color !important
+  //font-family $font-family-sans-serif-wide
+  line-height 1.2
+  margin-bottom .125rem
+  display block
+
+.users-activity-item__stat-narrow
+.users-activity-item__stat
+  font-size $font-size-xs
+  color $body-color-secondary
+  list-style none
+  margin 0
+  padding 0
+
+.users-activity-item__stat-item
+  display inline-block
+
+.users-activity-item__stat-item
+  &:after
+    content '|'
+    margin 0 .5rem
+  &:last-child:after
+    content ''
+
+.users-activity-item__stat-link
+  color $body-color-secondary
+
+//
+// Modifications for results with posted content or snippets.
+//
+
+.users-activity-item__m-with-content
+  .users-activity-item__title
+    font-size 1.125rem
+    color ($body-color-secondary - 20%) !important
+
+.users-activity-item.users-activity-item__m-with-content
+  padding-bottom 1rem
+
+//
+// Content markup styles tweak
+//
+.users-activity-item__content .markup
+  .image
+    max-width 50%

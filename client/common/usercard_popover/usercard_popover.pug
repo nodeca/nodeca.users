@@ -35,7 +35,10 @@
         dd.ucard-info__dd= self.t('infractions_text', self.infractions_points)
 
       dt.ucard-info__dt= self.t('activity')
-      dd.ucard-info__dd: a(href='#')= self.user_activity
+      dd.ucard-info__dd
+        a(
+          href=self.link_to('users.activity', { user_hid: self.user.hid })
+        )= self.user_activity
 
       if self.age != null
         dt.ucard-info__dt= self.t('age')

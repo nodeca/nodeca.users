@@ -78,6 +78,14 @@ router:
         media_id:
           match: /[0-9a-f]{24}/
 
+    users.activity:
+      "/member{user_hid}/activity(/{type})":
+        user_hid:
+          match: /\d+/
+          type: 'integer'
+        type:
+          match: /.+/
+
     users.album.edit:
       "/member{user_hid}/album/{album_id}/edit":
         user_hid:

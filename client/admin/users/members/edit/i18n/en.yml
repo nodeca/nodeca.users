@@ -5,7 +5,6 @@ en-US:
   nick: Nickname
   registered: Registered
   last_visited: Last visited
-  activity: Activity
   button_save: Save
   saved: Saved
   blocked_until: Blocked until
