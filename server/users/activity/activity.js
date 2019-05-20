@@ -3,7 +3,10 @@
 
 'use strict';
 
+
 const _  = require('lodash');
+
+const ITEMS_PER_PAGE = 40;
 
 
 module.exports = function (N, apiPath) {
@@ -85,13 +88,17 @@ module.exports = function (N, apiPath) {
     let sub_env = {
       params: {
         user_id:   env.data.user._id,
-        user_info: env.user_info
+        user_info: env.user_info,
+        start:     null,
+        before:    0,
+        after:     ITEMS_PER_PAGE
       }
     };
 
     await N.wire.emit('internal:users.activity.' + env.data.type, sub_env);
 
     env.res.results = sub_env.results;
+    env.res.items_per_page = ITEMS_PER_PAGE;
     env.data.users = (env.data.users || []).concat(sub_env.users);
   });
 
