@@ -13,7 +13,8 @@ module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
     user_hid: { type: 'integer', minimum: 1, required: true },
-    type:     { type: 'string',  required: false }
+    type:     { type: 'string',  required: false },
+    start:    { format: 'mongo', required: false }
   });
 
 
@@ -88,16 +89,28 @@ module.exports = function (N, apiPath) {
     let sub_env = {
       params: {
         user_id:   env.data.user._id,
-        user_info: env.user_info,
-        start:     null,
-        before:    0,
-        after:     ITEMS_PER_PAGE
+        user_info: env.user_info
       }
     };
 
+    if (env.params.start) {
+      // show the middle of the page, with some items before and after
+      sub_env.params.start  = env.params.start;
+      sub_env.params.before = Math.ceil(ITEMS_PER_PAGE / 2);
+      sub_env.params.after  = ITEMS_PER_PAGE;
+    } else {
+      // show first page
+      sub_env.params.start  = null;
+      sub_env.params.before = 0;
+      sub_env.params.after  = ITEMS_PER_PAGE;
+    }
+
     await N.wire.emit('internal:users.activity.' + env.data.type, sub_env);
 
-    env.res.results = sub_env.results;
+    env.res.results       = sub_env.results;
+    env.res.top_marker    = sub_env.top_marker;
+    env.res.bottom_marker = sub_env.bottom_marker;
+
     env.res.items_per_page = ITEMS_PER_PAGE;
     env.data.users = (env.data.users || []).concat(sub_env.users);
   });

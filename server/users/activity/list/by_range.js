@@ -91,7 +91,10 @@ module.exports = function (N, apiPath) {
 
     await N.wire.emit('internal:users.activity.' + env.data.type, sub_env);
 
-    env.res.results = sub_env.results;
+    env.res.results       = sub_env.results;
+    env.res.top_marker    = sub_env.top_marker;
+    env.res.bottom_marker = sub_env.bottom_marker;
+
     env.data.users = (env.data.users || []).concat(sub_env.users);
   });
 };

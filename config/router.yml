@@ -79,12 +79,18 @@ router:
           match: /[0-9a-f]{24}/
 
     users.activity:
-      "/member{user_hid}/activity(/{type})":
+      "/member{user_hid}/activity":
+        user_hid:
+          match: /\d+/
+          type: 'integer'
+      "/member{user_hid}/activity/{type}(/{start})":
         user_hid:
           match: /\d+/
           type: 'integer'
         type:
-          match: /.+/
+          match: /\w+/
+        start:
+          match: /[0-9a-f]{24}/
 
     users.album.edit:
       "/member{user_hid}/album/{album_id}/edit":
