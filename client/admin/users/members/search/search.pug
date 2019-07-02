@@ -35,15 +35,9 @@
             th= self.t('last_active')
             th= self.t('activity')
 
-        tbody.members-search__results._affix(
-          data-affix-bottom={
-            offset:     500,
-            wire_below: 'admin.users.members.search:load_next',
-            throttle:   100
-          }
-          data-search-query=   self.search_query
-          data-prefetch-start= self.prefetch_start
-          data-result-count=   self.search_results.length
+        tbody.members-search__results(
+          data-search-query= self.search_query
+          data-reached-end= self.reached_end
         )
           if self.search_results.length > 0
             != self.partial('results')
@@ -52,5 +46,5 @@
               td(colspan=5)= self.t('no_results')
 
     .members-search__loading-next.nojs-hide(
-      class=(self.prefetch_start ? '' : 'd-none')
+      class=(self.reached_end ? '' : 'd-none')
     )= self.t('loading')

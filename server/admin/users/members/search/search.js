@@ -17,7 +17,20 @@ module.exports = function (N, apiPath) {
   // Parse querystring
   //
   N.wire.before(apiPath, { priority: -20 }, function parse_query(env) {
-    env.data.search_params = env.params.$query || {};
+    env.data.search_params = Object.assign({}, env.params.$query);
+
+    let is_empty = _.isEmpty(env.params.$query);
+
+    // - sort list of all users by hid in reverse
+    // - sort any searches by nick
+
+    if (!env.data.search_params.sort_by) {
+      env.data.search_params.sort_by = is_empty ? 'hid' : 'nick';
+    }
+
+    if (!env.data.search_params.sort_order) {
+      env.data.search_params.sort_order = is_empty ? 'desc' : 'asc';
+    }
   });
 
 

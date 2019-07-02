@@ -15,15 +15,17 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, { properties: {}, additionalProperties: true });
 
   let validate_properties = {
-    nick:            { type: 'string' },
-    usergroup:       { anyOf: [ { format: 'mongo' }, { type: 'string', pattern: '^$' } ] },
-    email:           { type: 'string' },
-    reg_date_from:   { type: 'string', pattern: '^(\\d{4}-\\d{2}-\\d{2})?$' },
-    reg_date_to:     { type: 'string', pattern: '^(\\d{4}-\\d{2}-\\d{2})?$' },
-    //post_count_from: { type: 'string', pattern: '^(\\d+)?$' },
-    //post_count_to:   { type: 'string', pattern: '^(\\d+)?$' },
-    start:           { type: 'string' },
-    limit:           { type: 'number', minimum: 1, maximum: 100 }
+    nick:             { type: 'string' },
+    usergroup:        { anyOf: [ { format: 'mongo' }, { type: 'string', pattern: '^$' } ] },
+    email:            { type: 'string' },
+    reg_date_from:    { type: 'string', pattern: '^(\\d{4}-\\d{2}-\\d{2})?$' },
+    reg_date_to:      { type: 'string', pattern: '^(\\d{4}-\\d{2}-\\d{2})?$' },
+    //post_count_from:  { type: 'string', pattern: '^(\\d+)?$' },
+    //post_count_to:    { type: 'string', pattern: '^(\\d+)?$' },
+    start:            { type: 'string' },
+    limit:            { type: 'number', minimum: 1, maximum: 100 },
+    sort_by:          { 'enum': [ 'hid', 'nick' ] },
+    sort_order:       { 'enum': [ 'asc', 'desc' ] }
   };
 
   if (N.config.users && N.config.users.about) {
@@ -102,10 +104,8 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, async function members_search(env) {
     if (!env.data.search_query) return;
 
-    // - sort list of all users by hid in reverse
-    // - sort any searches by nick
-    let sort_field     = _.isEmpty(env.data.search_query) ? 'hid' : 'nick';
-    let sort_backwards = _.isEmpty(env.data.search_query) ? true  : false;
+    let sort_field     = env.data.search_params.sort_by;
+    let sort_backwards = env.data.search_params.sort_order === 'desc';
 
     if (env.data.search_params.start) {
       env.data.search_query[sort_field] = env.data.search_query[sort_field] || {};
@@ -120,15 +120,18 @@ module.exports = function (N, apiPath) {
                                         .limit(load_count + 1)
                                         .lean(true);
 
+    env.res.reached_end = true;
+
     // check if more results are available
     if (env.data.search_results.length > load_count) {
       env.data.search_results.pop();
-      env.res.prefetch_start = String(env.data.search_results[env.data.search_results.length - 1][sort_field]);
+      env.res.reached_end = false;
     }
 
     env.res.search_results = env.data.search_results.map(user => ({
       _id:            user._id,
       hid:            user.hid,
+      nick:           user.nick,
       name:           user.name,
       email:          user.email,
       last_active_ts: user.last_active_ts,

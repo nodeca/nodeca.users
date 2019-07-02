@@ -53,18 +53,8 @@
       )
         span.icon.icon-loading-placeholder
 
-      .user-messages-list._affix(
-        data-affix-top={
-          offset: 500,
-          wire_above: 'users.dialog:load_prev',
-          throttle: 100
-        }
-        data-affix-bottom={
-          offset: 500,
-          wire_below: 'users.dialog:load_next',
-          throttle: 100
-        }
-      )!=self.partial('@users.blocks.message_list')
+      .user-messages-list
+        != self.partial('@users.blocks.message_list')
 
       .user-messages-list__loading-next.nojs-hide(
         class=(!self.messages || self.messages.length === 0 || String(self.messages[self.messages.length - 1]._id) === String(self.last_message_id) ? 'd-none': '')

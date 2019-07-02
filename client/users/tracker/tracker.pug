@@ -1,6 +1,6 @@
 - self.users = self.users || {};
 - self.add_raw_data('tracker_type', self.type)
-- self.add_raw_data('tracker_next', self.next)
+- self.add_raw_data('reached_end', self.reached_end)
 
 #content.user-tracker
   != self.partial('@common.blocks.navbar.logo_apps')
@@ -9,13 +9,7 @@
     .layout__container.container-fluid
       != self.partial('@users.blocks.breadcrumbs')
 
-  .layout__container.container-fluid._affix(
-    data-affix-bottom={
-      offset:     500,
-      wire_below: 'users.tracker:load_next',
-      throttle:   100
-    }
-  )
+  .layout__container.container-fluid
     != self.partial('@users.blocks.announces')
 
     .user-tracker__filter.nav
@@ -40,7 +34,7 @@
       .user-tracker-items
         != self.partial('@users.tracker.items')
 
-    .user-tracker__loading-next.nojs-hide(
-      class=(!self.next ? 'd-none' : '')
-    )
-      span.icon.icon-loading-placeholder
+      .user-tracker__loading-next.nojs-hide(
+        class=(!self.next ? 'd-none' : '')
+      )
+        span.icon.icon-loading-placeholder

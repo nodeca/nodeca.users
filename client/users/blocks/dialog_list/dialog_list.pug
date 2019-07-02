@@ -2,6 +2,7 @@ each dialog in self.dialogs
   .dialog-list-item(
     id='dialog' + dialog._id
     data-dialog-id=dialog._id
+    data-last-message=dialog.cache.last_message
     class=dialog.unread > 0 ? 'dialog-list-item__m-unread' : ''
     class=dialog.cache.last_user !== N.runtime.user_id ? '' : 'dialog-list-item__m-outgoing'
   )

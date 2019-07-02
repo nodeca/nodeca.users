@@ -2,28 +2,90 @@
 
 
 const _ = require('lodash');
+const ScrollableList = require('nodeca.core/lib/app/scrollable_list');
 
 
-// Offset between navbar and the first dialog
-const TOP_OFFSET = 50;
-
-const navbarHeight = parseInt($('body').css('margin-top'), 10) + parseInt($('body').css('padding-top'), 10);
-
-let $window = $(window);
-// State
+// Page state
 //
 // - dialog_id           current dialog id
-// - first_offset:       offset of the first message in the DOM
 // - current_offset:     offset of the current message (first in the viewport)
 // - message_count:      total count of messages
-// - reached_start:      true iff no more message exist above first loaded one
-// - reached_end:        true iff no more message exist below last loaded one
 // - first_message_id:   id of the first message
 // - last_message_id:    id of the last message
-// - prev_loading_start: time when current xhr request for the previous page is started
-// - next_loading_start: time when current xhr request for the next page is started
 //
-let dlgState = {};
+let pageState = {};
+let scrollable_list;
+
+let $window = $(window);
+
+
+function load(start, direction) {
+  return N.io.rpc('users.dialog.list.by_range', {
+    dialog_id:       pageState.dialog_id,
+    last_message_id: start,
+    before:          direction === 'top' ? N.runtime.page_data.pagination.per_page : 0,
+    after:           direction === 'bottom' ? N.runtime.page_data.pagination.per_page : 0
+  }).then(res => {
+    pageState.message_count = res.pagination.total;
+
+    return N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
+      max: pageState.message_count
+    }).then(() => {
+      return {
+        $html: $(N.runtime.render('users.blocks.message_list', res)),
+        locals: res,
+        offset: res.pagination.chunk_offset,
+        reached_end: res.messages.length !== N.runtime.page_data.pagination.per_page
+      };
+    });
+  }).catch(err => {
+    // User deleted, refreshing the page so user can see the error
+    if (err.code === N.io.NOT_FOUND) return N.wire.emit('navigate.reload');
+    throw err;
+  });
+}
+
+
+// Use a separate debouncer that only fires when user stops scrolling,
+// so it's executed a lot less frequently.
+//
+// The reason is that `history.replaceState` is very slow in FF
+// on large pages: https://bugzilla.mozilla.org/show_bug.cgi?id=1250972
+//
+let update_url = _.debounce((item, index, item_offset) => {
+  let href, state;
+
+  if (item) {
+    state = {
+      message_id: $(item).data('message-id'),
+      offset:     item_offset
+    };
+  }
+
+  // save current offset, and only update url if offset is different,
+  // it protects url like /f1/topic23/page4 from being overwritten instantly
+  if (pageState.current_offset !== index) {
+    /* eslint-disable no-undefined */
+    href = N.router.linkTo('users.dialog', {
+      dialog_id:  pageState.dialog_id,
+      message_id: item ? $(item).data('message-id') : undefined
+    });
+
+    pageState.current_offset = index;
+  }
+
+  N.wire.emit('navigate.replace', { href, state })
+        .catch(err => N.wire.emit('error', err));
+}, 500);
+
+
+function on_list_scroll(item, index, item_offset) {
+  N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
+    current: index + 1 // `+1` because offset is zero based
+  }).catch(err => N.wire.emit('error', err));
+
+  update_url(item, index, item_offset);
+}
 
 
 /////////////////////////////////////////////////////////////////////
@@ -33,213 +95,73 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
   let pagination = N.runtime.page_data.pagination;
   let last_visible_message_id = $('.user-messages-list-item:last-child').data('message-id');
 
-  dlgState.dialog_id          = N.runtime.page_data.dialog._id;
-  dlgState.first_offset       = pagination.chunk_offset;
-  dlgState.current_offset     = -1;
-  dlgState.message_count      = pagination.total;
-  dlgState.first_message_id   = N.runtime.page_data.first_message_id;
-  dlgState.last_message_id    = N.runtime.page_data.last_message_id;
-  dlgState.reached_start      = pagination.chunk_offset === 0;
-  dlgState.reached_end        = dlgState.last_message_id === last_visible_message_id;
-  dlgState.prev_loading_start = 0;
-  dlgState.next_loading_start = 0;
+  pageState.dialog_id          = N.runtime.page_data.dialog._id;
+  pageState.current_offset     = -1;
+  pageState.message_count      = pagination.total;
+  pageState.first_message_id   = N.runtime.page_data.first_message_id;
+  pageState.last_message_id    = N.runtime.page_data.last_message_id;
 
-  // disable automatic scroll to an anchor in the navigator
-  data.no_scroll = true;
+  let navbar_height = parseInt($('body').css('margin-top'), 10) + parseInt($('body').css('padding-top'), 10);
+
+  // account for some spacing between posts
+  navbar_height += 50;
+
+  let scroll_done = false;
 
   // If we have state in history - scroll to saved offset
-  if (data.state && typeof data.state.message_id !== 'undefined' && typeof data.state.offset !== 'undefined') {
+  if (!scroll_done && data.state &&
+      typeof data.state.message_id !== 'undefined' && typeof data.state.offset !== 'undefined') {
     let el = $(`#message${data.state.message_id}`);
 
     if (el.length) {
-      $window.scrollTop(el.offset().top - $('.navbar').height() - TOP_OFFSET + data.state.offset);
-      return;
+      $window.scrollTop(el.offset().top - navbar_height + data.state.offset);
+      scroll_done = true;
     }
-
   }
 
   // If navigated to first message - scroll to top
-  if (data.params.message_id === dlgState.first_message_id) {
+  if (!scroll_done && data.params.message_id === pageState.first_message_id) {
     $window.scrollTop(0);
-    return;
+    scroll_done = true;
   }
 
   let el = $(`#message${data.params.message_id}`);
 
   // Scroll to needed message
-  if (el.length) {
-    $window.scrollTop(el.offset().top - $('.navbar').height() - TOP_OFFSET);
+  if (!scroll_done && el.length) {
+    $window.scrollTop(el.offset().top - navbar_height);
     el.addClass('user-messages-list-item__m-highlight');
-    return;
+    scroll_done = true;
   }
-});
 
+  // disable automatic scroll to an anchor in the navigator
+  data.no_scroll = true;
 
-/////////////////////////////////////////////////////////////////////
-// Change URL when user scrolls the page
-//
-// Use a separate debouncer that only fires when user stops scrolling,
-// so it's executed a lot less frequently.
-//
-// The reason is that `history.replaceState` is very slow in FF
-// on large pages: https://bugzilla.mozilla.org/show_bug.cgi?id=1250972
-//
-let locationScrollHandler = null;
-
-
-N.wire.on('navigate.done:' + module.apiPath, function location_updater_init() {
-  if ($('.user-messages-list').length === 0) return;
-
-  locationScrollHandler = _.debounce(function update_location_on_scroll() {
-    let messages         = document.getElementsByClassName('user-messages-list-item');
-    let messageThreshold = navbarHeight + TOP_OFFSET;
-    let offset;
-    let currentIdx;
-
-    // Get offset of the first topic in the viewport
-    //
-    currentIdx = _.sortedIndexBy(messages, null, msg => {
-      if (!msg) { return messageThreshold; }
-      return msg.getBoundingClientRect().top;
-    });
-
-    if (currentIdx >= messages.length) {
-      currentIdx = messages.length - 1;
-    }
-
-    let href = null;
-    let state = null;
-
-    offset = currentIdx + dlgState.first_offset;
-
-    if (currentIdx > 0 && messages.length) {
-      state = {
-        message_id: $(messages[currentIdx + 1]).data('message-id'),
-        offset: messageThreshold - messages[currentIdx + 1].getBoundingClientRect().top
-      };
-    }
-
-    // save current offset, and only update url if offset is different,
-    // it protects url like /messages/4ecabbd0821e2864cda37762 from being overwritten instantly
-    if (dlgState.current_offset !== offset) {
-      /* eslint-disable no-undefined */
-      href = N.router.linkTo('users.dialog', {
-        dialog_id: dlgState.dialog_id,
-        message_id: state ? state.message_id : undefined
-      });
-
-      dlgState.current_offset = offset;
-    }
-
-    N.wire.emit('navigate.replace', { href, state });
-  }, 500);
-
-  // avoid executing it on first tick because of initial scrollTop()
-  setTimeout(() => {
-    $window.on('scroll', locationScrollHandler);
-  }, 1);
-});
-
-
-N.wire.on('navigate.exit:' + module.apiPath, function location_updater_teardown() {
-  if (!locationScrollHandler) return;
-  locationScrollHandler.cancel();
-  $window.off('scroll', locationScrollHandler);
-  locationScrollHandler = null;
-});
-
-
-/////////////////////////////////////////////////////////////////////
-// When user scrolls the page:
-//
-//  1. update progress bar
-//  2. show/hide navbar
-//
-let progressScrollHandler = null;
-
-
-N.wire.on('navigate.done:' + module.apiPath, function progress_updater_init() {
-  if ($('.user-messages-list').length === 0) return;
-
-  progressScrollHandler = _.debounce(function update_progress_on_scroll() {
-    // If we scroll below page title, show the secondary navbar
-    //
-    let title = document.getElementsByClassName('page-head__title');
-
-    if (title.length && title[0].getBoundingClientRect().bottom > navbarHeight) {
-      $('.navbar').removeClass('navbar__m-secondary');
-    } else {
-      $('.navbar').addClass('navbar__m-secondary');
-    }
-
-    // Update progress bar
-    //
-    let messages         = document.getElementsByClassName('user-messages-list-item');
-    let messageThreshold = navbarHeight + TOP_OFFSET;
-    let offset;
-    let currentIdx;
-
-    // Get offset of the first topic in the viewport
-    //
-    currentIdx = _.sortedIndexBy(messages, null, msg => {
-      if (!msg) { return messageThreshold; }
-      return msg.getBoundingClientRect().top;
-    }) - 1;
-
-    offset = currentIdx + dlgState.first_offset;
-
-    N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
-      current:  offset + 1 // `+1` because offset is zero based
-    }).catch(err => N.wire.emit('error', err));
-  }, 100, { maxWait: 100 });
-
-  // avoid executing it on first tick because of initial scrollTop()
-  setTimeout(() => {
-    $window.on('scroll', progressScrollHandler);
+  scrollable_list = new ScrollableList({
+    N,
+    list_selector:               '.user-messages-list',
+    item_selector:               '.user-messages-list-item',
+    placeholder_top_selector:    '.user-messages-list__loading-prev',
+    placeholder_bottom_selector: '.user-messages-list__loading-next',
+    get_content_id:              msg => $(msg).data('message-id'),
+    load,
+    reached_top:                 pagination.chunk_offset === 0,
+    reached_bottom:              pageState.last_message_id === last_visible_message_id,
+    index_offset:                pagination.chunk_offset,
+    navbar_height,
+    // whenever there are more than 300 messages, cut off-screen messages down to 200
+    need_gc:                     count => (count > 300 ? count - 200 : 0),
+    on_list_scroll
   });
-
-  // execute it once on page load
-  progressScrollHandler();
 });
 
 
-N.wire.on('navigate.exit:' + module.apiPath, function progress_updater_teardown() {
-  if (!progressScrollHandler) return;
-  progressScrollHandler.cancel();
-  $window.off('scroll', progressScrollHandler);
-  progressScrollHandler = null;
+N.wire.on('navigate.exit:' + module.apiPath, function page_teardown() {
+  scrollable_list.destroy();
+  scrollable_list = null;
+  update_url.cancel();
+  pageState = {};
 });
-
-
-// Show/hide loading placeholders when new messages are fetched,
-// adjust scroll when adding/removing top placeholder
-//
-function reset_loading_placeholders() {
-  let prev = $('.user-messages-list__loading-prev');
-  let next = $('.user-messages-list__loading-next');
-
-  // if topmost dialog is loaded, hide top placeholder
-  if (dlgState.reached_start) {
-    if (!prev.hasClass('d-none')) {
-      $window.scrollTop($window.scrollTop() - prev.outerHeight(true));
-    }
-
-    prev.addClass('d-none');
-  } else {
-    if (prev.hasClass('d-none')) {
-      $window.scrollTop($window.scrollTop() + prev.outerHeight(true));
-    }
-
-    prev.removeClass('d-none');
-  }
-
-  // if last message is loaded, hide bottom placeholder
-  if (dlgState.reached_end) {
-    next.addClass('d-none');
-  } else {
-    next.removeClass('d-none');
-  }
-}
 
 
 // Init handlers
@@ -287,7 +209,10 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
     return Promise.resolve()
       .then(() => N.wire.emit('users.blocks.add_infraction_dlg', params))
       .then(() => N.io.rpc('users.dialog.message.add_infraction', params))
-      .then(() => N.io.rpc('users.dialog.list.by_ids', { dialog_id: dlgState.dialog_id, messages_ids: [ message_id ] }))
+      .then(() => N.io.rpc('users.dialog.list.by_ids', {
+        dialog_id: pageState.dialog_id,
+        messages_ids: [ message_id ]
+      }))
       .then(res => {
         let $result = $(N.runtime.render('users.blocks.message_list', res));
 
@@ -324,7 +249,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
         //
         // Update progress bar
         //
-        dlgState.message_count = res.message_count;
+        pageState.message_count = res.message_count;
 
         return N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
           max: res.message_count
@@ -345,153 +270,5 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
         apiPath: 'users.dialogs_root',
         params: { user_hid: N.runtime.user_hid }
       }));
-  });
-
-
-  ///////////////////////////////////////////////////////////////////////////
-  // Whenever we are close to beginning/end of dialog list, check if we can
-  // load more pages from the server
-  //
-
-  // an amount of topics we try to load when user scrolls to the end of the page
-  const LOAD_MSGS_COUNT = N.runtime.page_data.pagination.per_page;
-
-  // A delay after failed xhr request (delay between successful requests
-  // is set with affix `throttle` argument)
-  //
-  // For example, suppose user continuously scrolls. If server is up, each
-  // subsequent request will be sent each 100 ms. If server goes down, the
-  // interval between request initiations goes up to 2000 ms.
-  //
-  const LOAD_AFTER_ERROR = 2000;
-
-  N.wire.on(module.apiPath + ':load_prev', function load_prev_page() {
-    if (dlgState.reached_start) return;
-
-    let now = Date.now();
-
-    // `prev_loading_start` is the last request start time, which is reset to 0 on success
-    //
-    // Thus, successful requests can restart immediately, but failed ones
-    // will have to wait `LOAD_AFTER_ERROR` ms.
-    //
-    if (Math.abs(dlgState.prev_loading_start - now) < LOAD_AFTER_ERROR) return;
-
-    dlgState.prev_loading_start = now;
-
-    N.io.rpc('users.dialog.list.by_range', {
-      dialog_id: dlgState.dialog_id,
-      last_message_id: $('.user-messages-list-item:first-child').data('message-id'),
-      before: LOAD_MSGS_COUNT,
-      after: 0
-    }).then(function (res) {
-      if (!res.messages) return;
-
-      if (res.messages.length !== LOAD_MSGS_COUNT) {
-        dlgState.reached_start = true;
-        reset_loading_placeholders();
-      }
-
-      if (res.messages.length === 0) return;
-
-      // remove duplicate topics
-      res.messages.forEach(msg => $(`#message${msg._id}`).remove());
-
-      let $list = $('.user-messages-list');
-      let old_height = $list.height();
-      // render & inject topics list
-      let $result = $(N.runtime.render('users.blocks.message_list', res));
-
-      $list.prepend($result);
-
-      // update scroll so it would point at the same spot as before
-      $window.scrollTop($window.scrollTop() + $list.height() - old_height);
-
-      dlgState.first_offset = res.pagination.chunk_offset;
-      dlgState.topic_count = res.pagination.total;
-
-      dlgState.prev_loading_start = 0;
-
-      return N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
-        max: dlgState.message_count
-      });
-    }).catch(err => N.wire.emit('error', err));
-  });
-
-
-  N.wire.on(module.apiPath + ':load_next', function load_next_page() {
-    if (dlgState.reached_end) return;
-
-    let now = Date.now();
-
-    // `next_loading_start` is the last request start time, which is reset to 0 on success
-    //
-    // Thus, successful requests can restart immediately, but failed ones
-    // will have to wait `LOAD_AFTER_ERROR` ms.
-    //
-    if (Math.abs(dlgState.next_loading_start - now) < LOAD_AFTER_ERROR) return;
-
-    dlgState.next_loading_start = now;
-
-    N.io.rpc('users.dialog.list.by_range', {
-      dialog_id: dlgState.dialog_id,
-      last_message_id: $('.user-messages-list-item:last-child').data('message-id'),
-      before: 0,
-      after: LOAD_MSGS_COUNT
-    }).then(function (res) {
-      if (!res.messages) return;
-
-      if (res.messages.length !== LOAD_MSGS_COUNT) {
-        dlgState.reached_end = true;
-        reset_loading_placeholders();
-      }
-
-      if (res.messages.length === 0) return;
-
-      let $list = $('.user-messages-list');
-      let old_height = $list.height();
-      // render & inject topics list
-      let $result = $(N.runtime.render('users.blocks.message_list', res));
-
-      // remove duplicate topics
-      let deleted_count = res.messages.filter(msg => {
-        let el = $(`#message${msg._id}`);
-
-        if (el.length) {
-          el.remove();
-          return true;
-        }
-      }).length;
-
-      // update scroll so it would point at the same spot as before
-      if (deleted_count > 0) {
-        $window.scrollTop($window.scrollTop() + $list.height() - old_height);
-      }
-
-      dlgState.first_offset = res.pagination.chunk_offset - $('.user-messages-list-item').length;
-      dlgState.topic_count = res.pagination.total;
-
-
-      $list.append($result);
-
-      // Workaround for FF bug, possibly this one:
-      // https://github.com/nodeca/nodeca.core/issues/2
-      //
-      // When user scrolls down and we insert content to the end
-      // of the page, and the page is large enough (~1000 topics
-      // or more), next scrollTop() read on 'scroll' event may
-      // return invalid (too low) value.
-      //
-      // Reading scrollTop in the same tick seem to prevent this
-      // from happening.
-      //
-      $window.scrollTop();
-
-      dlgState.next_loading_start = 0;
-
-      return N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
-        max: dlgState.message_count
-      });
-    }).catch(err => N.wire.emit('error', err));
   });
 });

@@ -55,18 +55,8 @@
       )
         span.icon.icon-loading-placeholder
 
-      .dialog-list._affix(
-        data-affix-top={
-          offset: 500,
-          wire_above: 'users.dialogs_root:load_prev',
-          throttle: 100
-        }
-        data-affix-bottom={
-          offset: 500,
-          wire_below: 'users.dialogs_root:load_next',
-          throttle: 100
-        }
-      )!=self.partial('@users.blocks.dialog_list')
+      .dialog-list
+        != self.partial('@users.blocks.dialog_list')
 
       .dialog-list__loading-next.nojs-hide(
         class=(!self.dialogs || self.dialogs.length === 0 || String(self.dialogs[self.dialogs.length - 1]._id) === String(self.last_dialog_id) || !last_message_id ? 'd-none' : '')

@@ -1,5 +1,9 @@
 each user in self.search_results
-  tr(class=user.exists ? '' : 'members-search__user-deleted')
+  tr.members-search__item(
+    class=user.exists ? '' : 'members-search__user-deleted'
+    data-hid=user.hid
+    data-nick=user.nick
+  )
     td
       a(href=self.link_to('admin.users.members.edit', { user_hid: user.hid }))
         = user.name

@@ -69,9 +69,9 @@ module.exports = function (N, apiPath) {
 
     env.data.users = (env.data.users || []).concat(fetch_env.users);
     env.res = Object.assign(env.res, fetch_env.res);
-    env.res.type  = type;
-    env.res.items = fetch_env.items;
-    env.res.next  = fetch_env.next;
+    env.res.type        = type;
+    env.res.items       = fetch_env.items;
+    env.res.reached_end = !fetch_env.next;
 
     // calculate result counts for other tabs
     let counts = {};

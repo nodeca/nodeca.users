@@ -1,22 +1,32 @@
 'use strict';
 
-// A delay after failed xhr request (delay between successful requests
-// is set with affix `throttle` argument)
-//
-// For example, suppose user continuously scrolls. If server is up, each
-// subsequent request will be sent each 100 ms. If server goes down, the
-// interval between request initiations goes up to 2000 ms.
-//
-const LOAD_AFTER_ERROR = 2000;
+
+const ScrollableList = require('nodeca.core/lib/app/scrollable_list');
 
 
-// State of prefetch
+// Page state
+//
 // - type:               tab type (forum, blogs, etc)
-// - reached_end:        true if no more results exist below last loaded result
-// - next_loading_start: time when current xhr request for the next page is started
-// - bottom_marker:      offset of the last loaded result
 //
 let pageState = {};
+let scrollable_list;
+
+
+function load(start, direction) {
+  if (direction !== 'bottom') return null;
+
+  return N.io.rpc('users.tracker.list.after', {
+    type:  pageState.type,
+    start
+  }).then(res => {
+    return {
+      $html: $(N.runtime.render('users.tracker.items', res)),
+      locals: res,
+      reached_end: res.reached_end
+    };
+  });
+}
+
 
 N.wire.on('navigate.done:' + module.apiPath, function nav_tracker_tab_activate() {
   $('.navbar').find('[data-api-path="users.tracker"]').addClass('active');
@@ -25,42 +35,27 @@ N.wire.on('navigate.done:' + module.apiPath, function nav_tracker_tab_activate()
   pageState.reached_end        = !N.runtime.page_data.tracker_next;
   pageState.next_loading_start = 0;
   pageState.bottom_marker      = N.runtime.page_data.tracker_next;
+
+  let navbar_height = parseInt($('body').css('margin-top'), 10) + parseInt($('body').css('padding-top'), 10);
+
+  // account for some spacing between posts
+  navbar_height += 32;
+
+  scrollable_list = new ScrollableList({
+    N,
+    list_selector:               '.user-tracker-items',
+    item_selector:               '.user-tracker-item',
+    placeholder_bottom_selector: '.user-tracker__loading-next',
+    get_content_id:              item => $(item).data('last-ts'),
+    load,
+    reached_top:                 true,
+    reached_bottom:              N.runtime.page_data.reached_end,
+    navbar_height
+  });
 });
 
 
-// Fetch more results when user scrolls down
-//
-N.wire.on(module.apiPath + ':load_next', function load_next() {
-  if (pageState.reached_end) return;
-
-  let now = Date.now();
-
-  // `next_loading_start` is the last request start time, which is reset to 0 on success
-  //
-  // Thus, successful requests can restart immediately, but failed ones
-  // will have to wait `LOAD_AFTER_ERROR` ms.
-  //
-  if (Math.abs(pageState.next_loading_start - now) < LOAD_AFTER_ERROR) return;
-
-  pageState.next_loading_start = now;
-
-  N.io.rpc('users.tracker.list.after', {
-    type:  pageState.type,
-    start: pageState.bottom_marker
-  }).then(function (res) {
-    pageState.reached_end = !res.next;
-    pageState.bottom_marker = res.next;
-
-    // if last search result is loaded, hide bottom placeholder
-    if (pageState.reached_end) {
-      $('.user-tracker__loading-next').addClass('d-none');
-    }
-
-    // reset lock
-    pageState.next_loading_start = 0;
-
-    $('.user-tracker-items').append(N.runtime.render('users.tracker.items', res));
-  }).catch(err => {
-    N.wire.emit('error', err);
-  });
+N.wire.on('navigate.exit:' + module.apiPath, function page_teardown() {
+  scrollable_list.destroy();
+  scrollable_list = null;
 });
