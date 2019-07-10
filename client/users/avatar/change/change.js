@@ -1,8 +1,6 @@
 // Change avatar dialog
 //
 
-/*global window*/
-
 'use strict';
 
 

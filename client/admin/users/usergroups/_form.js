@@ -7,6 +7,7 @@ const _  = require('lodash');
 const ko = require('knockout');
 
 
+/*eslint-disable no-redeclare*/
 let N;
 
 
@@ -336,7 +337,6 @@ Form.prototype.submit = function submit() {
 
 
 module.exports = function (_N) {
-  /*eslint-disable no-undef*/
   if (!N) N = _N;
 
   return Form;
