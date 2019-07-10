@@ -39,9 +39,9 @@ describe('UserPenalty', function () {
     // We need delay because post save hook in model without callback
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    let usergroups = (await TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
+    let usergroups = (await TEST.N.models.users.User.findOne({ _id: user._id }).lean(true)).usergroups;
 
-    assert.deepStrictEqual(usergroups.toObject(), user.usergroups.toObject());
+    assert.deepStrictEqual(usergroups, [ user.usergroups[0] ]);
 
     await (new TEST.N.models.users.Infraction({
       from: user._id,
@@ -53,9 +53,9 @@ describe('UserPenalty', function () {
 
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    usergroups = (await TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
+    usergroups = (await TEST.N.models.users.User.findOne({ _id: user._id }).lean(true)).usergroups;
 
-    assert.deepStrictEqual(usergroups.toObject(), [ user.usergroups[0], violators_group_id ]);
+    assert.deepStrictEqual(usergroups, [ user.usergroups[0], violators_group_id ]);
 
     await (new TEST.N.models.users.Infraction({
       from: user._id,
@@ -67,9 +67,9 @@ describe('UserPenalty', function () {
 
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    usergroups = (await TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
+    usergroups = (await TEST.N.models.users.User.findOne({ _id: user._id }).lean(true)).usergroups;
 
-    assert.deepStrictEqual(usergroups.toObject(), [ user.usergroups[0], violators_group_id ]);
+    assert.deepStrictEqual(usergroups, [ user.usergroups[0], violators_group_id ]);
   });
 
 
@@ -93,9 +93,9 @@ describe('UserPenalty', function () {
     // We need delay because post save hook in model without callback
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    let usergroups = (await TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
+    let usergroups = (await TEST.N.models.users.User.findOne({ _id: user._id }).lean(true)).usergroups;
 
-    assert.deepStrictEqual(usergroups.toObject(), [ banned_group_id ]);
+    assert.deepStrictEqual(usergroups, [ banned_group_id ]);
   });
 
 
@@ -119,9 +119,9 @@ describe('UserPenalty', function () {
     // Infraction propagate logic sit on `postsave` hook, wait it.
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    let usergroups = (await TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
+    let usergroups = (await TEST.N.models.users.User.findOne({ _id: user._id }).lean(true)).usergroups;
 
-    assert.deepStrictEqual(usergroups.toObject(), [ user.usergroups[0], violators_group_id ]);
+    assert.deepStrictEqual(usergroups, [ user.usergroups[0], violators_group_id ]);
 
     // Set expire now
     await TEST.N.models.users.UserPenalty.updateOne(
@@ -142,8 +142,8 @@ describe('UserPenalty', function () {
 
     if (!retries) throw new Error('Task waiting timeout');
 
-    usergroups = (await TEST.N.models.users.User.findOne({ _id: user._id })).usergroups;
-    assert.deepStrictEqual(usergroups.toObject(), [ user.usergroups[0] ]);
+    usergroups = (await TEST.N.models.users.User.findOne({ _id: user._id }).lean(true)).usergroups;
+    assert.deepStrictEqual(usergroups, [ user.usergroups[0] ]);
   });
 
 
