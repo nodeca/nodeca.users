@@ -126,8 +126,8 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
     placeholder_bottom_selector: '.users-activity__loading-next',
     get_content_id:              item => $(item).data('item-id'),
     load,
-    reached_top:                 $('.users-activity-root').data('reached-top'),
-    reached_bottom:              $('.users-activity-root').data('reached-bottom'),
+    reached_top:                 typeof $('.users-activity-root').data('reached-top') !== 'undefined',
+    reached_bottom:              typeof $('.users-activity-root').data('reached-bottom') !== 'undefined',
     navbar_height,
     on_list_scroll
   });
