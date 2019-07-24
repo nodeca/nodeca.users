@@ -1,7 +1,7 @@
 en-US:
   subject:
-    subject: "abuse report about dialog from #{user_name}"
+    subject: "Report from #{user} (dialog message)"
   body:
-    header: "Complaint from user #{url}:"
+    header: "Report from user #{url}:"
     to: "About [dialog message](#{url}):"
     message_sent_to: "This message sent to: "
