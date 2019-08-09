@@ -92,6 +92,14 @@ router:
         start:
           match: /[0-9a-f]{24}/
 
+    users.bookmarks:
+      "/member{user_hid}/bookmarks(/{start})":
+        user_hid:
+          match: /\d+/
+          type: 'integer'
+        start:
+          match: /[0-9a-f]{24}/
+
     users.album.edit:
       "/member{user_hid}/album/{album_id}/edit":
         user_hid:

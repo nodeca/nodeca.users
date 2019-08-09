@@ -6,16 +6,13 @@
         .icon.icon-collapse
         .icon.icon-expand
 
-      a.member-block__header-link(href='#')
+      a.member-block__header-link(href=self.link_to('users.bookmarks', { 'user_hid': self.user.hid }))
         = self.t('title')
         span.member-block__header-arrow.icon.icon-right-open
-        small.member-block__header-counter 5
+        //-small.member-block__header-counter 5
 
   #member-bookmarks-info.member-block__inner.collapse.show
     ul.member-block__bookmarks-info
-      li.member-block__bookmarks-info-item
-        a(href='#') Inventore provident fugiat minima
-      li.member-block__bookmarks-info-item
-        a(href='#') Accusamus velit nulla
-      li.member-block__bookmarks-info-item
-        a(href='#') Odit consectetur voluptates
+      each bookmark in self.blocks.bookmarks.list
+        li.member-block__bookmarks-info-item
+          a(href=bookmark.url)= bookmark.title

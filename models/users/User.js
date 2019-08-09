@@ -293,6 +293,7 @@ module.exports = function (N, collectionName) {
     await N.models.users.Ignore.deleteMany({ from: id });
     await N.models.users.Ignore.deleteMany({ to: id });
     await N.models.users.Subscription.deleteMany({ user: id });
+    await N.models.users.Bookmark.deleteMany({ user: id });
     await N.models.users.UserExtra.deleteMany({ user: id });
     await N.models.users.UserPenalty.deleteMany({ user: id });
     await N.models.users.UserSettings.deleteMany({ user: id });

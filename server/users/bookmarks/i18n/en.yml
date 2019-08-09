@@ -1,0 +1,3 @@
+en-US:
+  title_with_user: "Bookmarks - #{user}"
+  breadcrumbs_title: Bookmarks

@@ -1,0 +1,121 @@
+@import "nodeca.core/client/common/_variables"
+
+.users-bookmarks__empty
+  color $body-color-secondary
+
+.users-bookmarks__loading-prev
+  padding 2rem
+  font-size 4rem
+  line-height 1.1em
+  text-align center
+  background-color $body-bg-secondary
+  color $body-color-secondary + 50%
+  border-radius 4px
+  margin-bottom 2rem
+
+.users-bookmarks__loading-next
+  padding 2rem
+  font-size 4rem
+  line-height 1.1em
+  text-align center
+  background-color $body-bg-secondary
+  color $body-color-secondary + 50%
+  border-radius 4px
+  margin-bottom 2rem
+
+//
+// Single result styles
+//
+.users-bookmarks-item
+  margin-bottom 2rem
+
+.users-bookmarks-item__header
+  border-bottom 1px solid $decorator-color
+  padding-bottom .25rem
+  margin-bottom .75rem
+  display flex
+  align-items flex-end
+
+.users-bookmarks-item__meta
+  flex 1 1 auto
+
+.users-bookmarks-item__controls
+  flex 0 1 auto
+
+.users-bookmarks-item__btn-delete
+  font-size $font-size-sm
+  color $body-color-secondary
+  padding-right .5rem
+
+.users-bookmarks-item__title
+  font-size 1.125rem
+  color ($body-color-secondary - 20%) !important
+  //font-family $font-family-sans-serif-wide
+  line-height 1.2
+  margin-bottom .125rem
+  display block
+
+.users-bookmarks-item__stat-narrow
+.users-bookmarks-item__stat
+  font-size $font-size-xs
+  color $body-color-secondary
+  list-style none
+  margin 0
+  padding 0
+
+.users-bookmarks-item__stat-item
+  display inline-block
+
+.users-bookmarks-item__stat-item
+  &:after
+    content '|'
+    margin 0 .5rem
+  &:last-child:after
+    content ''
+
+.users-bookmarks-item__stat-link
+  color $body-color-secondary
+
+//
+// Content markup styles tweak
+//
+.users-bookmarks-item__content .markup
+  .image
+    max-width 50%
+
+//
+// Stuff required for "read more" button
+//
+.users-bookmarks-item
+  position relative
+
+.users-bookmarks-item__expand
+  display none
+  width 100%
+  min-height 3rem
+  background linear-gradient(to bottom, transparent 0%, white 50%, white 100%)
+  font-size $font-size-sm
+  position absolute
+  bottom 0
+
+.users-bookmarks-item__expand-btn
+  width 100%
+  position absolute
+  bottom 0
+
+.users-bookmarks-item__content
+  max-height 200px
+  overflow hidden
+
+.users-bookmarks-item__m-can-expand
+  .users-bookmarks-item__expand
+    display block
+
+.no-js
+.users-bookmarks-item__m-expanded
+  .users-bookmarks-item__content
+    max-height none
+    overflow visible
+
+  .users-bookmarks-item__expand
+    display none

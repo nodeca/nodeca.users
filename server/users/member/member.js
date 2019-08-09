@@ -229,13 +229,6 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Stub for unimplemented blocks
-  //
-  N.wire.after(apiPath, function stub(env) {
-    _.set(env, 'res.blocks.bookmarks', {});
-  });
-
-
   // Fill actions (blocks could change `env.data.actions`)
   //
   N.wire.after(apiPath, { priority: 100 }, function fill_actions(env) {
