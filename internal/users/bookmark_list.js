@@ -20,6 +20,9 @@
 'use strict';
 
 
+const _ = require('lodash');
+
+
 module.exports = function (N, apiPath) {
 
   // Set up default values
@@ -35,7 +38,7 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, async function fetch_bookmarks_before(env) {
     if (!env.data.select_bookmarks_before) return;
 
-    let start = env.data.select_bookmarks_start, query;
+    let start = env.data.select_bookmarks_start, query, users = [];
 
     do {
       query = N.models.users.Bookmark.findOne()
@@ -70,20 +73,40 @@ module.exports = function (N, apiPath) {
 
       let bookmarks = await query.lean(true);
 
-      let sub_env = {
-        params: {
-          bookmarks,
-          user_info: env.user_info
-        },
-        results: [],
-        users: []
-      };
+      let content_type_from_int = _.invert(_.get(N, 'shared.content_type', {}));
+      let results = new Array(bookmarks.length).fill(null);
 
-      await N.wire.emit('internal:users.bookmarks.fetch', sub_env);
+      await Promise.all(_.uniq(_.map(bookmarks, 'src_type')).map(async type => {
+        if (!content_type_from_int[type]) return;
+
+        let content_type = content_type_from_int[type].toLowerCase();
+
+        let sub_env = {
+          params: {
+            bookmarks: bookmarks.filter(bookmark => bookmark.src_type === type),
+            user_info: env.user_info
+          },
+          sandbox: {}
+        };
+
+        await N.wire.emit('internal:users.bookmarks.' + content_type, sub_env);
+
+        if (!sub_env.results) return;
+
+        let results_by_id = _.keyBy(sub_env.results, '_id');
+
+        for (let [ idx, bookmark ] of Object.entries(bookmarks)) {
+          if (results_by_id[bookmark._id]) {
+            results[idx] = results_by_id[bookmark._id];
+          }
+        }
+
+        for (let user_id of sub_env.users) users.push(user_id);
+      }));
 
       start          = last_bookmark ? last_bookmark._id : null;
-      env.data.users = (env.data.users || []).concat(sub_env.users);
-      env.res.items  = sub_env.results.filter(Boolean).concat(env.res.items || []);
+      env.data.users = (env.data.users || []).concat(users);
+      env.res.items  = results.filter(Boolean).concat(env.res.items || []);
     } while (start && env.res.items.length < env.data.select_bookmarks_after);
 
     env.res.reached_top = !start;
@@ -95,7 +118,7 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, async function fetch_bookmarks_after(env) {
     if (!env.data.select_bookmarks_after) return;
 
-    let start = env.data.select_bookmarks_start, query;
+    let start = env.data.select_bookmarks_start, query, users = [];
 
     do {
       query = N.models.users.Bookmark.findOne()
@@ -119,20 +142,40 @@ module.exports = function (N, apiPath) {
 
       let bookmarks = await query.lean(true);
 
-      let sub_env = {
-        params: {
-          bookmarks,
-          user_info: env.user_info
-        },
-        results: [],
-        users: []
-      };
+      let content_type_from_int = _.invert(_.get(N, 'shared.content_type', {}));
+      let results = new Array(bookmarks.length).fill(null);
 
-      await N.wire.emit('internal:users.bookmarks.fetch', sub_env);
+      await Promise.all(_.uniq(_.map(bookmarks, 'src_type')).map(async type => {
+        if (!content_type_from_int[type]) return;
+
+        let content_type = content_type_from_int[type].toLowerCase();
+
+        let sub_env = {
+          params: {
+            bookmarks: bookmarks.filter(bookmark => bookmark.src_type === type),
+            user_info: env.user_info
+          },
+          sandbox: {}
+        };
+
+        await N.wire.emit('internal:users.bookmarks.' + content_type, sub_env);
+
+        if (!sub_env.results) return;
+
+        let results_by_id = _.keyBy(sub_env.results, '_id');
+
+        for (let [ idx, bookmark ] of Object.entries(bookmarks)) {
+          if (results_by_id[bookmark._id]) {
+            results[idx] = results_by_id[bookmark._id];
+          }
+        }
+
+        for (let user_id of sub_env.users) users.push(user_id);
+      }));
 
       start          = last_bookmark ? last_bookmark._id : null;
-      env.data.users = (env.data.users || []).concat(sub_env.users);
-      env.res.items  = (env.res.items || []).concat(sub_env.results.filter(Boolean));
+      env.data.users = (env.data.users || []).concat(users);
+      env.res.items  = (env.res.items || []).concat(results.filter(Boolean));
     } while (start && env.res.items.length < env.data.select_bookmarks_after);
 
     env.res.reached_bottom = !start;
