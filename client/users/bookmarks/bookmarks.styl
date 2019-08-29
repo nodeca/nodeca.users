@@ -1,7 +1,11 @@
 @import "nodeca.core/client/common/_variables"
 
 .users-bookmarks__empty
+  display none
   color $body-color-secondary
+
+.users-bookmarks__list:empty + .users-bookmarks__empty
+  display block
 
 .users-bookmarks__loading-prev
   padding 2rem
@@ -30,11 +34,14 @@
   margin-bottom 2rem
 
 .users-bookmarks-item__header
-  border-bottom 1px solid $decorator-color
   padding-bottom .25rem
   margin-bottom .75rem
   display flex
   align-items flex-end
+
+.users-bookmarks-item__m-with-content
+  .users-bookmarks-item__header
+    border-bottom 1px solid $decorator-color
 
 .users-bookmarks-item__meta
   flex 1 1 auto

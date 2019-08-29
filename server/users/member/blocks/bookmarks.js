@@ -29,8 +29,10 @@ module.exports = function (N) {
 
     env.res.blocks = env.res.blocks || {};
 
-    _.set(env.res, 'blocks.bookmarks', {
-      list: sub_env.res.items.slice(0, 3).map(({ title, url }) => ({ title, url }))
-    });
+    if (sub_env.res.items.length > 0) {
+      _.set(env.res, 'blocks.bookmarks', {
+        list: sub_env.res.items.slice(0, 3).map(({ title, url }) => ({ title, url }))
+      });
+    }
   });
 };

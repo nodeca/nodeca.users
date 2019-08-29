@@ -20,18 +20,17 @@ article#content.users-bookmarks-root(
         = self.t('title')
 
     .users-bookmarks
-      if self.items && self.items.length
-        .users-bookmarks__loading-prev.nojs-hide(
-          class=(self.reached_top ? 'd-none' : '')
-        )
-          span.icon.icon-loading-placeholder
+      .users-bookmarks__loading-prev.nojs-hide(
+        class=(self.reached_top ? 'd-none' : '')
+      )
+        span.icon.icon-loading-placeholder
 
-        .users-bookmarks__list
-          != self.partial('items')
+      .users-bookmarks__list
+        != self.partial('items')
 
-        .users-bookmarks__loading-next.nojs-hide(
-          class=(self.reached_bottom ? 'd-none' : '')
-        )
-          span.icon.icon-loading-placeholder
-      else
-        .users-bookmarks__empty= self.t('not_found')
+      .users-bookmarks__empty= self.t('not_found')
+
+      .users-bookmarks__loading-next.nojs-hide(
+        class=(self.reached_bottom ? 'd-none' : '')
+      )
+        span.icon.icon-loading-placeholder
