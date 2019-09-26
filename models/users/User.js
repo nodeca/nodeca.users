@@ -4,7 +4,6 @@
 const Mongoose      = require('mongoose');
 const Schema        = Mongoose.Schema;
 const unhomoglyph   = require('unhomoglyph');
-const xregexp       = require('xregexp');
 const zxcvbn        = require('zxcvbn');
 const configReader  = require('../../server/_lib/resize_parse');
 
@@ -109,7 +108,7 @@ module.exports = function (N, collectionName) {
   //////////////////////////////////////////////////////////////////////////////
 
 
-  var NICK_RE = xregexp('^[\\p{L}\\d\\-_]{3,}$');
+  var NICK_RE = /(?=.{3,20})^[\p{L}\p{N}]+(?:[-_][\p{L}\p{N}]+)*$/u;
 
 
   /**
@@ -118,8 +117,10 @@ module.exports = function (N, collectionName) {
    *
    *  Returns whenever or not `str` is a valid nickname:
    *
-   *  - length equals or greater than 3
-   *  - it consist of letters, numbers, dashes (-) and underscores (_) only.
+   *  - length equals to or greater than 2
+   *  - it consist of letters, numbers, dashes (-) and underscores (_) only,
+   *    where dashes and underscores can only be in the middle of the nick
+   *    and sequences of more than one of these are not allowed.
    **/
   User.statics.validateNick = function validateNick(str) {
     return NICK_RE.test(str);

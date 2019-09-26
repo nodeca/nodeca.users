@@ -122,18 +122,20 @@ module.exports = function (N, apiPath) {
       }
     }
 
-    let saved_user = await env.data.user.save();
+    env.data.saved_user = await env.data.user.save();
+  });
 
-    //
-    // Log this change in moderator notes;
-    // we need to wait until all 'post' hooks in User model are resolved
-    // to get correct values here
-    //
+
+  // Log this change in moderator notes;
+  // we need to wait until all 'post' hooks in User model are resolved
+  // to get correct values here
+  //
+  N.wire.after(apiPath, async function save_log_in_moderator_notes(env) {
     let log = []; // array of [ localized_field, old_value_str, new_value_str ]
 
     for (let path of N.models.users.User.trackable) {
       let old_value = _.get(env.data.original_user, path);
-      let new_value = _.get(saved_user, path);
+      let new_value = _.get(env.data.saved_user, path);
       let old_value_str;
       let new_value_str;
 
@@ -219,5 +221,19 @@ module.exports = function (N, apiPath) {
 
       await note.save();
     }
+  });
+
+
+  // Record nickname change in a separate collection if it happened
+  //
+  N.wire.after(apiPath, async function save_nick_change(env) {
+    if (env.data.original_user.nick === env.data.saved_user.nick) return;
+
+    await new N.models.users.UserNickChange({
+      from:     env.user_info.user_id,
+      user:     env.data.user._id,
+      old_nick: env.data.original_user.nick,
+      new_nick: env.data.saved_user.nick
+    }).save();
   });
 };

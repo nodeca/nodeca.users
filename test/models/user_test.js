@@ -15,7 +15,7 @@ describe('User', function () {
 
     it('allow only letters, digits, dashes and underscores', function () {
       assert.equal(User.validateNick('o.O'), false);
-      assert.equal(User.validateNick('-O_0-'), true);
+      assert.equal(User.validateNick('O_0'), true);
     });
   });
 
