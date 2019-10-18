@@ -179,7 +179,7 @@ N.wire.on('navigate.exit:' + module.apiPath, function page_teardown() {
 
 N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
-  N.wire.on('navigate.update', function set_tracker_on_update(data) {
+  N.wire.on('navigate.content_update', function set_tracker_on_update(data) {
     if (!pageState.active) return;
 
     data.$.find('.users-bookmarks-item__content > .markup').each((idx, element) => track_expand(element));

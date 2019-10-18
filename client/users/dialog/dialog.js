@@ -219,7 +219,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
       .then(res => {
         let $result = $(N.runtime.render('users.blocks.message_list', res));
 
-        return N.wire.emit('navigate.update', {
+        return N.wire.emit('navigate.content_update', {
           $: $result,
           locals: res,
           $replace: $(`#message${message_id}`)

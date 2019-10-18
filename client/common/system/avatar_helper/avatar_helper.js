@@ -103,6 +103,6 @@ N.wire.on('navigate.done', function identicon_replace(data) {
 });
 
 
-N.wire.on('navigate.update', function identicon_replace(data) {
+N.wire.on('navigate.content_update', function identicon_replace(data) {
   replace_placeholders(data.$, data.locals.users);
 });
