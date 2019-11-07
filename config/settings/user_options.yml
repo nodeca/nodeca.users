@@ -19,3 +19,9 @@ setting_schemas:
       hidden: true
       type: boolean
       default: false
+
+    hide_heavy_content:
+      priority: 30
+      category_key: content
+      type: boolean
+      default: false

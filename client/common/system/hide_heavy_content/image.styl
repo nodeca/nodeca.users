@@ -1,0 +1,10 @@
+@import "nodeca.core/client/common/_variables"
+
+.markup .image__m-hidden
+  cursor pointer
+  box-shadow 0 0 1px ($body-bg-secondary - 10%)
+  background-color $body-bg-secondary
+  width '$$ N.config.users.uploads.resize.sm.max_width || N.config.users.uploads.resize.sm.width $$'px
+
+  .image__spacer
+    padding-bottom '$$ ((N.config.users.uploads.resize.sm.max_height || N.config.users.uploads.resize.sm.height) / (N.config.users.uploads.resize.sm.max_width || N.config.users.uploads.resize.sm.width) * 100).toFixed(4) $$'%
