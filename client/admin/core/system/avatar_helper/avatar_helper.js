@@ -92,17 +92,18 @@ N.wire.once('init:assets', function avatar_helper_register() {
 });
 
 
-N.wire.on('navigate.done', function identicon_replace(data) {
-  if (data.locals) {
-    // page generated on client-side, so we have all the locals
-    replace_placeholders($(document), data.locals.users);
-  } else {
-    // page generated on server-side with users provided through page_data
-    replace_placeholders($(document), N.runtime.page_data.users);
-  }
+// Replace identicons after initial page load
+//
+N.wire.once('navigate.done', function identicon_replace(data) {
+  if (!data.first_load) return; // already handled by content_update
+
+  // page generated on server-side with users provided through page_data
+  replace_placeholders($(document), N.runtime.page_data.users);
 });
 
 
+// Replace identicons when any new content is loaded (prefetch or navigation between pages)
+//
 N.wire.on('navigate.content_update', function identicon_replace(data) {
   replace_placeholders(data.$, data.locals.users);
 });

@@ -65,7 +65,7 @@ function replace_videos(selector) {
 }
 
 
-N.wire.once('navigate.done', function hide_heavy_content_init() {
+N.wire.once('navigate.done', function hide_heavy_content_init(data) {
   // when user clicks on image area, replace it with original image
   N.wire.on(module.apiPath + ':expand', function expand_hidden_element(data) {
     data.$this.replaceWith(data.$this.data('nd-placeholder'));
@@ -76,15 +76,14 @@ N.wire.once('navigate.done', function hide_heavy_content_init() {
   N.live.on('local.users.settings.hide_heavy_content.change', function toggle_heavy_content(value) {
     N.runtime.settings.hide_heavy_content = value;
   });
-});
 
 
-N.wire.on('navigate.done', function hide_heavy_content() {
-  if (!N.runtime.settings.hide_heavy_content) return;
-
-  replace_attachments($('.markup'));
-  replace_images($('.markup'));
-  replace_videos($('.markup'));
+  // replace images with placeholders on initial page load
+  if (N.runtime.settings.hide_heavy_content && data.first_load) {
+    replace_attachments($('.markup'));
+    replace_images($('.markup'));
+    replace_videos($('.markup'));
+  }
 });
 
 
