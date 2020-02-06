@@ -45,7 +45,7 @@ module.exports = function (N, collectionName) {
     image_sizes    : Schema.Types.Mixed,
     user           : Schema.Types.ObjectId,
     album          : Schema.Types.ObjectId,
-    ts             : { type: Date, 'default': Date.now },
+    ts             : { type: Date, default: Date.now },
     type           : Number,
     medialink_html : String,
 
@@ -61,11 +61,11 @@ module.exports = function (N, collectionName) {
     // }
     medialink_meta : Schema.Types.Mixed,
 
-    file_size      : { type: Number, 'default': 0 },
+    file_size      : { type: Number, default: 0 },
     file_name      : String,
     description    : String,
 
-    comments_count : { type: Number, 'default': 0 }
+    comments_count : { type: Number, default: 0 }
   }, {
     versionKey: false
   });

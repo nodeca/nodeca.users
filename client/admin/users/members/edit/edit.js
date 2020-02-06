@@ -52,7 +52,7 @@ N.wire.once('navigate.done:' + module.apiPath, function init_handlers() {
   N.wire.on(module.apiPath + ':delete_account', function delete_account(data) {
     let user_hid = data.$this.data('user-hid');
 
-    return N.io.rpc('admin.users.members.edit.delete_account', { user_hid, 'delete': true })
+    return N.io.rpc('admin.users.members.edit.delete_account', { user_hid, delete: true })
                .then(() => N.wire.emit('navigate.reload'));
   });
 
@@ -69,7 +69,7 @@ N.wire.once('navigate.done:' + module.apiPath, function init_handlers() {
   N.wire.on(module.apiPath + ':restore_account', function restore_account(data) {
     let user_hid = data.$this.data('user-hid');
 
-    return N.io.rpc('admin.users.members.edit.delete_account', { user_hid, 'delete': false })
+    return N.io.rpc('admin.users.members.edit.delete_account', { user_hid, delete: false })
                .then(() => N.wire.emit('navigate.reload'));
   });
 

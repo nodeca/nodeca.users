@@ -11,7 +11,7 @@ module.exports = function (N, collectionName) {
     // Moderator _id
     from: Schema.Types.ObjectId,
     // Violator _id
-    'for': Schema.Types.ObjectId,
+    for: Schema.Types.ObjectId,
 
     // Overquoting, offtopic, etc.
     type: String,
@@ -27,11 +27,11 @@ module.exports = function (N, collectionName) {
     // for dialogs
     src_common_id: Schema.Types.ObjectId,
 
-    ts: { type: Date, 'default': Date.now },
+    ts: { type: Date, default: Date.now },
 
     del_reason: String,
     del_by: Schema.ObjectId,
-    exists: { type: Boolean, 'default': true }
+    exists: { type: Boolean, default: true }
   }, {
     versionKey: false
   });
@@ -41,7 +41,7 @@ module.exports = function (N, collectionName) {
   // Indexes
 
   // Used on member page to get all user's infractions
-  Infraction.index({ 'for': 1, exists: 1 });
+  Infraction.index({ for: 1, exists: 1 });
 
   // Used on forum in posts list
   Infraction.index({ src: 1, exists: 1 });

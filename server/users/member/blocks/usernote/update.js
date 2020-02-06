@@ -70,7 +70,7 @@ module.exports = function (N, apiPath) {
       $inc: {
         version: 1
       }
-    }, { 'new': true, upsert: true });
+    }, { new: true, upsert: true });
   });
 
 

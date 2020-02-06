@@ -25,16 +25,16 @@ module.exports = function (N, collectionName) {
 
     email          : String,
     usergroups     : [ Schema.Types.ObjectId ],
-    joined_ts      : { type: Date, 'default': Date.now },
+    joined_ts      : { type: Date, default: Date.now },
     joined_ip      : String,
-    last_active_ts : { type: Date, 'default': Date.now },
+    last_active_ts : { type: Date, default: Date.now },
 
     // false -> deleted accounts
-    exists         : { type: Boolean, 'default': true },
+    exists         : { type: Boolean, default: true },
     // true -> `hell banned` user
-    hb             : { type: Boolean, 'default': false },
+    hb             : { type: Boolean, default: false },
     // true -> user has posted something on the site (post, message, comment, etc.)
-    active         : { type: Boolean, 'default': false },
+    active         : { type: Boolean, default: false },
 
     locale         : String,
     name           : String,

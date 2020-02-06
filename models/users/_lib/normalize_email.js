@@ -106,7 +106,7 @@ let rules = {
     aliases: [ 'list.ru', 'inbox.ru' ],
     fn: normalize_mailru
   },
-  'default': { fn: normalize_generic }
+  default: { fn: normalize_generic }
 };
 
 

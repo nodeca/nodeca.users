@@ -18,7 +18,7 @@ module.exports = function (N, collectionName) {
     reason: String,
 
     // creation date
-    ts: { type: Date, 'default': Date.now },
+    ts: { type: Date, default: Date.now },
 
     // expiration date
     expire: Date

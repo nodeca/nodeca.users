@@ -20,7 +20,7 @@ module.exports = function (N, collectionName) {
 
     // Can be deleted?
     // Groups like `admin`, `guests`, `members` are protected
-    is_protected : { type: Boolean, 'default': false },
+    is_protected : { type: Boolean, default: false },
 
     // Parent group, all non-overriden settings will be inherited from it.
     parent_group : Schema.Types.ObjectId,
@@ -32,7 +32,7 @@ module.exports = function (N, collectionName) {
     //         value: Mixed
     //         force: Boolean
     //
-    settings     : { type: Schema.Types.Mixed, 'default': {} }
+    settings     : { type: Schema.Types.Mixed, default: {} }
   }, {
     versionKey : false
   });

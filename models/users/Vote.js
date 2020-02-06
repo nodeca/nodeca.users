@@ -16,13 +16,13 @@ module.exports = function (N, collectionName) {
     to: Schema.ObjectId,
 
     // Content id
-    'for': Schema.ObjectId,
+    for: Schema.ObjectId,
 
     // N.shared.content_type (FORUM_POST, BLOG_ENTRY, ...)
     type: Number,
 
     // Hell banned
-    hb: { type: Boolean, 'default': false },
+    hb: { type: Boolean, default: false },
 
     // Vote value
     value: Number,
@@ -42,7 +42,7 @@ module.exports = function (N, collectionName) {
   // - item votes/votes_hb count update (forum posts)
   // - user own votes fetch, how he voted (forum posts)
   //
-  Vote.index({ 'for': 1, from: 1 });
+  Vote.index({ for: 1, from: 1 });
 
   // used to remove votes from admin interface
   Vote.index({ from: 1 });

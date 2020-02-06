@@ -40,16 +40,16 @@ module.exports = function (N, collectionName) {
     provider_user_id: String,
 
     // true if active, false when deleted
-    exists:           { type: Boolean, 'default': true },
+    exists:           { type: Boolean, default: true },
 
     // Creation date
-    ts:               { type: Date, 'default': Date.now },
+    ts:               { type: Date, default: Date.now },
 
     // Creation ip
     ip:               String,
 
     // Last login date
-    last_ts:          { type: Date, 'default': Date.now },
+    last_ts:          { type: Date, default: Date.now },
 
     // Last login ip
     last_ip:          String,

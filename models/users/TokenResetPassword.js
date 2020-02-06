@@ -25,8 +25,8 @@ function createDecimalToken() {
 module.exports = function (N, collectionName) {
 
   let TokenResetPassword = new Schema({
-    secret_key:   { type: String, 'default': createDecimalToken },
-    create_ts:    { type: Date,   'default': Date.now, expires: TOKEN_EXPIRE_TIMEOUT },
+    secret_key:   { type: String, default: createDecimalToken },
+    create_ts:    { type: Date,   default: Date.now, expires: TOKEN_EXPIRE_TIMEOUT },
     session_id:   { type: String },
     user:         Schema.Types.ObjectId
   }, {

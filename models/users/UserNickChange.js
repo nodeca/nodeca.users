@@ -13,7 +13,7 @@ module.exports = function (N, collectionName) {
   let UserNickChange = new Schema({
     from:     Schema.Types.ObjectId,
     user:     Schema.Types.ObjectId,
-    ts:       { type: Date, 'default': Date.now },
+    ts:       { type: Date, default: Date.now },
     old_nick: String,
     new_nick: String
   }, {

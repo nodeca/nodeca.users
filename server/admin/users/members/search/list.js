@@ -24,8 +24,8 @@ module.exports = function (N, apiPath) {
     //post_count_to:    { type: 'string', pattern: '^(\\d+)?$' },
     start:            { type: 'string' },
     limit:            { type: 'number', minimum: 1, maximum: 100 },
-    sort_by:          { 'enum': [ 'hid', 'nick' ] },
-    sort_order:       { 'enum': [ 'asc', 'desc' ] }
+    sort_by:          { enum: [ 'hid', 'nick' ] },
+    sort_order:       { enum: [ 'asc', 'desc' ] }
   };
 
   if (N.config.users && N.config.users.about) {

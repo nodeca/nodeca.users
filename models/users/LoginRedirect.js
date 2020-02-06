@@ -14,7 +14,7 @@ module.exports = function (N, collectionName) {
     session_id: String,
 
     // Allow use redirect only once
-    used:       { type: Boolean, 'default': false }
+    used:       { type: Boolean, default: false }
   }, {
     versionKey: false,
     // 1 MB, ~10000 records

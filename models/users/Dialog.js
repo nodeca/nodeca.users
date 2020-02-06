@@ -34,11 +34,11 @@ module.exports = function (N, collectionName) {
 
     cache,
 
-    unread       : { type: Number, 'default': 0 }, // number of messages unread by owner
+    unread       : { type: Number, default: 0 }, // number of messages unread by owner
 
     // set to `false` if dialog is deleted by the user,
     // it'll reset to `true` whenever a new message between two users is created
-    exists       : { type: Boolean, 'default': true }
+    exists       : { type: Boolean, default: true }
   }, {
     versionKey: false
   });

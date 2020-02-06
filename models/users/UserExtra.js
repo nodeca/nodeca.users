@@ -11,7 +11,7 @@ module.exports = function (N, collectionName) {
     {
       user: Schema.Types.ObjectId,
 
-      media_size: { type: Number, 'default': 0 }
+      media_size: { type: Number, default: 0 }
     },
     {
       versionKey: false

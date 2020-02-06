@@ -12,7 +12,7 @@ module.exports = function (N, collectionName) {
     to:      Schema.Types.ObjectId,
     md:      String,
     html:    String,
-    ts:      { type: Date, 'default': Date.now }
+    ts:      { type: Date, default: Date.now }
   }, {
     versionKey: false
   });

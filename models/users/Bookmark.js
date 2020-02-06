@@ -18,7 +18,7 @@ module.exports = function (N, collectionName) {
 
     // last known information regarding whether or not this bookmark source
     // was publicly visible (not guaranteed to be accurate, lazily updated)
-    'public': { type: Boolean, 'default': true }
+    public: { type: Boolean, default: true }
   }, {
     versionKey : false
   });
@@ -29,7 +29,7 @@ module.exports = function (N, collectionName) {
   // - find user bookmarks for bookmark page
   // - find/count user bookmarks for profile widget
   //
-  Bookmark.index({ user: 1, _id: 1, 'public': -1 });
+  Bookmark.index({ user: 1, _id: 1, public: -1 });
 
   // - add/remove/count bookmark for a specific post
   Bookmark.index({ src: 1, user: 1 });

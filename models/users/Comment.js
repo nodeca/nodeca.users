@@ -17,7 +17,7 @@ module.exports = function (N, collectionName) {
     user            : Schema.ObjectId,
     media_id        : Schema.ObjectId,
     to              : Schema.ObjectId,
-    ts              : { type: Date, 'default': Date.now },
+    ts              : { type: Date, default: Date.now },
     ip              : String,
     text            : String,
     // Comment status (visible, deleted, hellbanned)

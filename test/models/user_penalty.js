@@ -30,7 +30,7 @@ describe('UserPenalty', function () {
 
     await (new TEST.N.models.users.Infraction({
       from: user._id,
-      'for': user._id,
+      for: user._id,
       type: 'custom',
       reason: 'Custom reason',
       points: 5
@@ -45,7 +45,7 @@ describe('UserPenalty', function () {
 
     await (new TEST.N.models.users.Infraction({
       from: user._id,
-      'for': user._id,
+      for: user._id,
       type: 'custom',
       reason: 'Custom reason',
       points: 5
@@ -59,7 +59,7 @@ describe('UserPenalty', function () {
 
     await (new TEST.N.models.users.Infraction({
       from: user._id,
-      'for': user._id,
+      for: user._id,
       type: 'custom',
       reason: 'Custom reason',
       points: 20
@@ -84,7 +84,7 @@ describe('UserPenalty', function () {
 
     await (new TEST.N.models.users.Infraction({
       from: user._id,
-      'for': user._id,
+      for: user._id,
       type: 'custom',
       reason: 'Custom reason',
       points: 105
@@ -110,7 +110,7 @@ describe('UserPenalty', function () {
 
     await (new TEST.N.models.users.Infraction({
       from: user._id,
-      'for': user._id,
+      for: user._id,
       type: 'custom',
       reason: 'Custom reason',
       points: 20
@@ -157,7 +157,7 @@ describe('UserPenalty', function () {
 
     await (new TEST.N.models.users.Infraction({
       from: user._id,
-      'for': user._id,
+      for: user._id,
       type: 'custom',
       reason: 'Custom reason',
       points: 20
@@ -173,7 +173,7 @@ describe('UserPenalty', function () {
 
     await (new TEST.N.models.users.Infraction({
       from: user._id,
-      'for': user._id,
+      for: user._id,
       type: 'custom',
       reason: 'Custom reason',
       points: 100

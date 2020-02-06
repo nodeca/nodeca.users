@@ -23,9 +23,9 @@ module.exports = function (N, collectionName) {
   let DlgMessage = new Schema({
     parent       : Schema.Types.ObjectId, // dialog id
     user         : Schema.Types.ObjectId,
-    ts           : { type: Date, 'default': Date.now },
+    ts           : { type: Date, default: Date.now },
     ip           : String,  // ip address
-    exists       : { type: Boolean, 'default': true },
+    exists       : { type: Boolean, default: true },
     common_id    : Schema.Types.ObjectId,
 
 

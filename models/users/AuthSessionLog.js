@@ -25,12 +25,12 @@ const logout_types = {
 module.exports = function (N, collectionName) {
 
   let AuthSessionLog = new Schema({
-    session_id:    { type: String, 'default': () => 'm' + createToken() },
+    session_id:    { type: String, default: () => 'm' + createToken() },
     user:          Schema.Types.ObjectId,
     authprovider:  Schema.Types.ObjectId,
-    first_ts:      { type: Date, 'default': Date.now }, // login time
-    last_ts:       { type: Date, 'default': Date.now }, // last activity time
-    logout_type:   { type: Number, 'default': 0 },
+    first_ts:      { type: Date, default: Date.now }, // login time
+    last_ts:       { type: Date, default: Date.now }, // last activity time
+    logout_type:   { type: Number, default: 0 },
     user_agent:    String,
     ip:            String
   }, {

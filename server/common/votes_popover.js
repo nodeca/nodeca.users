@@ -6,14 +6,14 @@ var _ = require('lodash');
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
-    'for': { format: 'mongo', required: true }
+    for: { format: 'mongo', required: true }
   });
 
   // Fill votes and collect users
   //
   N.wire.on(apiPath, async function fill_votes(env) {
     let votes = await N.models.users.Vote
-                          .find({ 'for': env.params.for, value: { $in: [ 1, -1 ] } })
+                          .find({ for: env.params.for, value: { $in: [ 1, -1 ] } })
                           .select('from value')
                           .lean(true);
 

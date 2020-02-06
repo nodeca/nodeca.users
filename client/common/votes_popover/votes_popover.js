@@ -18,7 +18,7 @@ N.wire.on('common.votes_popover', function show_votes_popover(data) {
     return;
   }
 
-  return N.io.rpc('common.votes_popover', { 'for': data.$this.data('votes-popover-for') }).then(res => {
+  return N.io.rpc('common.votes_popover', { for: data.$this.data('votes-popover-for') }).then(res => {
     if (res.votes.up.length === 0 && res.votes.down.length === 0) {
       N.wire.emit('notify.info', t('no_votes'));
       return;
