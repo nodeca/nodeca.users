@@ -149,7 +149,6 @@ module.exports = function (N, apiPath) {
     let message_data = {
       common_id:    new ObjectId(),
       ts:           Date.now(),
-      user:         bot._id,
       html:         parse_result.html,
       md:           text,
       params:       options,
@@ -176,14 +175,17 @@ module.exports = function (N, apiPath) {
     if (!opponent_dialog) {
       opponent_dialog = new N.models.users.Dialog({
         user: infraction.for,
-        to:   bot._id
+        with: bot._id
       });
     }
 
     _.merge(opponent_dialog, dlg_update_data);
 
     let opponent_msg = new N.models.users.DlgMessage(_.assign({
-      parent: opponent_dialog._id
+      parent: opponent_dialog._id,
+      user: infraction.for,
+      with: bot._id,
+      incoming: true
     }, message_data));
 
     opponent_dialog.unread = (opponent_dialog.unread || 0) + 1;

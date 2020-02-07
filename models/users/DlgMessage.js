@@ -21,8 +21,18 @@ module.exports = function (N, collectionName) {
   set_content_type('DIALOG_MESSAGE', 8);
 
   let DlgMessage = new Schema({
-    parent       : Schema.Types.ObjectId, // dialog id
+    // dialog id, needed because it is a part of URL to any message
+    parent       : Schema.Types.ObjectId,
+
+    // user who sees this copy of the message
     user         : Schema.Types.ObjectId,
+
+    // 2nd participant
+    with         : Schema.Types.ObjectId,
+
+    // if false, 'user' is the author, if true, 'with' is the author
+    incoming     : Boolean,
+
     ts           : { type: Date, default: Date.now },
     ip           : String,  // ip address
     exists       : { type: Boolean, default: true },
@@ -44,6 +54,9 @@ module.exports = function (N, collectionName) {
 
   // Used in messages list
   DlgMessage.index({ parent: 1, exists: 1, _id: -1 });
+
+  // Find all messages from and to any user
+  DlgMessage.index({ user: 1, _id: -1 });
 
   /////////////////////////////////////////////////////////////////////////////
 

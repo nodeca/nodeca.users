@@ -95,7 +95,7 @@ module.exports = function (N, apiPath) {
     env.data.users = env.data.users || [];
 
     env.data.dialogs.forEach(dlg => {
-      env.data.users.push(dlg.to);
+      env.data.users.push(dlg.with);
       env.data.users.push(dlg.cache.last_user);
     });
   });

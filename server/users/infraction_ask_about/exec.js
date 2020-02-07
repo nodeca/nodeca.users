@@ -221,7 +221,6 @@ module.exports = function (N, apiPath) {
     let message_data = {
       common_id:    new ObjectId(),
       ts:           Date.now(),
-      user:         env.user_info.user_id,
       html:         env.data.parse_result.html,
       md:           env.data.text,
       ip:           env.req.ip,
@@ -251,20 +250,23 @@ module.exports = function (N, apiPath) {
       //
       let own_dialog = await N.models.users.Dialog.findOne({
         user: env.user_info.user_id,
-        to:   env.data.to._id
+        with: env.data.to._id
       });
 
       if (!own_dialog) {
         own_dialog = new N.models.users.Dialog({
           user: env.user_info.user_id,
-          to:   env.data.to._id
+          with: env.data.to._id
         });
       }
 
       _.merge(own_dialog, dlg_update_data);
 
       let own_msg = new N.models.users.DlgMessage(_.assign({
-        parent: own_dialog._id
+        parent: own_dialog._id,
+        user: env.user_info.user_id,
+        with: env.data.to._id,
+        incoming: false
       }, message_data));
 
       own_dialog.cache.last_message = own_msg._id;
@@ -285,20 +287,23 @@ module.exports = function (N, apiPath) {
       //
       let opponent_dialog = await N.models.users.Dialog.findOne({
         user: env.data.to._id,
-        to:   env.user_info.user_id
+        with: env.user_info.user_id
       });
 
       if (!opponent_dialog) {
         opponent_dialog = new N.models.users.Dialog({
           user: env.data.to._id,
-          to:   env.user_info.user_id
+          with: env.user_info.user_id
         });
       }
 
       _.merge(opponent_dialog, dlg_update_data);
 
       let opponent_msg = new N.models.users.DlgMessage(_.assign({
-        parent: opponent_dialog._id
+        parent: opponent_dialog._id,
+        user: env.data.to._id,
+        with: env.user_info.user_id,
+        incoming: true
       }, message_data));
 
       opponent_dialog.unread = (opponent_dialog.unread || 0) + 1;

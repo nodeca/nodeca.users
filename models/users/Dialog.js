@@ -30,7 +30,7 @@ module.exports = function (N, collectionName) {
 
   let Dialog = new Schema({
     user         : Schema.Types.ObjectId, // copy owner's _id
-    to           : Schema.Types.ObjectId, // opponent user _id
+    with         : Schema.Types.ObjectId, // opponent user _id
 
     cache,
 
@@ -52,10 +52,10 @@ module.exports = function (N, collectionName) {
   Dialog.index({ user: 1, exists: 1, 'cache.is_reply': 1, 'cache.last_message': -1, _id: 1 });
 
   // Used to remove all dialogs created by a user from ACP
-  Dialog.index({ to: 1 });
+  Dialog.index({ with: 1 });
 
   // Used to find dialog between users
-  Dialog.index({ user: 1, to: 1 });
+  Dialog.index({ user: 1, with: 1 });
 
   /////////////////////////////////////////////////////////////////////////////
 

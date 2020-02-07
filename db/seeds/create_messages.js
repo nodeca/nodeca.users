@@ -69,7 +69,6 @@ async function createMessages(dlg1, dlg2, msg_count) {
     let ts = new Date(2010, 0, msg_day++);
 
     let msg_data = {
-      user: Math.random() > 0.5 ? dlg1.user : dlg2.user,
       common_id: new ObjectId(Math.round(ts / 1000)),
       ts,
       /*eslint-disable new-cap*/
@@ -78,14 +77,22 @@ async function createMessages(dlg1, dlg2, msg_count) {
       html: result.html
     };
 
+    let is_to_user1 = Math.random() > 0.5;
+
     msg1 = new models.users.DlgMessage(_.assign({
       _id: new ObjectId(Math.round(ts / 1000)),
-      parent: dlg1._id
+      parent: dlg1._id,
+      user: dlg1.user,
+      with: dlg2.user,
+      incoming: is_to_user1
     }, msg_data));
 
     msg2 = new models.users.DlgMessage(_.assign({
       _id: new ObjectId(Math.round(ts / 1000)),
-      parent: dlg2._id
+      parent: dlg2._id,
+      user: dlg2.user,
+      with: dlg1.user,
+      incoming: !is_to_user1
     }, msg_data));
 
     await Promise.all([ msg1.save(), msg2.save() ]);
@@ -120,12 +127,12 @@ async function createDialogs(owner) {
 
     let own = new models.users.Dialog(_.assign({
       user: owner._id,
-      to: opponent._id
+      with: opponent._id
     }, dlg_data));
 
     let opp = new models.users.Dialog(_.assign({
       user: opponent._id,
-      to: owner._id
+      with: owner._id
     }, dlg_data));
 
     // The last dialog will be big

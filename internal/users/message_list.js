@@ -158,10 +158,9 @@ module.exports = function (N, apiPath) {
   N.wire.after(apiPath, function collect_users(env) {
     env.data.users = env.data.users || [];
 
-    env.data.users.push(env.data.dialog.to);
-
     env.data.messages.forEach(msg => {
       env.data.users.push(msg.user);
+      env.data.users.push(msg.with);
     });
   });
 };

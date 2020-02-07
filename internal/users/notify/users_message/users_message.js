@@ -24,7 +24,7 @@ module.exports = function (N) {
 
     // Fetch opponent
     let opponent = await N.models.users.User.findOne()
-                            .where('_id').equals(dialog.to)
+                            .where('_id').equals(dialog.with)
                             .lean(true);
 
     // Fetch last message

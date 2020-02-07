@@ -61,7 +61,7 @@ module.exports = function (N, apiPath) {
       if (!dialog) return;
 
       info_env.info[message._id] = {
-        title: users_by_id[dialog.to] && users_by_id[dialog.to].name,
+        title: users_by_id[dialog.with] && users_by_id[dialog.with].name,
         url: N.router.linkTo('users.dialog', {
           dialog_id:  dialog._id,
           message_id: message._id

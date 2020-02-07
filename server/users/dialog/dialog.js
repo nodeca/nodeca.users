@@ -48,7 +48,7 @@ module.exports = function (N, apiPath) {
   // Fetch recipient
   //
   N.wire.after(apiPath, async function fetch_recipient(env) {
-    env.data.to = await N.models.users.User.findById(env.data.dialog.to)
+    env.data.to = await N.models.users.User.findById(env.data.dialog.with)
                             .lean(true);
   });
 

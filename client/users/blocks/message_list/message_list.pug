@@ -7,9 +7,9 @@
 - var own_page = self.dialog.user === self.runtime.user_id;
 
 each message in self.messages
-  - var author = self.users[message.user];
+  - var author = self.users[message.incoming ? message.with : message.user];
 
-  if (author && author._id === self.dialog.user)
+  if !message.incoming
     .user-messages-list-item.user-messages-list-item__m-self(
       id='message' + message._id
       data-message-id=message._id

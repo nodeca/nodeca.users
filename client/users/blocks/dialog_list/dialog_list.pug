@@ -6,7 +6,7 @@ each dialog in self.dialogs
     class=dialog.unread > 0 ? 'dialog-list-item__m-unread' : ''
     class=dialog.cache.last_user !== N.runtime.user_id ? '' : 'dialog-list-item__m-outgoing'
   )
-    - var to = self.users[dialog.to];
+    - var to = self.users[dialog.with];
 
     .dialog-list-item__aside
       if to
