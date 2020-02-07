@@ -78,12 +78,16 @@ module.exports = function (N, apiPath) {
   // Fill last dialog _id
   //
   N.wire.after(apiPath, async function fill_last_dialog(env) {
-    let last_dlg = await N.models.users.Dialog.findOne()
-                            .where('user').equals(env.data.user._id)
-                            .where('exists').equals(true)
-                            .sort('cache.last_message')
-                            .select('_id')
-                            .lean(true);
+    let query = N.models.users.Dialog.findOne()
+                    .where('user').equals(env.data.user._id)
+                    .where('exists').equals(true)
+                    .sort('cache.last_message')
+                    .select('_id')
+                    .lean(true);
+
+    if (env.data.dialogs_hide_answered) query = query.where('cache.is_reply').equals(false);
+
+    let last_dlg = await query.lean(true);
 
     env.res.last_dialog_id = last_dlg ? last_dlg._id : null;
   });
