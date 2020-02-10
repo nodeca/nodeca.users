@@ -53,11 +53,12 @@ N.wire.before(module.apiPath + ':begin', function fetch_options() {
 //    - meta (Object) - additional arguments passed into RPC method (optional)
 //
 N.wire.on(module.apiPath + ':begin', function create_dialog(params) {
+  params = params || {};
+
   const Bloodhound = require('corejs-typeahead/dist/bloodhound.js');
 
   // build draft key tail
-  let key_tail = '';
-  if (params) key_tail += params.ref ? params.ref : (params.nick || '');
+  let key_tail = params.ref ? params.ref : (params.nick || '');
 
   let $editor = N.MDEdit.show({
     draftKey: `dialog_create_${N.runtime.user_hid}_${key_tail}`,
@@ -65,11 +66,11 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(params) {
       // Add `:last` because typeahead create additional field copy
       '.dialogs-create__user-nick-input:last': 'input'
     },
-    text: params ? params.text || '' : ''
+    text: params.text || ''
   });
 
   let $inputs = $(N.runtime.render(module.apiPath + '.inputs', {
-    to: params ? params.nick : ''
+    to: params.nick || ''
   }));
 
   let $to = $inputs.find('.dialogs-create__user-nick-input');
@@ -159,7 +160,7 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(params) {
       let dlg_create_params = {
         to:                       $to.val(),
         txt:                      N.MDEdit.text(),
-        meta:                     params && params.meta,
+        meta:                     params.meta,
         option_no_mlinks:         options.user_settings.no_mlinks,
         option_no_emojis:         options.user_settings.no_emojis,
         option_no_quote_collapse: options.user_settings.no_quote_collapse
