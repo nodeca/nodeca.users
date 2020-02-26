@@ -1,0 +1,36 @@
+@import "nodeca.core/client/common/_variables"
+
+//
+// Indicator shown on the avatar in navbar
+//
+.navbar__m-unread-dialogs
+  .navbar-auth__avatar-container
+  .navbar-toggler // menu on mobile
+    position relative
+
+    &:after // .navbar-toggler:before is already busy
+      position absolute
+      width 9px
+      height 9px
+      border-radius 5px
+      top -4px
+      left -4px
+      background-color $brand-success
+      content ' '
+      box-shadow 0px 0px 1px 0 #808080
+
+//
+// Indicator shown near "dialogs" link in dropdown dialog
+//
+.navbar__m-unread-dialogs
+  .navbar-auth__dropdown-dialogs:before
+    width 6px
+    height 6px
+    border-radius 3px
+    background-color $brand-success
+    content ' '
+    position relative
+    left -6px
+    margin-left -6px
+    bottom 2px
+    display inline-block

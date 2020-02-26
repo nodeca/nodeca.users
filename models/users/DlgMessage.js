@@ -74,6 +74,16 @@ module.exports = function (N, collectionName) {
   });
 
 
+  // Mark recipient as having new message
+  //
+  DlgMessage.post('save', async function () {
+    if (!this.incoming) return;
+
+    N.models.users.DlgUnread.set_last(this.user)
+      .catch(err => N.logger.error(err));
+  });
+
+
   N.wire.on('init:models', function emit_init_DlgMessage() {
     return N.wire.emit('init:models.' + collectionName, DlgMessage);
   });

@@ -188,7 +188,7 @@ module.exports = function (N, apiPath) {
       incoming: true
     }, message_data));
 
-    opponent_dialog.unread = (opponent_dialog.unread || 0) + 1;
+    opponent_dialog.unread             = true;
     opponent_dialog.cache.last_message = opponent_msg._id;
     opponent_dialog.cache.is_reply     = String(opponent_msg.user) === String(message_data.user);
 
@@ -199,7 +199,6 @@ module.exports = function (N, apiPath) {
       opponent_dialog.save(),
       opponent_msg.save()
     ]);
-
 
     // Notify user
     //

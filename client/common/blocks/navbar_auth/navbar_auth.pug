@@ -10,25 +10,26 @@ if self.runtime.is_member
       aria-expanded='false'
       data-toggle='dropdown'
     )
-      img.navbar-auth__avatar()&attributes(self.avatar(self.runtime.user_id, 'md'))
+      .navbar-auth__avatar-container
+        img.navbar-auth__avatar()&attributes(self.avatar(self.runtime.user_id, 'md'))
 
     .dropdown-menu.dropdown-menu-right(aria-labelledby=menu_rnd_id)
       .dropdown-header= self.runtime.user_nick
 
-      a.dropdown-item(href=self.link_to('users.member', { user_hid: self.runtime.user_hid }))=self.t('profile')
+      a.dropdown-item.navbar-auth__dropdown-profile(href=self.link_to('users.member', { user_hid: self.runtime.user_hid }))=self.t('profile')
 
       if self.runtime.settings.can_use_dialogs
-        a.dropdown-item(href=self.link_to('users.dialogs_root', { user_hid: self.runtime.user_hid }))=self.t('dialogs')
+        a.dropdown-item.navbar-auth__dropdown-dialogs(href=self.link_to('users.dialogs_root', { user_hid: self.runtime.user_hid }))=self.t('dialogs')
 
       a.dropdown-item.navbar-auth__dropdown-activity(href=self.link_to('users.activity', { user_hid: self.runtime.user_hid }))=self.t('activity')
 
       if self.runtime.settings.can_access_acp
         .dropdown-divider
 
-        a.dropdown-item(href=self.link_to('admin.core.dashboard'), target='_blank')= self.t('admin')
+        a.dropdown-item.navbar-auth__dropdown-acp(href=self.link_to('admin.core.dashboard'), target='_blank')= self.t('admin')
 
       .dropdown-divider
-      button.dropdown-item(
+      button.dropdown-item.navbar-auth__dropdown-logout(
         type='button'
         data-on-click='common.blocks.logout'
       )= self.t('logout')

@@ -3,7 +3,7 @@ each dialog in self.dialogs
     id='dialog' + dialog._id
     data-dialog-id=dialog._id
     data-last-message=dialog.cache.last_message
-    class=dialog.unread > 0 ? 'dialog-list-item__m-unread' : ''
+    class=dialog.unread ? 'dialog-list-item__m-unread' : ''
     class=dialog.cache.last_user !== N.runtime.user_id ? '' : 'dialog-list-item__m-outgoing'
   )
     - var to = self.users[dialog.with];

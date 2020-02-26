@@ -120,6 +120,16 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Mark dialogs as visited
+  //
+  N.wire.after(apiPath, async function mark_dialogs_visited(env) {
+    // keep unread flag if user is looking at old dialogs
+    if (env.res.pagination.chunk_offset !== 0) return;
+
+    await N.models.users.DlgUnread.set_last_read(env.data.user._id);
+  });
+
+
   // Fill head meta
   //
   N.wire.after(apiPath, function fill_head(env) {

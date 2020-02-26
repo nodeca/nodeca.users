@@ -3,6 +3,9 @@
 'use strict';
 
 
+const mongoose      = require('mongoose');
+
+
 const MESSAGES_PER_PAGE = 50;
 
 
@@ -108,7 +111,37 @@ module.exports = function (N, apiPath) {
   // Mark dialog as read
   //
   N.wire.after(apiPath, async function mark_read(env) {
-    await N.models.users.Dialog.updateOne({ _id: env.data.dialog._id }, { unread: 0 });
+    let result = await N.models.users.Dialog.updateOne({ _id: env.data.dialog._id }, { unread: false });
+
+    env.data.unread_modified = (result.nModified !== 0);
+  });
+
+
+  // Mark dialogs as visited
+  //
+  N.wire.after(apiPath, async function mark_dialogs_visited(env) {
+    // no need to do anything if user browses old messages
+    if (!env.data.unread_modified) return;
+
+    let unread = await N.models.users.DlgUnread.findOne()
+                           .where('user').equals(env.data.dialog.user)
+                           .lean(true);
+
+    let any_unread_dialog = N.models.users.Dialog.findOne()
+                                .where('user').equals(env.data.dialog.user)
+                                .where('exists').equals(true)
+                                .where('unread').equals(true)
+                                .select('cache.last_message -_id')
+                                .lean(true);
+
+    if (unread) {
+      let start = new mongoose.Types.ObjectId(Math.floor(unread.last_read / 1000));
+      any_unread_dialog = any_unread_dialog.where('cache.last_message').gt(start);
+    }
+
+    if (await any_unread_dialog) return;
+
+    await N.models.users.DlgUnread.set_last_read(env.data.dialog.user);
   });
 
 

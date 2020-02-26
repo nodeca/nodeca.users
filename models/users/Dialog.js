@@ -34,7 +34,7 @@ module.exports = function (N, collectionName) {
 
     cache,
 
-    unread       : { type: Number, default: 0 }, // number of messages unread by owner
+    unread       : { type: Boolean, default: false },
 
     // set to `false` if dialog is deleted by the user,
     // it'll reset to `true` whenever a new message between two users is created
@@ -50,6 +50,9 @@ module.exports = function (N, collectionName) {
   // Used in dialogs list page
   Dialog.index({ user: 1, exists: 1, 'cache.last_message': -1, _id: 1 });
   Dialog.index({ user: 1, exists: 1, 'cache.is_reply': 1, 'cache.last_message': -1, _id: 1 });
+
+  // Used in DlgUnread to check unread dialogs
+  Dialog.index({ user: 1, exists: 1, unread: 1, 'cache.last_message': -1 });
 
   // Used to remove all dialogs created by a user from ACP
   Dialog.index({ with: 1 });
