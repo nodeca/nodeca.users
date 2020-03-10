@@ -1,0 +1,27 @@
+#content.user-settings-account
+  - var navbar_args = { level_up: self.link_to('users.member', { user_hid: self.runtime.user_hid }) };
+  != self.partial('@common.blocks.navbar.levelup_apps', navbar_args)
+
+  nav.breadcrumbs-container
+    .layout__container.container-fluid
+      != self.partial('@users.blocks.breadcrumbs')
+
+  .layout__container.container-fluid
+    != self.partial('@users.blocks.announces')
+    != self.partial('@users.settings.tabs', { active: 'account' })
+
+    form.form.user-settings__tab-content.user-settings__m-narrow
+      .form-group
+        label= self.t('current_email')
+        input.form-control(type='text', value=self.email, readonly)
+
+      .form-group
+        a.btn.btn-secondary.col-12(
+          href=self.link_to('users.settings.account.change_email.request_show')
+        )= self.t('request_email_change')
+
+      .form-group
+        button.btn.btn-secondary.col-12(
+          type='button'
+          data-on-click='users.settings.account:change_password'
+        )= self.t('request_password_change')

@@ -51,6 +51,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
         return N.wire.emit('navigate.to', { apiPath: 'users.auth.reset_password.change_show', params: data.fields });
       }, err => {
+        // Non client error will be processed with default error handler
+        if (err.code !== N.io.CLIENT_ERROR) throw err;
+
         view.error(err.message);
       });
   });

@@ -21,7 +21,7 @@ module.exports = function (N, apiPath) {
     if (!token || token.session_id !== env.session_id) {
       throw {
         code:    N.io.CLIENT_ERROR,
-        message: env.t('err_bad_token')
+        message: env.t('err_invalid_token')
       };
     }
 
@@ -39,7 +39,7 @@ module.exports = function (N, apiPath) {
     if (!env.data.user) {
       throw {
         code:         N.io.CLIENT_ERROR,
-        message:      env.t('err_bad_token'),
+        message:      env.t('err_invalid_token'),
         bad_password: false
       };
     }
@@ -59,7 +59,7 @@ module.exports = function (N, apiPath) {
       // e.g. regular login with a password using vb authprovider
       throw {
         code:    N.io.CLIENT_ERROR,
-        message: env.t('err_bad_token')
+        message: env.t('err_invalid_token')
       };
     }
 

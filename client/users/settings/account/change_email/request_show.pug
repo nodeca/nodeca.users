@@ -1,0 +1,25 @@
+#content
+  != self.partial('@common.blocks.navbar.logo_apps')
+
+  .layout__container.container-fluid.space-top
+    .row
+      .col-md-6.col-sm-8.m-auto
+        .card
+          form.card-body(data-on-submit='users.settings.account.change_email.request_show:submit')
+            .form-group
+              label(for='change_email_pass')= self.t('password')
+              input.form-control(
+                id='change_email_pass'
+                name='pass'
+                type='password'
+                placeholder=self.t('password_desc')
+                data-bind='css: { "is-invalid": error }'
+              )
+              // ko if: error
+              .invalid-feedback(data-bind='text: error')
+              // /ko
+              // ko ifnot: error
+              small.form-text.text-muted= self.t('password_help')
+              // /ko
+
+            button.btn.btn-primary(type='submit')= self.t('submit')

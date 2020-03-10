@@ -1,0 +1,26 @@
+en-US:
+  request_show:
+    password: Enter your password to change email
+    password_desc: Password
+    password_help: If you leave password empty, we will email you a link you can use instead
+    submit: ok
+
+  request_done_show:
+    message: 'You should receive email with a link to change email. Click on it or enter the code here:'
+    err_invalid_token: Invalid security token
+    submit: ok
+
+  change_show:
+    email: Enter new email address
+    email_desc: Email
+    email_help: Confirmation will be sent to your new email
+    submit: ok
+    err_invalid_token: Invalid security token
+
+  change_done_show:
+    message: 'You should receive email with a link to confirm email. Click on it or enter the code here:'
+    err_invalid_token: Invalid security token
+    submit: ok
+
+  confirm_done_show:
+    message: Your email was changed.

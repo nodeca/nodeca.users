@@ -1,0 +1,21 @@
+#content
+  != self.partial('@common.blocks.navbar.logo_apps')
+
+  .layout__container.container-fluid.space-top
+    .row
+      .col-md-6.col-sm-8.m-auto
+        .card
+          form.card-body(data-on-submit='users.settings.account.change_email.change_done_show:submit')
+            .form-group
+              label(for='secret_key')= self.t('message')
+              input.form-control(
+                id='secret_key'
+                type='number'
+                name='secret_key'
+                data-bind='css: { "is-invalid": error }'
+              )
+              // ko if: error
+              .invalid-feedback(data-bind='text: error')
+              // /ko
+
+            button.btn.btn-primary(type='submit')= self.t('submit')

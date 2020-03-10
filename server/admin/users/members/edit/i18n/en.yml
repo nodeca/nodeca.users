@@ -11,4 +11,23 @@ en-US:
     hb: Hellbanned
     yes: Yes
     no: No
-    mod_note_header: 'Profile change:'
+    mod_note_text: 'Profile change made by [#{admin_nick}](#{admin_link}):'
+
+  delete_account:
+    mod_note_text_delete: 'Account deleted by [#{admin_nick}](#{admin_link}).'
+    mod_note_text_undelete: 'Account restored by [#{admin_nick}](#{admin_link}).'
+
+  delete_avatar:
+    mod_note_text: 'Avatar deleted by [#{admin_nick}](#{admin_link}).'
+
+  delete_dialogs:
+    mod_note_text: 'Dialogs deleted by [#{admin_nick}](#{admin_link}).'
+
+  delete_votes:
+    mod_note_text: 'Votes deleted by [#{admin_nick}](#{admin_link}).'
+
+  reset_password:
+    mod_note_text: 'Password deactivated by [#{admin_nick}](#{admin_link}).'
+
+  unblock:
+    mod_note_text: 'Account unblocked by [#{admin_nick}](#{admin_link}).'

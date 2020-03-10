@@ -30,6 +30,12 @@
             data-user-hid=self.user.hid
           )= self.t('delete_votes')
 
+          button.dropdown-item(
+            type='button'
+            data-on-click='admin.users.members.edit:reset_password'
+            data-user-hid=self.user.hid
+          )= self.t('reset_password')
+
           if self.user.exists
             button.dropdown-item(
               type='button'

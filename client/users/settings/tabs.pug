@@ -1,0 +1,6 @@
+.user-settings__tabs.nav.nav-tabs-underlined
+  each tab in [ 'general', 'about', 'ignore', 'account' ]
+    a.nav-link(
+      href= self.link_to('users.settings.' + tab)
+      class= tab === self.active ? 'active' : ''
+    )= self.t(tab)

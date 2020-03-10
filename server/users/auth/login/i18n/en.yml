@@ -22,4 +22,4 @@ en-US:
       just ignore this letter.
 
   by_email_exec:
-    err_bad_token: Invalid security token.
+    err_invalid_token: Invalid security token.

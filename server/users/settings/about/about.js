@@ -23,6 +23,9 @@ module.exports = function (N, apiPath) {
     if (!can_edit_profile) {
       throw N.io.FORBIDDEN;
     }
+
+    env.res.settings = env.res.settings || {};
+    env.res.settings.can_edit_profile = can_edit_profile;
   });
 
 

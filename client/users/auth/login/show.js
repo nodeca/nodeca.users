@@ -78,6 +78,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         // Force captcha on every attempt.
         N.wire.emit('common.blocks.recaptcha.update');
 
+        // Non client error will be processed with default error handler
+        if (err.code !== N.io.CLIENT_ERROR) throw err;
+
         view.error(err.message);
       });
   });

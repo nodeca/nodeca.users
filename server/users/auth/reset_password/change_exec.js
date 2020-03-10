@@ -2,8 +2,9 @@
 //
 'use strict';
 
-const _   = require('lodash');
-const url = require('url');
+const _             = require('lodash');
+const url           = require('url');
+const parse_options = require('nodeca.users/server/users/mod_notes/_parse_options');
 
 
 module.exports = function (N, apiPath) {
@@ -164,5 +165,31 @@ module.exports = function (N, apiPath) {
         ip: env.req.ip
       })
     });
+  });
+
+
+  // Log this change in moderator notes
+  //
+  N.wire.after(apiPath, async function save_log_in_moderator_notes(env) {
+    let md_text = env.t('mod_note_text');
+
+    let parse_result = await N.parser.md2html({
+      text:        md_text,
+      options:     parse_options,
+      user_info:   env.user_info
+    });
+
+    let bot = await N.models.users.User.findOne()
+                        .where('hid').equals(N.config.bots.default_bot_hid)
+                        .lean(true);
+
+    let note = new N.models.users.ModeratorNote({
+      from: bot._id,
+      to:   env.data.user._id,
+      md:   env.params.txt,
+      html: parse_result.html
+    });
+
+    await note.save();
   });
 };

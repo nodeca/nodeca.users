@@ -49,6 +49,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
           return;
         }
 
+        // Non client error will be processed with default error handler
+        if (err.code !== N.io.CLIENT_ERROR) throw err;
+
         view.error(err.message);
       });
   });

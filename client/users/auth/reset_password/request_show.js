@@ -52,6 +52,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
     return N.io.rpc('users.auth.reset_password.request_exec', form.fields)
       .then(() => N.wire.emit('navigate.to', { apiPath: 'users.auth.reset_password.request_done_show' }))
       .catch(err => {
+        // Non client error will be processed with default error handler
+        if (err.code !== N.io.CLIENT_ERROR) throw err;
+
         N.wire.emit('common.blocks.recaptcha.update');
         view.error(err.message);
       });

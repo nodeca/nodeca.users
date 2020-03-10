@@ -41,6 +41,29 @@ router:
     users.settings.about:
       "/settings/about": ~
 
+    users.settings.account:
+      "/settings/account": ~
+
+    users.settings.account.change_email.request_show:
+      "/settings/account/change_email": ~
+
+    users.settings.account.change_email.request_done_show:
+      "/settings/account/change_email/request": ~
+
+    users.settings.account.change_email.change_show:
+      "/settings/account/change_email/request/{secret_key}":
+        secret_key: /[0-9a-f]+/
+
+    users.settings.account.change_email.change_done_show:
+      "/settings/account/change_email/confirm": ~
+
+    users.settings.account.change_email.confirm_exec:
+      "/settings/account/change_email/confirm/{secret_key}":
+        secret_key: /[0-9a-f]+/
+
+    users.settings.account.change_email.confirm_done_show:
+      "/settings/account/change_email/done": ~
+
     users.settings.ignore:
       "/settings/ignore": ~
 

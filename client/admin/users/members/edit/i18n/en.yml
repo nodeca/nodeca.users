@@ -11,8 +11,10 @@ en-US:
   unblock: Unblock
   delete_dialogs: Remove dialogs
   delete_votes: Remove votes
+  reset_password: Reset password
   dialogs_deleted: Dialogs removed
   votes_deleted: Votes removed
+  password_reset: Password deactivated
   show_ips: Show IP addresses
   delete_account: Delete account
   restore_account: Restore account
@@ -21,4 +23,5 @@ en-US:
   restore_account_confirm: Are you sure you want to restore this account?
   delete_dialogs_confirm: Are you sure you want to remove all dialogs associated with this account?
   delete_votes_confirm: Are you sure you want to remove all votes created by this user?
+  reset_password_confirm: Are you sure you want to deactivate this user's password?
   unblock_confirm: Are you sure you want to unblock this user?

@@ -1,0 +1,16 @@
+en-US:
+  request_exec:
+    email_subject: '#{project_name}: password change confirmation.'
+    email_text: |
+      Password change was requested from IP #{ip}
+
+      Follow this link to change your password:
+
+      #{link}
+
+      Or enter this code:
+
+      #{code}
+
+      If you did not request password reset or changed your mind,
+      just ignore this letter.

@@ -10,11 +10,7 @@
 
   .layout__container.container-fluid
     != self.partial('@users.blocks.announces')
-
-    .user-settings__tabs.nav.nav-tabs-underlined
-      a.nav-link(href=self.link_to('users.settings.general'))= self.t('general')
-      a.nav-link.active(href=self.link_to('users.settings.about'))= self.t('about')
-      a.nav-link(href=self.link_to('users.settings.ignore'))= self.t('ignore')
+    != self.partial('@users.settings.tabs', { active: 'about' })
 
     form.form.user-settings__tab-content.user-settings__m-narrow#user-settings-about(data-bind='submit: submit')
 

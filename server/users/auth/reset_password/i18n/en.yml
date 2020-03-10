@@ -40,6 +40,7 @@ en-US:
 
         - Time: #{time}
         - IP: #{ip}
+    mod_note_text: 'Password changed by user.'
 
   change_done_show:
     title: Change password

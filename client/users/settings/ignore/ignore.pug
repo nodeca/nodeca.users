@@ -8,12 +8,7 @@
 
   .layout__container.container-fluid
     != self.partial('@users.blocks.announces')
-
-    .user-settings__tabs.nav.nav-tabs-underlined
-      a.nav-link(href=self.link_to('users.settings.general'))= self.t('general')
-      if self.settings.can_edit_profile
-        a.nav-link(href=self.link_to('users.settings.about'))= self.t('about')
-      a.nav-link.active(href=self.link_to('users.settings.ignore'))= self.t('ignore')
+    != self.partial('@users.settings.tabs', { active: 'ignore' })
 
     .user-settings__tab-content
       table.table.table-condensed.user-settings-ignore

@@ -91,6 +91,23 @@ N.wire.once('navigate.done:' + module.apiPath, function init_handlers() {
   });
 
 
+  // Show reset password confirmation dialog
+  //
+  N.wire.before(module.apiPath + ':reset_password', function confirm_reset_password() {
+    return N.wire.emit('admin.core.blocks.confirm', t('reset_password_confirm'));
+  });
+
+
+  // Click on reset password button
+  //
+  N.wire.on(module.apiPath + ':reset_password', function reset_password(data) {
+    let user_hid = data.$this.data('user-hid');
+
+    return N.io.rpc('admin.users.members.edit.reset_password', { user_hid })
+      .then(() => N.wire.emit('notify.info', t('password_reset')));
+  });
+
+
   // Show unblock confirmation dialog
   //
   N.wire.before(module.apiPath + ':unblock', function confirm_unblock() {

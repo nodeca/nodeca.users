@@ -1,0 +1,33 @@
+#content
+  != self.partial('@common.blocks.navbar.logo_apps')
+
+  .layout__container.container-fluid.space-top
+    unless self.valid_token
+      .row
+        .col-md-6.col-sm-8.m-auto
+          .card.card-body.text-danger
+            = self.t('err_invalid_token')
+    else
+      .row
+        .col-md-6.col-sm-8.m-auto
+          .card
+            form.card-body(data-on-submit='users.settings.account.change_email.change_show:submit')
+              input(type='hidden', name='secret_key', value=self.secret_key)
+
+              .form-group
+                label(for='change_email_new')= self.t('email')
+                input.form-control(
+                  id='change_email_new'
+                  name='email'
+                  type='email'
+                  placeholder=self.t('email_desc')
+                  data-bind='css: { "is-invalid": error }'
+                )
+                // ko if: error
+                .invalid-feedback(data-bind='text: error')
+                // /ko
+                // ko ifnot: error
+                small.form-text.text-muted= self.t('email_help')
+                // /ko
+
+              button.btn.btn-primary(type='submit')= self.t('submit')

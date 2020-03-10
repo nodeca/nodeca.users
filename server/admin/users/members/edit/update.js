@@ -110,6 +110,15 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, async function save_user(env) {
     if (env.data.user.isModified('email')) {
+      // disable all email authproviders
+      // (authprovider for new email will be created on next login)
+      await N.models.users.AuthProvider.updateOne(
+        { user: env.data.user._id, type: 'email' },
+        { $set: { exists: false } },
+        { multi: true }
+      );
+
+      // replace email in plain authprovider
       let authProvider = await N.models.users.AuthProvider.findOne()
                                    .where('user').equals(env.data.user._id)
                                    .where('type').equals('plain')
@@ -200,7 +209,10 @@ module.exports = function (N, apiPath) {
     }
 
     if (log.length) {
-      let md_text = env.t('mod_note_header') +
+      let md_text = env.t('mod_note_text', {
+        admin_nick: env.user_info.user_name,
+        admin_link: N.router.linkTo('users.member', { user_hid: env.user_info.user_hid })
+      }) +
                     '\n\n' +
                     log.map(([ field, old_value, new_value ]) =>
                       ` - ${field}: ${old_value} → ${new_value}`
@@ -212,8 +224,12 @@ module.exports = function (N, apiPath) {
         user_info:   env.user_info
       });
 
+      let bot = await N.models.users.User.findOne()
+                          .where('hid').equals(N.config.bots.default_bot_hid)
+                          .lean(true);
+
       let note = new N.models.users.ModeratorNote({
-        from: env.user_info.user_id,
+        from: bot._id,
         to:   env.data.user._id,
         md:   env.params.txt,
         html: parse_result.html
