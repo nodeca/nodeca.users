@@ -20,6 +20,8 @@ if self.runtime.is_member
       if self.runtime.settings.can_use_dialogs
         a.dropdown-item(href=self.link_to('users.dialogs_root', { user_hid: self.runtime.user_hid }))=self.t('dialogs')
 
+      a.dropdown-item.navbar-auth__dropdown-activity(href=self.link_to('users.activity', { user_hid: self.runtime.user_hid }))=self.t('activity')
+
       if self.runtime.settings.can_access_acp
         .dropdown-divider
 

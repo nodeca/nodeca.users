@@ -1,6 +1,7 @@
 en-US:
   profile: Profile
   dialogs: Dialogs
+  activity: Activity
   admin: Administration
   login: Login / Register
   logout: Logout
