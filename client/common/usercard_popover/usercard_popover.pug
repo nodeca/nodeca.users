@@ -22,13 +22,14 @@
   .ucard-info
     .ucard-info__head
       a.ucard-info__head-link(
+        class=self.users[self.user._id].css
         href=self.link_to('users.member', { user_hid: self.user.hid })
       )= self.user.name
 
     dl.ucard-info__dl
       if self.penalty_expire
-        dt.ucard-info__dt= self.t('penalty_title')
-        dd.ucard-info__dd!= self.timetag(self.penalty_expire, 'compact')
+        dt.ucard-info__dt.text-danger= self.t('penalty_title')
+        dd.ucard-info__dd.text-danger!= self.timetag(self.penalty_expire, 'compact')
 
       if self.infractions_points && self.infractions_points > 0
         dt.ucard-info__dt= self.t('infractions_title')

@@ -141,6 +141,9 @@ module.exports = function (N, apiPath) {
       env.res.location      = env.data.user.location;
       env.res.location_name = (await N.models.core.Location.info([ env.data.user.location ], env.user_info.locale))[0];
     }
+
+    env.data.users = env.data.users || [];
+    env.data.users.push(env.data.user._id);
   });
 
 
