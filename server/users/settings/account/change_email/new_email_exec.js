@@ -26,11 +26,13 @@ module.exports = function (N, apiPath) {
   // Check token
   //
   N.wire.before(apiPath, async function check_token(env) {
-    let token = await N.models.users.TokenEmailChange
-                          .findOne({ secret_key: env.params.secret_key })
+    let token = await N.models.users.TokenEmailConfirm.findOne()
+                          .where('secret_key').equals(env.params.secret_key)
+                          .where('session_id').equals(env.session_id)
+                          .where('user').equals(env.user_info.user_id)
                           .lean(true);
 
-    if (!token || token.session_id !== env.session_id) {
+    if (!token) {
       throw {
         code:    N.io.CLIENT_ERROR,
         message: env.t('err_invalid_token')
@@ -63,7 +65,7 @@ module.exports = function (N, apiPath) {
   // Send confirmation to the new email
   //
   N.wire.on(apiPath, async function confirm_new_email(env) {
-    let token = await N.models.users.TokenEmailChangeConfirm.create({
+    let token = await N.models.users.TokenEmailConfirmNew.create({
       session_id: env.session_id,
       user:       env.data.user._id,
       new_email:  env.params.email
@@ -71,7 +73,7 @@ module.exports = function (N, apiPath) {
 
     let general_project_name = await N.settings.get('general_project_name');
 
-    let link = env.helpers.link_to('users.settings.account.change_email.confirm_exec', {
+    let link = env.helpers.link_to('users.settings.account.change_email.new_email_verify_exec', {
       secret_key: token.secret_key
     });
 
@@ -87,7 +89,7 @@ module.exports = function (N, apiPath) {
   // Remove current and all other email change tokens for this user
   //
   N.wire.after(apiPath, async function remove_token(env) {
-    await N.models.users.TokenEmailChange.deleteMany({ user: env.data.user._id });
+    await N.models.users.TokenEmailConfirm.deleteMany({ user: env.data.user._id });
   });
 
 
@@ -101,7 +103,7 @@ module.exports = function (N, apiPath) {
     throw {
       code: N.io.REDIRECT,
       head: {
-        Location: N.router.linkTo('users.settings.account.change_email.change_done_show')
+        Location: N.router.linkTo('users.settings.account.change_email.new_email_verify')
       }
     };
   });

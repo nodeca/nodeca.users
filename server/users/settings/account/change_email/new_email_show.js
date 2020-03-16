@@ -16,8 +16,10 @@ module.exports = function (N, apiPath) {
     env.res.head.title = env.t('title');
     env.res.secret_key = env.params.secret_key;
 
-    let token = await N.models.users.TokenEmailChange
-                          .findOne({ secret_key: env.params.secret_key, session_id: env.session_id })
+    let token = await N.models.users.TokenEmailConfirm.findOne()
+                          .where('secret_key').equals(env.params.secret_key)
+                          .where('session_id').equals(env.session_id)
+                          .where('user').equals(env.user_info.user_id)
                           .lean(true);
 
     //

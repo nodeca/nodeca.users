@@ -1,5 +1,5 @@
 /**
- *  class models.users.TokenEmailChangeNoPassword
+ *  class models.users.TokenEmailConfirmNew
  *
  *  Confirm new email when changing to it
  **/
@@ -24,7 +24,7 @@ function createDecimalToken() {
 
 module.exports = function (N, collectionName) {
 
-  let TokenEmailChangeConfirm = new Schema({
+  let TokenEmailConfirmNew = new Schema({
     secret_key:   { type: String, default: createDecimalToken },
     create_ts:    { type: Date,   default: Date.now, expires: TOKEN_EXPIRE_TIMEOUT },
     user:         Schema.Types.ObjectId,
@@ -38,17 +38,17 @@ module.exports = function (N, collectionName) {
   //////////////////////////////////////////////////////////////////////////////
 
   // used when user clicks reset link in email
-  TokenEmailChangeConfirm.index({ secret_key: 1 });
+  TokenEmailConfirmNew.index({ secret_key: 1 });
 
   //////////////////////////////////////////////////////////////////////////////
 
 
-  N.wire.on('init:models', function emit_init_TokenEmailChangeConfirm() {
-    return N.wire.emit('init:models.' + collectionName, TokenEmailChangeConfirm);
+  N.wire.on('init:models', function emit_init_TokenEmailConfirmNew() {
+    return N.wire.emit('init:models.' + collectionName, TokenEmailConfirmNew);
   });
 
 
-  N.wire.on('init:models.' + collectionName, function init_model_TokenEmailChangeConfirm(schema) {
+  N.wire.on('init:models.' + collectionName, function init_model_TokenEmailConfirmNew(schema) {
     N.models[collectionName] = Mongoose.model(collectionName, schema);
   });
 };

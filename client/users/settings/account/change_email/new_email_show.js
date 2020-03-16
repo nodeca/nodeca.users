@@ -43,7 +43,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   N.wire.on(module.apiPath + ':submit', function submit_code(data) {
     view.error(null);
 
-    return N.io.rpc('users.settings.account.change_email.change_exec', data.fields)
+    return N.io.rpc('users.settings.account.change_email.new_email_exec', data.fields)
       .catch(err => {
         if (err.code === N.io.REDIRECT) {
           window.location = err.head.Location;

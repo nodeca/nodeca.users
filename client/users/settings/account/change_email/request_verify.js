@@ -1,4 +1,4 @@
-// Move to confirm email page using code received in email
+// Move to change email page using code received in email
 //
 'use strict';
 
@@ -42,13 +42,18 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   //
   N.wire.on(module.apiPath + ':submit', function submit_code(data) {
 
-    return N.io.rpc('users.settings.account.change_email.confirm_exec', data.fields)
-      .catch(err => {
-        if (err.code === N.io.REDIRECT) {
-          window.location = err.head.Location;
+    return N.io.rpc('users.settings.account.change_email.new_email_show', data.fields)
+      .then(res => {
+        if (!res.valid_token) {
+          view.error(t('err_invalid_token'));
           return;
         }
 
+        return N.wire.emit('navigate.to', {
+          apiPath: 'users.settings.account.change_email.new_email_show',
+          params: data.fields
+        });
+      }, err => {
         // Non client error will be processed with default error handler
         if (err.code !== N.io.CLIENT_ERROR) throw err;
 

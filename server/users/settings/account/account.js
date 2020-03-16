@@ -38,7 +38,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.on(apiPath, function account_data(env) {
     // keep first 2 and last 2 characters, replace the rest with 10 stars
-    env.res.email = env.data.user.email.replace(/(?<=^..).+(?=..$)/, '*'.repeat(10));
+    env.res.email = (env.data.user.email || '').replace(/(?<=^..).+(?=..$)/, '*'.repeat(10));
   });
 
 

@@ -47,21 +47,21 @@ router:
     users.settings.account.change_email.request_show:
       "/settings/account/change_email": ~
 
-    users.settings.account.change_email.request_done_show:
-      "/settings/account/change_email/request": ~
+    users.settings.account.change_email.request_verify:
+      "/settings/account/change_email/verify_old": ~
 
-    users.settings.account.change_email.change_show:
-      "/settings/account/change_email/request/{secret_key}":
+    users.settings.account.change_email.new_email_show:
+      "/settings/account/change_email/verify_old/{secret_key}":
         secret_key: /[0-9a-f]+/
 
-    users.settings.account.change_email.change_done_show:
-      "/settings/account/change_email/confirm": ~
+    users.settings.account.change_email.new_email_verify:
+      "/settings/account/change_email/verify_new": ~
 
-    users.settings.account.change_email.confirm_exec:
-      "/settings/account/change_email/confirm/{secret_key}":
+    users.settings.account.change_email.new_email_verify_exec:
+      "/settings/account/change_email/verify_new/{secret_key}":
         secret_key: /[0-9a-f]+/
 
-    users.settings.account.change_email.confirm_done_show:
+    users.settings.account.change_email.new_email_done:
       "/settings/account/change_email/done": ~
 
     users.settings.ignore:

@@ -34,14 +34,14 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, { priority: -5 }, async function create_otp_email_token(env) {
     if (!_.isEmpty(env.params.pass)) return;
 
-    let token = await N.models.users.TokenEmailChange.create({
+    let token = await N.models.users.TokenEmailConfirm.create({
       session_id: env.session_id,
       user:       env.data.user._id
     });
 
     let general_project_name = await N.settings.get('general_project_name');
 
-    let link = env.helpers.link_to('users.settings.account.change_email.change_show', {
+    let link = env.helpers.link_to('users.settings.account.change_email.new_email_show', {
       secret_key: token.secret_key
     });
 
@@ -55,7 +55,7 @@ module.exports = function (N, apiPath) {
     throw {
       code: N.io.REDIRECT,
       head: {
-        Location: N.router.linkTo('users.settings.account.change_email.request_done_show')
+        Location: N.router.linkTo('users.settings.account.change_email.request_verify')
       }
     };
   });
@@ -77,7 +77,7 @@ module.exports = function (N, apiPath) {
       };
     }
 
-    let token = await N.models.users.TokenEmailChange.create({
+    let token = await N.models.users.TokenEmailConfirm.create({
       session_id: env.session_id,
       user:       env.data.user._id
     });
@@ -85,7 +85,7 @@ module.exports = function (N, apiPath) {
     throw {
       code: N.io.REDIRECT,
       head: {
-        Location: N.router.linkTo('users.settings.account.change_email.change_show', {
+        Location: N.router.linkTo('users.settings.account.change_email.new_email_show', {
           secret_key: token.secret_key
         })
       }

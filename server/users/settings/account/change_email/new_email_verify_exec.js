@@ -25,11 +25,13 @@ module.exports = function (N, apiPath) {
   // Check token
   //
   N.wire.before(apiPath, async function check_token(env) {
-    let token = await N.models.users.TokenEmailChangeConfirm
-                          .findOne({ secret_key: env.params.secret_key })
+    let token = await N.models.users.TokenEmailConfirmNew.findOne()
+                          .where('secret_key').equals(env.params.secret_key)
+                          .where('session_id').equals(env.session_id)
+                          .where('user').equals(env.user_info.user_id)
                           .lean(true);
 
-    if (!token || token.session_id !== env.session_id) {
+    if (!token) {
       throw {
         code:    N.io.CLIENT_ERROR,
         message: env.t('err_invalid_token')
@@ -129,7 +131,7 @@ module.exports = function (N, apiPath) {
   // Remove current and all other email confirmation tokens for this user
   //
   N.wire.after(apiPath, async function remove_token(env) {
-    await N.models.users.TokenEmailChangeConfirm.deleteMany({ user: env.data.user._id });
+    await N.models.users.TokenEmailConfirmNew.deleteMany({ user: env.data.user._id });
   });
 
 
@@ -143,7 +145,7 @@ module.exports = function (N, apiPath) {
     throw {
       code: N.io.REDIRECT,
       head: {
-        Location: N.router.linkTo('users.settings.account.change_email.confirm_done_show')
+        Location: N.router.linkTo('users.settings.account.change_email.new_email_done')
       }
     };
   });

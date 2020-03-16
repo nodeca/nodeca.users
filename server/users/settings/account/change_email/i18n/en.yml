@@ -2,7 +2,7 @@ en-US:
   request_show:
     title: Change email
 
-  request_done_show:
+  request_verify:
     title: Change email
 
   request_exec:
@@ -24,10 +24,10 @@ en-US:
     err_wrong_password: |
       Wrong password, try again. Or leave password empty, then we will email you a link you can use instead.
 
-  change_show:
+  new_email_show:
     title: Change email
 
-  change_exec:
+  new_email_exec:
     err_invalid_token: Invalid security token
     err_bad_email: Invalid email address
 
@@ -46,10 +46,10 @@ en-US:
       If you did not request email change or changed your mind,
       just ignore this letter.
 
-  change_done_show:
+  new_email_verify:
     title: Change email
 
-  confirm_exec:
+  new_email_verify_exec:
     err_invalid_token: Invalid security token
 
     email_subject: '#{project_name}: email has been changed.'
@@ -65,5 +65,5 @@ en-US:
 
       #{old_email} → #{new_email}
 
-  confirm_done_show:
+  new_email_done:
     title: Change email
