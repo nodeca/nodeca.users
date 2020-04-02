@@ -12,6 +12,9 @@
 // - `marker_pos_updates`                (zset) - last update info for `marker_pos:*`
 // - `marker_cut:<user_id>:<section_id>` (key)  - contain timestamp of read cut
 // - `marker_cut_updates`                (zset) - last update info for `marker_cut:*`
+// - `marker_global_cut:<user_id>        (key)  - contain timestamp of minimal read cut for all content
+//                                                (used as a way to mark everything as read)
+// - `marker_global_cut_updates`         (zset) - last update info for `marker_global_cut:*`
 //
 // GC logic:
 //
@@ -119,25 +122,26 @@ module.exports = function (N, collectionName) {
   // Mark all topics before now as read
   //
   // - userId (ObjectId)
-  // - categoryId (ObjectId)
+  // - categoryId (ObjectId) - optional, mark everything as read if undefined
   // - ts (Number) - optional, cut off timestamp, `Date.now()` by default
   //
   Marker.markAll = async function (userId, categoryId, ts) {
-    if (!userId || String(userId) === '000000000000000000000000') {
-      return;
-    }
+    if (!userId || String(userId) === '000000000000000000000000') return;
 
     let now = Date.now();
 
-    if (!ts) {
-      ts = now;
-    }
+    if (!ts) ts = now;
 
     // If `ts` bigger than now plus one hour or more - stop here
-    if (ts > 1000 * 60 * 60 + Date.now()) return;
+    if (ts > 1000 * 60 * 60 + now) return;
 
-    await N.redis.zaddAsync('marker_cut_updates', now, userId + ':' + categoryId);
-    await N.redis.setAsync('marker_cut:' + userId + ':' + categoryId, ts);
+    if (categoryId) {
+      await N.redis.zaddAsync('marker_cut_updates', now, userId + ':' + categoryId);
+      await N.redis.setAsync('marker_cut:' + userId + ':' + categoryId, ts);
+    } else {
+      await N.redis.zaddAsync('marker_global_cut_updates', now, userId);
+      await N.redis.setAsync('marker_global_cut:' + userId, ts);
+    }
   };
 
 
@@ -251,18 +255,17 @@ module.exports = function (N, collectionName) {
 
     let content_read_marks_expire = await N.settings.get('content_read_marks_expire');
 
+    let cutKeys = categoriesIds.map(id => 'marker_cut:' + userId + ':' + id);
+
+    let [ globalCut, ...cuts ] = await N.redis.mgetAsync(
+      [ 'marker_global_cut:' + userId ].concat(cutKeys)
+    );
+
     let defaultCut = Date.now() - (content_read_marks_expire * 24 * 60 * 60 * 1000);
-    let result = categoriesIds.reduce((acc, id) => {
-      acc[String(id)] = defaultCut;
-      return acc;
-    }, {});
+    let result = {};
 
-    let cutKeys = Object.keys(result).map(id => 'marker_cut:' + userId + ':' + id);
-
-    let res = await N.redis.mgetAsync(cutKeys);
-
-    Object.keys(result).forEach((id, i) => {
-      result[id] = +res[i] || defaultCut;
+    categoriesIds.forEach((id, i) => {
+      result[id] = Math.max(+cuts[i] || defaultCut, globalCut || 0);
     });
 
     return result;
@@ -401,6 +404,19 @@ module.exports = function (N, collectionName) {
     });
 
     await cutQuery.execAsync();
+
+
+    // Cleanup global cut markers
+    //
+    let globalCutItems = await N.redis.zrangebyscoreAsync('marker_global_cut_updates', '-inf', lastTs);
+    let globalCutQuery = N.redis.multi();
+
+    globalCutItems.forEach(item => {
+      globalCutQuery.del('marker_global_cut:' + item);
+      globalCutQuery.zrem('marker_global_cut_updates', item);
+    });
+
+    await globalCutQuery.execAsync();
 
 
     // Cleanup read markers

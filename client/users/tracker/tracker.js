@@ -59,3 +59,9 @@ N.wire.on('navigate.exit:' + module.apiPath, function page_teardown() {
   scrollable_list.destroy();
   scrollable_list = null;
 });
+
+
+N.wire.on(module.apiPath + ':mark_read', function mark_read() {
+  return N.io.rpc('users.tracker.mark_read')
+             .then(() => N.wire.emit('navigate.reload'));
+});

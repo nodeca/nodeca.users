@@ -15,6 +15,11 @@
     .user-tracker__filter.nav
       a.nav-link.btn.btn-sm.btn-outline-success(href=self.link_to('users.tracker'))= self.t('tracker')
       a.nav-link.btn.btn-sm.btn-outline-secondary(href=self.link_to('users.subscriptions.index'))= self.t('subscriptions')
+      button.nav-link.btn.btn-sm.btn-outline-secondary.btn-square.icon.icon-check(
+        type='button'
+        data-on-click='users.tracker:mark_read'
+        title=self.t('mark_read')
+      )
 
     ul.nav.nav-tabs-underlined(role='tablist')
       each tab in self.tabs
