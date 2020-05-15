@@ -6,13 +6,36 @@
 'use strict';
 
 
+// Replace thumbnails (sm attachments)
+//
+function replace_thumbs(selector) {
+  selector.find('.thumb > img').each(function (n, img) {
+    let container = img.parentNode, $container = $(container);
+
+    // replaced by another step
+    if (typeof $container.data('heavy-content-placeholder') !== 'undefined') return;
+
+    $container.replaceWith(N.runtime.render(module.apiPath + '.thumb', {
+      apiPath: module.apiPath,
+      orig: $container.data('nd-orig'),
+      placeholder: container.outerHTML,
+      width: $container.find('.thumb__image').attr('width'),
+      height: $container.find('.thumb__image').attr('height')
+    }));
+  });
+}
+
+
 // Replace attachments with placeholders
 //
 function replace_attachments(selector) {
   selector.find('.attach-img > img').each(function (n, img) {
     let container = img.parentNode, $container = $(container);
 
-    $container.replaceWith(N.runtime.render(module.apiPath + '.image', {
+    // replaced by another step
+    if (typeof $container.data('heavy-content-placeholder') !== 'undefined') return;
+
+    $container.replaceWith(N.runtime.render(module.apiPath + '.attach', {
       apiPath: module.apiPath,
       orig: $container.data('nd-orig'),
       placeholder: container.outerHTML,
@@ -30,6 +53,9 @@ function replace_images(selector) {
   selector.find('.image > img').each(function (n, img) {
     let container = img.parentNode, $container = $(container);
 
+    // replaced by another step
+    if (typeof $container.data('heavy-content-placeholder') !== 'undefined') return;
+
     $container.replaceWith(N.runtime.render(module.apiPath + '.image', {
       apiPath: module.apiPath,
       orig: $container.data('nd-orig'),
@@ -42,6 +68,9 @@ function replace_images(selector) {
   // images with unknown size (just a single image tag)
   selector.find('img.image').each(function (n, img) {
     let container = img, $container = $(container);
+
+    // replaced by another step
+    if (typeof $container.data('heavy-content-placeholder') !== 'undefined') return;
 
     $container.replaceWith(N.runtime.render(module.apiPath + '.image', {
       apiPath: module.apiPath,
@@ -57,6 +86,9 @@ function replace_images(selector) {
 function replace_videos(selector) {
   selector.find('.ez-player').each(function (n, container) {
     let $container = $(container);
+
+    // replaced by another step
+    if (typeof $container.data('heavy-content-placeholder') !== 'undefined') return;
 
     $container.replaceWith(N.runtime.render(module.apiPath + '.video', {
       orig: $container.data('nd-orig')
@@ -80,9 +112,12 @@ N.wire.once('navigate.done', function hide_heavy_content_init(data) {
 
   // replace images with placeholders on initial page load
   if (N.runtime.settings.hide_heavy_content && data.first_load) {
-    replace_attachments($('.markup'));
-    replace_images($('.markup'));
-    replace_videos($('.markup'));
+    let content = $('.markup');
+
+    replace_thumbs(content);
+    replace_attachments(content);
+    replace_images(content);
+    replace_videos(content);
   }
 });
 
@@ -90,7 +125,10 @@ N.wire.once('navigate.done', function hide_heavy_content_init(data) {
 N.wire.on('navigate.content_update', function hide_heavy_content(data) {
   if (!N.runtime.settings.hide_heavy_content) return;
 
-  replace_attachments(data.$.find('.markup'));
-  replace_images(data.$.find('.markup'));
-  replace_videos(data.$.find('.markup'));
+  let content = data.$.find('.markup');
+
+  replace_thumbs(content);
+  replace_attachments(content);
+  replace_images(content);
+  replace_videos(content);
 });

@@ -1,3 +1,7 @@
 en-US:
   image:
     tooltip: Click to show (you can enable images back in your settings)
+  thumb:
+    tooltip: Click to show (you can enable images back in your settings)
+  attach:
+    tooltip: Click to show (you can enable images back in your settings)
