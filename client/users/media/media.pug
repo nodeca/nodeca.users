@@ -19,36 +19,36 @@
       var isVideo = mType === mTypes.MEDIALINK;
       var isBinary = mType === mTypes.BINARY
 
-    .user-media__wrapper(
+    .user-media__container(
       class= isVideo ? 'user-media__m-video' : ''
       class= isBinary ? 'user-media__m-binary' : ''
     )
+      .user-media__content
+        if isImage
+          -
+            var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.media_id });
+            var size = self.media.image_sizes.orig;
 
-      if isImage
-        -
-          var imageUrl = self.link_to('core.gridfs', { 'bucket': self.media.media_id });
-          var size = self.media.image_sizes.orig;
-
-        .user-media__image-container
-          span.user-media__image-outer(
-            style= 'width:' + size.width + 'px'
-          )
-            img.user-media__image(src=imageUrl)
-            span.user-media__image-spacer(
-              style= 'padding-bottom:' + 100*size.height/size.width + '%'
+          .user-media__image-container
+            span.user-media__image-outer(
+              style= 'width:' + size.width + 'px'
             )
+              img.user-media__image(src=imageUrl)
+              span.user-media__image-spacer(
+                style= 'padding-bottom:' + 100*size.height/size.width + '%'
+              )
 
-      else if isVideo
-        .user-media__video
-          != self.media.medialink_html
+        else if isVideo
+          .user-media__video
+            != self.media.medialink_html
 
-      else if isBinary
-        .user-media__binary
-          a.user-media__binary-link(
-            href=self.link_to('core.gridfs', { bucket: self.media.media_id })
-          )
-            span.user-media__binary-icon.icon.icon-binary
-            = self.media.file_name
+        else if isBinary
+          .user-media__binary
+            a.user-media__binary-link(
+              href=self.link_to('core.gridfs', { bucket: self.media.media_id })
+            )
+              span.user-media__binary-icon.icon.icon-binary
+              = self.media.file_name
 
       //- Prev / Next navigation
       if self.previous
