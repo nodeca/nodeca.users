@@ -182,7 +182,10 @@ N.wire.after('navigate.done:' + module.apiPath, function uploader_setup() {
   $dropZone = $('.user-album-upload');
 
   $('#user-album-upload__files').on('change', function () {
-    let files = $(this).get(0).files;
+    var files = Array.prototype.slice.call($(this).get(0).files); // clone filelist
+
+    // reset input, so uploading the same file again will trigger 'change' event
+    $(this).val('');
 
     if (files.length > 0) {
       let params = {

@@ -29,16 +29,13 @@
 'use strict';
 
 const _              = require('lodash');
-const from2          = require('from2');
 const readFile       = require('util').promisify(require('fs').readFile);
 const mime           = require('mime-types').lookup;
 const Mongoose       = require('mongoose');
-const pump           = require('util').promisify(require('pump'));
 const stream         = require('readable-stream');
 const sharp          = require('sharp');
-const through2       = require('through2');
-const filter_jpeg    = require('nodeca.users/lib/filter_jpeg');
 const probe          = require('probe-image-size');
+const image_traverse = require('image-blob-reduce/lib/image_traverse');
 const resize_outline = require('nodeca.users/lib/resize_outline');
 
 
@@ -46,26 +43,6 @@ let File;
 
 // Limit amount of threads used for each image
 sharp.concurrency(1);
-
-
-// Stream2 interface for jpeg_stream
-//
-function filter_jpeg_stream(options) {
-  let filter = filter_jpeg(options);
-
-  let stream = through2(function write(chunk, __, callback) {
-    filter.push(chunk);
-    callback();
-  }, function flush(callback) {
-    filter.end();
-    callback();
-  });
-
-  filter.onData = data => { stream.push(data); };
-  filter.onEnd  = ()   => { stream.push(null); };
-
-  return stream;
-}
 
 
 // Create preview for image
@@ -161,6 +138,38 @@ async function createPreview(image, resizeConfig, imageType) {
 }
 
 
+// Remove all metadata (Exif, ICC, photoshop stuff, etc.)
+//
+function filterJpegPreview(buffer) {
+  buffer = image_traverse.jpeg_segments_filter(buffer, segment => {
+    if (segment.id >= 0xE1 && segment.id < 0xF0) return false;
+    return true;
+  });
+
+  return buffer;
+}
+
+
+// Remove metadata (ICC, photoshop stuff, etc.), and filter exif
+//
+function filterJpegImage(buffer, comment) {
+  buffer = image_traverse.jpeg_segments_filter(buffer, segment => {
+    if (segment.id >= 0xE2 && segment.id < 0xF0) return false;
+    return true;
+  });
+
+  buffer = image_traverse.jpeg_exif_tags_filter(buffer, entry => {
+    return entry.data_length < 100;
+  });
+
+  if (comment) {
+    buffer = image_traverse.jpeg_add_comment(buffer, comment);
+  }
+
+  return buffer;
+}
+
+
 // Save buffered images to database
 //
 // - previews - { orig: { path, type }, ... }
@@ -198,20 +207,17 @@ async function saveImages(previews, options) {
       params.filename = origId + '_' + key;
     }
 
-    let filter = (data.image.buffer[0] === 0xFF && data.image.buffer[1] === 0xD8) ?
-                 filter_jpeg_stream({
-                   filter:     true,
-                   removeICC:  key === 'sm' ? true : null,
-                   removeExif: key === 'sm' ? true : null,
-                   comment:    key === 'sm' ? null : options.comment
-                 }) :
-                 through2();
+    let buffer = data.image.buffer;
 
-    await pump(
-      from2([ data.image.buffer ]),
-      filter,
-      File.createWriteStream(params)
-    );
+    if (buffer[0] === 0xFF && buffer[1] === 0xD8) {
+      if (key === 'sm') {
+        buffer = filterJpegPreview(buffer, options.comment);
+      } else {
+        buffer = filterJpegImage(buffer, options.comment);
+      }
+    }
+
+    await File.put(Buffer.from(buffer), params);
   }
 
   return origId;

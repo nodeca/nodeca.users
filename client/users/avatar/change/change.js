@@ -4,20 +4,22 @@
 'use strict';
 
 
-const _           = require('lodash');
-const filter_jpeg = require('nodeca.users/lib/filter_jpeg');
+const _ = require('lodash');
 
 // Pica instance
 let pica;
 
-// Promise that waits for pica dependency to load
-let waitForPica;
+// Reducer instance
+let image_blob_reduce;
+
+// Promise that waits for image-blob-reduce dependency to load
+let waitForReduce;
 
 // Avatar upload finish callback
 let onUploaded;
 
-// Original image & it's sizes (sizes are calculated after orientation update)
-let image, imageWidth, imageHeight;
+// Original image sizes
+let imageWidth, imageHeight;
 
 // Avatar size config
 const avatarWidth = '$$ N.config.users.avatars.resize.orig.width $$';
@@ -83,7 +85,7 @@ let redrawTaskCancel = null;
 // Built high quality avatar preview. This is slow, do
 // it only after user stopped cropper change
 let previewHqUpdate = _.debounce(() => {
-  pica = pica || require('pica')();
+  pica = pica || require('image-blob-reduce').pica();
 
   let width = cropperRight - cropperLeft;
   let height = cropperBottom - cropperTop;
@@ -334,70 +336,6 @@ function cropperResize(mouseX, mouseY, dir) {
 }
 
 
-// Apply JPEG orientation to canvas. Define flip/rotate transformation
-// on context and swap canvas width/height if needed
-//
-function orientationApply(ctx, orientation) {
-  let width = canvas.width;
-  let height = canvas.height;
-
-  if (!orientation || orientation > 8) return;
-
-  if (orientation > 4) {
-    ctx.canvas.width = height;
-    ctx.canvas.height = width;
-  }
-
-  switch (orientation) {
-
-    case 2:
-      // Horizontal flip
-      ctx.translate(width, 0);
-      ctx.scale(-1, 1);
-      break;
-
-    case 3:
-      // rotate 180 degrees left
-      ctx.translate(width, height);
-      ctx.rotate(Math.PI);
-      break;
-
-    case 4:
-      // Vertical flip
-      ctx.translate(0, height);
-      ctx.scale(1, -1);
-      break;
-
-    case 5:
-      // Vertical flip + rotate right
-      ctx.rotate(0.5 * Math.PI);
-      ctx.scale(1, -1);
-      break;
-
-    case 6:
-      // Rotate right
-      ctx.rotate(0.5 * Math.PI);
-      ctx.translate(0, -height);
-      break;
-
-    case 7:
-      // Horizontal flip + rotate right
-      ctx.rotate(0.5 * Math.PI);
-      ctx.translate(width, -height);
-      ctx.scale(-1, 1);
-      break;
-
-    case 8:
-      // Rotate left
-      ctx.rotate(-0.5 * Math.PI);
-      ctx.translate(-width, 0);
-      break;
-
-    default:
-  }
-}
-
-
 // Update viewRatio, viewOffsetX, viewOffsetY, cropperMinWidth, cropperMinHeight on image load & window resize
 //
 function viewParamsUpdate() {
@@ -415,29 +353,20 @@ function viewParamsUpdate() {
 // Load image from user's file
 //
 function loadImage(file) {
-  var ctx = canvas.getContext('2d');
-  var orientation;
+  image_blob_reduce = image_blob_reduce || require('image-blob-reduce')();
 
-  image = new Image();
-
-  image.onerror = () => { N.wire.emit('notify', t('err_image_invalid')); };
-
-  image.onload =  () => {
-
-    if (image.width < avatarWidth || image.height < avatarHeight) {
-      N.wire.emit('notify', t('err_invalid_size', { w: avatarWidth, h: avatarHeight }));
-      return;
-    }
-
-    canvas.width  = image.width;
-    canvas.height = image.height;
-
-    orientationApply(ctx, orientation);
+  image_blob_reduce.to_canvas(file).then(_canvas => {
+    canvas.width = _canvas.width;
+    canvas.height = _canvas.height;
+    canvas.getContext('2d').drawImage(_canvas, 0, 0);
 
     imageWidth = canvas.width;
     imageHeight = canvas.height;
 
-    ctx.drawImage(image, 0, 0, image.width, image.height);
+    if (imageWidth < avatarWidth || imageHeight < avatarHeight) {
+      N.wire.emit('notify', t('err_invalid_size', { w: avatarWidth, h: avatarHeight }));
+      return;
+    }
 
     $('.avatar-change').addClass('avatar-change__m-loaded');
 
@@ -452,32 +381,8 @@ function loadImage(file) {
 
     cropperUpdate();
     previewUpdate();
-  };
 
-  let reader = new FileReader();
-
-  reader.onloadend = e => {
-    // only keep comments and exif in header
-    let filter = filter_jpeg({
-      onIFDEntry: function readOrientation(ifd, entry) {
-        if (ifd === 0 && entry.tag === 0x112 && entry.type === 3) {
-          orientation = this.readUInt16(entry.value, 0);
-        }
-      }
-    });
-
-    try {
-      filter.push(new Uint8Array(e.target.result));
-      filter.end();
-    } catch (err) {
-      N.wire.emit('notify', t('err_image_invalid'));
-      return;
-    }
-
-    image.src = window.URL.createObjectURL(file);
-  };
-
-  reader.readAsArrayBuffer(file);
+  }, () => N.wire.emit('notify', t('err_image_invalid')));
 }
 
 
@@ -581,7 +486,7 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
         $dropZone.removeClass('active');
 
         if (data.files && data.files.length) {
-          waitForPica
+          waitForReduce
             .then(() => loadImage(data.files[0]))
             .catch(err => N.wire.emit('error', err));
         }
@@ -598,7 +503,7 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
   let avatarBlob;
 
   N.wire.on('users.avatar.change:apply', function change_avatar_resize() {
-    pica = pica || require('pica')();
+    pica = pica || require('image-blob-reduce').pica();
 
     var width = cropperRight - cropperLeft;
     var height = cropperBottom - cropperTop;
@@ -668,7 +573,6 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
 
     // Free resources
     onUploaded = null;
-    image = null;
     $dialog = null;
     cropper = null;
     canvas = null;
@@ -721,10 +625,13 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
   $('#avatar-change__upload').on('change', function () {
     let files = $(this)[0].files;
     if (files.length > 0) {
-      waitForPica
-        .then(() => loadImage(files[0]))
+      let avatar = files[0];
+      waitForReduce
+        .then(() => loadImage(avatar))
         .catch(err => N.wire.emit('error', err));
     }
+    // reset input, so uploading the same file again will trigger 'change' event
+    $(this).val('');
   });
 
   // Update cropper on dialog open.
@@ -736,5 +643,5 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
 
   $dialog.modal('show');
 
-  waitForPica = N.loader.loadAssets('vendor.pica');
+  waitForReduce = N.loader.loadAssets('vendor.image-blob-reduce');
 });

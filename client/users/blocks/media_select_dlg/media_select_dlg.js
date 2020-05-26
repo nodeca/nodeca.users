@@ -85,7 +85,10 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
   // Upload selected files
   //
   N.wire.on('users.blocks.media_select_dlg:upload', function upload_files(data) {
-    var files = data.$this.get(0).files;
+    var files = Array.prototype.slice.call(data.$this.get(0).files); // clone filelist
+
+    // reset input, so uploading the same file again will trigger 'change' event
+    data.$this.val('');
 
     if (files.length > 0) {
       var params = {

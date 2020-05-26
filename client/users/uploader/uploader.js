@@ -23,9 +23,7 @@
 'use strict';
 
 
-const _              = require('lodash');
-const filter_jpeg    = require('nodeca.users/lib/filter_jpeg');
-const resize_outline = require('nodeca.users/lib/resize_outline');
+const _ = require('lodash');
 
 
 let settings;
@@ -36,28 +34,7 @@ let aborted;
 let closeConfirmation;
 let uploadedFiles;
 let requests;
-let pica;
-
-
-// Concatenate multiple Uint8Arrays
-//
-function arrayConcat(list) {
-  let size = 0;
-  let pos = 0;
-
-  for (let i = 0; i < list.length; i++) {
-    size += list[i].length;
-  }
-
-  let result = new Uint8Array(size);
-
-  for (let i = 0; i < list.length; i++) {
-    result.set(list[i], pos);
-    pos += list[i].length;
-  }
-
-  return result;
-}
+let image_blob_reduce;
 
 
 // Check file extension
@@ -77,132 +54,40 @@ function checkFile(data) {
 // Resize image if needed
 //
 function resizeImage(data) {
-  pica = pica || require('pica')();
+  image_blob_reduce = image_blob_reduce || require('image-blob-reduce')();
 
-  return new Promise((resolve, reject) => {
-    // Next tick
-    setTimeout(() => {
-      let slice = data.file.slice || data.file.webkitSlice || data.file.mozSlice;
-      let ext = data.file.name.split('.').pop();
-      let typeConfig = settings.types[ext] || {};
+  let ext = data.file.name.split('.').pop();
+  let typeConfig = settings.types[ext] || {};
 
-      // Check if file can be resized before upload
-      if ([ 'bmp', 'jpg', 'jpeg', 'png' ].indexOf(ext) === -1 || !typeConfig.resize || !typeConfig.resize.orig) {
-        resolve(); // Skip resize
-        return;
-      }
+  // Check if file can be resized before upload
+  if ([ 'bmp', 'jpg', 'jpeg', 'png' ].indexOf(ext) === -1 || !typeConfig.resize || !typeConfig.resize.orig) {
+    return Promise.resolve(); // Skip resize
+  }
 
-      let resizeConfig = typeConfig.resize.orig;
+  let resizeConfig = typeConfig.resize.orig;
 
-      // If image size smaller than 'skip_size' - skip resizing
-      if (data.file.size < resizeConfig.skip_size) {
-        resolve();
-        return;
-      }
+  // If image size smaller than 'skip_size' - skip resizing
+  if (data.file.size < resizeConfig.skip_size) {
+    return Promise.resolve();
+  }
 
-      let $progressStatus = $('#' + data.uploaderFileId).find('.uploader-progress__status');
-      let jpegHeader;
-      let img = new Image();
+  let $progressStatus = $('#' + data.uploaderFileId).find('.uploader-progress__status');
 
-      $progressStatus.show(0);
+  $progressStatus.show(0);
 
-      img.onload = () => {
-        let u = resize_outline(img.width, img.height, resizeConfig);
-        let scaledWidth = u.crop_width;
-        let scaledHeight = u.crop_height;
+  return image_blob_reduce.to_blob(data.file, { max: resizeConfig.width })
+    .then(blob => {
+      data.file = new File([ blob ], data.file.name, { type: blob.type });
+      $progressStatus.hide(0);
+    })
+    .catch(err => {
+      let message = t('err_bad_image', {
+        file_name: data.file.name
+      });
 
-        /*eslint-disable no-undefined*/
-        let quality = (ext === 'jpeg' || ext === 'jpg') ? resizeConfig.jpeg_quality : undefined;
-
-        let width = Math.min(img.height * scaledWidth / scaledHeight, img.width);
-        let cropX = (width - img.width) / 2;
-
-        let alpha = ext === 'png';
-
-        let source = document.createElement('canvas');
-        let dest = document.createElement('canvas');
-
-        source.width = width;
-        source.height = img.height;
-
-        dest.width = scaledWidth;
-        dest.height = scaledHeight;
-
-        source.getContext('2d').drawImage(img, cropX, 0, width, img.height);
-
-        pica.resize(source, dest, { alpha })
-          .then(() => pica.toBlob(dest, data.file.type, quality))
-          .then(function (blob) {
-            let jpegBlob, jpegBody;
-
-            if (jpegHeader) {
-              // remove JPEG header (2 bytes) and JFIF segment (18 bytes),
-              // assuming JFIF is always present and always the same in all
-              // images from canvas
-              jpegBody = slice.call(blob, 20);
-
-              jpegBlob = new Blob([ jpegHeader, jpegBody ], { type: data.file.type });
-            }
-
-            let name = data.file.name;
-
-            data.file = jpegBlob || blob;
-            data.file.name = name;
-            $progressStatus.hide(0);
-            resolve();
-          });
-      };
-
-      img.onerror = () => {
-        let message = t('err_bad_image', {
-          file_name: data.file.name
-        });
-
-        N.wire.emit('notify', message);
-
-        reject(new Error(message));
-      };
-
-      let reader = new FileReader();
-
-      reader.onloadend = () => {
-        let fileData = new Uint8Array(reader.result);
-
-        if (fileData[0] === 0xFF && fileData[1] === 0xD8) {
-          // only keep comments and exif in header
-          let filter = filter_jpeg({
-            removeImage: true,
-            filter:      true,
-            removeICC:   true
-          });
-
-          try {
-            filter.push(fileData);
-            filter.end();
-          } catch (err) {
-            let message = t('err_bad_image', {
-              file_name: data.file.name
-            });
-
-            N.wire.emit('notify', message);
-
-            reject(new Error(message));
-            return;
-          }
-
-          let tmp = arrayConcat(filter.output);
-
-          // cut off last 2 bytes (EOI, 0xFFD9),
-          // they are always added by filter_jpeg on end
-          jpegHeader = tmp.subarray(0, tmp.length - 2);
-        }
-
-        img.src = window.URL.createObjectURL(data.file);
-      };
-
-      reader.readAsArrayBuffer(data.file);
-    }, 0);
-  });
+      N.wire.emit('notify', message);
+      throw err; // re-throw
+    });
 }
 
 
@@ -336,7 +221,7 @@ N.wire.before(module.apiPath + ':add', function load_config(data) {
 // Load dependencies
 //
 N.wire.before(module.apiPath + ':add', function load_deps() {
-  return N.loader.loadAssets('vendor.pica');
+  return N.loader.loadAssets('vendor.image-blob-reduce');
 });
 
 
