@@ -75,7 +75,7 @@ function resizeImage(data) {
 
   $progressStatus.show(0);
 
-  return image_blob_reduce.to_blob(data.file, { max: resizeConfig.width })
+  return image_blob_reduce.toBlob(data.file, { max: resizeConfig.width })
     .then(blob => {
       data.file = new File([ blob ], data.file.name, { type: blob.type });
       $progressStatus.hide(0);

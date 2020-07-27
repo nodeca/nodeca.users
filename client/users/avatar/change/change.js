@@ -355,7 +355,7 @@ function viewParamsUpdate() {
 function loadImage(file) {
   image_blob_reduce = image_blob_reduce || require('image-blob-reduce')();
 
-  image_blob_reduce.to_canvas(file).then(_canvas => {
+  image_blob_reduce.toCanvas(file).then(_canvas => {
     canvas.width = _canvas.width;
     canvas.height = _canvas.height;
     canvas.getContext('2d').drawImage(_canvas, 0, 0);
