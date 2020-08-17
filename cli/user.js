@@ -7,7 +7,7 @@ const _       = require('lodash');
 
 
 module.exports.parserParameters = {
-  addHelp:     true,
+  add_help:    true,
   help:        'Create user and assign with some groups',
   description: 'Create user'
 };
@@ -27,7 +27,7 @@ module.exports.commandLineArguments = [
       dest: 'mark_to_add',
       help: 'add user to group',
       action: 'append',
-      defaultValue: [],
+      default: [],
       type: 'string'
     }
   },
@@ -37,7 +37,7 @@ module.exports.commandLineArguments = [
       dest: 'mark_to_remove',
       help: 'remove user from group',
       action: 'append',
-      defaultValue: [],
+      default: [],
       type: 'string'
     }
   },
