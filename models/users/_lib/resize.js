@@ -32,7 +32,6 @@ const _              = require('lodash');
 const readFile       = require('util').promisify(require('fs').readFile);
 const mime           = require('mime-types').lookup;
 const Mongoose       = require('mongoose');
-const stream         = require('readable-stream');
 const sharp          = require('sharp');
 const probe          = require('probe-image-size');
 const image_traverse = require('image-blob-reduce/lib/image_traverse');
@@ -233,12 +232,7 @@ module.exports = async function (src, options) {
   // Read image from file, determine its size
   //
   let data = await readFile(src);
-  let streamBuffer = new stream.Transform();
-
-  streamBuffer.push(data);
-  streamBuffer.end();
-
-  let imgSz = await probe(streamBuffer);
+  let imgSz = probe.sync(data);
 
   let origImage = {
     buffer: data,
