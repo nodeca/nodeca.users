@@ -3,20 +3,15 @@
 
 'use strict';
 
-const pumpify  = require('pumpify');
-const through2 = require('through2');
+const stream   = require('stream');
 
 
 module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, function get_users_sitemap(data) {
-    let stream = pumpify.obj(
-      N.models.users.User.collection
-                         .find({ exists: true }, { hid: 1, last_active_ts: 1 })
-                         .sort({ hid: 1 })
-                         .stream(),
-
-      through2.obj(function (user, encoding, callback) {
+    let user_stream = new stream.Transform({
+      objectMode: true,
+      transform(user, encoding, callback) {
         this.push({
           loc: N.router.linkTo('users.member', {
             user_hid: user.hid
@@ -25,9 +20,21 @@ module.exports = function (N, apiPath) {
         });
 
         callback();
-      })
+      }
+    });
+
+    stream.pipeline(
+      N.models.users.User.find()
+          .where('exists').equals(true)
+          .select('hid last_active_ts')
+          .sort('hid')
+          .lean(true)
+          .stream(),
+
+      user_stream,
+      () => {}
     );
 
-    data.streams.push({ name: 'users', stream });
+    data.streams.push({ name: 'users', stream: user_stream });
   });
 };
