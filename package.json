@@ -7,17 +7,5 @@
     "users"
   ],
   "license": "MIT",
-  "repository": "nodeca/nodeca.users",
-  "browserify": {
-    "transform": [
-      [
-        "babelify",
-        {
-          "presets": [
-            "@babel/preset-env"
-          ]
-        }
-      ]
-    ]
-  }
+  "repository": "nodeca/nodeca.users"
 }
