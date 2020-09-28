@@ -1,0 +1,4 @@
+ru-RU:
+  title: "#{album} - #{username}"
+  default_name: Несортированное
+  breadcrumbs_progress: "#{title} (#{current} из #{total})"

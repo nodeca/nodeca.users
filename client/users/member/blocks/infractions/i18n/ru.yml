@@ -1,0 +1,16 @@
+ru-RU:
+  title: "Нарушения"
+  counter: "#{count} ((очко|очка|очков))"
+  never: Никогда
+  expired: Истекло
+  deleted: Удалено
+  by: От
+  date: Дата
+  reason: Причина
+  points: Очки
+  expires: Истекает
+  ask_question: Задать вопрос об этом нарушении
+  delete: Удалить
+  add: Добавить нарушение
+  infraction_added: Нарушение добавлено
+  deleted_by: "Удалил:"

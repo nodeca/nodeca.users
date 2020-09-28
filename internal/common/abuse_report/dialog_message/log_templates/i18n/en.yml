@@ -3,5 +3,5 @@ en-US:
     subject: "Report from #{user} (dialog message)"
   body:
     header: "Report from user #{url}:"
-    to: "About [dialog message](#{url}):"
-    message_sent_to: "This message sent to: "
+    to: "About dialog [message](#{url}):"
+    message_sent_to: "This report is also sent to: "

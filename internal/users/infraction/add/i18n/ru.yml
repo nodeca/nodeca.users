@@ -1,0 +1,15 @@
+ru-RU:
+  original_message: "Исходное сообщение:"
+  text: |
+    #{nick} выдал вам ((=0 предупреждение|нарушение \(#{points} очко\)|нарушение \(#{points} очка\)|нарушение \(#{points} очков\))):points
+
+    Reason: #{reason}
+
+    #{description}
+
+    #{message_url}
+
+    #{message_text}
+
+    Вы можете посмотреть список ваших нарушений и задать вопросы в
+    [вашем профиле](#{infraction_link}).

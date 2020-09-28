@@ -1,0 +1,12 @@
+ru-RU:
+  error: Пользователь не найден
+  find_posts: Найти сообщения
+  send_message: Отправить сообщение
+  infractions_title: Нарушения
+  infractions_text: "#{count} ((очко|очка|очков))"
+  penalty_title: Заблокирован до
+  age: Возраст
+  location: Местоположение
+  activity: Активность
+  joined: Зарегистрирован
+  last_active: Последняя активность

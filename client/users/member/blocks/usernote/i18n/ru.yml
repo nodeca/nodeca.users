@@ -1,0 +1,6 @@
+ru-RU:
+  edit_note: Редактировать эту заметку
+  remove_note: Удалить эту заметку
+  editor_title: "Редактировать заметки для пользователя &quot;<a href='#{url}'>#{nick}</a>&quot;"
+  update_notice: Ваша заметка сохранена
+  remove_confirm: Вы уверены, что хотите удалить эту заметку?

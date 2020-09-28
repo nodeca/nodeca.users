@@ -1,0 +1,8 @@
+ru-RU:
+  index:
+    title: Подписки
+    delete_confirmation: Вы уверены, что хотите отменить эту подписку?
+    no_subscriptions: Подписок нет
+    tracker: Новые
+    subscriptions: Все подписки
+    mark_read: Пометить всё как прочитанное

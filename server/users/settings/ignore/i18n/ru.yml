@@ -1,0 +1,8 @@
+ru-RU:
+  title: Список игнорированных
+  breadcrumbs_title: Настройки
+
+  add:
+    err_invalid_user: Недействительный пользователь
+    err_cant_ignore_yourself: Вы не можете игнорировать себя самого
+    err_cant_ignore_moderators: Вы не можете игнорировать модераторов

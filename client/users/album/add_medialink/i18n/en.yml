@@ -7,4 +7,4 @@ en-US:
   add: Add
   cancel: Cancel
 
-  err_empty_url: 'Video URL should not be empty'
+  err_empty_url: Video URL should not be empty

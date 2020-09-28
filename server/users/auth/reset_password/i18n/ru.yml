@@ -1,0 +1,46 @@
+ru-RU:
+  request_show:
+    title: Смена пароля
+
+  request_exec:
+    err_captcha_wrong: Проверка CAPTCHA не прошла, попробуйте ещё раз.
+    err_email_unknown: Неизвестный email адрес.
+
+    email_subject: '#{project_name}: подтверждение смены пароля.'
+    email_text: |
+      Смена пароля была запрошена с IP #{ip}
+
+      Пройдите по этой ссылке для смены пароля:
+
+      #{link}
+
+      Или введите этот код:
+
+      #{code}
+
+      Если вы не запрашивали сброс пароля или передумали,
+      просто проигнорируйте это письмо.
+
+  request_done_show:
+    title: Смена пароля
+
+  change_show:
+    title: Смена пароля
+
+  change_exec:
+    err_expired_token: Токен безопасности истёк.
+    err_broken_token: Неверный токен безопасности.
+    err_password_is_nick: Вы не должны использовать ваш ник в качестве пароля.
+    err_password_is_email: Вы не должны использовать ваш email в качестве пароля.
+    err_password_is_hostname: Вы не должны использовать адрес сайта в качестве пароля.
+    email_subject: '#{project_name}: пароль изменён.'
+    email_text: |
+      md:
+        Пароль для аккаунта #{nick} на #{project_name} был изменён.
+
+        - Время: #{time}
+        - IP: #{ip}
+    mod_note_text: Пароль изменён пользователем.
+
+  change_done_show:
+    title: Смена пароля

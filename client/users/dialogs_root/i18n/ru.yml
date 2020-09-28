@@ -1,0 +1,6 @@
+ru-RU:
+  title: Диалоги
+  hide_answered_dialogs: Только без ответа
+  no_messages: Диалогов нет
+  new_message: Новый диалог
+  delete_confirmation: Вы уверены, что хотите удалить весь этот разговор? Это действие не может быть отменено.

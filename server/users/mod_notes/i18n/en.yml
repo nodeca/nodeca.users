@@ -2,6 +2,6 @@ en-US:
   title_with_user: "Moderator's notes - #{user}"
   breadcrumbs_title: Moderator's notes
   update:
-    err_perm_expired: You can not edit this note anymore
+    err_perm_expired: You cannot edit this note anymore
   destroy:
-    err_perm_expired: You can not delete this note anymore
+    err_perm_expired: You cannot delete this note anymore

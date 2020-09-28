@@ -1,0 +1,17 @@
+ru-RU:
+  show:
+    title: Вход
+    register: Регистрация
+    email: Email (или ник)
+    email_desc: Введите email
+    password: Пароль
+    password_desc: Пароль
+    password_help: Если вы оставите пароль пустым, мы пришлём вам на email ссылку для входа
+    enter: Вход
+    forgot: забыли пароль?
+    oauth_info: Зайти через
+
+  by_email_show:
+    title: Вход
+    message: "Мы отправили вам на email ссылку для входа. Нажмите её или введите полученный код сюда:"
+    submit: Вход

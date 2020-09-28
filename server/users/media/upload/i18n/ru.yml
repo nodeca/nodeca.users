@@ -1,0 +1,6 @@
+ru-RU:
+  err_permission: У вас нет прав на загрузку файлов
+  err_file_size: "Файл слишком большой (макс. #{max_size_kb} KB)"
+  err_invalid_ext: "#{file_name}: вы не можете загружать файлы в этом формате"
+  err_quota_exceeded: "Ваша квота (#{quota_mb} MB) превышена"
+  err_album_not_found: Альбом не найден

@@ -1,7 +1,7 @@
 en-US:
   plain_exec:
     err_login_failed:
-      Can't login. Check, that your email/nick and password are correct and try
+      Can't login. Check that your email/nick and password are correct, and try
       again. Or use link below to reset your password.
 
     err_captcha_wrong: CAPTCHA verification failed, try again.

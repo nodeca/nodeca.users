@@ -1,0 +1,4 @@
+ru-RU:
+  title_with_nick: "Написать ответ &quot;<a href='#{url}'>#{nick}</a>&quot;"
+  options_btn:
+    options: Опции

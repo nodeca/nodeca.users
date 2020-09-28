@@ -1,0 +1,2 @@
+ru-RU:
+  err_quota_exceeded: "Ваша квота (#{quota_mb} MB) превышена"

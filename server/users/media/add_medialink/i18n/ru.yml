@@ -1,0 +1,3 @@
+ru-RU:
+  err_invalid_url: Неверный URL
+  err_cannot_parse: URL недоступен. Попробуйте позже

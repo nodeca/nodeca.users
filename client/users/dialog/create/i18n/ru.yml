@@ -1,0 +1,8 @@
+ru-RU:
+  title: Новый диалог
+  title_with_nick: "Новый диалог с &quot;<a href='#{url}'>#{nick}</a>&quot;"
+  inputs:
+    to_label: Новый диалог с
+    to_placeholder: ник пользователя
+  options_btn:
+    options: Опции

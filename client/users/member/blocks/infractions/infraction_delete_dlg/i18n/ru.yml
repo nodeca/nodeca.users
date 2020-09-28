@@ -1,0 +1,6 @@
+ru-RU:
+  title: Удалить нарушение
+  confirmation_text: Вы уверены, что хотите удалить это нарушение?
+  reason_input_help: Причина удаления
+  ok: OK
+  cancel: Отмена

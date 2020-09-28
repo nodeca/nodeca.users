@@ -1,6 +1,6 @@
 en-US:
   title: Delete infraction
-  confirmation_text: Are you sure you want to delete infraction?
+  confirmation_text: Are you sure you wish to delete infraction?
   reason_input_help: Deletion reason
   ok: OK
   cancel: Cancel

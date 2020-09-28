@@ -1,0 +1,7 @@
+ru-RU:
+  title_with_user: "Примечания модератора - #{user}"
+  breadcrumbs_title: Примечания модератора
+  update:
+    err_perm_expired: Вы не можете больше редактировать это примечание
+  destroy:
+    err_perm_expired: Вы не можете больше удалить это примечание

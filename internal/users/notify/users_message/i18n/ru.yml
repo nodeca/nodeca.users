@@ -1,0 +1,3 @@
+ru-RU:
+  subject: '#{project_name}: сообщение от #{user_name}'
+  reply: Ответ

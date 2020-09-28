@@ -1,0 +1,26 @@
+ru-RU:
+  request_show:
+    password: Введите ваш пароль для смены email
+    password_desc: Пароль
+    password_help: Если вы оставите пароль пустым, мы отправим вам на старый email ссылку, которую вы можете использовать для его замены
+    submit: ok
+
+  request_verify:
+    message: 'Вы должны получить письмо со ссылкой для смены email. Нажмите на неё или введите полученный код сюда:'
+    err_invalid_token: Неверный токен безопасности
+    submit: ok
+
+  new_email_show:
+    email: Введите новый email
+    email_desc: Email
+    email_help: Подтверждение будет отправлено на новый email
+    submit: ok
+    err_invalid_token: Неверный токен безопасности
+
+  new_email_verify:
+    message: 'Вы должны получить письмо со ссылкой для подтверждения нового email. Нажмите на неё или введите полученный код сюда:'
+    err_invalid_token: Неверный токен безопасности
+    submit: ok
+
+  new_email_done:
+    message: Ваш email изменён.

@@ -15,7 +15,7 @@ en-US:
       Dear #{nick},
 
       Thank you for registering at the #{project_name}. Before we can activate
-      your account one last step must be taken to complete your registration.
+      your account, one last step must be taken to complete your registration.
 
       Please note - you must complete this last step to become a registered
       member. You will only need to visit this URL once to activate your account.

@@ -18,10 +18,10 @@ en-US:
   show_ips: Show IP addresses
   delete_account: Delete account
   restore_account: Restore account
-  delete_avatar_confirm: Are you sure you want to delete this avatar?
-  delete_account_confirm: Are you sure you want to delete this account?
-  restore_account_confirm: Are you sure you want to restore this account?
-  delete_dialogs_confirm: Are you sure you want to remove all dialogs associated with this account?
-  delete_votes_confirm: Are you sure you want to remove all votes created by this user?
-  reset_password_confirm: Are you sure you want to deactivate this user's password?
-  unblock_confirm: Are you sure you want to unblock this user?
+  delete_avatar_confirm: Are you sure you wish to delete this avatar?
+  delete_account_confirm: Are you sure you wish to delete this account?
+  restore_account_confirm: Are you sure you wish to restore this account?
+  delete_dialogs_confirm: Are you sure you wish to remove all dialogs associated with this account?
+  delete_votes_confirm: Are you sure you wish to remove all votes created by this user?
+  reset_password_confirm: Are you sure you wish to deactivate this user's password?
+  unblock_confirm: Are you sure you wish to unblock this user?

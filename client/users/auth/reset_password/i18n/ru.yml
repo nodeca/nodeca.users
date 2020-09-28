@@ -1,0 +1,25 @@
+ru-RU:
+  request_show:
+    email: Email
+    email_desc: Введите email
+    login: Вход
+    reset_password: Сбросить пароль
+
+  request_done_show:
+    message: 'Вы должны получить письмо со ссылкой для смены пароля. Нажмите на неё или введите полученный код сюда:'
+    err_invalid_token: Неверный токен безопасности.
+    submit: ok
+
+  change_show:
+    err_invalid_token: Неверный токен безопасности.
+
+    password: Новый пароль
+    password_desc: Новый пароль
+    password_help: >
+      Слабые пароли не принимаются. Мы рекомендуем использовать >= 10 символов
+      с комбинациями чисел и букв или фразу из нескольких слов.
+
+    ok: Ok
+
+  change_done_show:
+    message: Ваш пароль был изменён.

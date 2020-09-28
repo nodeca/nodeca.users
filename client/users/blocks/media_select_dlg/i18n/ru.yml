@@ -1,0 +1,11 @@
+ru-RU:
+  title: Выбрать файлы
+  cancel: Отмена
+  ok: OK
+  all: Все
+  dlg_body:
+    create_album: Создать альбом
+    upload_here: Загрузить сюда
+    default_name: Несортированное
+    no_files: Файлов нет
+    more: Ещё

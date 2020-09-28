@@ -1,5 +1,5 @@
 en-US:
   hellban: Hellban
-  unhellban: Unhelban
-  confirm_hellban: Are you sure want to hellban this user?
-  confirm_unhellban: Are you sure want to unhellban this user?
+  unhellban: Unhellban
+  confirm_hellban: Are you sure you wish all messages of this user to be hidden?
+  confirm_unhellban: Are you sure you wish all messages of this user to be visible?

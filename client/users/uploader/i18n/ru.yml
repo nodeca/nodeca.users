@@ -1,0 +1,12 @@
+ru-RU:
+  title: Загружается...
+
+  err_upload: "#{file_name}: загрузка не удалась"
+  err_bad_image: "#{file_name}: повреждённое изображение"
+  err_invalid_ext: "#{file_name}: вы не можете загружать файлы в этом формате"
+  err_max_size: "#{file_name}: слишком большой размер (> #{max_size_kb} KB)"
+
+  abort_confirm: Вы действительно хотите остановить загрузку?
+
+  progress:
+    compressing: Сжатие

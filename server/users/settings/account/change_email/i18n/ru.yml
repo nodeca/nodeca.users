@@ -1,0 +1,70 @@
+ru-RU:
+  request_show:
+    title: Смена email
+
+  request_verify:
+    title: Смена email
+
+  request_exec:
+    email_subject: '#{project_name}: подтверждение смены email.'
+    email_text: |
+      Смена email была запрошена с IP #{ip}
+
+      Пройдите по этой ссылке для смены email:
+
+      #{link}
+
+      Или введите этот код:
+
+      #{code}
+
+      Если вы не запрашивали смену email или передумали,
+      просто проигнорируйте это письмо.
+
+    err_wrong_password: |
+      Неверный пароль, попробуйте ещё раз. Или оставьте пароль пустым, тогда
+      мы отправим вам на старый email ссылку, которую вы можете использовать для его замены.
+
+  new_email_show:
+    title: Смена email
+
+  new_email_exec:
+    err_invalid_token: Неверный токен безопасности
+    err_bad_email: Неверный email адрес
+
+    email_subject: '#{project_name}: подтверждение email.'
+    email_text: |
+      Смена email была запрошена с IP #{ip}
+
+      В качестве последнего шага, вы должны подтвердить ваш новый email. Пройдите по этой ссылке:
+
+      #{link}
+
+      Или введите этот код:
+
+      #{code}
+
+      Если вы не запрашивали смену email или передумали,
+      просто проигнорируйте это письмо.
+
+  new_email_verify:
+    title: Смена email
+
+  new_email_verify_exec:
+    err_invalid_token: Неверный токен безопасности
+
+    email_subject: '#{project_name}: email изменён.'
+    email_text: |
+      md:
+        Email для аккаунта #{nick} на #{project_name} был изменён.
+
+        - Время: #{time}
+        - IP: #{ip}
+
+    mod_note_text: |
+      Email изменён пользователем:
+
+      #{old_email} → #{new_email}
+
+  new_email_done:
+    title: Смена email

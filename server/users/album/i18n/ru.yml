@@ -1,0 +1,4 @@
+ru-RU:
+  title_with_user: "Альбомы - #{username}"
+  title_album_with_user: "#{album} - #{username}"
+  default_name: Несортированное

@@ -1,0 +1,6 @@
+ru-RU:
+  title: Создать альбом
+  create: OK
+  cancel: Отмена
+  input_name: Название альбома
+  input_desc: Название для нового альбома

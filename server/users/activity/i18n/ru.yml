@@ -1,0 +1,3 @@
+ru-RU:
+  title_with_user: "Активность - #{user}"
+  breadcrumbs_title: Активность

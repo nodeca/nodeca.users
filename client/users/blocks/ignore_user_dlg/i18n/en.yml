@@ -1,6 +1,6 @@
 en-US:
   title: Ignore user
-  input_reason_placeholder: Reason (can be empty)
+  input_reason_placeholder: Reason (optional)
 
   period_forever: Forever
   period_7d: 7 days

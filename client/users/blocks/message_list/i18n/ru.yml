@@ -1,0 +1,6 @@
+ru-RU:
+  delete: Удалить
+  report: Сообщить модератору
+  ip_info: Информация об IP
+  add_infraction: Добавить нарушение
+  infraction_title: "#{points} ((очко|очка|очков)):points, добавлено #{date}"

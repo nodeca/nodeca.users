@@ -1,0 +1,8 @@
+ru-RU:
+  title_input_name: Название альбома
+  title_input_desc: Введите сюда название альбома
+  description_input_name: Описание альбома
+  description_input_desc: Описание для альбома (необязательно)
+  cover_input_name: Обложка
+  save: Сохранить
+  err_empty_name: Название альбома должно быть заполнено

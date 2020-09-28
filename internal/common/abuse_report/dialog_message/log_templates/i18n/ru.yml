@@ -1,0 +1,7 @@
+ru-RU:
+  subject:
+    subject: "Жалоба от #{user} (dialog message)"
+  body:
+    header: "Жалоба от пользователя #{url}:"
+    to: "О [сообщении](#{url}) в диалогах:"
+    message_sent_to: "Эта жалоба также отправлена: "

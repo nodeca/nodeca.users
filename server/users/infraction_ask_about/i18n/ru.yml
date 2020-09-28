@@ -1,9 +1,14 @@
-en-US:
+ru-RU:
   exec:
     message_text: |
-      Вопрос о предупреждении "#{reason}"\
+      Вопрос о нарушении "#{reason}"\
       #{link}
 
       ---
 
       #{message}
+
+    err_user_not_found: Пользователь не найден
+    err_sender_is_ignored: Вы не можете задавать вопросов потому, что модератор вас игнорирует
+    err_recipient_is_ignored: Вы не можете задавать вопросов потому, что вы игнорируете этого модератора
+    err_recipient_cant_use_dialogs: Пользователь не может получать никаких сообщений

@@ -1,0 +1,7 @@
+ru-RU:
+  ip_info:
+    err_no_ip: IP адрес для этого сообщения не указан
+
+  add_infraction:
+    err_perm_receive: Вы не можете выдать нарушение этому пользователю
+    err_infraction_exists: Нельзя выдать нарушение дважды

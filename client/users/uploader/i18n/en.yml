@@ -6,7 +6,7 @@ en-US:
   err_invalid_ext: "#{file_name}: you can't upload files of this type"
   err_max_size: "#{file_name}: too big file size (> #{max_size_kb} KB)"
 
-  abort_confirm: Are you sure want to abort uploading?
+  abort_confirm: Do you really wish to abort uploading?
 
   progress:
     compressing: Compressing

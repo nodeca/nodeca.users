@@ -1,0 +1,6 @@
+ru-RU:
+  title: Сменить альбом
+  default_album_name: Несортированное
+  album_input_name: 'Переместить в:'
+  ok: OK
+  cancel: Отмена

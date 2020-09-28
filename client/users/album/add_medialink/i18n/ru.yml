@@ -1,0 +1,10 @@
+ru-RU:
+  title: Добавить видео
+  input_url_name: URL-адрес видео
+  input_url_desc: URL-адрес страницы с видео
+  input_url_help: Вы можете добавить видео из
+
+  add: Добавить
+  cancel: Отмена
+
+  err_empty_url: URL-адрес видео должен быть заполнен

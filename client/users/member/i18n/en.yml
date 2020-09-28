@@ -1,7 +1,7 @@
 en-US:
   title: User profile
   change_avatar: click to change
-  delete_avatar_confirm: Are you sure want to delete avatar?
+  delete_avatar_confirm: Are you sure wish to delete avatar?
   last_active: 'Last active:'
   blocked_until: Blocked until
   add_ignore: Ignore this user
