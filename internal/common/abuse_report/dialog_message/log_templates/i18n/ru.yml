@@ -1,6 +1,6 @@
 ru-RU:
   subject:
-    subject: "Жалоба от #{user} (dialog message)"
+    subject: "Жалоба от #{user} (диалоги)"
   body:
     header: "Жалоба от пользователя #{url}:"
     to: "О [сообщении](#{url}) в диалогах:"
