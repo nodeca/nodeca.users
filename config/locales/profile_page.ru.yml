@@ -1,0 +1,12 @@
+i18n:
+  ru-RU:
+    users:
+      profile_page:
+        menu:
+          dialogs: Диалоги
+          albums: Альбомы
+          groups: Группы
+          bookmarks: Закладки
+          subscriptions: Подписки
+          drafts: Черновики
+          settings: Настройки

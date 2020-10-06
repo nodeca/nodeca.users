@@ -1,0 +1,19 @@
+i18n:
+  ru-RU:
+    users:
+
+      setting_cat:
+        subscriptions: Подписки
+        dialogs: Диалоги
+        content: Контент
+
+      setting_names:
+        default_subscription_mode: Режим подписки по умолчанию
+        dialogs_notify: Отправить email, если кто-то мне напишет
+        dialogs_hide_answered: Скрыть отвеченные диалоги
+        hide_heavy_content: Скрыть тяжёлый контент (картинки, видео и т.п.)
+
+      setting_values:
+        default_subscription_mode:
+          WATCHING: Наблюдать
+          TRACKING: Следить
