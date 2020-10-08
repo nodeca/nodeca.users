@@ -1,5 +1,5 @@
 en-US:
-  title: "Infractions"
+  title: Infractions
   counter: "#{count} ((point|points))"
   never: Never
   expired: Expired
