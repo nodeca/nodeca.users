@@ -3,4 +3,4 @@ ru-RU:
   report: Сообщить модератору
   ip_info: Информация об IP
   add_infraction: Выдать нарушение
-  infraction_title: "#{points} ((очко|очка|очков)):points, добавлено #{date}"
+  infraction_title: "#{points} ((балл|балла|баллов)):points, добавлено #{date}"

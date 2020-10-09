@@ -4,7 +4,7 @@ ru-RU:
   type: Тип
   reason: Причина
   reason_help: Введите причину, если нет подходящей
-  points: Очки
+  points: Баллы
   expire: Истекает (дни)
   expire_never: Никогда
   other: Другое

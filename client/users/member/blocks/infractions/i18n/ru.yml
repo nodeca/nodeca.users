@@ -1,13 +1,13 @@
 ru-RU:
   title: Нарушения
-  counter: "#{count} ((очко|очка|очков))"
+  counter: "#{count} ((балл|балла|баллов))"
   never: Никогда
   expired: Истекло
   deleted: Удалено
   by: От
   date: Дата
   reason: Причина
-  points: Очки
+  points: Баллы
   expires: Истекает
   ask_question: Задать вопрос об этом нарушении
   delete: Удалить

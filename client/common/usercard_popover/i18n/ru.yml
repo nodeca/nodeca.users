@@ -3,7 +3,7 @@ ru-RU:
   find_posts: Найти сообщения
   send_message: Отправить сообщение
   infractions_title: Нарушения
-  infractions_text: "#{count} ((очко|очка|очков))"
+  infractions_text: "#{count} ((балл|балла|баллов))"
   penalty_title: Заблокирован до
   age: Возраст
   location: Местоположение
