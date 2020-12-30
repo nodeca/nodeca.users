@@ -34,7 +34,7 @@ const mime           = require('mime-types').lookup;
 const Mongoose       = require('mongoose');
 const sharp          = require('sharp');
 const probe          = require('probe-image-size');
-const image_traverse = require('image-blob-reduce/lib/image_traverse');
+const image_traverse = require('image-blob-reduce/lib/image_traverse.js');
 const resize_outline = require('nodeca.users/lib/resize_outline');
 
 
