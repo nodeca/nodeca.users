@@ -175,7 +175,7 @@ module.exports = function (N, collectionName) {
    *  Resolve name for user location with 5 second delay used for deduplication
    **/
   User.statics.resolveLocation = async function resolveLocation(user_id, locale) {
-    await N.redis.zaddAsync('geo:member', Date.now(), String(user_id) + ':' + locale);
+    await N.redis.zadd('geo:member', Date.now(), String(user_id) + ':' + locale);
 
     N.queue.geo_member_location_process().postpone();
   };

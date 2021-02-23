@@ -42,11 +42,11 @@ describe('Marker', function () {
 
       await Marker.mark(uid, cid, cat, 'test');
 
-      let res = await redis.zscoreAsync('marker_marks:' + uid, String(cid));
+      let res = await redis.zscore('marker_marks:' + uid, String(cid));
 
       assert.strictEqual(+res, +cid.getTimestamp());
 
-      res = await redis.sismemberAsync('marker_marks_items', String(uid));
+      res = await redis.sismember('marker_marks_items', String(uid));
 
       assert.ok(res);
     });
@@ -59,7 +59,7 @@ describe('Marker', function () {
 
       await Marker.mark(uid, cid, cat, 'test');
 
-      let res = await redis.zscoreAsync('marker_marks:' + uid, String(cid));
+      let res = await redis.zscore('marker_marks:' + uid, String(cid));
 
       assert.strictEqual(res, null);
     });
@@ -73,11 +73,11 @@ describe('Marker', function () {
 
     await Marker.markAll(uid, sid);
 
-    let res = await redis.getAsync('marker_cut:' + uid + ':' + sid);
+    let res = await redis.get('marker_cut:' + uid + ':' + sid);
 
     assert.ok(now - 1000 <= res && res <= now + 1000);
 
-    res = await redis.zscoreAsync('marker_cut_updates', uid + ':' + sid);
+    res = await redis.zscore('marker_cut_updates', uid + ':' + sid);
 
     assert.ok(now - 1000 <= res && res <= now + 1000);
   });
@@ -92,11 +92,11 @@ describe('Marker', function () {
     await Marker.setPos(uid, cid, 6, 6, cat, 'test');
     await Marker.setPos(uid, cid, 2, 1, cat, 'test');
 
-    let res = await redis.zscoreAsync('marker_pos_updates', uid + ':' + cid);
+    let res = await redis.zscore('marker_pos_updates', uid + ':' + cid);
 
     assert.ok(now - 1000 <= res && res <= now + 1000);
 
-    let resJson = await redis.hgetAsync('marker_pos:' + uid, String(cid));
+    let resJson = await redis.hget('marker_pos:' + uid, String(cid));
 
     res = JSON.parse(resJson);
 
@@ -114,11 +114,11 @@ describe('Marker', function () {
       query.hset('marker_pos:' + uid, i, JSON.stringify({}));
     }
 
-    await query.execAsync();
+    await query.exec();
 
     await Marker.setPos(uid, 'qqq', 6, 6, cat, 'test');
 
-    let cnt = await redis.hlenAsync('marker_pos:' + uid);
+    let cnt = await redis.hlen('marker_pos:' + uid);
 
     assert.equal(cnt, 1000);
   });
@@ -209,7 +209,7 @@ describe('Marker', function () {
     query.zadd('marker_pos_updates', now, uid + ':fgh');
     query.zadd('marker_pos_updates', now - expire - 1000, uid + ':hgf');
 
-    await query.execAsync();
+    await query.exec();
 
     await Marker.cleanup();
 
@@ -229,19 +229,19 @@ describe('Marker', function () {
       .zscore('marker_pos_updates', uid + ':fgh')
       .zscore('marker_pos_updates', uid + ':hgf');
 
-    let res = await query.execAsync();
+    let res = await query.exec();
 
-    assert.notEqual(res[0], null);
-    assert.equal(res[1], null);
-    assert.notEqual(res[2], null);
-    assert.equal(res[3], null);
+    assert.notEqual(res[0][1], null);
+    assert.equal(res[1][1], null);
+    assert.notEqual(res[2][1], null);
+    assert.equal(res[3][1], null);
 
-    assert.notEqual(res[4], null);
-    assert.equal(res[5], null);
+    assert.notEqual(res[4][1], null);
+    assert.equal(res[5][1], null);
 
-    assert.notEqual(res[6], null);
-    assert.equal(res[7], null);
-    assert.notEqual(res[8], null);
-    assert.equal(res[9], null);
+    assert.notEqual(res[6][1], null);
+    assert.equal(res[7][1], null);
+    assert.notEqual(res[8][1], null);
+    assert.equal(res[9][1], null);
   });
 });

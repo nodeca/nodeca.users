@@ -19,7 +19,7 @@ module.exports = function (N) {
       }
 
       // Fetch session ID from token record
-      let session_id = await N.redis.getAsync('token_live:' + data.message.token);
+      let session_id = await N.redis.get('token_live:' + data.message.token);
 
       // Fetch session
       let authSession = await N.models.users.AuthSession.findOne()

@@ -110,8 +110,8 @@ module.exports = function (N, collectionName) {
     if (contentId.getTimestamp() < res[categoryId]) return;
 
     await Promise.all([
-      N.redis.saddAsync('marker_marks_items', String(userId)),
-      N.redis.zaddAsync('marker_marks:' + userId, +contentId.getTimestamp(), String(contentId))
+      N.redis.sadd('marker_marks_items', String(userId)),
+      N.redis.zadd('marker_marks:' + userId, +contentId.getTimestamp(), String(contentId))
     ]);
 
     // TODO: consider executing gc randomly with ~10% probablility
@@ -136,11 +136,11 @@ module.exports = function (N, collectionName) {
     if (ts > 1000 * 60 * 60 + now) return;
 
     if (categoryId) {
-      await N.redis.zaddAsync('marker_cut_updates', now, userId + ':' + categoryId);
-      await N.redis.setAsync('marker_cut:' + userId + ':' + categoryId, ts);
+      await N.redis.zadd('marker_cut_updates', now, userId + ':' + categoryId);
+      await N.redis.set('marker_cut:' + userId + ':' + categoryId, ts);
     } else {
-      await N.redis.zaddAsync('marker_global_cut_updates', now, userId);
-      await N.redis.setAsync('marker_global_cut:' + userId, ts);
+      await N.redis.zadd('marker_global_cut_updates', now, userId);
+      await N.redis.set('marker_global_cut:' + userId, ts);
     }
   };
 
@@ -152,12 +152,12 @@ module.exports = function (N, collectionName) {
     let gcThreshold = maxItems + Math.round(maxItems * 0.10) + 1;
 
     // Get position records count
-    let cnt = await N.redis.hlenAsync('marker_pos:' + userId);
+    let cnt = await N.redis.hlen('marker_pos:' + userId);
 
     // If count less than limit - skip
     if (cnt <= gcThreshold) return Promise.resolve();
 
-    let items = await N.redis.hgetallAsync('marker_pos:' + userId);
+    let items = await N.redis.hgetall('marker_pos:' + userId);
     let query = N.redis.multi();
 
     _(items)
@@ -181,7 +181,7 @@ module.exports = function (N, collectionName) {
         query.zrem('marker_pos_updates', userId + ':' + item.id);
       });
 
-    return query.execAsync();
+    return query.exec();
   }
 
 
@@ -200,7 +200,7 @@ module.exports = function (N, collectionName) {
     }
 
     let now = Date.now();
-    let posJson = await N.redis.hgetAsync('marker_pos:' + userId, String(contentId));
+    let posJson = await N.redis.hget('marker_pos:' + userId, String(contentId));
     let pos;
     let maxUpdated = false;
 
@@ -220,8 +220,8 @@ module.exports = function (N, collectionName) {
       maxUpdated = true;
     }
 
-    await N.redis.zaddAsync('marker_pos_updates', now, userId + ':' + contentId);
-    await N.redis.hsetAsync('marker_pos:' + userId, String(contentId), JSON.stringify(pos));
+    await N.redis.zadd('marker_pos_updates', now, userId + ':' + contentId);
+    await N.redis.hset('marker_pos:' + userId, String(contentId), JSON.stringify(pos));
     await limitPositionMarkers(userId);
 
     if (!maxUpdated) return;
@@ -257,7 +257,7 @@ module.exports = function (N, collectionName) {
 
     let cutKeys = categoriesIds.map(id => 'marker_cut:' + userId + ':' + id);
 
-    let [ globalCut, ...cuts ] = await N.redis.mgetAsync(
+    let [ globalCut, ...cuts ] = await N.redis.mget(
       [ 'marker_global_cut:' + userId ].concat(cutKeys)
     );
 
@@ -321,10 +321,10 @@ module.exports = function (N, collectionName) {
       }
     });
 
-    let res = await query.execAsync();
+    let res = await query.exec();
 
     _.forEach(newCandidates, (id, n) => {
-      if (res[n] !== null) {
+      if (res[n][1] !== null) {
         result[id].isNew = false;
       }
     });
@@ -339,9 +339,9 @@ module.exports = function (N, collectionName) {
 
     contentIds.forEach(id => query.hget('marker_pos:' + userId, id));
 
-    let posInfo = await query.execAsync();
+    let posInfo = await query.exec();
 
-    posInfo = posInfo.map(json => {
+    posInfo = posInfo.map(([ , json ]) => {
       let result;
 
       if (json) {
@@ -380,7 +380,7 @@ module.exports = function (N, collectionName) {
 
     // Cleanup position markers
     //
-    let posItems = await N.redis.zrangebyscoreAsync('marker_pos_updates', '-inf', lastTs);
+    let posItems = await N.redis.zrangebyscore('marker_pos_updates', '-inf', lastTs);
     let posQuery = N.redis.multi();
 
     posItems.forEach(item => {
@@ -390,12 +390,12 @@ module.exports = function (N, collectionName) {
       posQuery.zrem('marker_pos_updates', item);
     });
 
-    await posQuery.execAsync();
+    await posQuery.exec();
 
 
     // Cleanup cut markers
     //
-    let cutItems = await N.redis.zrangebyscoreAsync('marker_cut_updates', '-inf', lastTs);
+    let cutItems = await N.redis.zrangebyscore('marker_cut_updates', '-inf', lastTs);
     let cutQuery = N.redis.multi();
 
     cutItems.forEach(item => {
@@ -403,12 +403,12 @@ module.exports = function (N, collectionName) {
       cutQuery.zrem('marker_cut_updates', item);
     });
 
-    await cutQuery.execAsync();
+    await cutQuery.exec();
 
 
     // Cleanup global cut markers
     //
-    let globalCutItems = await N.redis.zrangebyscoreAsync('marker_global_cut_updates', '-inf', lastTs);
+    let globalCutItems = await N.redis.zrangebyscore('marker_global_cut_updates', '-inf', lastTs);
     let globalCutQuery = N.redis.multi();
 
     globalCutItems.forEach(item => {
@@ -416,14 +416,14 @@ module.exports = function (N, collectionName) {
       globalCutQuery.zrem('marker_global_cut_updates', item);
     });
 
-    await globalCutQuery.execAsync();
+    await globalCutQuery.exec();
 
 
     // Cleanup read markers
     //
     // TODO: cut by script if number of active users per month became too big
     //
-    let marksItems = await N.redis.smembersAsync('marker_marks_items');
+    let marksItems = await N.redis.smembers('marker_marks_items');
     let marksQuery = N.redis.multi();
 
     marksItems.forEach(item => {
@@ -432,16 +432,16 @@ module.exports = function (N, collectionName) {
       marksQuery.zcard('marker_marks:' + item);
     });
 
-    let res = await marksQuery.execAsync();
+    let res = await marksQuery.exec();
     let query = N.redis.multi();
 
     marksItems.forEach((item, i) => {
-      if (res[i * 2 + 1] === 0) { // zcard result
+      if (res[i * 2 + 1][1] === 0) { // zcard result
         query.srem('marker_marks_items', item);
       }
     });
 
-    await query.execAsync();
+    await query.exec();
   };
 
 

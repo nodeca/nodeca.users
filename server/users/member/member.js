@@ -143,13 +143,13 @@ module.exports = function (N, apiPath) {
       // User is viewing its own profile. Since redis last_active_ts is not
       // yet updated, just show her the current redis time.
       //
-      let time = await N.redis.timeAsync();
+      let time = await N.redis.time();
 
       env.data.user.last_active_ts = new Date(Math.floor(time[0] * 1000 + time[1] / 1000));
       return;
     }
 
-    let score = await N.redis.zscoreAsync('users:last_active', String(env.data.user._id));
+    let score = await N.redis.zscore('users:last_active', String(env.data.user._id));
 
     // Score not found, use `last_active_ts` from mongodb
     if (!score) {
