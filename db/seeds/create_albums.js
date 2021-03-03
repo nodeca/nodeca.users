@@ -3,12 +3,10 @@
 'use strict';
 
 
-const Promise   = require('bluebird');
 const Charlatan = require('charlatan');
 const path      = require('path');
 const glob      = require('glob').sync;
 const _         = require('lodash');
-const numCPUs   = require('os').cpus().length;
 const statuses  = require('../../server/users/_lib/statuses.js');
 
 const ALBUMS_COUNT     = 7;
@@ -108,7 +106,7 @@ async function createAlbums() {
   user_ids = _.uniq(user_ids.map(String));
 
   // Create albums for prepared user list
-  await Promise.map(user_ids, uid => createMultipleAlbums(uid), { concurrency: numCPUs });
+  await Promise.all(user_ids.map(uid => createMultipleAlbums(uid)));
 }
 
 
@@ -151,10 +149,8 @@ async function createComments() {
   let mediasId = _.map(results, 'media_id');
 
   // Create comments for prepared media and user list
-  await Promise.map(
-    mediasId,
-    mid => createMultipleComments(mid, usersId),
-    { concurrency: numCPUs }
+  await Promise.all(
+    mediasId.map(mid => createMultipleComments(mid, usersId))
   );
 }
 
