@@ -33,7 +33,6 @@ const readFile       = require('util').promisify(require('fs').readFile);
 const mime           = require('mime-types').lookup;
 const Mongoose       = require('mongoose');
 const sharp          = require('sharp');
-const probe          = require('probe-image-size');
 const image_traverse = require('image-blob-reduce/lib/image_traverse.js');
 const resize_outline = require('nodeca.users/lib/resize_outline');
 
@@ -232,15 +231,19 @@ module.exports = async function (src, options) {
   // Read image from file, determine its size
   //
   let data = await readFile(src);
-  let imgSz = probe.sync(data);
+  let imgSz = await sharp(data).metadata();
 
   let origImage = {
     buffer: data,
-    length: data.length,
-    type:   imgSz.type,
+    length: imgSz.size,
     width:  imgSz.width,
-    height: imgSz.height
+    height: imgSz.height,
+    type:   imgSz.type
   };
+
+  if (imgSz.orientation >= 5) {
+    [ origImage.width, origImage.height ] = [ origImage.height, origImage.width ];
+  }
 
   let resizeConfigKeys = Object.keys(options.resize);
 
