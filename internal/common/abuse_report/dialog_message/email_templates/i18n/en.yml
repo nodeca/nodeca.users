@@ -1,8 +1,0 @@
-en-US:
-  subject:
-    subject: "report from #{user} (dialogs)"
-  body:
-    header: "Report from user #{url}:"
-    to: "About dialog message:"
-    message_sent_to: "This report was also sent to: "
-    report_topic: Topic with report.

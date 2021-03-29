@@ -1,0 +1,7 @@
+en-US:
+  subject_log: 'Dialogs: report from #{author.user_nick}'
+  subject_email: '#{project_name} (dialogs): report from #{author.user_nick}'
+
+  header: "Report from user [#{name}](#{url}):"
+  src_description: "About [dialog message](#{url}):"
+  report_topic: Topic with report.

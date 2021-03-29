@@ -8,9 +8,9 @@
 //
 // - recipients - { user_id: user_info }
 // - locals - rendering data
-// - email_templates - { body, subject }
-// - log_templates - { body, subject }
-//
+// - subject_email
+// - subject_log
+// - template
 //
 'use strict';
 
@@ -96,15 +96,11 @@ module.exports = function (N, apiPath) {
     let locals = params.locals || {};
     let author = params.report.from ? await userInfo(N, params.report.from) : null;
 
-    params.log_templates = {
-      body: 'common.abuse_report.dialog_message.log_templates.body',
-      subject: 'common.abuse_report.dialog_message.log_templates.subject'
-    };
+    const TEMPLATE_PATH = 'common.abuse_report.dialog_message';
 
-    params.email_templates = {
-      body: 'common.abuse_report.dialog_message.email_templates.body',
-      subject: 'common.abuse_report.dialog_message.email_templates.subject'
-    };
+    params.subject_log   = `${TEMPLATE_PATH}.subject_log`;
+    params.subject_email = `${TEMPLATE_PATH}.subject_email`;
+    params.template      = TEMPLATE_PATH;
 
     locals.project_name = await N.settings.get('general_project_name');
     locals.report_text = params.report.text;
@@ -113,10 +109,22 @@ module.exports = function (N, apiPath) {
       message_id: params.data.message._id
     });
     locals.src_text = params.data.message.md;
-    locals.src_html = params.data.message.html;
-    locals.recipients = _.values(params.recipients);
 
-    if (author) locals.author = author;
+    // calculate minimum backtick length for ````quote, so it would encapsulate
+    // original content (longest backtick sequence plus 1, but at least 3)
+    let backtick_seq_len = Math.max.apply(
+      null,
+      ('`` ' + locals.report_text + ' ' + locals.src_text)
+        .match(/`+/g) //`
+        .map(s => s.length)
+      ) + 1;
+
+    locals.backticks = '`'.repeat(backtick_seq_len);
+
+    if (author) {
+      locals.author = author;
+      locals.author_link = N.router.linkTo('users.member', { user_hid: author.user_hid });
+    }
 
     params.locals = locals;
   });
