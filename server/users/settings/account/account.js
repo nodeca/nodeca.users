@@ -3,6 +3,9 @@
 'use strict';
 
 
+const uaParser = require('ua-parser-js');
+
+
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {});
@@ -39,6 +42,46 @@ module.exports = function (N, apiPath) {
   N.wire.on(apiPath, function account_data(env) {
     // keep first 2 and last 2 characters, replace the rest with 10 stars
     env.res.email = (env.data.user.email || '').replace(/(?<=^..).+(?=..$)/, '*'.repeat(10));
+  });
+
+
+  function get_device(user_agent) {
+    let parsed  = uaParser(user_agent);
+    let browser = parsed.browser.name || 'Unknown';
+    let os      = parsed.os.name      || 'Unknown';
+
+    return `${browser}, ${os}`;
+  }
+
+
+  // Fill sessions data
+  //
+  N.wire.on(apiPath, async function session_data(env) {
+    let active_sessions = await N.models.users.AuthSession.find()
+                                    .where('user').equals(env.user_info.user_id)
+                                    .sort('-last_ts')
+                                    .lean(true);
+
+    env.res.active_sessions = active_sessions.map(session => ({
+      current:    session.session_id === env.session_id,
+      last_ts:    session.last_ts,
+      user_agent: session.user_agent,
+      device:     get_device(session.user_agent),
+      ip:         session.ip
+    }));
+
+    let closed_sessions = await N.models.users.AuthSessionLog.find()
+                                    .where('user').equals(env.user_info.user_id)
+                                    .sort('-last_ts')
+                                    .limit(5)
+                                    .lean(true);
+
+    env.res.closed_sessions = closed_sessions.map(session => ({
+      last_ts:    session.last_ts,
+      user_agent: session.user_agent,
+      device:     get_device(session.user_agent),
+      ip:         session.ip
+    }));
   });
 
 

@@ -2,3 +2,7 @@ en-US:
   current_email: Current email
   request_email_change: Change email
   request_password_change: Change password
+  active_sessions: 'Active sessions:'
+  closed_sessions: 'Closed sessions:'
+  current: current
+  logout: Close session

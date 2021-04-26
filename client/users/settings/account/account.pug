@@ -25,3 +25,32 @@
           type='button'
           data-on-click='users.settings.account:change_password'
         )= self.t('request_password_change')
+
+      if self.active_sessions.length
+        fieldset.user-settings-account__active-sessions
+          legend= self.t('active_sessions')
+
+          each session in self.active_sessions
+            .form-group.user-settings-account__session
+              if !session.current
+                .user-settings-account__logout
+                  a.icon.icon-x(href='#', type='button', title=self.t('logout'))
+
+              .user-settings-account__ts
+                if session.current
+                  = self.t('current')
+                else
+                  != self.timetag(session.last_ts, 'relative')
+
+              .user-settings-account__device(title=session.user_agent)= session.device
+              .user-settings-account__ip= session.ip
+
+      if self.closed_sessions.length
+        fieldset.user-settings-account__closed-sessions
+          legend= self.t('closed_sessions')
+
+          each session in self.closed_sessions
+            .form-group.user-settings-account__session
+              .user-settings-account__ts!= self.timetag(session.last_ts, 'relative')
+              .user-settings-account__device(title=session.user_agent)= session.device
+              .user-settings-account__ip= session.ip

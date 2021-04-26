@@ -35,7 +35,8 @@ module.exports = function (N, collectionName) {
   // used for re-creating session when redis session is expired
   AuthSession.index({ session_id: 1 });
 
-  // TODO: add indexes to display these records in user interface
+  // show user sessions
+  AuthSession.index({ user: 1, last_ts: -1 });
 
   //////////////////////////////////////////////////////////////////////////////
 
