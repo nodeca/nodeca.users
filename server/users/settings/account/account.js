@@ -63,6 +63,7 @@ module.exports = function (N, apiPath) {
                                     .lean(true);
 
     env.res.active_sessions = active_sessions.map(session => ({
+      _id:        session._id,
       current:    session.session_id === env.session_id,
       last_ts:    session.last_ts,
       user_agent: session.user_agent,
@@ -77,6 +78,7 @@ module.exports = function (N, apiPath) {
                                     .lean(true);
 
     env.res.closed_sessions = closed_sessions.map(session => ({
+      _id:        session._id,
       last_ts:    session.last_ts,
       user_agent: session.user_agent,
       device:     get_device(session.user_agent),

@@ -2,7 +2,8 @@ en-US:
   current_email: Current email
   request_email_change: Change email
   request_password_change: Change password
-  active_sessions: 'Active sessions:'
-  closed_sessions: 'Closed sessions:'
+  active_sessions: 'Active devices:'
+  closed_sessions: 'Expired logins:'
   current: current
-  logout: Close session
+  logout: Log out from device
+  session_closed: Device logged off

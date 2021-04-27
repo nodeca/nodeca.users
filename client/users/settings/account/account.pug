@@ -34,7 +34,13 @@
             .form-group.user-settings-account__session
               if !session.current
                 .user-settings-account__logout
-                  a.icon.icon-x(href='#', type='button', title=self.t('logout'))
+                  button.user-settings-account__logout-btn.btn.btn-link.icon.icon-x(
+                    href='#'
+                    type='button'
+                    data-on-click='users.settings.account:close_session'
+                    data-authsession-id=session._id
+                    title=self.t('logout')
+                  )
 
               .user-settings-account__ts
                 if session.current
