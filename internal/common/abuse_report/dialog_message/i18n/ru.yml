@@ -2,6 +2,6 @@ ru-RU:
   subject_log: 'Диалоги: жалоба от #{author.user_nick}'
   subject_email: '#{project_name} (диалоги): жалоба от #{author.user_nick}'
 
-  header: "Жалоба от пользователя #{url}:"
+  header: "Жалоба от [#{nick}](#{url}):"
   src_description: "На [сообщение](#{url}) в диалогах:"
   report_topic: Тема с жалобой.
