@@ -2,5 +2,5 @@ en-US:
   confirmation: |
     Are you sure you wish to disable notifications when someone messages you? You
     will be able to change this in your settings anytime.
-  label: yes, don't notify me anymore
+  label: Yes, don't notify me anymore
   ok: OK
