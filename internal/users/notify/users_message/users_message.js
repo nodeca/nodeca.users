@@ -49,7 +49,7 @@ module.exports = function (N) {
 
     let subject = N.i18n.t(locale, 'users.notify.users_message.subject', {
       project_name: general_project_name,
-      user_name:    opponent.name
+      user:         opponent.nick
     });
 
     let url = N.router.linkTo('users.dialog', {
