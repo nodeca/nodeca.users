@@ -49,7 +49,7 @@ N.wire.once('navigate.done', function init_usercard_click() {
         let pos_left = $link.offset().left + $link.innerWidth();
         let $card = $(N.runtime.render(module.apiPath, res));
 
-        if (pos_left + POPOVER_WIDTH > $container.width()) {
+        if (pos_left + POPOVER_WIDTH > $container.offset().left + $container.width()) {
 
           // If popover with offset get out container edge - show it under
           // link near right container edge.
