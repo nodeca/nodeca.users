@@ -46,7 +46,7 @@
                 if session.current
                   = self.t('current')
                 else
-                  != self.timetag(session.last_ts, 'relative')
+                  != self.timetag(session.last_ts, 'relative_full')
 
               .user-settings-account__device(title=session.user_agent)= session.device
               .user-settings-account__ip= session.ip
@@ -57,6 +57,6 @@
 
           each session in self.closed_sessions
             .form-group.user-settings-account__session
-              .user-settings-account__ts!= self.timetag(session.last_ts, 'relative')
+              .user-settings-account__ts!= self.timetag(session.last_ts, 'relative_full')
               .user-settings-account__device(title=session.user_agent)= session.device
               .user-settings-account__ip= session.ip
