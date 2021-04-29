@@ -6,7 +6,7 @@ ru-RU:
   infractions_text: "#{count} ((балл|балла|баллов))"
   penalty_title: Заблокирован до
   age: Возраст
-  location: Местоположение
+  location: Откуда
   activity: Активность
-  joined: Зарегистрирован
+  joined: Регистрация
   last_active: Последняя активность
