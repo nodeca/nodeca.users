@@ -104,9 +104,9 @@ let previewHqUpdate = _.debounce(() => {
 
   // Resize to preview size
   pica.resize(canvasCropped, canvasPreview, {
-    unsharpAmount: 80,
+    unsharpAmount: 160,
     unsharpRadius: 0.6,
-    unsharpThreshold: 2,
+    unsharpThreshold: 1,
     cancelToken: new Promise((resolve, reject) => {
       redrawTaskCancel = () => reject('CANCELED');
     })
@@ -528,9 +528,9 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
     avatarCanvas.height = avatarHeight;
 
     return pica.resize(canvasCropped, avatarCanvas, {
-      unsharpAmount: 80,
+      unsharpAmount: 160,
       unsharpRadius: 0.6,
-      unsharpThreshold: 2
+      unsharpThreshold: 1
     })
     .then(() => pica.toBlob(avatarCanvas, 'image/jpeg', 90))
     .then(function (blob) {
