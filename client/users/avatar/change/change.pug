@@ -3,9 +3,8 @@
     .modal-content
       .modal-header
         h4.modal-title= self.t('title')
-        button.close(data-dismiss='modal')
-          span(aria-hidden='true') &times;
-          span.sr-only= self.t('close')
+        button.btn-close(data-bs-dismiss='modal')
+          span.visually-hidden= self.t('close')
 
       .modal-body
         .avatar-change(data-on-dragdrop='users.avatar.change:dd_area')
@@ -35,7 +34,7 @@
 
         button.btn.btn-secondary(
           type='button'
-          data-dismiss='modal'
+          data-bs-dismiss='modal'
         )= self.t('cancel')
 
         button.btn.btn-primary(

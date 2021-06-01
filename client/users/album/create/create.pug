@@ -5,12 +5,12 @@
 
         .modal-header
           h4.modal-title= self.t('title')
-          button.close(
+          button.btn-close(
             aria-hidden='true'
             type='button'
-            data-dismiss='modal'
+            data-bs-dismiss='modal'
             tabindex='-1'
-          ) &times;
+          )
 
         .modal-body
           label(for='album_name_dlg_input')=self.t('input_name')
@@ -24,6 +24,6 @@
           )
 
         .modal-footer
-          button.btn.btn-secondary(type='button' tabindex='2' data-dismiss='modal')= self.t('cancel')
+          button.btn.btn-secondary(type='button' tabindex='2' data-bs-dismiss='modal')= self.t('cancel')
           button.btn.btn-primary(type='submit' tabindex='3')= self.t('create')
 

@@ -4,7 +4,7 @@
       form(data-on-submit=self.apiPath + ':submit')
         .modal-header
           h4.modal-title=self.t('title')
-          button.close(type='button' tabindex='-1' data-dismiss='modal') &times;
+          button.btn-close(type='button' tabindex='-1' data-bs-dismiss='modal')
         .modal-body
           .form-group.add-infraction-type
             label=self.t('type')
@@ -51,5 +51,5 @@
                   =self.t('expire_never')
 
         .modal-footer
-          button.btn.btn-secondary(type='button' tabindex='6' data-dismiss='modal')=self.t('cancel')
+          button.btn.btn-secondary(type='button' tabindex='6' data-bs-dismiss='modal')=self.t('cancel')
           button.btn.btn-danger(type='submit' tabindex='7')=self.t('ok')

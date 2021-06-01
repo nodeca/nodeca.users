@@ -6,7 +6,7 @@
     ul.ucard__controls
       if self.can_create_dialog_with_user
         li.ucard__controls-item
-          button.btn.btn-secondary.btn-xs.btn-block.icon.icon-mail(
+          button.btn.btn-secondary.btn-xs.w-100.icon.icon-mail(
             data-on-click='common.usercard_popover:message'
             data-to-nick=self.user.nick
             data-to-hid=self.user.hid
@@ -15,7 +15,7 @@
           )
 
       //- li.ucard__controls-item
-        button.btn.btn-secondary.btn-xs.btn-block.icon.icon-search(
+        button.btn.btn-secondary.btn-xs.w-100.icon.icon-search(
           title=self.t('find_posts')
         )
 

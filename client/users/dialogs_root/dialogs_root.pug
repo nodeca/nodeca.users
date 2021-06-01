@@ -32,7 +32,7 @@
     != self.partial('@users.blocks.announces')
 
     header.page-head
-      .float-right
+      .float-end
         != self.partial('@users.dialogs_root.blocks.toolbar_controls')
       h1.page-head__title(itemprop='name')= self.t('title')
       .dialog-list-filter.form-inline(itemprop='description')

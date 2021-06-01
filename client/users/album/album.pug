@@ -14,7 +14,7 @@
 
     header.page-head
       h1.page-head__title(itemprop='name')
-        .float-right
+        .float-end
           != self.partial('@users.album.blocks.toolbar_controls')
 
         = self.album ? self.album.title : self.t('title_all_files')

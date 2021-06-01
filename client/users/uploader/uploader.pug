@@ -3,10 +3,10 @@
     .modal-content
       .modal-header
         h4.modal-title= self.t('title')
-        button.close(
+        button.btn-close(
           aria-hidden='true'
           type='button'
           data-on-click='users.uploader:close'
-        ) &times;
+        )
       .modal-body
         #uploader-files

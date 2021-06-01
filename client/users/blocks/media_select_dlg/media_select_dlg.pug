@@ -3,15 +3,15 @@
     .modal-content
 
       .modal-header
-        //- used custom close handler instead `data-dismiss='modal'` because this dialog
+        //- used custom close handler instead `data-bs-dismiss='modal'` because this dialog
         //- has internal dialogs and we can't use bootstrap events
         h4.modal-title= self.t('title')
-        button.close(
+        button.btn-close(
           aria-hidden='true'
           type='button'
           tabindex='-1'
           data-on-click='users.blocks.media_select_dlg:close'
-        ) &times;
+        )
 
       .media_select_dlg__body.modal-body
 

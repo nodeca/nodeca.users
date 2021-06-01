@@ -5,7 +5,7 @@
     != self.partial('@admin.core.blocks.breadcrumbs')
 
     .page-head
-      .float-right
+      .float-end
         a.btn.btn-sm.btn-light(href=self.link_to('admin.users.usergroups.new'))= self.t('new')
       h1.page-head__title= self.head.title
 
@@ -26,7 +26,7 @@
             a(href=self.link_to('admin.users.members.search') + '?usergroup=' + group._id)= self.members_count[group._id]
           td
             unless group.is_protected
-              a.float-right(
+              a.float-end(
                 href='#'
                 data-on-click='admin.users.usergroups.destroy',
                 data-usergroup-id=group._id,

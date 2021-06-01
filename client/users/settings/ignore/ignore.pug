@@ -29,7 +29,7 @@
               td.user-settings-ignore__expire.text-nowrap
                 = row.expire ? self.t('ignored_till', { date: self.date(row.expire, 'date') }) : self.t('ignored_forever')
               td.user-settings-ignore__controls
-                button.float-right.btn.btn-xs.btn-link.icon.icon-x(
+                button.float-end.btn.btn-xs.btn-link.icon.icon-x(
                   data-on-click='users.settings.ignore:remove'
                   data-user-id=user._id
                 )

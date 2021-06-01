@@ -28,7 +28,7 @@
     != self.partial('@users.blocks.announces')
 
     header.page-head
-      .float-right
+      .float-end
         != self.partial('@users.dialog.blocks.toolbar_controls')
       h1.page-head__title(itemprop='name')
         = (self.users[self.dialog.with] || {}).name || ''
@@ -36,7 +36,7 @@
     - var recipient = self.users[self.dialog.with];
     if recipient && self.can_create_dialog_with_user && self.dialog.user === self.runtime.user_id
       .user-messages-list-reply
-        button.btn.btn-block.btn-link(
+        button.btn.btn-link.w-100(
           data-dialog-id=self.dialog._id
           data-dialog-last-message=self.dialog.cache.last_message
           data-on-click='users.dialog:reply'
