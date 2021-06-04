@@ -12,11 +12,11 @@
 
           form.card-body(data-on-submit='users.auth.reset_password.request_exec')
 
-            .form-group(data-bind='visible: error', style='display: none')
+            .mb-3(data-bind='visible: error', style='display: none')
               p.text-danger(data-bind='text: error')
 
-            .form-group
-              label(for='reset_password_email')= self.t('email')
+            .mb-3
+              label.form-label(for='reset_password_email')= self.t('email')
               input.form-control(
                 id='reset_password_email'
                 name='email'

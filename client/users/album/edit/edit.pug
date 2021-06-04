@@ -24,8 +24,8 @@
               name='album_id'
             )
 
-            .form-group
-              label= self.t('title_input_name')
+            .mb-3
+              label.form-label= self.t('title_input_name')
               input.form-control(
                 name='title'
                 id='album-edit__title'
@@ -33,8 +33,8 @@
                 value=self.album.title
               )
 
-            .form-group
-              label= self.t('description_input_name')
+            .mb-3
+              label.form-label= self.t('description_input_name')
               textarea.form-control(
                 name='description'
                 placeholder=self.t('description_input_desc')
@@ -43,8 +43,8 @@
             - var state_class = self.album.cover_id ? 'has-cover' : '';
             #album-edit__cover(class=state_class)
 
-              .form-group.album-edit__cover
-                label= self.t('cover_input_name')
+              .album-edit__cover.mb-3
+                label.form-label= self.t('cover_input_name')
 
                 p: a.thumb.thumb__m-sm(
                   href='#'

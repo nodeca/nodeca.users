@@ -2,7 +2,7 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
   fieldset
     legend= self.t('group.options')
 
-    .form-group.row
+    .row.mb-3
       label.col-form-label.col-3= self.t('group.short_name')
       .col-3
         input.form-control(type="text", data-bind="value: currentGroup.name, disable: currentGroup.isProtected")
@@ -10,12 +10,12 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
         div(data-bind="text: currentGroup.localizedName")
         // /ko
 
-    .form-group.row
+    .row.mb-3
       label.col-form-label.col-3= self.t('group.inherit')
       .col-3
-        select.form-control.custom-select(data-bind="options: otherGroups, optionsText: 'name', optionsCaption: '" + self.t('group.inherit_none') + "', value: currentGroup.parentGroup")
+        select.form-control.form-select(data-bind="options: otherGroups, optionsText: 'name', optionsCaption: '" + self.t('group.inherit_none') + "', value: currentGroup.parentGroup")
 
-    .form-group.row
+    .row.mb-3
       label.col-form-label.col-3= self.t('filter')
       .col-9
         .form-check.form-check-inline
@@ -40,7 +40,7 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
     legend(data-bind="text: localizedName")
 
     // ko foreach: settings
-    .form-group.form-group-hover.row(data-bind="visible: visible, css: { overriden: overriden, inherited: inherited, forced: forced }")
+    .form-group-hover.row.mb-3(data-bind="visible: visible, css: { overriden: overriden, inherited: inherited, forced: forced }")
 
       label.col-form-label.col-3(data-bind="text: localizedName, attr: { 'for': elementId }")
 
@@ -56,7 +56,7 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
         // ko if: 'boolean' === valueType
         .switch
           input(type="checkbox", data-bind="checked: value, attr: { id: elementId }")
-          label(data-yes=self.t('setting.yes'), data-no=self.t('setting.no'), data-bind="attr: { 'for': elementId }"): i
+          label.form-label(data-yes=self.t('setting.yes'), data-no=self.t('setting.no'), data-bind="attr: { 'for': elementId }"): i
         // /ko
 
         // ko if: localizedHelp
@@ -77,7 +77,7 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
     // /ko
   // /ko
 
-  .form-group.row
+  .row.mb-3
     .col-9.ml-auto
       button.btn.btn-primary(type="submit", data-bind="enable: currentGroup.isDirty")
         = self.t('submit')

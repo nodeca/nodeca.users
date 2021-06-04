@@ -18,11 +18,11 @@
       input(type='hidden', name='infraction_id', value=self.infraction._id)
 
       //- Message to show on error
-      .form-group(data-bind='visible: error', style='display: none')
+      .mb-3(data-bind='visible: error', style='display: none')
         p.text-danger(data-bind='text: error')
 
       // ko with: message
-      .form-group
+      .mb-3
         textarea.form-control.contact-form-textarea(
           name='message'
           data-bind='value: value, css: { "is-invalid": error }'

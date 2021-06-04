@@ -6,8 +6,8 @@
       .col-md-6.col-sm-8.m-auto
         .card
           form.card-body(data-on-submit='users.settings.account.change_email.request_show:submit')
-            .form-group
-              label(for='change_email_pass')= self.t('password')
+            .mb-3
+              label.form-label(for='change_email_pass')= self.t('password')
               input.form-control(
                 id='change_email_pass'
                 name='pass'

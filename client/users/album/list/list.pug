@@ -20,7 +20,7 @@ each media in self.media
                 span.thumb-caption__inline.icon.icon-space-after.icon-comment
                   = media.comments_count
 
-        label.user-medialist-item__select-overlay
+        label.form-label.user-medialist-item__select-overlay
           input.user-medialist-item__select-cb(type='checkbox', data-on-change='users.album:media_check')
 
       else if mType === mTypes.MEDIALINK
@@ -36,7 +36,7 @@ each media in self.media
                 span.thumb-caption__inline.icon.icon-space-after.icon-comment
                   = media.comments_count
 
-        label.user-medialist-item__select-overlay
+        label.form-label.user-medialist-item__select-overlay
           input.user-medialist-item__select-cb(type='checkbox', data-on-change='users.album:media_check')
 
       else if mType === mTypes.BINARY
@@ -51,5 +51,5 @@ each media in self.media
               span.thumb-caption__inline.icon.icon-space-after.icon-comment
                 = media.comments_count
 
-        label.user-medialist-item__select-overlay
+        label.form-label.user-medialist-item__select-overlay
           input.user-medialist-item__select-cb(type='checkbox', data-on-change='users.album:media_check')

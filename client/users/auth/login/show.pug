@@ -15,20 +15,20 @@
 
           form.card-body(data-on-submit='users.auth.login.plain_exec')
             //- Message to show on error
-            .form-group(data-bind='visible: error', style='display: none')
+            .mb-3(data-bind='visible: error', style='display: none')
               p.text-danger(data-bind='text: error')
 
             if self.redirect_id
               input(type='hidden', name='redirect_id', value=self.redirect_id)
 
             if self.oauth && Object.keys(self.oauth).length
-              .form-group
+              .mb-3
                 != self.partial('@common.blocks.oauth_buttons')
                 small.form-text.text-muted
                   =self.t('oauth_info')
 
-            .form-group
-              label(for='login_email_or_nick')= self.t('email')
+            .mb-3
+              label.form-label(for='login_email_or_nick')= self.t('email')
               input.form-control(
                 id='login_email_or_nick'
                 name='email_or_nick'
@@ -36,8 +36,8 @@
                 placeholder=self.t('email_desc')
               )
 
-            .form-group
-              label(for='login_pass')= self.t('password')
+            .mb-3
+              label.form-label(for='login_pass')= self.t('password')
               input.form-control(
                 id='login_pass'
                 name='pass'

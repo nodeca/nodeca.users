@@ -6,9 +6,9 @@
           h4.modal-title=self.t('title')
           button.btn-close(type='button' tabindex='-1' data-bs-dismiss='modal')
         .modal-body
-          .form-group.add-infraction-type
-            label=self.t('type')
-            select.add-infraction-type__input.form-control.custom-select(name='type' tabindex='1' data-on-change=self.apiPath + ':select_type')
+          .mb-3.add-infraction-type
+            label.form-label=self.t('type')
+            select.add-infraction-type__input.form-control.form-select(name='type' tabindex='1' data-on-change=self.apiPath + ':select_type')
               option(value='custom')=self.t('custom')
               each category in self.categories
                 if category.name
@@ -16,24 +16,24 @@
                 each type in category.types
                   option(value=type.name)=self.t('@users.infractions.types.' + type.name) + ' (' + type.points + ')'
 
-          .form-group.add-infraction-reason
-            label=self.t('reason')
+          .mb-3.add-infraction-reason
+            label.form-label=self.t('reason')
             input.add-infraction-reason__input.form-control(type='text'
               tabindex='2'
               name='reason'
               placeholder=self.t('reason_help')
             )
 
-          .form-group.add-infraction-points
-            label=self.t('points')
+          .mb-3.add-infraction-points
+            label.form-label=self.t('points')
             input.add-infraction-points__input.form-control(type='number'
               tabindex='3'
               name='points'
               value='0'
             )
 
-          .form-group
-            label= self.t('expire')
+          .mb-3
+            label.form-label= self.t('expire')
             .row
               .col-6.add-infraction-expire
                 input.add-infraction-expire__input.form-control(type='number'

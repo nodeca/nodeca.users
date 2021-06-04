@@ -17,13 +17,13 @@ if (self.email)
 
           form.card-body(data-on-submit='users.auth.register.exec')
             if self.oauth && Object.keys(self.oauth).length
-              .form-group
+              .mb-3
                 != self.partial('@common.blocks.oauth_buttons')
                 small.text-muted
                   =self.t('oauth_info')
             // ko with: email
-            .form-group
-              label(for='register_email')= self.t('email')
+            .mb-3
+              label.form-label(for='register_email')= self.t('email')
               input.form-control(
                 id='register_email'
                 name='email'
@@ -37,8 +37,8 @@ if (self.email)
             // /ko
 
             // ko with: pass
-            .form-group
-              label(for='register_pass')= self.t('pass')
+            .mb-3
+              label.form-label(for='register_pass')= self.t('pass')
               input.form-control(
                 id='register_pass'
                 name='pass'
@@ -54,8 +54,8 @@ if (self.email)
 
 
             // ko with: nick
-            .form-group
-              label(for='register_nick') #{self.t('nick')}
+            .mb-3
+              label.form-label(for='register_nick') #{self.t('nick')}
               input.form-control(
                 id='register_nick',
                 name='nick',

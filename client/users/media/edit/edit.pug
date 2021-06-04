@@ -6,8 +6,8 @@
           h4.modal-title= self.t('title')
           button.btn-close(type='button' tabindex='-1' data-bs-dismiss='modal')
         .modal-body
-          label= self.t('album_input_name')
-          select.form-control.custom-select(name='album_id' tabindex='1')
+          label.form-label= self.t('album_input_name')
+          select.form-control.form-select(name='album_id' tabindex='1')
             each album in self.albums
               option(
                 value=album._id

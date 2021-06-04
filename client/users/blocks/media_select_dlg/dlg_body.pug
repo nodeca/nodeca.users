@@ -1,4 +1,4 @@
-select.media-select-dlg__albums.form-control.custom-select(data-on-change='users.blocks.media_select_dlg:album_select')
+select.media-select-dlg__albums.form-control.form-select(data-on-change='users.blocks.media_select_dlg:album_select')
   each album in self.albums
     option(
       value=album._id || ''

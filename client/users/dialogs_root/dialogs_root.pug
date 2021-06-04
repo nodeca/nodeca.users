@@ -35,7 +35,7 @@
       .float-end
         != self.partial('@users.dialogs_root.blocks.toolbar_controls')
       h1.page-head__title(itemprop='name')= self.t('title')
-      .dialog-list-filter.form-inline(itemprop='description')
+      .dialog-list-filter(itemprop='description')
         .form-check
           label.form-check-label.dialog-list-filter__label(
             data-on-change='users.dialogs_root:toggle_answered'

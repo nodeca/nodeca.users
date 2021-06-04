@@ -11,16 +11,16 @@
     != self.partial('@users.settings.tabs', { active: 'account' })
 
     form.form.user-settings__tab-content.user-settings__m-narrow
-      .form-group
-        label= self.t('current_email')
+      .mb-3
+        label.form-label= self.t('current_email')
         input.form-control(type='text', value=self.email, readonly)
 
-      .form-group
+      .mb-3
         a.btn.btn-secondary.col-12(
           href=self.link_to('users.settings.account.change_email.request_show')
         )= self.t('request_email_change')
 
-      .form-group
+      .mb-3
         button.btn.btn-secondary.col-12(
           type='button'
           data-on-click='users.settings.account:change_password'
@@ -31,7 +31,7 @@
           legend= self.t('active_sessions')
 
           each session in self.active_sessions
-            .form-group.user-settings-account__session
+            .mb-3.user-settings-account__session
               if !session.current
                 .user-settings-account__logout
                   button.user-settings-account__logout-btn.btn.btn-link.icon.icon-x(
@@ -56,7 +56,7 @@
           legend= self.t('closed_sessions')
 
           each session in self.closed_sessions
-            .form-group.user-settings-account__session
+            .user-settings-account__session.mb-3
               .user-settings-account__ts!= self.timetag(session.last_ts, 'relative_full')
               .user-settings-account__device(title=session.user_agent)= session.device
               .user-settings-account__ip= session.ip

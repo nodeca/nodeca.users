@@ -17,14 +17,14 @@
       each item in self.about
         - var name = item.name;
 
-        .form-group.form-group-hover.user-settings-about-field(
+        .form-group-hover.user-settings-about-field.mb-3(
           data-bind= 'css: { "user-settings-about-field__m-mandatory": about.' + name + '.must_fill }'
         )
 
           if self.partial_exists('blocks.' + name)
             != self.partial('blocks.' + name, item)
           else
-            label.user-settings-about-field__label
+            label.form-label.user-settings-about-field__label
               = self.t.exists(name) ? self.t(name) : self.t('@users.about.' + name)
             input.form-control(type='text', data-bind='value: about.' + name + '.value, valueUpdate: "keyup", disable: about.' + name + '.readonly, css: { "is-invalid": about.' + name + '.hasError }')
 

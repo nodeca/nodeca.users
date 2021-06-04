@@ -6,18 +6,18 @@
           h4.modal-title=self.t('title')
           button.btn-close(type='button' tabindex='-1' data-bs-dismiss='modal')
         .modal-body
-          .form-group
+          .mb-3
             a(href=self.link_to('users.member', { user_hid: self.user.hid }))
               img.ignore-user-dlg__avatar(alt=self.user.name)&attributes(self.avatar(self.user, 'sm'))
               = self.user.name
 
           input(name='user', type='hidden', value=self.user._id)
 
-          .form-group
+          .mb-3
             input.form-control(type='text', name='reason', placeholder=self.t('input_reason_placeholder'), tabindex='2')
 
-          .form-group
-            select.form-control.custom-select(name='period', tabindex='1')
+          .mb-3
+            select.form-control.form-select(name='period', tabindex='1')
               option(value='0')=self.t('period_forever')
               option(value='7')=self.t('period_7d')
               option(value='30')=self.t('period_30d')

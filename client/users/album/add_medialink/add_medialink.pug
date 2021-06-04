@@ -6,7 +6,7 @@
           h4.modal-title= self.t('title')
           button.btn-close(type='button' tabindex='-1' data-bs-dismiss='modal')
         .modal-body
-          label(for='add-medialink__url')=self.t('input_url_name')
+          label.form-label(for='add-medialink__url')=self.t('input_url_name')
           input.form-control(
             type='text'
             id='add-medialink__url'

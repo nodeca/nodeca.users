@@ -18,8 +18,8 @@
             form.card-body(data-on-submit='users.auth.reset_password.change_exec')
               input(type='hidden' name='secret_key' value=self.secret_key)
 
-              .form-group
-                label(for='password')= self.t('password')
+              .mb-3
+                label.form-label(for='password')= self.t('password')
                 input.form-control(
                   id='password'
                   name='password'

@@ -14,13 +14,13 @@
         if self.partial_exists('blocks.' + item.name)
           != self.partial('blocks.' + item.name, item)
         else
-          .form-group.row
+          .row.mb-3
             label.col-form-label.col-3
               = self.t.exists(item.name) ? self.t(item.name) : self.t('@admin.users.about.' + item.name)
             .col-4
               input.form-control(type='text', name=item.name, value=item.value)
 
-      .form-group.row
+      .row.mb-3
         .col-md-9.ml-md-auto
           button.btn.btn-primary(type='submit')
             = self.t('search')

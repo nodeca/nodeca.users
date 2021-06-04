@@ -64,7 +64,7 @@
     form#member_edit_form.form-horizontal(data-on-submit='admin.users.members.edit:submit', data-user-hid=self.user.hid)
       fieldset
 
-        .form-group.row
+        .row.mb-3
           label.col-form-label.col-3
             = self.t('avatar')
           .col-4.control-value
@@ -75,7 +75,7 @@
         each item in self.fields
           - var name = item.name;
 
-          .form-group.row.form-group-hover
+          .row.mb-3.form-group-hover
 
             if self.partial_exists('blocks.' + name)
               != self.partial('blocks.' + name, item)
@@ -88,7 +88,7 @@
                 else
                   input.form-control(type='text', name=item.name, value=item.value)
 
-      .form-group.row
+      .row.mb-3
         .col-9.ml-auto
           button.btn.btn-primary(type='submit')
             = self.t('button_save')
