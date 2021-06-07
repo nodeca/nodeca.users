@@ -29,7 +29,7 @@ function load(start, direction) {
 
 
 N.wire.on('navigate.done:' + module.apiPath, function nav_tracker_tab_activate() {
-  $('.navbar').find('[data-api-path="users.tracker"]').addClass('active');
+  $('.navbar').find('[data-api-path="users.tracker"]').addClass('show');
 
   pageState.type               = N.runtime.page_data.tracker_type;
   pageState.reached_end        = !N.runtime.page_data.tracker_next;
