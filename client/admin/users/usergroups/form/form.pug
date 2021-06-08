@@ -18,19 +18,19 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
     .row.mb-3
       label.col-form-label.col-3= self.t('filter')
       .col-9
-        .form-check.form-check-inline
+        .form-check
           label.form-check-label
             input.form-check-input(type="radio", name="filter", value="", data-bind="checked: filter")
             = ' ' + self.t('filter_options.show_all')
-        .form-check.form-check-inline
+        .form-check
           label.form-check-label
             input.form-check-input(type="radio", name="filter", value="overriden", data-bind="checked: filter")
             = ' ' + self.t('filter_options.show_overriden')
-        .form-check.form-check-inline
+        .form-check
           label.form-check-label
             input.form-check-input(type="radio", name="filter", value="forced", data-bind="checked: filter")
             = ' ' + self.t('filter_options.show_forced')
-        .form-check.form-check-inline
+        .form-check
           label.form-check-label
             input.form-check-input(type="radio", name="filter", value="inherited", data-bind="checked: filter")
             = ' ' + self.t('filter_options.show_inherited')
@@ -64,12 +64,12 @@ form.form-horizontal(data-bind="submit: submit", style="display: none")
         // /ko
 
       .col-4
-        .form-check.form-check-inline
+        .form-check
           label.form-check-label(data-bind="visible: parentSetting")
             input.form-check-input(type="checkbox", data-bind="checked: overriden")
             = ' ' + self.t('setting.override')
 
-        .form-check.form-check-inline
+        .form-check
           label.form-check-label(data-bind="visible: overriden")
             input.form-check-input(type="checkbox", data-bind="checked: forced")
             = ' ' + self.t('setting.force')
