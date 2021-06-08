@@ -13,7 +13,7 @@ if self.runtime.is_member
       .navbar-auth__avatar-container
         img.navbar-auth__avatar()&attributes(self.avatar(self.runtime.user_id, 'md'))
 
-    .dropdown-menu.dropdown-menu-right(aria-labelledby=menu_rnd_id)
+    .dropdown-menu.dropdown-menu-end(aria-labelledby=menu_rnd_id)
       .dropdown-header= self.runtime.user_nick
 
       a.dropdown-item.navbar-auth__dropdown-profile(href=self.link_to('users.member', { user_hid: self.runtime.user_hid }))=self.t('profile')

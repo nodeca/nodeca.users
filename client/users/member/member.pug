@@ -67,7 +67,7 @@
                   type='button'
                   data-bs-toggle='dropdown'
                 )
-                .dropdown-menu.dropdown-menu-left
+                .dropdown-menu.dropdown-menu-start
                   each item in self.actions_ordered
                     !=self.partial('@users.member.actions.' + item.name)
 
