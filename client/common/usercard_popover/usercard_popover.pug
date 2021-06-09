@@ -48,10 +48,10 @@
       if self.location
         dt.ucard-info__dt= self.t('location')
         dd.ucard-info__dd
-          span.icon.icon-location.icon-space-after
-
           if self.location_name
             = self.location_name
+          else
+            span.icon.icon-location
 
       dt.ucard-info__dt= self.t('joined')
       dd.ucard-info__dd!= self.timetag(self.user.joined_ts, 'registered_time')
