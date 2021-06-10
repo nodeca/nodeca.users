@@ -107,7 +107,7 @@
                   else
                     =self.t('never')
 
-                td.member-infractions-item__send-pm.text-nowrap.text-end
+                td.member-infractions-item__controls.text-nowrap.text-end
                   if own_page && infraction.exists
                     if self.settings.can_create_dialogs
                       a.icon.icon-edit(
@@ -115,9 +115,8 @@
                         title=self.t('ask_question')
                       )
 
-                td.member-infractions-item__remove.text-nowrap.text-end
                   if infraction.exists && !expired && (self.blocks.infractions.settings.can_delete_infractions || infraction.from === self.runtime.user_id)
-                    a.icon.icon-x(
+                    a.icon.icon-x.icon-space-before(
                       href='#'
                       data-on-click='users.member.blocks.infractions:delete'
                       data-infraction-id=infraction._id
