@@ -81,6 +81,9 @@ function resizeImage(data) {
       $progressStatus.hide(0);
     })
     .catch(err => {
+      // firefox with resist fingerprinting setting on, can still upload original file
+      if (err.code === 'ERR_GET_IMAGE_DATA') return;
+
       let message = t('err_bad_image', {
         file_name: data.file.name
       });
