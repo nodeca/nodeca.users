@@ -5,6 +5,10 @@
   margin 0 auto
   text-align center
 
+.avatar-change__info
+  // prevent 'dragleave' event from firing over child elements,
+  // https://stackoverflow.com/questions/7110353/html5-dragleave-fired-when-hovering-a-child-element
+  pointer-events none
 
 .avatar-change__info
   padding 2rem

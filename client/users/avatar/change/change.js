@@ -5,6 +5,7 @@
 
 
 const _ = require('lodash');
+const bootstrap = require('bootstrap');
 
 // Pica instance
 let pica;
@@ -46,7 +47,7 @@ let cropperTop,
 let data;
 
 // Dialog elements
-let $dialog, cropper, canvas, canvasPreview, canvasPreviewCtx;
+let dialog, cropper, cropperCleanup, canvas, canvasPreview, canvasPreviewCtx;
 
 // Timer to detect zoom and dialog size change
 let sizeCheckInterval;
@@ -345,8 +346,9 @@ function viewParamsUpdate() {
   viewRatio = canvas.offsetWidth / imageWidth;
 
   // Cropper size should be bigger than 3x resize mark (to user be able interact with marks)
-  cropperMinWidth = Math.max(avatarWidth, Math.round($dialog.find('.avatar-cropper__mark').width() * 3 / viewRatio));
-  cropperMinHeight = Math.max(avatarHeight, Math.round($dialog.find('.avatar-cropper__mark').height() * 3 / viewRatio));
+  let cropperMark = dialog.getElementsByClassName('avatar-cropper__mark')[0];
+  cropperMinWidth = Math.max(avatarWidth, Math.round(cropperMark.offsetWidth * 3 / viewRatio));
+  cropperMinHeight = Math.max(avatarHeight, Math.round(cropperMark.offsetHeight * 3 / viewRatio));
 }
 
 
@@ -368,7 +370,7 @@ function loadImage(file) {
       return;
     }
 
-    $('.avatar-change').addClass('avatar-change__m-loaded');
+    document.getElementsByClassName('avatar-change')[0].classList.add('avatar-change__m-loaded');
 
     viewParamsUpdate();
 
@@ -393,61 +395,76 @@ function loadImage(file) {
 //
 function initCropper() {
   let cropperClickOffsetX, cropperClickOffsetY, action;
-  let $body = $('body');
+
+  function onBodyMouseUp() {
+    dialog.classList.remove('avatar-dialog__m-cursor-' + action);
+    dialog.classList.remove('avatar-dialog__m-crop-active');
+    action = null;
+  }
 
   // Use `body` selector for listen mouse events outside of dialog
-  $body
-    .on('mouseup.nd.avatar_change touchend.nd.avatar_change', () => {
-      $dialog.removeClass('avatar-dialog__m-cursor-' + action);
-      $dialog.removeClass('avatar-dialog__m-crop-active');
+  document.body.addEventListener('mouseup', onBodyMouseUp);
+  document.body.addEventListener('touchend', onBodyMouseUp);
+
+  function onBodyMouseMove(event) {
+    if (!action) return;
+
+    // Detect mouse button up for case when `mouseup` event happens
+    // out of browser window. Check current state directly. Skip this check
+    // for touch events, because they have invalid mouse buttons values.
+    // `event.which` works in chrome, `event.buttons` in firefox
+    if (event.type === 'mousemove' && (event.which === 0 || event.buttons === 0)) {
+      dialog.classList.remove('avatar-dialog__m-cursor-' + action);
+      dialog.classList.remove('avatar-dialog__m-crop-active');
       action = null;
-    })
-    .on('mousemove.nd.avatar_change touchmove.nd.avatar_change', event => {
+      return;
+    }
 
-      if (!action) return;
+    let canvasRect = canvas.getBoundingClientRect();
+    let point = event.touches ? event.touches[0] : event;
+    let mouseX = (point.pageX - canvasRect.left) / viewRatio;
+    let mouseY = (point.pageY - canvasRect.top) / viewRatio;
 
-      // Detect mouse button up for case when `mouseup` event happens
-      // out of browser window. Check current state directly. Skip this check
-      // for touch events, because they have invalid mouse buttons values.
-      // `event.which` works in chrome, `event.buttons` in firefox
-      if (event.type === 'mousemove' && (event.which === 0 || event.buttons === 0)) {
-        $dialog.removeClass('avatar-dialog__m-cursor-' + action);
-        $dialog.removeClass('avatar-dialog__m-crop-active');
-        action = null;
-        return;
-      }
+    if (action !== 'move') {
+      cropperResize(mouseX, mouseY, action);
+    } else {
+      cropperDrag(cropperClickOffsetX, cropperClickOffsetY, mouseX, mouseY);
+    }
 
-      let canvasRect = canvas.getBoundingClientRect();
-      let point = event.originalEvent.touches ? event.originalEvent.touches[0] : event;
-      let mouseX = (point.pageX - canvasRect.left) / viewRatio;
-      let mouseY = (point.pageY - canvasRect.top) / viewRatio;
+    cropperUpdate();
+    previewUpdate();
+  }
 
-      if (action !== 'move') {
-        cropperResize(mouseX, mouseY, action);
-      } else {
-        cropperDrag(cropperClickOffsetX, cropperClickOffsetY, mouseX, mouseY);
-      }
+  document.body.addEventListener('mousemove', onBodyMouseMove);
+  document.body.addEventListener('touchmove', onBodyMouseMove);
 
-      cropperUpdate();
-      previewUpdate();
-    });
-
-  $(cropper).on('mousedown touchstart', event => {
-    let $target = $(event.target);
-    let point = event.originalEvent.touches ? event.originalEvent.touches[0] : event;
+  function cropperMouseDown(event) {
+    let point = event.touches ? event.touches[0] : event;
 
     let canvasRect = canvas.getBoundingClientRect();
     cropperClickOffsetX = (point.pageX - canvasRect.left) / viewRatio - cropperLeft;
     cropperClickOffsetY = (point.pageY - canvasRect.top) / viewRatio - cropperTop;
 
     if (!action) {
-      action = $target.data('action');
-      $dialog.addClass('avatar-dialog__m-cursor-' + action);
-      $dialog.addClass('avatar-dialog__m-crop-active');
+      action = event.target.dataset.action;
+      dialog.classList.add('avatar-dialog__m-cursor-' + action);
+      dialog.classList.add('avatar-dialog__m-crop-active');
     }
 
-    return false;
-  });
+    // prevent mousedown from being turned into dragstart
+    event.preventDefault();
+  }
+
+  cropper.addEventListener('mousedown', cropperMouseDown);
+  cropper.addEventListener('touchstart', cropperMouseDown);
+
+  if (cropperCleanup) cropperCleanup();
+  cropperCleanup = () => {
+    document.body.removeEventListener('mouseup', onBodyMouseUp);
+    document.body.removeEventListener('touchend', onBodyMouseUp);
+    document.body.removeEventListener('mousemove', onBodyMouseMove);
+    document.body.removeEventListener('touchmove', onBodyMouseMove);
+  };
 }
 
 
@@ -458,32 +475,19 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
   // Handles the event when user drag file to drag drop zone
   //
   N.wire.on('users.avatar.change:dd_area', function change_avatar_dd(data) {
-    let x0, y0, x1, y1, ex, ey;
-    let $dropZone = $('.avatar-change');
+    let dropZone = document.getElementsByClassName('avatar-change')[0];
 
     switch (data.event.type) {
       case 'dragenter':
-        $dropZone.addClass('active');
+        dropZone.classList.add('active');
         break;
 
       case 'dragleave':
-        // 'dragleave' occurs when user move cursor over child HTML element
-        // track this situation and don't remove 'active' class
-        // http://stackoverflow.com/questions/10867506/
-        x0 = $dropZone.offset().left;
-        y0 = $dropZone.offset().top;
-        x1 = x0 + $dropZone.outerWidth();
-        y1 = y0 + $dropZone.outerHeight();
-        ex = data.event.originalEvent.pageX;
-        ey = data.event.originalEvent.pageY;
-
-        if (ex > x1 || ex < x0 || ey > y1 || ey < y0) {
-          $dropZone.removeClass('active');
-        }
+        dropZone.classList.remove('active');
         break;
 
       case 'drop':
-        $dropZone.removeClass('active');
+        dropZone.classList.remove('active');
 
         if (data.files && data.files.length) {
           waitForReduce
@@ -550,10 +554,10 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
     return N.io.rpc('users.avatar.upload', { avatar })
       .then(result => {
         data.avatar_id = result.avatar_id;
-        $dialog.modal('hide');
+        bootstrap.Modal.getInstance(dialog).hide();
         onUploaded();
       }, () => {
-        $dialog.modal('hide');
+        bootstrap.Modal.getInstance(dialog).hide();
         N.wire.emit('notify', t('err_upload_failed'));
       });
   });
@@ -562,18 +566,19 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
   // Page exit
   //
   N.wire.on('navigate.exit', function page_exit() {
-    if (!$dialog) return;
+    if (!dialog) return;
 
     clearInterval(sizeCheckInterval);
 
-    $dialog.remove();
+    bootstrap.Modal.getInstance(dialog).dispose();
+    dialog.remove();
 
-    $('body').off('.nd.avatar_change');
-    $(window).off('.nd.avatar_change');
+    cropperCleanup();
+    cropperCleanup = null;
 
     // Free resources
     onUploaded = null;
-    $dialog = null;
+    dialog = null;
     cropper = null;
     canvas = null;
     canvasPreview = null;
@@ -590,29 +595,32 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
 
   // If dialog already exists - just show,
   // it allows to keep already uploaded image
-  if ($dialog) {
-    $dialog.modal('show');
+  if (dialog) {
+    bootstrap.Modal.getOrCreateInstance(dialog).show();
     return;
   }
 
-  $dialog = $(N.runtime.render('users.avatar.change'));
-  $('body').append($dialog);
+  let tmpDiv = document.createElement('div');
+  tmpDiv.innerHTML = N.runtime.render('users.avatar.change');
 
-  cropper = $('.avatar-cropper')[0];
-  canvas = $('.avatar-change__canvas')[0];
+  dialog = tmpDiv.firstChild;
+  document.body.appendChild(dialog);
 
-  canvasPreview = $('.avatar-preview')[0];
+  cropper = document.getElementsByClassName('avatar-cropper')[0];
+  canvas = document.getElementsByClassName('avatar-change__canvas')[0];
+
+  canvasPreview = document.getElementsByClassName('avatar-preview')[0];
   canvasPreview.width = previewWidth;
   canvasPreview.height = previewHeight;
   canvasPreviewCtx = canvasPreview.getContext('2d');
 
   initCropper();
 
-  let lastWidth = $dialog.width();
+  let lastWidth = dialog.offsetWidth;
 
   // We can't use `resize` event here because zoom level also change width, but doesn't fire `resize`
   sizeCheckInterval = setInterval(() => {
-    let newWidth = $dialog.width();
+    let newWidth = dialog.offsetWidth;
 
     if (lastWidth === newWidth) return;
 
@@ -622,8 +630,8 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
     cropperUpdate();
   }, 500);
 
-  $('#avatar-change__upload').on('change', function () {
-    let files = $(this)[0].files;
+  document.getElementById('avatar-change__upload').addEventListener('change', event => {
+    let files = event.target.files;
     if (files.length > 0) {
       let avatar = files[0];
       waitForReduce
@@ -631,17 +639,17 @@ N.wire.on('users.avatar.change', function show_change_avatar(params, callback) {
         .catch(err => N.wire.emit('error', err));
     }
     // reset input, so uploading the same file again will trigger 'change' event
-    $(this).val('');
+    event.target.value = '';
   });
 
   // Update cropper on dialog open.
   // Needed when we open dialog at second time with existing image
-  $dialog.on('shown.bs.modal', function () {
+  dialog.addEventListener('shown.bs.modal', function () {
     viewParamsUpdate();
     cropperUpdate();
   });
 
-  $dialog.modal('show');
+  bootstrap.Modal.getOrCreateInstance(dialog).show();
 
   waitForReduce = N.loader.loadAssets('vendor.image-blob-reduce');
 });
