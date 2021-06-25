@@ -20,7 +20,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
     error: ko.observable(null)
   };
 
-  ko.applyBindings(view, $('#content')[0]);
+  ko.applyBindings(view, document.getElementById('content'));
 });
 
 
@@ -33,7 +33,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   N.wire.on('navigate.exit:' + module.apiPath, function page_exit() {
     const ko = require('knockout');
 
-    ko.cleanNode($('#content')[0]);
+    ko.cleanNode(document.getElementById('content'));
     view = null;
   });
 

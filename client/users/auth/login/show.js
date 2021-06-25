@@ -26,7 +26,7 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
     }
   };
 
-  ko.applyBindings(view, $('#content')[0]);
+  ko.applyBindings(view, document.getElementById('content'));
 
   return N.wire.emit('common.blocks.recaptcha.create');
 });
@@ -41,7 +41,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   N.wire.on('navigate.exit:' + module.apiPath, function page_exit() {
     const ko = require('knockout');
 
-    ko.cleanNode($('#content')[0]);
+    ko.cleanNode(document.getElementById('content'));
     view = null;
   });
 

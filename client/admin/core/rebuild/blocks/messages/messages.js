@@ -8,7 +8,7 @@ const ko = require('knockout');
 
 // Knockout bindings root object.
 let view = null;
-let SELECTOR = '#rebuild-messages-task';
+let CONTAINER_ID = '#rebuild-messages-task';
 let finished_tasks = {};
 
 
@@ -37,7 +37,8 @@ function update_task_status(task_info) {
 
 
 N.wire.on('navigate.done:admin.core.rebuild', function rebuild_messages_widget_setup() {
-  if (!$(SELECTOR).length) return;
+  let container = document.getElementById(CONTAINER_ID);
+  if (!container) return;
 
   let current = N.runtime.page_data.messages_task.current || 0;
   let total   = N.runtime.page_data.messages_task.total || 1;
@@ -48,17 +49,18 @@ N.wire.on('navigate.done:admin.core.rebuild', function rebuild_messages_widget_s
     total:    ko.observable(total)
   };
 
-  ko.applyBindings(view, $(SELECTOR)[0]);
+  ko.applyBindings(view, container);
 
   N.live.on('admin.core.rebuild.messages', update_task_status);
 });
 
 
 N.wire.on('navigate.exit:admin.core.rebuild', function rebuild_messages_widget_teardown() {
-  if (!$(SELECTOR).length) return;
+  let container = document.getElementById(CONTAINER_ID);
+  if (!container) return;
 
   view = null;
-  ko.cleanNode($(SELECTOR)[0]);
+  ko.cleanNode(container);
 
   N.live.off('admin.core.rebuild.messages', update_task_status);
 });

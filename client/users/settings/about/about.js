@@ -114,14 +114,14 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
   const ko = require('knockout');
 
   form = new Form(N.runtime.page_data);
-  ko.applyBindings(form, $('#user-settings-about').get(0));
+  ko.applyBindings(form, document.getElementById('user-settings-about'));
 });
 
 
 N.wire.on('navigate.exit:' + module.apiPath, function page_exit() {
   const ko = require('knockout');
 
-  ko.cleanNode($('#user-settings-about').get(0));
+  ko.cleanNode(document.getElementById('user-settings-about'));
   form = null;
 });
 

@@ -125,12 +125,12 @@ N.wire.on('navigate.preload:' + module.apiPath, function load_deps(preload) {
 N.wire.on('navigate.done:' + module.apiPath, function page_setup() {
   const ko = require('knockout');
 
-  ko.applyBindings(new Form(N.runtime.page_data), $('#user-settings-general').get(0));
+  ko.applyBindings(new Form(N.runtime.page_data), document.getElementById('user-settings-general'));
 });
 
 
 N.wire.on('navigate.exit:' + module.apiPath, function page_exit() {
   const ko = require('knockout');
 
-  ko.cleanNode($('#user-settings-general').get(0));
+  ko.cleanNode(document.getElementById('user-settings-general'));
 });
