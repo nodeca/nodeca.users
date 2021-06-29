@@ -30,10 +30,7 @@ module.exports = function (N) {
     let group = groupsById[groupId];
 
     // Setting exists, and it is not inherited from another section.
-    if (group &&
-        group.settings &&
-        group.settings[settingName]) {
-
+    if (group?.settings?.[settingName]) {
       return group.settings[settingName];
     }
 
@@ -68,7 +65,7 @@ module.exports = function (N) {
         let values = [];
 
         for (let group of groups) {
-          if (group.settings && group.settings[key]) {
+          if (group.settings?.[key]) {
             values.push(group.settings[key]);
             continue;
           }

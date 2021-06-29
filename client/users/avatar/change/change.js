@@ -485,7 +485,7 @@ N.wire.once('users.avatar.change', function init_event_handlers() {
       case 'drop':
         $dropZone.removeClass('active');
 
-        if (data.files && data.files.length) {
+        if (data.files?.length) {
           waitForReduce
             .then(() => loadImage(data.files[0]))
             .catch(err => N.wire.emit('error', err));

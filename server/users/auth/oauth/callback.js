@@ -99,7 +99,7 @@ module.exports = function (N, apiPath) {
 
     env.data.user     = user;
     env.data.authProvider = authProvider;
-    env.data.redirect_id = (env.session.oauth || {}).redirect_id;
+    env.data.redirect_id = env.session.oauth?.redirect_id;
 
     await N.wire.emit('internal:users.login', env);
 

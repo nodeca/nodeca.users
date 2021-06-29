@@ -27,12 +27,12 @@ module.exports = function (N, apiPath) {
   N.wire.after(apiPath, function fill_head_and_breadcrumbs(env) {
 
     // If user logged in via oauth, prefill email and oauth status
-    if (env.session.oauth && env.session.oauth.info) {
+    if (env.session.oauth?.info) {
       env.res.oauth_active = env.session.oauth.info.provider;
       env.res.email = env.session.oauth.info.email;
     }
 
-    var providers = N.config.oauth || {};
+    let providers = N.config.oauth || {};
 
     env.res.oauth = {};
 

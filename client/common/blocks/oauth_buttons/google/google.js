@@ -19,7 +19,7 @@ var init = _.once(function () {
     var path = 'users.auth.oauth.remember_action';
 
     var params = { action };
-    if (pageParams && pageParams.redirect_id) {
+    if (pageParams?.redirect_id) {
       params.redirect_id = pageParams.redirect_id;
     }
 

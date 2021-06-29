@@ -84,7 +84,7 @@ module.exports = function (N, apiPath) {
     }
 
     // If we use oauth for registration, provider email should be unique too.
-    if (env.session.oauth && env.session.oauth.info) {
+    if (env.session.oauth?.info) {
       if (await N.models.users.AuthProvider.similarEmailExists(env.session.oauth.info.email)) {
         env.data.errors.email = env.t('err_busy_email');
         return;
@@ -172,7 +172,7 @@ module.exports = function (N, apiPath) {
 
     // If oauth login info exists, skip validation for trusted provider,
     // when user's email === privider's email
-    let oainfo = (env.session.oauth || {}).info;
+    let oainfo = env.session.oauth?.info;
 
     if (oainfo && N.config.oauth[oainfo.type].trusted && env.params.email === oainfo.email) {
       env.data.validate_email = false;
@@ -245,7 +245,7 @@ module.exports = function (N, apiPath) {
       pass_hash: await password.hash(env.params.pass)
     };
 
-    env.data.oauth_info = (env.session.oauth || {}).info;
+    env.data.oauth_info = env.session.oauth?.info;
 
     // Stupid attempt to cleanup session. It should be safe to skip it,
     // because session is deleted on user login.

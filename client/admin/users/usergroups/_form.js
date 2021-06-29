@@ -175,7 +175,7 @@ function UserGroup(form, data) {
 
   this.parentGroup = ko.computed({
     read() { return form.groupsById ? form.groupsById[this.parentId()] : null; },
-    write(group) { this.parentId(group ? group.id : null); },
+    write(group) { this.parentId(group?.id); },
     owner: this
   });
 

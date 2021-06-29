@@ -239,7 +239,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
       case 'drop':
         $dropZone.removeClass('active');
 
-        if (data.files && data.files.length) {
+        if (data.files?.length) {
           let params = {
             files: data.files,
             rpc: [ 'users.media.upload', { album_id: pageState.album_id } ],

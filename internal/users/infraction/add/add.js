@@ -77,7 +77,7 @@ module.exports = function (N, apiPath) {
     //
     let message_url = '';
 
-    if (info_env.info[infraction.src] && info_env.info[infraction.src].url) {
+    if (info_env.info[infraction.src]?.url) {
       let original_message = N.i18n.t(locale, 'users.infraction.add.original_message');
 
       message_url = `[${original_message}](${info_env.info[infraction.src].url})`;
@@ -88,7 +88,7 @@ module.exports = function (N, apiPath) {
     //
     let message_text = '';
 
-    if (info_env.info[infraction.src] && info_env.info[infraction.src].text) {
+    if (info_env.info[infraction.src]?.text) {
       // Calculate apostrophes count for quote wrapper
       //
       // - get string from message with longest apostrophes sequence
@@ -181,7 +181,7 @@ module.exports = function (N, apiPath) {
 
     _.merge(opponent_dialog, dlg_update_data);
 
-    let opponent_msg = new N.models.users.DlgMessage(_.assign({
+    let opponent_msg = new N.models.users.DlgMessage(Object.assign({
       parent: opponent_dialog._id,
       user: infraction.for,
       with: bot._id,

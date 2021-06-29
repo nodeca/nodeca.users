@@ -11,7 +11,7 @@ module.exports = function (N, apiPath) {
 
   validate_params.birthday = { type: [ 'string', 'null' ] };
 
-  if (N.config.users && N.config.users.about) {
+  if (N.config.users?.about) {
     for (let name of Object.keys(N.config.users.about)) {
       validate_params[name] = { type: [ 'string', 'null' ] };
     }
@@ -78,7 +78,7 @@ module.exports = function (N, apiPath) {
       if (!birthday_is_valid) env.data.errors.birthday = true;
     }
 
-    if (N.config.users && N.config.users.about) {
+    if (N.config.users?.about) {
       for (let name of Object.keys(N.config.users.about)) {
         if (typeof env.params[name] === 'undefined') continue;
 

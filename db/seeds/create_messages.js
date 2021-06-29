@@ -3,7 +3,6 @@
 'use strict';
 
 
-const _         = require('lodash');
 const charlatan = require('charlatan');
 const ObjectId  = require('mongoose').Types.ObjectId;
 
@@ -79,7 +78,7 @@ async function createMessages(dlg1, dlg2, msg_count) {
 
     let is_to_user1 = Math.random() > 0.5;
 
-    msg1 = new models.users.DlgMessage(_.assign({
+    msg1 = new models.users.DlgMessage(Object.assign({
       _id: new ObjectId(Math.round(ts / 1000)),
       parent: dlg1._id,
       user: dlg1.user,
@@ -87,7 +86,7 @@ async function createMessages(dlg1, dlg2, msg_count) {
       incoming: is_to_user1
     }, msg_data));
 
-    msg2 = new models.users.DlgMessage(_.assign({
+    msg2 = new models.users.DlgMessage(Object.assign({
       _id: new ObjectId(Math.round(ts / 1000)),
       parent: dlg2._id,
       user: dlg2.user,
@@ -125,12 +124,12 @@ async function createDialogs(owner) {
     let opponent = opponents[i];
     let dlg_data = {};
 
-    let own = new models.users.Dialog(_.assign({
+    let own = new models.users.Dialog(Object.assign({
       user: owner._id,
       with: opponent._id
     }, dlg_data));
 
-    let opp = new models.users.Dialog(_.assign({
+    let opp = new models.users.Dialog(Object.assign({
       user: opponent._id,
       with: owner._id
     }, dlg_data));

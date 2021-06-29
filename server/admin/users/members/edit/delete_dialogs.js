@@ -4,7 +4,6 @@
 'use strict';
 
 
-const _ = require('lodash');
 const parse_options = require('nodeca.users/server/users/mod_notes/_parse_options');
 
 
@@ -30,12 +29,12 @@ module.exports = function (N, apiPath) {
                                  .lean(true);
 
     await N.models.users.Dialog.updateMany(
-      { _id: { $in: _.map(dialogs_from, '_id') } },
+      { _id: { $in: dialogs_from.map(x => x._id) } },
       { $set: { exists: false } }
     );
 
     await N.models.users.DlgMessage.updateMany(
-      { parent: { $in: _.map(dialogs_from, '_id') } },
+      { parent: { $in: dialogs_from.map(x => x._id) } },
       { $set: { exists: false } }
     );
 
@@ -45,12 +44,12 @@ module.exports = function (N, apiPath) {
                                .lean(true);
 
     await N.models.users.Dialog.updateMany(
-      { _id: { $in: _.map(dialogs_to, '_id') } },
+      { _id: { $in: dialogs_to.map(x => x._id) } },
       { $set: { exists: false } }
     );
 
     await N.models.users.DlgMessage.updateMany(
-      { parent: { $in: _.map(dialogs_to, '_id') } },
+      { parent: { $in: dialogs_to.map(x => x._id) } },
       { $set: { exists: false } }
     );
   });

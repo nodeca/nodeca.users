@@ -61,15 +61,15 @@ module.exports = function (N, apiPath) {
 
     // Remove from database
     await N.models.users.Subscription.deleteMany()
-              .where('_id').in(_.map(env.data.missed_subscriptions, '_id'));
+              .where('_id').in(env.data.missed_subscriptions.map(x => x._id));
   });
 
 
   // Fill tabs
   //
   N.wire.after(apiPath, function fill_tabs(env) {
-    let tabs = _.reduce((N.config.users || {}).subscriptions || {}, (acc, tab_config, block_name) => {
-      acc.push(_.assign({
+    let tabs = _.reduce(N.config.users?.subscriptions || {}, (acc, tab_config, block_name) => {
+      acc.push(Object.assign({
         block_name,
         priority: 10,
         items: _.filter(env.data.subscriptions, { to_type: N.shared.content_type[tab_config.to_type] })

@@ -299,7 +299,7 @@ module.exports = function (N, collectionName) {
     }
 
     // Fetch cuts
-    let cuts = await Marker.cuts(userId, _.map(contentInfo, 'categoryId'));
+    let cuts = await Marker.cuts(userId, contentInfo.map(x => x.categoryId));
 
     // Set `isNew` flag by cut
     contentInfo.forEach(item => {
@@ -354,8 +354,8 @@ module.exports = function (N, collectionName) {
     });
 
     _.forEach(contentInfo, item => {
-      max = (posInfo[contentIds.indexOf(String(item.contentId))] || {}).max || -1;
-      result[item.contentId].position = (posInfo[contentIds.indexOf(String(item.contentId))] || {}).current || -1;
+      max = posInfo[contentIds.indexOf(String(item.contentId))]?.max ?? -1;
+      result[item.contentId].position = posInfo[contentIds.indexOf(String(item.contentId))]?.current ?? -1;
 
       if (max === -1 || item.lastPostTs < cuts[item.categoryId]) {
         result[item.contentId].next = -1;

@@ -15,7 +15,6 @@
 'use strict';
 
 
-const _        = require('lodash');
 const userInfo = require('nodeca.users/lib/user_info');
 
 
@@ -67,7 +66,7 @@ module.exports = function (N, apiPath) {
                                .select('_id')
                                .lean(true);
 
-    let user_infos = await userInfo(N, _.map(recipients, '_id'));
+    let user_infos = await userInfo(N, recipients.map(x => x._id));
 
     let allowed_userinfos = {};
 

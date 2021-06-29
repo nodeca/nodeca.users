@@ -231,7 +231,7 @@ module.exports = function (N, apiPath) {
 
       _.merge(own_dialog, dlg_update_data);
 
-      let own_msg = new N.models.users.DlgMessage(_.assign({
+      let own_msg = new N.models.users.DlgMessage(Object.assign({
         parent: own_dialog._id,
         user: env.user_info.user_id,
         with: env.data.to._id,
@@ -269,7 +269,7 @@ module.exports = function (N, apiPath) {
 
       _.merge(opponent_dialog, dlg_update_data);
 
-      let opponent_msg = new N.models.users.DlgMessage(_.assign({
+      let opponent_msg = new N.models.users.DlgMessage(Object.assign({
         parent: opponent_dialog._id,
         user: env.data.to._id,
         with: env.user_info.user_id,

@@ -18,10 +18,8 @@ const _ = require('lodash');
 module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, async function dialogs_fetch_infraction_info(info_env) {
-    let message_ids = _.map(info_env.infractions.filter(
-      i => i.src_type === N.shared.content_type.DIALOG_MESSAGE
-    ), 'src');
-
+    let message_ids = info_env.infractions.filter(i => i.src_type === N.shared.content_type.DIALOG_MESSAGE)
+                                          .map(x => x.src);
     if (!message_ids.length) return;
 
 
@@ -34,7 +32,7 @@ module.exports = function (N, apiPath) {
     // Fetch dialogs
     //
     let dialogs = await N.models.users.Dialog.find()
-                            .where('_id').in(_.map(messages, 'parent'))
+                            .where('_id').in(messages.map(x => x.parent))
                             .lean(true);
 
     let params = {
@@ -50,7 +48,7 @@ module.exports = function (N, apiPath) {
     // Fetch opponents
     //
     let opponents = await N.models.users.User.find()
-                              .where('_id').in(_.map(dialogs, 'to'))
+                              .where('_id').in(dialogs.map(x => x.to))
                               .lean(true);
 
     let dialogs_by_id = _.keyBy(dialogs, '_id');
@@ -61,7 +59,7 @@ module.exports = function (N, apiPath) {
       if (!dialog) return;
 
       info_env.info[message._id] = {
-        title: users_by_id[dialog.with] && users_by_id[dialog.with].name,
+        title: users_by_id[dialog.with]?.name,
         url: N.router.linkTo('users.dialog', {
           dialog_id:  dialog._id,
           message_id: message._id

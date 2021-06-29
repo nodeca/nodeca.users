@@ -8,7 +8,7 @@ const parse_options = require('nodeca.users/server/users/mod_notes/_parse_option
 
 function md_escape(text) {
   // punctuation character set is the same as in markdown-it `text` rule
-  return text.replace(/([\n!#$%&*+\-:<=>@[\\\]^_`{}~])/g, '\\$1');
+  return text.replace(/([\n!#$%&*+\-:<=>@[\\\]^_`{}~])/g, '\\$1'); //`
 }
 
 
@@ -23,7 +23,7 @@ module.exports = function (N, apiPath) {
     hb:         { type: 'string' }
   };
 
-  if (N.config.users && N.config.users.about) {
+  if (N.config.users?.about) {
     for (let name of Object.keys(N.config.users.about)) {
       validate_params[name] = { type: 'string' };
     }
@@ -64,7 +64,7 @@ module.exports = function (N, apiPath) {
     }
 
     // process custom fields
-    if (N.config.users && N.config.users.about) {
+    if (N.config.users?.about) {
       for (let name of Object.keys(N.config.users.about)) {
         // Only change fields if:
         //  - field is present in input (form may be submitted partially)
@@ -165,8 +165,8 @@ module.exports = function (N, apiPath) {
           '_id'
         );
 
-        old_value_str = old_value.map(id => (usergroups_by_id[id] || {}).short_name).join(', ');
-        new_value_str = new_value.map(id => (usergroups_by_id[id] || {}).short_name).join(', ');
+        old_value_str = old_value.map(id => usergroups_by_id[id]?.short_name).join(', ');
+        new_value_str = new_value.map(id => usergroups_by_id[id]?.short_name).join(', ');
       }
 
       // format date for birthday

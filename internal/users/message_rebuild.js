@@ -17,7 +17,7 @@ module.exports = function (N, apiPath) {
 
     let dialogs_by_id = _.keyBy(
       await N.models.users.Dialog.find()
-                .where('_id').in(_.uniq(_.map(posts, 'parent').map(String)))
+                .where('_id').in(_.uniq(posts.map(x => x.parent).map(String)))
                 .lean(true),
       '_id'
     );
@@ -62,7 +62,7 @@ module.exports = function (N, apiPath) {
       //
       let dialog = dialogs_by_id[post.parent];
 
-      if (dialog && dialog.cache && String(dialog.cache.last_message) === String(post._id)) {
+      if (dialog?.cache && String(dialog.cache.last_message) === String(post._id)) {
         let preview_data = await N.parser.md2preview({
           text: post.md,
           limit: 500,

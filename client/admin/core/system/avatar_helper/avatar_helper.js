@@ -36,7 +36,7 @@ function avatar_helper(user_id, user, size_name) {
 
   if (user) {
     avatar_id = user.avatar_id;
-  } else if (N && N.runtime && N.runtime.user_id === user_id) {
+  } else if (N?.runtime && N.runtime.user_id === user_id) {
     avatar_id = N.runtime.user_avatar;
   }
 
@@ -73,7 +73,7 @@ function replace_placeholders(selector, users) {
     }
 
     // Avatar id is not specified, but we can retrieve it from locals
-    if (users && users[user_id]) {
+    if (users?.[user_id]) {
       avatar_id = avatar_id || users[user_id].avatar_id;
     }
 

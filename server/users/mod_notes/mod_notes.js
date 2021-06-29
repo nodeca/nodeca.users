@@ -1,9 +1,6 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
@@ -45,7 +42,7 @@ module.exports = function (N, apiPath) {
     // Fetch users info
     //
     env.data.users = env.data.users || [];
-    env.data.users = env.data.users.concat(_.map(notes, 'from'));
+    env.data.users = env.data.users.concat(notes.map(x => x.from));
     env.data.users.push(env.data.user._id);
 
 

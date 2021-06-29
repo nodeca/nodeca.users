@@ -77,7 +77,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
         id = $dropZone.data('albumId');
 
-        if (data.files && data.files.length) {
+        if (data.files?.length) {
           return N.wire.emit('users.uploader:add', {
             files: data.files,
             rpc: [ 'users.media.upload', { album_id: id } ],

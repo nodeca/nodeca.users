@@ -3,8 +3,6 @@
 'use strict';
 
 
-const _ = require('lodash');
-
 const detectCircular = require('./_lib/detect_circular');
 const PARAMS_SCHEMA  = require('./_lib/params_schema');
 
@@ -13,7 +11,7 @@ module.exports = function (N, apiPath) {
   let UserGroup = N.models.users.UserGroup;
 
 
-  N.validate(apiPath, _.assign({
+  N.validate(apiPath, Object.assign({
     _id: { format: 'mongo', required: true }
   }, PARAMS_SCHEMA));
 

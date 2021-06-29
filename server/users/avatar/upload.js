@@ -38,7 +38,7 @@ module.exports = function (N, apiPath) {
   // Create image/binary (for images previews created automatically)
   //
   N.wire.on(apiPath, async function save_media(env) {
-    let fileInfo = env.req.files.avatar && env.req.files.avatar[0];
+    let fileInfo = env.req.files.avatar?.[0];
 
     if (!fileInfo) throw new Error('No file was uploaded');
 

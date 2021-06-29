@@ -89,7 +89,7 @@ module.exports = function (N, apiPath) {
 
     let last_dlg = await query.lean(true);
 
-    env.res.last_dialog_id = last_dlg ? last_dlg._id : null;
+    env.res.last_dialog_id = last_dlg?._id;
   });
 
 

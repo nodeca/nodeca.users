@@ -23,9 +23,6 @@
 'use strict';
 
 
-const _       = require('lodash');
-
-
 module.exports = function (N) {
 
   return async function buildDialogsIds(env) {
@@ -51,7 +48,7 @@ module.exports = function (N) {
               .select('_id')
               .limit(env.data.select_dialogs_before)
               .lean(true)
-              .then(dlgs => _.map(dlgs, '_id').reverse());
+              .then(dlgs => dlgs.map(x => x._id).reverse());
     }
 
 
@@ -84,7 +81,7 @@ module.exports = function (N) {
               .select('_id')
               .limit(count)
               .lean(true)
-              .then(dlgs => _.map(dlgs, '_id'));
+              .then(dlgs => dlgs.map(x => x._id));
     }
 
 

@@ -76,7 +76,7 @@ module.exports = function (N, apiPath) {
       let content_type_from_int = _.invert(_.get(N, 'shared.content_type', {}));
       let results = new Array(bookmarks.length).fill(null);
 
-      await Promise.all(_.uniq(_.map(bookmarks, 'src_type')).map(async type => {
+      await Promise.all(_.uniq(bookmarks.map(x => x.src_type)).map(async type => {
         if (!content_type_from_int[type]) return;
 
         let content_type = content_type_from_int[type].toLowerCase();
@@ -104,7 +104,7 @@ module.exports = function (N, apiPath) {
         for (let user_id of sub_env.users) users.push(user_id);
       }));
 
-      start          = last_bookmark ? last_bookmark._id : null;
+      start          = last_bookmark?._id;
       env.data.users = (env.data.users || []).concat(users);
       env.res.items  = results.filter(Boolean).concat(env.res.items || []);
     } while (start && env.res.items.length < env.data.select_bookmarks_after);
@@ -145,7 +145,7 @@ module.exports = function (N, apiPath) {
       let content_type_from_int = _.invert(_.get(N, 'shared.content_type', {}));
       let results = new Array(bookmarks.length).fill(null);
 
-      await Promise.all(_.uniq(_.map(bookmarks, 'src_type')).map(async type => {
+      await Promise.all(_.uniq(bookmarks.map(x => x.src_type)).map(async type => {
         if (!content_type_from_int[type]) return;
 
         let content_type = content_type_from_int[type].toLowerCase();
@@ -173,7 +173,7 @@ module.exports = function (N, apiPath) {
         for (let user_id of sub_env.users) users.push(user_id);
       }));
 
-      start          = last_bookmark ? last_bookmark._id : null;
+      start          = last_bookmark?._id;
       env.data.users = (env.data.users || []).concat(users);
       env.res.items  = (env.res.items || []).concat(results.filter(Boolean));
     } while (start && env.res.items.length < env.data.select_bookmarks_after);

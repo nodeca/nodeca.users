@@ -1,7 +1,6 @@
 'use strict';
 
 
-const _        = require('lodash');
 const assert   = require('assert');
 const ObjectId = require('mongoose').Types.ObjectId;
 
@@ -52,6 +51,6 @@ describe('Ignore', function () {
 
     let ignored_users = await TEST.N.models.users.Ignore.find({ from: id1 }).lean(true);
 
-    assert.deepEqual(_.map(ignored_users, 'to'), [ id2, id4 ]);
+    assert.deepEqual(ignored_users.map(x => x.to), [ id2, id4 ]);
   });
 });

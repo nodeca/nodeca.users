@@ -12,13 +12,13 @@ module.exports = function (N, apiPath) {
 
   let blocks = _.map(
     N.config.users.profile_page.blocks,
-    (v, k) => _.assign({ name: k }, v)
+    (v, k) => Object.assign({ name: k }, v)
   );
   blocks = _.sortBy(blocks, _.property('priority'));
 
   let menu = _.map(
     N.config.users.profile_page.menu,
-    (v, k) => _.assign({ name: k }, v)
+    (v, k) => Object.assign({ name: k }, v)
   );
   menu = _.sortBy(menu, _.property('priority'));
 
@@ -40,7 +40,7 @@ module.exports = function (N, apiPath) {
 
     let actions = _.map(
       N.config.users.profile_page.actions,
-      (v, k) => _.assign({ name: k }, v)
+      (v, k) => Object.assign({ name: k }, v)
     );
 
     env.data.actions = _.sortBy(actions, _.property('priority'));
@@ -54,7 +54,7 @@ module.exports = function (N, apiPath) {
                             .where('user').equals(env.data.user._id)
                             .lean(true);
 
-    if (penalty && penalty.expire) {
+    if (penalty?.expire) {
       env.res.penalty_expire = penalty.expire;
     }
   });

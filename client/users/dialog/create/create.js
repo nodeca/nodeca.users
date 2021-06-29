@@ -11,7 +11,7 @@ let bloodhound;
 
 
 function updateOptions() {
-  N.MDEdit.parseOptions(_.assign({}, options.parse_options, {
+  N.MDEdit.parseOptions(Object.assign({}, options.parse_options, {
     link_to_title:   options.user_settings.no_mlinks         ? false : options.parse_options.link_to_title,
     link_to_snippet: options.user_settings.no_mlinks         ? false : options.parse_options.link_to_snippet,
     quote_collapse:  options.user_settings.no_quote_collapse ? false : options.parse_options.quote_collapse,

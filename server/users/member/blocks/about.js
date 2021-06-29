@@ -40,7 +40,7 @@ module.exports = function (N) {
       priority: 10
     });
 
-    let birthday = env.data.user.about && env.data.user.about.birthday;
+    let birthday = env.data.user.about?.birthday;
 
     if (birthday && show_contacts) {
       let now = new Date();
@@ -73,7 +73,7 @@ module.exports = function (N) {
       priority: 40
     });
 
-    if (N.config.users && N.config.users.about && show_contacts) {
+    if (N.config.users?.about && show_contacts) {
       for (let name of Object.keys(N.config.users.about)) {
         if (!about[name]) continue;
 

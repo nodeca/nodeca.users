@@ -23,9 +23,6 @@
 'use strict';
 
 
-const _       = require('lodash');
-
-
 module.exports = function (N) {
 
   function select_visible_before(env) {
@@ -42,7 +39,7 @@ module.exports = function (N) {
               .select('_id')
               .limit(env.data.select_messages_before)
               .lean(true)
-              .then(msgs => _.map(msgs, '_id').reverse());
+              .then(msgs => msgs.map(x => x._id).reverse());
   }
 
 
@@ -71,7 +68,7 @@ module.exports = function (N) {
             .select('_id')
             .limit(count)
             .lean(true)
-            .then(msgs => _.map(msgs, '_id'));
+            .then(msgs => msgs.map(x => x._id));
   }
 
 

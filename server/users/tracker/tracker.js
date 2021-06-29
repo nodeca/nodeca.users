@@ -50,7 +50,7 @@ module.exports = function (N, apiPath) {
     let tab_types = Object.keys(menu)
                           .sort((a, b) => (menu[a].priority || 100) - (menu[b].priority || 100));
 
-    let type = env.params.$query && env.params.$query.type || tab_types[0];
+    let type = env.params.$query?.type || tab_types[0];
 
     // validate tab type
     if (tab_types.indexOf(type) === -1) {

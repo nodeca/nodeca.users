@@ -9,9 +9,6 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     media_ids: { type: 'array', required: true, uniqueItems: true, items: { format: 'mongo' } }
@@ -26,6 +23,6 @@ module.exports = function (N, apiPath) {
                         .select('media_id')
                         .lean(true);
 
-    env.res.media_ids = _.map(res, 'media_id');
+    env.res.media_ids = res.map(x => x.media_id);
   });
 };

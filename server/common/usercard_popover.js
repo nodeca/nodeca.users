@@ -28,7 +28,7 @@ module.exports = function (N, apiPath) {
                             .where('user').equals(env.data.user._id)
                             .lean(true);
 
-    if (penalty && penalty.expire) {
+    if (penalty?.expire) {
       env.res.penalty_expire = penalty.expire;
     }
 
@@ -125,7 +125,7 @@ module.exports = function (N, apiPath) {
       env.res.user.avatar_id = null;
     }
 
-    let birthday = env.data.user.about && env.data.user.about.birthday;
+    let birthday = env.data.user.about?.birthday;
 
     if (birthday && show_contacts) {
       let now = new Date();

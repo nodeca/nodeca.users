@@ -84,7 +84,7 @@ module.exports = function (N, collectionName) {
   User.index({ email: 1 });
 
   // For searching by custom fields
-  if (N.config.users && N.config.users.about) {
+  if (N.config.users?.about) {
     Object.keys(N.config.users.about).forEach(name => {
       let index = N.config.users.about[name].index;
 
@@ -191,7 +191,7 @@ module.exports = function (N, collectionName) {
     'hb'
   ];
 
-  if (N.config.users && N.config.users.about) {
+  if (N.config.users?.about) {
     for (let name of Object.keys(N.config.users.about)) {
       User.statics.trackable.push('about.' + name);
     }
@@ -240,7 +240,7 @@ module.exports = function (N, collectionName) {
   //
   User.pre('save', async function () {
     if (!this.isNew) return;
-    if (this.usergroups && this.usergroups.length) return;
+    if (this.usergroups?.length) return;
 
     let registered_user_group = await N.settings.get('registered_user_group');
 

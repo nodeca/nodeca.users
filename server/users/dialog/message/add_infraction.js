@@ -49,7 +49,7 @@ module.exports = function (N, apiPath) {
                                .lean(true);
 
     let sender_dialog = await N.models.users.Dialog.findOne()
-                                  .where('_id').in(_.map(all_copies, 'parent'))
+                                  .where('_id').in(all_copies.map(x => x.parent))
                                   .where('user').equals(message.user)
                                   .lean(true);
 

@@ -20,7 +20,7 @@ module.exports = function (N) {
         var results = {};
 
         keys.forEach(key => {
-          if (data && data[key]) {
+          if (data?.[key]) {
             results[key] = data[key];
           } else {
             results[key] = {

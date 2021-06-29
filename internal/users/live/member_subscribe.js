@@ -10,6 +10,6 @@ module.exports = function (N) {
 
     let match = data.channel.match(/^private\.member\.([0-9a-f]{24})\./);
 
-    if (match && match[1] && match[1] === user_info.user_id) data.allowed = true;
+    if (match?.[1] && match[1] === user_info.user_id) data.allowed = true;
   });
 };

@@ -149,7 +149,7 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, function fill_head(env) {
     env.res.head = env.res.head || {};
-    env.res.head.title = env.t('title', { nick: (env.data.to || {}).name || '' });
+    env.res.head.title = env.t('title', { nick: env.data.to?.name || '' });
   });
 
 

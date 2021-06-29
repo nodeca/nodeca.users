@@ -23,7 +23,7 @@ N.wire.once(module.apiPath, function init_handlers() {
 
   // Prepare types by categories
   //
-  let types = '$$ JSON.stringify((N.config.users.infractions || {}).types || {}) $$';
+  let types = '$$ JSON.stringify(N.config.users.infractions?.types || {}) $$';
 
   types = _.mapValues(types, (type, name) => _.defaults(type, { category_key: '', name, priority: 10 }));
 
@@ -36,7 +36,7 @@ N.wire.once(module.apiPath, function init_handlers() {
         types: _(_.values(types)).filter({ category_key }).sortBy('priority').value()
       };
 
-      cat.priority = _.map(cat.types, 'priority').reduce((a, b) => a + b);
+      cat.priority = cat.types.map(x => x.priority).reduce((a, b) => a + b);
 
       return cat;
     })
@@ -153,7 +153,7 @@ N.wire.once(module.apiPath, function init_handlers() {
 //
 N.wire.on(module.apiPath, function show_add_infraction_dlg(options) {
   params = options;
-  $dialog = $(N.runtime.render(module.apiPath, _.assign({ apiPath: module.apiPath, categories }, params)));
+  $dialog = $(N.runtime.render(module.apiPath, Object.assign({ apiPath: module.apiPath, categories }, params)));
 
   $('body').append($dialog);
 

@@ -180,7 +180,7 @@ module.exports = function (N, apiPath) {
 
     // escape markdown characters (user is only allowed to post plain text),
     // punctuation character set is the same as in markdown-it `text` rule
-    let message = env.params.message.replace(/([!#$%&*+\-:<=>@[\\\]^_`{}~])/g, '\\$1');
+    let message = env.params.message.replace(/([!#$%&*+\-:<=>@[\\\]^_`{}~])/g, '\\$1');//`
 
     env.data.text = env.t('message_text', {
       reason,
@@ -262,7 +262,7 @@ module.exports = function (N, apiPath) {
 
       _.merge(own_dialog, dlg_update_data);
 
-      let own_msg = new N.models.users.DlgMessage(_.assign({
+      let own_msg = new N.models.users.DlgMessage(Object.assign({
         parent: own_dialog._id,
         user: env.user_info.user_id,
         with: env.data.to._id,
@@ -299,7 +299,7 @@ module.exports = function (N, apiPath) {
 
       _.merge(opponent_dialog, dlg_update_data);
 
-      let opponent_msg = new N.models.users.DlgMessage(_.assign({
+      let opponent_msg = new N.models.users.DlgMessage(Object.assign({
         parent: opponent_dialog._id,
         user: env.data.to._id,
         with: env.user_info.user_id,

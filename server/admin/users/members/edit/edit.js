@@ -27,7 +27,7 @@ module.exports = function (N, apiPath) {
                             .where('user').equals(env.data.user._id)
                             .lean(true);
 
-    if (penalty && penalty.expire) {
+    if (penalty?.expire) {
       env.res.penalty_expire = penalty.expire;
     }
   });
@@ -79,7 +79,7 @@ module.exports = function (N, apiPath) {
       priority: 40
     });
 
-    if (N.config.users && N.config.users.about) {
+    if (N.config.users?.about) {
       for (let name of Object.keys(N.config.users.about)) {
         env.res.fields.push({
           name,

@@ -1,7 +1,6 @@
 'use strict';
 
 
-const _ = require('lodash');
 const ScrollableList = require('nodeca.core/lib/app/scrollable_list');
 
 let scrollable_list;
@@ -11,7 +10,7 @@ let search_query;
 function load(start, direction) {
   if (direction !== 'bottom') return null;
 
-  return N.io.rpc('admin.users.members.search.list', _.assign({
+  return N.io.rpc('admin.users.members.search.list', Object.assign({
     start,
     limit: 100
   }, search_query)).then(function (res) {

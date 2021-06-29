@@ -10,12 +10,9 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 module.exports = function (N, apiPath) {
   N.wire.on(apiPath, async function notification_add(params) {
-    let taskData = _.assign({}, params, { to: Array.isArray(params.to) ? params.to : [ params.to ] });
+    let taskData = Object.assign({}, params, { to: Array.isArray(params.to) ? params.to : [ params.to ] });
 
     // Cancel previous task if exists (reset delay for send)
     await N.queue.cancel(`notify_${taskData.type}_${taskData.src}`);

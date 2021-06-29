@@ -77,7 +77,7 @@ module.exports = function (N, apiPath) {
   // Check file size and type
   //
   N.wire.before(apiPath, async function upload_media(env) {
-    let fileInfo = env.req.files.file && env.req.files.file[0];
+    let fileInfo = env.req.files.file?.[0];
 
     if (!fileInfo) throw new Error('No file was uploaded');
 

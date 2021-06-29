@@ -23,9 +23,6 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 let settings;
 let $uploadDialog;
 // Needed to terminate pending queue on abort
@@ -124,7 +121,7 @@ function startUpload(data) {
 
   let request = N.io.rpc(
     data.rpc[0],
-    _.assign({}, data.rpc[1], { file: data.file }),
+    Object.assign({}, data.rpc[1], { file: data.file }),
     {
       onProgress(e) {
         if (e.lengthComputable) {

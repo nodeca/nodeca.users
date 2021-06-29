@@ -123,8 +123,8 @@ module.exports = function (N, apiPath) {
                               .select('_id')
                               .lean(true);
 
-    env.res.first_message_id = first_msg ? first_msg._id : null;
-    env.res.last_message_id = last_msg ? last_msg._id : null;
+    env.res.first_message_id = first_msg?._id;
+    env.res.last_message_id  = last_msg?._id;
   });
 
 
@@ -141,7 +141,7 @@ module.exports = function (N, apiPath) {
     let infractions = await N.models.users.Infraction.find()
                                 .where('src_type').equals(N.shared.content_type.DIALOG_MESSAGE)
                                 // filter out messages that don't have common_id (which shouldn't normally happen)
-                                .where('src_common_id').in(_.map(env.data.messages, 'common_id').filter(Boolean))
+                                .where('src_common_id').in(env.data.messages.map(x => x.common_id).filter(Boolean))
                                 .where('exists').equals(true)
                                 .select('src points ts src_common_id')
                                 .lean(true);

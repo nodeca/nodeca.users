@@ -84,7 +84,7 @@ async function createAlbums() {
                       .lean(true);
 
   if (users) {
-    user_ids = user_ids.concat(_.map(users, '_id'));
+    user_ids = user_ids.concat(users.map(x => x._id));
   }
 
   // Collect moderators in first forum section
@@ -145,8 +145,8 @@ async function createComments() {
 
   let results = await models.users.MediaInfo.find().lean(true);
 
-  let usersId = _.uniq(_.map(results, 'user'));
-  let mediasId = _.map(results, 'media_id');
+  let usersId = _.uniq(results.map(x => x.user));
+  let mediasId = results.map(x => x.media_id);
 
   // Create comments for prepared media and user list
   await Promise.all(

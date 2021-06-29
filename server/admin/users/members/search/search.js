@@ -87,7 +87,7 @@ module.exports = function (N, apiPath) {
     //  priority: 50
     //});
 
-    if (N.config.users && N.config.users.about) {
+    if (N.config.users?.about) {
       for (let name of Object.keys(N.config.users.about)) {
         env.res.fields.push({
           name,

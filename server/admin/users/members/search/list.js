@@ -28,7 +28,7 @@ module.exports = function (N, apiPath) {
     sort_order:       { enum: [ 'asc', 'desc' ] }
   };
 
-  if (N.config.users && N.config.users.about) {
+  if (N.config.users?.about) {
     for (let name of Object.keys(N.config.users.about)) {
       validate_properties[name] = { type: 'string' };
     }
@@ -89,7 +89,7 @@ module.exports = function (N, apiPath) {
     //  search_query.post_count.$lte = Number(search_params.post_count_to);
     //}
 
-    if (N.config.users && N.config.users.about) {
+    if (N.config.users?.about) {
       for (let name of Object.keys(N.config.users.about)) {
         if (search_params[name]) {
           search_query['about.' + name] = new RegExp('^' + _.escapeRegExp(search_params[name]), 'i');
@@ -147,7 +147,7 @@ module.exports = function (N, apiPath) {
   // Fill user activity
   //
   N.wire.after(apiPath, async function fill_user_activity(env) {
-    let user_ids = _.map(env.data.search_results, '_id');
+    let user_ids = env.data.search_results.map(x => x._id);
 
     let data = { user_id: user_ids, current_user_info: env.user_info };
     await N.wire.emit('internal:users.activity.get', data);

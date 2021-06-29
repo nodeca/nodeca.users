@@ -3,8 +3,6 @@
 
 'use strict';
 
-const _ = require('lodash');
-
 
 // Max media files to fetch before and after
 const LIMIT = 100;
@@ -59,7 +57,7 @@ module.exports = function (N, apiPath) {
     env.res.media = [];
 
     if (env.params.before && env.params.media_id) {
-      let query = _.assign({ media_id: { $gt: env.params.media_id } }, criteria);
+      let query = Object.assign({ media_id: { $gt: env.params.media_id } }, criteria);
 
       result = await N.models.users.MediaInfo.find(query)
                                              .lean(true)
@@ -85,7 +83,7 @@ module.exports = function (N, apiPath) {
       let query;
 
       if (env.params.media_id) {
-        query = _.assign({
+        query = Object.assign({
           media_id: env.params.before ? { $lte: env.params.media_id } : { $lt: env.params.media_id }
         }, criteria);
       } else {

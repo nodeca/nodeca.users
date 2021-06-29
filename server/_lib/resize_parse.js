@@ -123,10 +123,10 @@ module.exports = _.memoize(function (uploadsConfig) {
 
       _.forEach(config.resize || {}, function (previewOptions, key) {
         // Get specific preview options by type
-        var previewTypeOptions = ((config.types[realExtension] || {}).resize || {})[key] || {};
+        var previewTypeOptions = config.types[realExtension]?.resize?.[key] || {};
 
         // Override preview options by type preview options
-        configForExt.resize[key] = _.assign({}, previewOptions, previewTypeOptions);
+        configForExt.resize[key] = Object.assign({}, previewOptions, previewTypeOptions);
 
         // For jpeg preview assign 'jpeg_quality' option
         if (configForExt.resize[key].type === 'jpeg' ||
@@ -144,7 +144,7 @@ module.exports = _.memoize(function (uploadsConfig) {
     }
 
     // Override global options by type options
-    _.assign(configForExt, _.omit(config.types[realExtension] || {}, 'resize'));
+    Object.assign(configForExt, _.omit(config.types[realExtension] || {}, 'resize'));
 
     typesOptions[ext] = configForExt;
   });
