@@ -68,15 +68,15 @@ module.exports = function (N, apiPath) {
   // Fill tabs
   //
   N.wire.after(apiPath, function fill_tabs(env) {
-    let tabs = _.reduce(N.config.users?.subscriptions || {}, (acc, tab_config, block_name) => {
-      acc.push(Object.assign({
+    let tabs = [];
+
+    for (let [ block_name, tab_config ] of Object.entries(N.config.users?.subscriptions || {})) {
+      tabs.push(Object.assign({
         block_name,
         priority: 10,
-        items: _.filter(env.data.subscriptions, { to_type: N.shared.content_type[tab_config.to_type] })
+        items: env.data.subscriptions.filter(s => s.to_type === N.shared.content_type[tab_config.to_type])
       }, tab_config));
-
-      return acc;
-    }, []);
+    }
 
     tabs = _.sortBy(tabs, 'priority');
 

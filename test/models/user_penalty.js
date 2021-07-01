@@ -10,7 +10,7 @@ describe('UserPenalty', function () {
 
 
   before(function save_current_config() {
-    config = _.get(TEST.N.config, 'users.infractions');
+    config = TEST.N.config.users?.infractions;
 
     _.set(TEST.N.config, 'users.infractions.penalties', [
       { points: 7, action: 'to_violators', action_data: { days: 7 } },

@@ -2,8 +2,6 @@
 //
 'use strict';
 
-const _ = require('lodash');
-
 
 module.exports = function (N, apiPath) {
 
@@ -19,8 +17,7 @@ module.exports = function (N, apiPath) {
     let settings = env.params.settings;
     let valid = true;
 
-    _.forEach(settings, (value, key) => {
-
+    for (let [ key, value ] of Object.entries(settings)) {
       if (!schema[key]) {
         valid = false;
 
@@ -31,29 +28,29 @@ module.exports = function (N, apiPath) {
       switch (schema[key].type) {
 
         case 'dropdown':
-          if (!_.find(schema[key].values, { value })) {
+          if (!schema[key].values.some(v => v.value === value)) {
             valid = false;
           }
           break;
 
         case 'boolean':
-          if (!_.isBoolean(value)) {
+          if (typeof value !== 'boolean') {
             valid = false;
           }
           break;
 
         case 'string':
-          if (!_.isString(value)) {
+          if (typeof value !== 'string') {
             valid = false;
           }
 
-          if (!schema[key].empty_value && _.isEmpty(value)) {
+          if (!schema[key].empty_value && value === '') {
             valid = false;
           }
           break;
 
         case 'number':
-          if (!_.isNumber(value)) {
+          if (typeof value !== 'number') {
             valid = false;
           }
           break;
@@ -61,7 +58,7 @@ module.exports = function (N, apiPath) {
         default:
           valid = false;
       }
-    });
+    }
 
     if (!valid) {
       return N.io.FORBIDDEN;
@@ -81,10 +78,11 @@ module.exports = function (N, apiPath) {
   // Save settings
   //
   N.wire.on(apiPath, async function save_settings(env) {
-    let settings = _.reduce(env.params.settings, (res, val, key) => {
-      res[key] = { value: val };
-      return res;
-    }, {});
+    let settings = {};
+
+    for (let [ key, val ] of Object.entries(env.params.settings)) {
+      settings[key] = { value: val };
+    }
 
     await N.settings.getStore('user').set(settings, { user_id: env.user_info.user_id });
   });

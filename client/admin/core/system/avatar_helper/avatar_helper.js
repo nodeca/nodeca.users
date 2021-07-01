@@ -3,12 +3,15 @@
 
 'use strict';
 
-var _           = require('lodash');
-var identicon   = require('nodeca.users/lib/identicon');
-var avatarSizes = _.reduce('$$ JSON.stringify(N.config.users.avatars.resize) $$', function (result, val, key) {
-  result[key] = val.width;
-  return result;
-}, {});
+
+const identicon   = require('nodeca.users/lib/identicon');
+
+
+let avatarSizes = {};
+
+for (let [ key, val ] of Object.entries('$$ JSON.stringify(N.config.users.avatars.resize) $$')) {
+  avatarSizes[key] = val.width;
+}
 
 
 // Returns a list of attributes for avatar img tag.
@@ -19,7 +22,7 @@ var avatarSizes = _.reduce('$$ JSON.stringify(N.config.users.avatars.resize) $$'
 //  - avatar_helper(user_id, user [, size_name])
 //
 function avatar_helper(user_id, user, size_name) {
-  var avatar_id, src;
+  let avatar_id, src;
 
   if (typeof user_id !== 'string') {
     // avatar_helper(user, size_name)
@@ -58,7 +61,7 @@ function avatar_helper(user_id, user, size_name) {
 //
 function replace_placeholders(selector, users) {
   selector.find('._identicon').each(function (n, img) {
-    var $img = $(img),
+    let $img = $(img),
         user_id = $img.data('user-id'),
         avatar_id = $img.data('avatar-id'),
         size_name = $img.data('avatar-size');

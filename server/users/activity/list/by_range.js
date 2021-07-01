@@ -2,8 +2,6 @@
 //
 'use strict';
 
-const _  = require('lodash');
-
 
 // Max topics to fetch before and after
 const LIMIT = 50;
@@ -51,9 +49,9 @@ module.exports = function (N, apiPath) {
   // Validate type, update counter for the current type
   //
   N.wire.before(apiPath, async function get_content_types(env) {
-    let menu = _.get(N.config, 'users.activity.menu', {});
+    let menu = N.config.users?.activity?.menu || {};
     let content_types = Object.keys(menu)
-                         .sort((a, b) => (menu[a].priority || 100) - (menu[b].priority || 100));
+                         .sort((a, b) => (menu[a].priority ?? 100) - (menu[b].priority ?? 100));
 
     env.data.type = env.params.type;
 

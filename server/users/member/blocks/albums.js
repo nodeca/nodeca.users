@@ -3,9 +3,6 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 module.exports = function (N) {
 
   const ALBUMS_LIMIT = 7;
@@ -41,7 +38,7 @@ module.exports = function (N) {
     }
 
     env.res.blocks = env.res.blocks || {};
-    _.set(env.res, 'blocks.albums', { list: albums });
+    env.res.blocks.albums = { list: albums };
   });
 
 
@@ -49,7 +46,7 @@ module.exports = function (N) {
   //
   N.wire.after('server:users.member', async function fetch_photos_count(env) {
 
-    if (!_.get(env.res, 'blocks.albums')) return;
+    if (!env.res.blocks?.albums) return;
 
     let query = N.models.users.Album.find()
                     .where('user').equals(env.data.user._id)

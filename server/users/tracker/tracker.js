@@ -46,9 +46,9 @@ module.exports = function (N, apiPath) {
   // Fetch tracked items
   //
   N.wire.on(apiPath, async function fetch_items(env) {
-    let menu = _.get(N.config, 'users.tracker.menu', {});
+    let menu = N.config.users?.tracker?.menu || {};
     let tab_types = Object.keys(menu)
-                          .sort((a, b) => (menu[a].priority || 100) - (menu[b].priority || 100));
+                          .sort((a, b) => (menu[a].priority ?? 100) - (menu[b].priority ?? 100));
 
     let type = env.params.$query?.type || tab_types[0];
 

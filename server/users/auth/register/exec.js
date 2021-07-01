@@ -118,7 +118,7 @@ module.exports = function (N, apiPath) {
     }
 
     // forbid password equal to hostname
-    let mount = _.get(N.config, 'bind.default.mount', '/');
+    let mount = N.config.bind?.default?.mount || '/';
     let hostname = url.parse(mount).hostname;
 
     if (hostname) {

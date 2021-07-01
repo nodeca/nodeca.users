@@ -36,7 +36,7 @@ module.exports = function (N, apiPath) {
                           .select('_id name nick')
                           .lean(true);
 
-    users = _.filter(users, u => String(u._id) !== env.user_info.user_id); // exclude current user
+    users = users.filter(u => String(u._id) !== env.user_info.user_id); // exclude current user
 
     env.res = users;
   });

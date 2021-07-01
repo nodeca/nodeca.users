@@ -14,7 +14,7 @@ module.exports = function (N, apiPath) {
   // Apply penalty action if needed
   //
   N.wire.on(apiPath, async function apply_penalty(infraction) {
-    let penalties = _.get(N.config, 'users.infractions.penalties', []);
+    let penalties = N.config.users?.infractions?.penalties || [];
     // Rules sorted by `points` in desc order
     let rules = penalties.sort((a, b) => b.points - a.points);
 
@@ -94,9 +94,9 @@ module.exports = function (N, apiPath) {
       // - get string from message with longest apostrophes sequence
       // - apostrophes count is length + 1 (but always more than 3)
       //
-      let max_apostrophes = _.maxBy(info_env.info[infraction.src].text.match(/`+/gm) || [], str => str.length);
+      let max_apostrophes = _.maxBy(info_env.info[infraction.src].text.match(/`+/gm) || [], str => str.length); //`
       let apostrophes_length = Math.max(max_apostrophes ? (max_apostrophes.length + 1) : 0, 3);
-      let apostrophes = _.repeat('`', apostrophes_length);
+      let apostrophes = '`'.repeat(apostrophes_length);
 
       message_text = `${apostrophes}quote\n${info_env.info[infraction.src].text}\n${apostrophes}`;
     }

@@ -2,7 +2,7 @@
 //
 'use strict';
 
-const _             = require('lodash');
+
 const url           = require('url');
 const parse_options = require('nodeca.users/server/users/mod_notes/_parse_options');
 
@@ -94,7 +94,7 @@ module.exports = function (N, apiPath) {
     }
 
     // forbid password equal to hostname
-    let mount = _.get(N.config, 'bind.default.mount', '/');
+    let mount = N.config.bind?.default?.mount || '/';
     let hostname = url.parse(mount).hostname;
 
     if (hostname) {

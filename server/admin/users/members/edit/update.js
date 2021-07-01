@@ -70,7 +70,7 @@ module.exports = function (N, apiPath) {
         //  - field is present in input (form may be submitted partially)
         //  - field is different from stored value (falsy values considered equal)
         if (typeof env.params[name] !== 'undefined' &&
-            (env.params[name] || '') !== _.get(env.data.user, `about.${name}`, '')) {
+            (env.params[name] || '') !== (env.data.user.about?.[name] || '')) {
 
           /* eslint-disable max-depth */
           if (env.params[name]) {
@@ -170,14 +170,18 @@ module.exports = function (N, apiPath) {
       }
 
       // format date for birthday
-      if (_.isDate(old_value)) old_value_str = old_value.toISOString().split('T')[0];
-      if (_.isDate(new_value)) new_value_str = new_value.toISOString().split('T')[0];
+      if (Object.prototype.toString.call(old_value) === '[object Date]') {
+        old_value_str = old_value.toISOString().split('T')[0];
+      }
+      if (Object.prototype.toString.call(new_value) === '[object Date]') {
+        new_value_str = new_value.toISOString().split('T')[0];
+      }
 
       // format booleans (hellbanned)
-      if (_.isBoolean(old_value) || _.isBoolean(new_value)) {
+      if (typeof old_value === 'boolean' || typeof new_value === 'boolean') {
         /* eslint-disable max-depth */
-        if (_.isBoolean(old_value) || !old_value) old_value_str = env.t(old_value ? 'yes' : 'no');
-        if (_.isBoolean(new_value) || !new_value) new_value_str = env.t(new_value ? 'yes' : 'no');
+        if (typeof old_value === 'boolean' || !old_value) old_value_str = env.t(old_value ? 'yes' : 'no');
+        if (typeof new_value === 'boolean' || !new_value) new_value_str = env.t(new_value ? 'yes' : 'no');
       }
 
       // default formatters (strings)

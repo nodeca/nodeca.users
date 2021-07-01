@@ -4,8 +4,6 @@
 'use strict';
 
 
-const _  = require('lodash');
-
 const ITEMS_PER_PAGE = 40;
 
 
@@ -40,9 +38,9 @@ module.exports = function (N, apiPath) {
   // Get all available content types, fetch counters for each, determine active one
   //
   N.wire.before(apiPath, async function get_content_types(env) {
-    let menu = _.get(N.config, 'users.activity.menu', {});
+    let menu = N.config.users?.activity?.menu || {};
     let content_types = Object.keys(menu)
-                         .sort((a, b) => (menu[a].priority || 100) - (menu[b].priority || 100));
+                         .sort((a, b) => (menu[a].priority ?? 100) - (menu[b].priority ?? 100));
 
     // if type is not specified, select first one
     env.data.type = env.params.type || content_types[0];

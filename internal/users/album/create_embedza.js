@@ -13,7 +13,7 @@ const templates   = require('embedza/lib/templates');
 
 module.exports = function (N, apiPath) {
 
-  let rootUrl = _.get(N.config, 'bind.default.mount', 'http://localhost') + '/';
+  let rootUrl = (N.config.bind?.default?.mount || 'http://localhost') + '/';
   let userAgentEmbedza = `${embedza_pkg.name}/${embedza_pkg.version} (Nodeca; +${rootUrl})`;
 
   templates['default_thumb_url'] = result => {

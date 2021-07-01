@@ -2,7 +2,6 @@
 //
 'use strict';
 
-var _ = require('lodash');
 
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
@@ -19,7 +18,7 @@ module.exports = function (N, apiPath) {
 
     env.data.users = env.data.users || [];
 
-    env.res.votes = _.reduce(votes, (result, vote) => {
+    env.res.votes = votes.reduce((result, vote) => {
       env.data.users.push(vote.from);
 
       if (vote.value === 1)  result.up.push(vote.from);
