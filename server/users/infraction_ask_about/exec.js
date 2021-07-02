@@ -43,10 +43,10 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, function validate_params(env) {
     if (!validate(env.params)) {
-      _.forEach(validate.errors, function (error) {
+      for (let error of validate.errors) {
         // Don't customize form text, just highlight the field.
         env.data.errors[error.field.replace(/^data[.]/, '')] = true;
-      });
+      }
     }
   });
 
@@ -54,7 +54,7 @@ module.exports = function (N, apiPath) {
   // If any of the previous checks failed, terminate with client error
   //
   N.wire.before(apiPath, function check_errors(env) {
-    if (!_.isEmpty(env.data.errors)) {
+    if (!Object.keys(env.data.errors).length) {
       throw { code: N.io.CLIENT_ERROR, data: env.data.errors };
     }
   });

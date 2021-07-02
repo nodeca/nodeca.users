@@ -163,7 +163,7 @@ module.exports.run = async function (N, args) {
     });
 
     if (!_.isEmpty(toAdd)) {
-      _.values(toAdd).forEach(group => user.usergroups.push(group));
+      Object.values(toAdd).forEach(group => user.usergroups.push(group));
     }
   }
 

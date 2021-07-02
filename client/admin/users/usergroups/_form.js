@@ -26,7 +26,7 @@ function Setting(form, name, schema, config) {
   //
   this.elementId     = 'setting_' + name; // HTML id attribute.
   this.name          = name;
-  this.defaultValue  = schema['default'];
+  this.defaultValue  = schema.default;
   this.valueType     = schema.type;
   this.categoryKey   = schema.category_key;
   this.priority      = schema.priority;
@@ -190,7 +190,7 @@ function UserGroup(form, data) {
                               group:     this,
                               overriden,
                               forced:    overriden ? settings[name].force : false,
-                              value:     overriden ? settings[name].value : schema['default']
+                              value:     overriden ? settings[name].value : schema.default
                             });
                           })
                           .sortBy('priority')

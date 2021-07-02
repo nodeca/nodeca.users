@@ -33,7 +33,7 @@ N.wire.once(module.apiPath, function init_handlers() {
     .map(category_key => {
       let cat = {
         name: category_key,
-        types: _(_.values(types)).filter({ category_key }).sortBy('priority').value()
+        types: _(Object.values(types)).filter({ category_key }).sortBy('priority').value()
       };
 
       cat.priority = cat.types.map(x => x.priority).reduce((a, b) => a + b);

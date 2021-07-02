@@ -4,9 +4,6 @@
 'use strict';
 
 
-var _ = require('lodash');
-
-
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
@@ -67,13 +64,14 @@ module.exports = function (N, apiPath) {
   // Fill oauth providers
   //
   N.wire.after(apiPath, function fill_head_and_breadcrumbs(env) {
-    var oauth = {};
-    var providers = N.config.oauth;
+    let oauth = {};
+    let providers = N.config.oauth || {};
 
-    _.forEach(providers, function (provider, name) {
+    for (let [ name, provider ] of Object.entries(providers)) {
       oauth[name] = provider.client;
-    });
+    }
 
-    _.set(env.res, 'blocks.oauth', oauth);
+    env.res.blocks = env.res.blocks || {};
+    env.res.blocks.oauth = oauth;
   });
 };

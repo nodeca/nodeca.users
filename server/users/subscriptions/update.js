@@ -3,9 +3,6 @@
 'use strict';
 
 
-var _ = require('lodash');
-
-
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
@@ -17,7 +14,7 @@ module.exports = function (N, apiPath) {
   // Check type
   //
   N.wire.before(apiPath, function check_type(env) {
-    if (_.values(N.models.users.Subscription.types).indexOf(env.params.type) === -1) {
+    if (Object.values(N.models.users.Subscription.types).indexOf(env.params.type) === -1) {
       return N.io.BAD_REQUEST;
     }
   });

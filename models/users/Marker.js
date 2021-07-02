@@ -58,12 +58,12 @@ module.exports = function (N, collectionName) {
     let updatedCut = currentCut;
     let mark;
 
-    for (let i = 0; i < contentInfo.length; i++) {
-      mark = marks[contentInfo[i].contentId];
+    for (let item of contentInfo) {
+      mark = marks[item.contentId];
 
       if (mark.isNew || mark.next !== -1) break;
 
-      updatedCut = +contentInfo[i].lastPostTs;
+      updatedCut = +item.lastPostTs;
     }
 
     if (updatedCut !== currentCut) {
@@ -175,7 +175,7 @@ module.exports = function (N, collectionName) {
         return result;
       })
       .sortBy('ts')
-      .take(_.values(items).length - maxItems)
+      .take(Object.values(items).length - maxItems)
       .forEach(item => {
         query.hdel('marker_pos:' + userId, item.id);
         query.zrem('marker_pos_updates', userId + ':' + item.id);
@@ -290,9 +290,9 @@ module.exports = function (N, collectionName) {
   Marker.info = async function (userId, contentInfo) {
     let result = {};
 
-    contentInfo.forEach(item => {
+    for (let item of contentInfo) {
       result[item.contentId] = { isNew: false, next: -1, position: -1 };
-    });
+    }
 
     if (!userId || String(userId) === '000000000000000000000000' || contentInfo.length === 0) {
       return result;
@@ -302,11 +302,11 @@ module.exports = function (N, collectionName) {
     let cuts = await Marker.cuts(userId, contentInfo.map(x => x.categoryId));
 
     // Set `isNew` flag by cut
-    contentInfo.forEach(item => {
+    for (let item of contentInfo) {
       if (item.contentId.getTimestamp() > cuts[item.categoryId]) {
         result[item.contentId].isNew = true;
       }
-    });
+    }
 
 
     // Unset `isNew` flag by markers
@@ -314,25 +314,25 @@ module.exports = function (N, collectionName) {
     let newCandidates = [];
     let query = N.redis.multi();
 
-    _.forEach(result, (v, id) => {
+    for (let [ id, v ] of Object.entries(result)) {
       if (v.isNew) {
         query.zscore('marker_marks:' + userId, id);
         newCandidates.push(id);
       }
-    });
+    }
 
     let res = await query.exec();
 
-    _.forEach(newCandidates, (id, n) => {
+    for (let [ n, id ] of Object.entries(newCandidates)) {
       if (res[n][1] !== null) {
         result[id].isNew = false;
       }
-    });
+    }
 
 
     // Fill position info
     //
-    let contentIds = _.keys(result);
+    let contentIds = Object.keys(result);
     let max;
 
     query = N.redis.multi();
@@ -353,7 +353,7 @@ module.exports = function (N, collectionName) {
       return result;
     });
 
-    _.forEach(contentInfo, item => {
+    for (let item of contentInfo) {
       max = posInfo[contentIds.indexOf(String(item.contentId))]?.max ?? -1;
       result[item.contentId].position = posInfo[contentIds.indexOf(String(item.contentId))]?.current ?? -1;
 
@@ -362,7 +362,7 @@ module.exports = function (N, collectionName) {
       } else if (item.lastPostNumber > max) {
         result[item.contentId].next = +max + 1;
       }
-    });
+    }
 
     return result;
   };

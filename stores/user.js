@@ -1,9 +1,6 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 module.exports = function (N) {
 
   // ##### Params
@@ -12,12 +9,12 @@ module.exports = function (N) {
   //
   return N.settings.createStore({
     get(keys, params) {
-      if (_.isEmpty(params.user_id)) {
+      if (!params.user_id) {
         return Promise.reject('user_id param required to getting settings from user store');
       }
 
       return N.models.users.UserSettings.findOne({ user: params.user_id }).lean(true).then(data => {
-        var results = {};
+        let results = {};
 
         keys.forEach(key => {
           if (data?.[key]) {
@@ -48,9 +45,9 @@ module.exports = function (N) {
           data = new N.models.users.UserSettings({ user: params.user_id });
         }
 
-        _.forEach(settings, (option, key) => {
+        for (let [ key, option ] of Object.entries(settings)) {
           data.set(key, option);
-        });
+        }
 
         return data.save();
       });

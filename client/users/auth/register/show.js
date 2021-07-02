@@ -98,12 +98,12 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         if (err.code !== N.io.CLIENT_ERROR) throw err;
 
         // Update classes and messages on all input fields.
-        _.forEach(view, (field, name) => {
+        for (let [ name, field ] of Object.entries(view)) {
           field.error(err.data[name]);
-        });
+        }
 
         // Update ReCaptcha if there is a ReCaptcha error.
-        if (_.has(err.data, 'recaptcha_response_field')) {
+        if (Object.prototype.hasOwnProperty(err.data, 'recaptcha_response_field')) {
           N.wire.emit('common.blocks.recaptcha.update');
         }
       });

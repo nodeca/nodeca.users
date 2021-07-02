@@ -3,7 +3,6 @@
 
 'use strict';
 
-const _  = require('lodash');
 
 let view = null;
 
@@ -66,12 +65,12 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         if (err.code !== N.io.CLIENT_ERROR) throw err;
 
         // Update classes and messages on all input fields.
-        _.forEach(view, (field, name) => {
-          if (name === 'submitted') return;
-          if (name === 'error') return;
+        for (let [ name, field ] of Object.entries(view)) {
+          if (name === 'submitted') continue;
+          if (name === 'error') continue;
 
-          field.error(_.get(err.data, name));
-        });
+          field.error(err.data?.name);
+        }
 
         view.error(err.message);
       });

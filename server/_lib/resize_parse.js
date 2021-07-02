@@ -21,12 +21,13 @@
 
 'use strict';
 
-var _           = require('lodash');
-var mime        = require('mime-types');
-var validator   = require('is-my-json-valid');
+
+const _           = require('lodash');
+const mime        = require('mime-types');
+const validator   = require('is-my-json-valid');
 
 
-var resizeConfigSchema = {
+let resizeConfigSchema = {
   type: 'object',
   additionalProperties: false,
   patternProperties: {
@@ -47,7 +48,7 @@ var resizeConfigSchema = {
   }
 };
 
-var configSchema = {
+let configSchema = {
   additionalProperties: false,
   properties: {
     extensions:    {
@@ -86,34 +87,34 @@ var configSchema = {
   }
 };
 
-var validate = validator(configSchema, { verbose: true });
+let validate = validator(configSchema, { verbose: true });
 
 
 module.exports = _.memoize(function (uploadsConfig) {
-  var config = _.cloneDeep(uploadsConfig);
+  let config = _.cloneDeep(uploadsConfig);
 
   config.types = config.types || {};
   config.resize = config.resize || {};
 
   // Check uploads options, throw an error if validation failed
   if (!validate(config)) {
-    var errorMessages = validate.errors.map(function (error) {
+    let errorMessages = validate.errors.map(function (error) {
       return `'${error.field}' ${error.message} '${error.value}'`;
     });
 
     throw new Error(errorMessages.join(', '));
   }
 
-  var typesOptions = {};
+  let typesOptions = {};
 
   // Combine all options by file type
-  _.forEach(config.extensions, function (ext) {
-    var mimeType = mime.lookup(ext);
+  for (let ext of config.extensions) {
+    let mimeType = mime.lookup(ext);
 
     // Get real extension (like 'jpg' instead 'jpeg')
-    var realExtension = mime.extension(mimeType);
+    let realExtension = mime.extension(mimeType);
 
-    var configForExt = {
+    let configForExt = {
       max_size: config.max_size
     };
 
@@ -121,14 +122,15 @@ module.exports = _.memoize(function (uploadsConfig) {
     if (mimeType.indexOf('image/') !== -1) {
       configForExt.resize = {};
 
-      _.forEach(config.resize || {}, function (previewOptions, key) {
+      for (let [ key, previewOptions ] of Object.entries(config.resize || {})) {
         // Get specific preview options by type
-        var previewTypeOptions = config.types[realExtension]?.resize?.[key] || {};
+        let previewTypeOptions = config.types[realExtension]?.resize?.[key] || {};
 
         // Override preview options by type preview options
         configForExt.resize[key] = Object.assign({}, previewOptions, previewTypeOptions);
 
         // For jpeg preview assign 'jpeg_quality' option
+        /* eslint-disable max-depth */
         if (configForExt.resize[key].type === 'jpeg' ||
             (realExtension === 'jpeg' && !configForExt.resize[key].type)) {
           configForExt.resize[key].jpeg_quality =
@@ -140,14 +142,14 @@ module.exports = _.memoize(function (uploadsConfig) {
             (realExtension === 'gif' && !configForExt.resize[key].type)) {
           configForExt.resize[key].gif_animation = previewTypeOptions.gif_animation || config.gif_animation;
         }
-      });
+      }
     }
 
     // Override global options by type options
     Object.assign(configForExt, _.omit(config.types[realExtension] || {}, 'resize'));
 
     typesOptions[ext] = configForExt;
-  });
+  }
 
   // Override type options by result
   config.types = typesOptions;

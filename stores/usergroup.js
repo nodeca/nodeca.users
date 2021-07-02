@@ -51,7 +51,7 @@ module.exports = function (N) {
     async get(keys, params, options) {
       let fetch = options.skipCache ? fetchUsrGrpSettings : fetchUsrGrpSettingsCached;
 
-      if (!_.isArray(params.usergroup_ids) || _.isEmpty(params.usergroup_ids)) {
+      if (!Array.isArray(params.usergroup_ids) || _.isEmpty(params.usergroup_ids)) {
         throw 'usergroup_ids param required to be non-empty array ' +
               'for getting settings from usergroup store';
       }
