@@ -1,7 +1,6 @@
 'use strict';
 
 
-const _         = require('lodash');
 const assert    = require('assert');
 const ObjectId  = require('mongoose').Types.ObjectId;
 const Marker    = TEST.N.models.users.Marker;
@@ -12,13 +11,13 @@ let expire;
 
 
 function randObjectIdByTimestamp(ts) {
-  var hexChars = 'abcdef0123456789'.split('');
-  var hexSeconds = Math.floor(ts / 1000).toString(16);
-  var strId = hexSeconds;
+  let hexChars = 'abcdef0123456789'.split('');
+  let hexSeconds = Math.floor(ts / 1000).toString(16);
+  let strId = hexSeconds;
 
-  _.times(16, function () {
-    strId += _.sample(hexChars);
-  });
+  for (let i = 0; i < 16; i++) {
+    strId += hexChars[Math.floor(Math.random() * hexChars.length)];
+  }
 
   return new ObjectId(strId);
 }
@@ -160,7 +159,7 @@ describe('Marker', function () {
       let now = Date.now();
       let cat = new ObjectId();
 
-      var sid = randObjectIdByTimestamp(now);
+      let sid = randObjectIdByTimestamp(now);
       let cid1 = randObjectIdByTimestamp(now);
       let cid2 = randObjectIdByTimestamp(now);
       let cid3 = randObjectIdByTimestamp(now);

@@ -1,9 +1,6 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 let pageParams;
 
 
@@ -19,7 +16,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
       let $listContainer = $('.user-albumlist');
 
       if (albumId) {
-        albumsList.albums = _.filter(albumsList.albums, { _id: albumId });
+        albumsList.albums = albumsList.albums.filter(a => a._id === albumId);
 
         $listContainer.find('[data-album-id=' + albumId + ']').replaceWith(
           $(N.runtime.render('users.albums_root.list', albumsList))

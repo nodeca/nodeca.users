@@ -16,7 +16,7 @@ function Setting(name, schema, value) {
   this.help = N.runtime.t.exists(tHelp) ? N.runtime.t(tHelp) : '';
   this.type = schema.type;
 
-  this._value = _.isNull(value) ? schema.default : value;
+  this._value = value ?? schema.default;
 
   this.value = ko.observable(this._value);
 

@@ -9,8 +9,6 @@
 
 'use strict';
 
-var _ = require('lodash');
-
 
 var $dialog;
 var options;
@@ -197,7 +195,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
     var id = data.$this.data('media-id');
     var $listItem = $('#media-select-dlg__media-' + id);
 
-    if (_.findIndex(options.selected, function (mediaInfo) { return mediaInfo.media_id === id; }) === -1) {
+    if (!options.selected.some(mediaInfo => mediaInfo.media_id === id)) {
       $listItem.addClass('selected');
 
       options.selected.push({
@@ -208,7 +206,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
 
     } else {
       $listItem.removeClass('selected');
-      options.selected = _.remove(options.selected, function (mediaInfo) { return mediaInfo.media_id !== id; });
+      options.selected = options.selected.filter(mediaInfo => mediaInfo.media_id === id);
     }
   });
 

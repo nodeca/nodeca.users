@@ -3,22 +3,19 @@
 'use strict';
 
 
-var _ = require('lodash');
+let pageParams;
 
 
-var pageParams;
-
-
-var init = _.once(function () {
+N.wire.once('navigate.done:users.auth.login.show', function page_once() {
 
   // Set redirect action and redirect to provider
   //
   N.wire.on('common.blocks.oauth_buttons.google', function set_action(data) {
-    var url = data.$this.data('url');
-    var action = N.runtime.page_data.action;
-    var path = 'users.auth.oauth.remember_action';
+    let url = data.$this.data('url');
+    let action = N.runtime.page_data.action;
+    let path = 'users.auth.oauth.remember_action';
 
-    var params = { action };
+    let params = { action };
     if (pageParams?.redirect_id) {
       params.redirect_id = pageParams.redirect_id;
     }
@@ -35,13 +32,6 @@ var init = _.once(function () {
 
 // Init page
 //
-N.wire.on(
-  [
-    'navigate.done:users.auth.login.show',
-    'navigate.done:users.auth.login.show'
-  ],
-  function page_setup(data) {
-    pageParams = data.params;
-    init(data);
-  }
-);
+N.wire.on('navigate.done:users.auth.login.show', function page_setup(data) {
+  pageParams = data.params;
+});

@@ -207,7 +207,7 @@ function UserGroup(form, data) {
                           .map(name => new SettingCategory(
                             form,
                             name,
-                            _.filter(this.settings, { categoryKey: name })
+                            this.settings.filter(s => s.categoryKey === name)
                           ))
                           .sortBy('priority')
                           .value();
