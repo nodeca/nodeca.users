@@ -1,8 +1,6 @@
 'use strict';
 
 
-const _  = require('lodash');
-
 let form;
 
 
@@ -99,7 +97,7 @@ Form.prototype.submit = function submit() {
 
     // Update classes and messages on all input fields.
     Object.keys(self.about).forEach(function (name) {
-      self.about[name].hasError(_.has(err.data, name));
+      self.about[name].hasError(Object.prototype.hasOwnProperty.call(err.data, name));
     });
   });
 };

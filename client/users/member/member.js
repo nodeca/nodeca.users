@@ -3,7 +3,6 @@
 'use strict';
 
 
-const _           = require('lodash');
 const bag         = require('bagjs')({ prefix: 'nodeca' });
 const identicon   = require('nodeca.users/lib/identicon');
 const avatarWidth = '$$ JSON.stringify(N.config.users.avatars.resize.orig.width) $$';
@@ -24,7 +23,7 @@ N.wire.on('navigate.done:' + module.apiPath, function store_blocks_state(data) {
   // Handle show/hide events
   $('.member-block__inner')
     .on('shown.bs.collapse', event => {
-      collapsedBlocks = _.without(collapsedBlocks, $(event.target).attr('id'));
+      collapsedBlocks = collapsedBlocks.filter(x => x !== $(event.target).attr('id'));
 
       bag.set(key, collapsedBlocks).catch(() => {}); // Suppress storage errors
     })

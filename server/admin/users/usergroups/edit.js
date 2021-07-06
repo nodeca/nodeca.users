@@ -3,9 +3,6 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     _id: { format: 'mongo', required: true }
@@ -21,13 +18,13 @@ module.exports = function (N, apiPath) {
     // We always fetch all groups, to calculate inheritances on client
     let groups = await N.models.users.UserGroup.find().sort('_id');
 
-    let currentGroup = _.find(groups, g => String(g._id) === env.params._id);
+    let currentGroup = groups.find(g => String(g._id) === env.params._id);
 
     if (!currentGroup) throw N.io.NOT_FOUND;
 
     res.head.title = env.t('title', { name: currentGroup.short_name });
 
     res.current_group_id = currentGroup._id.toString();
-    res.groups_data      = _.invokeMap(groups, 'toJSON');
+    res.groups_data      = groups.map(g => g.toJSON());
   });
 };

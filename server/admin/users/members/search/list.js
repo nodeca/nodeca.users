@@ -154,8 +154,8 @@ module.exports = function (N, apiPath) {
 
     env.res.user_activity = {};
 
-    for (let [ user_id, count ] of _.zip(user_ids, data.count)) {
-      env.res.user_activity[user_id] = count;
+    for (let i = 0; i < user_ids.length; i++) {
+      env.res.user_activity[user_ids[i]] = data.count[i];
     }
   });
 };

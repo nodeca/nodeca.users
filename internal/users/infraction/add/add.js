@@ -25,13 +25,14 @@ module.exports = function (N, apiPath) {
                                 .select('points')
                                 .lean(true);
 
-    let total_points = _.sumBy(infractions, 'points');
-    let apply_rule;
+    let total_points = infractions.map(i => i.points).reduce((a, b) => a + b, 0);
 
     // Find rule with maximum points
-    apply_rule = _.maxBy(rules.filter(rule => rule.points <= total_points), rule => rule.points);
+    rules = rules.filter(rule => rule.points <= total_points);
 
-    if (!apply_rule) return;
+    if (!rules.length) return;
+
+    let apply_rule = rules.reduce((a, b) => (a.points >= b.points ? a : b));
 
     return N.wire.emit(`internal:users.infraction.${apply_rule.action}.add`, {
       infraction,
@@ -94,7 +95,8 @@ module.exports = function (N, apiPath) {
       // - get string from message with longest apostrophes sequence
       // - apostrophes count is length + 1 (but always more than 3)
       //
-      let max_apostrophes = _.maxBy(info_env.info[infraction.src].text.match(/`+/gm) || [], str => str.length); //`
+      let max_apostrophes = (info_env.info[infraction.src].text.match(/`+/gm) || []) //`
+                              .reduce((a, b) => (a.length >= b.length ? a : b), '');
       let apostrophes_length = Math.max(max_apostrophes ? (max_apostrophes.length + 1) : 0, 3);
       let apostrophes = '`'.repeat(apostrophes_length);
 

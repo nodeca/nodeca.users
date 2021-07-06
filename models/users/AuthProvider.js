@@ -7,7 +7,6 @@
 'use strict';
 
 
-const _               = require('lodash');
 const Mongoose        = require('mongoose');
 const Schema          = Mongoose.Schema;
 const password        = require('./_lib/password');
@@ -88,7 +87,8 @@ module.exports = function (N, collectionName) {
     }
 
     return password.hash(pass).then(hash => {
-      _.set(this, 'meta.pass', hash);
+      this.meta = this.meta || {};
+      this.meta.pass = hash;
 
       // Notify mongoose about changes in nested object
       this.markModified('meta');
@@ -107,7 +107,8 @@ module.exports = function (N, collectionName) {
       return Promise.reject(new Error("Can't set password for non plain provider"));
     }
 
-    _.set(this, 'meta.pass', hash);
+    this.meta = this.meta || {};
+    this.meta.pass = hash;
 
     // Notify mongoose about changes in nested object
     this.markModified('meta');
@@ -127,7 +128,7 @@ module.exports = function (N, collectionName) {
       return Promise.reject(new Error("Can't set password for non plain provider"));
     }
 
-    return password.check(pass, _.get(this, 'meta.pass'));
+    return password.check(pass, this.meta?.pass);
   };
 
 

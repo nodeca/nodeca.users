@@ -3,9 +3,6 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 module.exports = function (N) {
 
   N.wire.after('server:users.member', async function add_notepad(env) {
@@ -26,6 +23,7 @@ module.exports = function (N) {
       template_params.version = usernote.version;
     }
 
-    _.set(env.res, 'blocks.usernote', template_params);
+    env.res.blocks = env.res.blocks || {};
+    env.res.blocks.usernote = template_params;
   });
 };

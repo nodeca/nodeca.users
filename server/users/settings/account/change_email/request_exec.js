@@ -4,9 +4,6 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     pass: { type: 'string', required: true }
@@ -32,7 +29,7 @@ module.exports = function (N, apiPath) {
   // If user tries to change email without entering password, send link/code to email
   //
   N.wire.before(apiPath, { priority: -5 }, async function create_otp_email_token(env) {
-    if (!_.isEmpty(env.params.pass)) return;
+    if (env.params.pass) return;
 
     let token = await N.models.users.TokenEmailConfirm.create({
       session_id: env.session_id,

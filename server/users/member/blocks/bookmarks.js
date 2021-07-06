@@ -3,9 +3,6 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 module.exports = function (N) {
 
   const BOOKMARKS_LIMIT = 3;
@@ -27,12 +24,11 @@ module.exports = function (N) {
 
     await N.wire.emit('internal:users.bookmark_list', sub_env);
 
-    env.res.blocks = env.res.blocks || {};
-
     if (sub_env.res.items.length > 0) {
-      _.set(env.res, 'blocks.bookmarks', {
+      env.res.blocks = env.res.blocks || {};
+      env.res.blocks.bookmarks = {
         list: sub_env.res.items.slice(0, 3).map(({ title, url }) => ({ title, url }))
-      });
+      };
     }
   });
 };

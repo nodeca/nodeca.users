@@ -3,9 +3,6 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 module.exports = function (N) {
 
   // Fetch permissions
@@ -27,8 +24,10 @@ module.exports = function (N) {
     let show_contacts = env.user_info.is_member;
 
     // initialize list and extra unless they exist already
-    _.set(env.res, 'blocks.about.list',  _.get(env.res, 'blocks.about.list') || []);
-    _.set(env.res, 'blocks.about.extra', _.get(env.res, 'blocks.about.extra') || []);
+    env.res.blocks = env.res.blocks || {};
+    env.res.blocks.about = env.res.blocks.about || {};
+    env.res.blocks.about.list = env.res.blocks.about.list || [];
+    env.res.blocks.about.extra = env.res.blocks.about.extra || [];
 
     // get total activity counter
     let data = { user_id: env.data.user._id, current_user_info: env.user_info };
@@ -92,7 +91,7 @@ module.exports = function (N) {
       }
     }
 
-    env.res.blocks.about.list  = _.sortBy(env.res.blocks.about.list, _.property('priority'));
-    env.res.blocks.about.extra = _.sortBy(env.res.blocks.about.extra, _.property('priority'));
+    env.res.blocks.about.list  = env.res.blocks.about.list.sort((a, b) => a.priority - b.priority);
+    env.res.blocks.about.extra = env.res.blocks.about.extra.sort((a, b) => a.priority - b.priority);
   });
 };

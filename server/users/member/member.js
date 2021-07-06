@@ -1,26 +1,19 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
     user_hid: { type: 'integer', minimum: 1, required: true }
   });
 
-  let blocks = _.map(
-    N.config.users.profile_page.blocks,
-    (v, k) => Object.assign({ name: k }, v)
-  );
-  blocks = _.sortBy(blocks, _.property('priority'));
+  let blocks = Object.entries(N.config.users.profile_page.blocks)
+    .map(([ k, v ]) => Object.assign({ name: k }, v))
+    .sort((a, b) => a.priority - b.priority);
 
-  let menu = _.map(
-    N.config.users.profile_page.menu,
-    (v, k) => Object.assign({ name: k }, v)
-  );
-  menu = _.sortBy(menu, _.property('priority'));
+  let menu = Object.entries(N.config.users.profile_page.menu)
+    .map(([ k, v ]) => Object.assign({ name: k }, v))
+    .sort((a, b) => a.priority - b.priority);
 
 
   // Fetch member by 'user_hid'
@@ -38,12 +31,9 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    let actions = _.map(
-      N.config.users.profile_page.actions,
-      (v, k) => Object.assign({ name: k }, v)
-    );
-
-    env.data.actions = _.sortBy(actions, _.property('priority'));
+    env.data.actions = Object.entries(N.config.users.profile_page.actions)
+      .map(([ k, v ]) => Object.assign({ name: k }, v))
+      .sort((a, b) => a.priority - b.priority);
   });
 
 

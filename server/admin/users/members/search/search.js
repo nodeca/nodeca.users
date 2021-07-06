@@ -4,9 +4,6 @@
 'use strict';
 
 
-const _  = require('lodash');
-
-
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {
@@ -19,7 +16,7 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, { priority: -20 }, function parse_query(env) {
     env.data.search_params = Object.assign({}, env.params.$query);
 
-    let is_empty = _.isEmpty(env.params.$query);
+    let is_empty = Object.keys(env.data.search_params).length === 0;
 
     // - sort list of all users by hid in reverse
     // - sort any searches by nick
@@ -97,6 +94,6 @@ module.exports = function (N, apiPath) {
       }
     }
 
-    env.res.fields = _.sortBy(env.res.fields, _.property('priority'));
+    env.res.fields = env.res.fields.sort((a, b) => a.priority - b.priority);
   });
 };

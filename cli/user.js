@@ -3,9 +3,6 @@
 'use strict';
 
 
-const _       = require('lodash');
-
-
 module.exports.parserParameters = {
   add_help:    true,
   help:        'Create user and assign with some groups',
@@ -28,7 +25,7 @@ module.exports.commandLineArguments = [
       help: 'add user to group',
       action: 'append',
       default: [],
-      type: 'string'
+      type: 'str'
     }
   },
   {
@@ -38,14 +35,14 @@ module.exports.commandLineArguments = [
       help: 'remove user from group',
       action: 'append',
       default: [],
-      type: 'string'
+      type: 'str'
     }
   },
   {
     args: [ '-u', '--user' ],
     options: {
       help: 'target user',
-      type: 'string',
+      type: 'str',
       required: true
     }
   },
@@ -53,14 +50,14 @@ module.exports.commandLineArguments = [
     args: [ '-p', '--pass' ],
     options: {
       help: 'user passsword. required only for add command',
-      type: 'string'
+      type: 'str'
     }
   },
   {
     args: [ '-e', '--email' ],
     options: {
       help: 'user email. required only for add command',
-      type: 'string'
+      type: 'str'
     }
   }
 ];
@@ -151,20 +148,18 @@ module.exports.run = async function (N, args) {
 
   // validate and update usergroups
   //
-  if (!_.isEmpty(toRemove) && !_.isEmpty(user.usergroups)) {
+  if (toRemove.length !== 0 && user.usergroups.length !== 0) {
     user.usergroups = user.usergroups.filter(group => toRemove.indexOf(group.toString()) === -1);
   }
-  if (!_.isEmpty(toAdd)) {
+  if (Object.keys(toAdd).length !== 0) {
     // remove from toAdd list already assigned groups
     user.usergroups.forEach(group => {
       let group_id = group.toString();
 
-      if (toAdd[group_id]) toAdd = _.without(toAdd, group_id);
+      if (toAdd[group_id]) delete toAdd[group_id];
     });
 
-    if (!_.isEmpty(toAdd)) {
-      Object.values(toAdd).forEach(group => user.usergroups.push(group));
-    }
+    Object.values(toAdd).forEach(group => user.usergroups.push(group));
   }
 
   await user.save();

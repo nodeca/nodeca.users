@@ -1,13 +1,9 @@
 'use strict';
 
 
-var _  = require('lodash');
-
-
 function Setting(name, schema, value) {
   const ko = require('knockout');
 
-  var self = this;
   var tHelp = 'users.setting_names.' + name + '__help';
 
   this.settingName = name;
@@ -20,8 +16,8 @@ function Setting(name, schema, value) {
 
   this.value = ko.observable(this._value);
 
-  this.valueOptions = _.map(schema.values, function (option) {
-    var titlePath = '@users.setting_values.' + name + '.' + option.name;
+  this.valueOptions = (schema.values || []).map(option => {
+    let titlePath = `@users.setting_values.${name}.${option.name}`;
 
     return {
       name: option.name,
@@ -30,8 +26,8 @@ function Setting(name, schema, value) {
     };
   });
 
-  this.modified = ko.computed(function () {
-    return self._value !== self.value();
+  this.modified = ko.computed(() => {
+    return this._value !== this.value();
   });
 }
 
@@ -39,76 +35,65 @@ function Setting(name, schema, value) {
 function Form(page_data) {
   const ko = require('knockout');
 
-  var self = this, categoryName, categorySettings, setting;
+  let categoryName, categorySettings, setting;
 
   this.categories = [];
   this.settings = [];
   this.isDirty = ko.observable(false);
 
-  function checkDirty() {
-    for (var i = 0; i < self.settings.length; i++) {
-
-      if (self.settings[i].modified()) {
-        self.isDirty(true);
+  let checkDirty = () => {
+    for (let setting of this.settings) {
+      if (setting.modified()) {
+        this.isDirty(true);
         return;
       }
     }
 
-    self.isDirty(false);
-  }
+    this.isDirty(false);
+  };
 
   // Grouping settings by category and priority
-  _.uniq(Object.values(page_data.setting_schemas).map(x => x.category_key)).forEach(function (category) {
+  for (let category of new Set(Object.values(page_data.setting_schemas).map(x => x.category_key)).values()) {
 
     categoryName = N.runtime.t('users.setting_cat.' + category);
     categorySettings = [];
 
-    _.forEach(
-
+    for (let [ key, value ] of Object.entries(page_data.setting_schemas)) {
       // Get all settings in category
-      _.pickBy(page_data.setting_schemas, function (val) {
-        return val.category_key === category;
-      }),
-
-      // Add setting to category
-      function (value, key) {
-
+      if (value.category_key === category) {
+        // Add setting to category
         setting = new Setting(key, value, page_data.settings[key] ? page_data.settings[key].value : null);
         setting.value.subscribe(checkDirty);
 
         categorySettings.push(setting);
-        self.settings.push(setting);
+        this.settings.push(setting);
       }
-    );
+    }
 
-    categorySettings = categorySettings.sort(function (a, b) {
-      return a.priority - b.priority;
-    });
+    categorySettings = categorySettings.sort((a, b) => a.priority - b.priority);
 
-    self.categories.push({ name: categoryName, settings: categorySettings });
-  });
+    this.categories.push({ name: categoryName, settings: categorySettings });
+  }
 }
 
 
 Form.prototype.submit = function submit() {
-  var self = this;
+  let data = { settings: {} };
 
-  var data = { settings: {} };
-
-  this.settings.forEach(function (setting) {
+  this.settings.forEach(setting => {
     data.settings[setting.settingName] = setting.value();
   });
 
-  N.io.rpc('users.settings.general.update', data).then(function () {
+  N.io.rpc('users.settings.general.update', data).then(() => {
     N.wire.emit('notify.info', t('saved'));
 
-    self.settings.forEach(function (setting) {
+    this.settings.forEach(setting => {
       setting._value = setting.value();
     });
-    self.isDirty(false);
+    this.isDirty(false);
 
     // announce setting change to all tabs
-    self.settings.forEach(function (setting) {
+    this.settings.forEach(setting => {
       if (setting.settingName === 'hide_heavy_content' && setting.modified()) {
         N.live.emit('local.users.settings.hide_heavy_content.change', data.settings.hide_heavy_content);
       }

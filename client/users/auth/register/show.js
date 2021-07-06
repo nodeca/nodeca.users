@@ -103,7 +103,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         }
 
         // Update ReCaptcha if there is a ReCaptcha error.
-        if (Object.prototype.hasOwnProperty(err.data, 'recaptcha_response_field')) {
+        if (Object.prototype.hasOwnProperty.call(err.data, 'recaptcha_response_field')) {
           N.wire.emit('common.blocks.recaptcha.update');
         }
       });

@@ -4,7 +4,6 @@
 'use strict';
 
 
-const _         = require('lodash');
 const recaptcha = require('nodeca.core/lib/app/recaptcha');
 
 
@@ -31,7 +30,7 @@ module.exports = function (N, apiPath) {
   // If email_or_nick is not specified, stop before database queries.
   //
   N.wire.before(apiPath, function check_params(env) {
-    if (_.isEmpty(env.params.email_or_nick)) {
+    if (!env.params.email_or_nick) {
       throw {
         code:    N.io.CLIENT_ERROR,
         message: env.t('err_login_failed')

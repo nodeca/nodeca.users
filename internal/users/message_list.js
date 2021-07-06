@@ -24,9 +24,6 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 module.exports = function (N, apiPath) {
 
   // Fetch and fill permissions
@@ -94,7 +91,7 @@ module.exports = function (N, apiPath) {
     // Sort in `env.data.messages_ids` order.
     // May be slow on large dialogs volumes
     env.data.messages_ids.forEach(id => {
-      let msg = _.find(messages, m => m._id.equals(id));
+      let msg = messages.find(m => m._id.equals(id));
 
       if (msg) {
         env.data.messages.push(msg);

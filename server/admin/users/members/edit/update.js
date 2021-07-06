@@ -57,9 +57,12 @@ module.exports = function (N, apiPath) {
       if (env.params.birthday) {
         let date = new Date(env.params.birthday);
 
-        if (!isNaN(date)) _.set(env.data.user, 'about.birthday', date);
+        if (!isNaN(date)) {
+          env.data.user.about = env.data.user.about || {};
+          env.data.user.about.birthday = date;
+        }
       } else {
-        _.unset(env.data.user, 'about.birthday');
+        delete env.data.user.about?.birthday;
       }
     }
 
@@ -74,10 +77,11 @@ module.exports = function (N, apiPath) {
 
           /* eslint-disable max-depth */
           if (env.params[name]) {
-            _.set(env.data.user, `about.${name}`, env.params[name]);
+            env.data.user.about = env.data.user.about || {};
+            env.data.user.about[name] = env.params[name];
           } else {
             // if it's empty, remove it from database
-            _.unset(env.data.user, `about.${name}`);
+            delete env.data.user.about?.[name];
           }
         }
       }

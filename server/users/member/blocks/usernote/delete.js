@@ -2,8 +2,6 @@
 //
 'use strict';
 
-const _ = require('lodash');
-
 
 module.exports = function (N, apiPath) {
 
@@ -39,8 +37,9 @@ module.exports = function (N, apiPath) {
     env.data.users = env.data.users || [];
     env.data.users.push(env.data.target_user._id);
 
-    _.set(env.res, 'blocks.usernote', {
+    env.res.blocks = env.res.blocks || {};
+    env.res.blocks.usernote = {
       user_id: env.data.target_user._id
-    });
+    };
   });
 };

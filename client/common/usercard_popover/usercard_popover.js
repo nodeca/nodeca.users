@@ -3,9 +3,6 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 N.wire.once('navigate.done', function init_usercard_click() {
   let $body = $('body');
   let $fake_popover = $('<div id="ucard-popover"></div>').appendTo($body);
@@ -28,10 +25,8 @@ N.wire.once('navigate.done', function init_usercard_click() {
     }
 
     // Try parse href to get `user_hid` from member page link.
-    let user_hid = _.chain(N.router.matchAll($link.attr('href')))
-      .find(function (match) { return _.get(match, 'meta.methods.get') === 'users.member'; })
-      .get('params.user_hid')
-      .value();
+    let user_hid = N.router.matchAll($link.attr('href'))
+      .find(match => match.meta?.methods?.get === 'users.member')?.params?.user_hid;
 
     if (!user_hid) return;
 

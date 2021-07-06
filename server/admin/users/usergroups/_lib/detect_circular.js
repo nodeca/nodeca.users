@@ -6,9 +6,6 @@
 'use strict';
 
 
-const _       = require('lodash');
-
-
 module.exports = async function detectCircular(N, groupId, parentId) {
   // No parent - skip.
   if (!parentId) return null;
@@ -20,7 +17,7 @@ module.exports = async function detectCircular(N, groupId, parentId) {
   // Returns `null` if no circular dependency found
   // or group id of first detected circular dependency
   function checkGroup(groupId) {
-    let group = _.find(groups, g => String(g._id) === String(groupId));
+    let group = groups.find(g => String(g._id) === String(groupId));
 
     if (descendants.indexOf(groupId) >= 0) {
       return groupId;

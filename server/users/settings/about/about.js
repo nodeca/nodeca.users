@@ -3,9 +3,6 @@
 'use strict';
 
 
-const _ = require('lodash');
-
-
 module.exports = function (N, apiPath) {
 
   N.validate(apiPath, {});
@@ -75,7 +72,7 @@ module.exports = function (N, apiPath) {
   // Sort fields based on priority
   //
   N.wire.after(apiPath, function sort_fields(env) {
-    env.res.about = _.sortBy(env.res.about, _.property('priority'));
+    env.res.about = env.res.about.sort((a, b) => a.priority - b.priority);
   });
 
 

@@ -9,8 +9,6 @@
 'use strict';
 
 
-const _ = require('lodash');
-
 const ITEMS_PER_PAGE = 50;
 
 
@@ -79,7 +77,7 @@ module.exports = function (N, apiPath) {
     // set result count for current tab
     counts[type] = fetch_env.count;
 
-    let other_tabs = _.without(tab_types, type);
+    let other_tabs = tab_types.filter(x => x !== type);
 
     await Promise.all(other_tabs.map(async type => {
       let sub_env = {

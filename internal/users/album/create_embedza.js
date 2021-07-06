@@ -5,7 +5,6 @@
 'use strict';
 
 
-const _           = require('lodash');
 const Embedza     = require('embedza');
 const embedza_pkg = require('embedza/package.json');
 const templates   = require('embedza/lib/templates');
@@ -17,19 +16,19 @@ module.exports = function (N, apiPath) {
   let userAgentEmbedza = `${embedza_pkg.name}/${embedza_pkg.version} (Nodeca; +${rootUrl})`;
 
   templates['default_thumb_url'] = result => {
-    let thumbnail = _.find(result.snippets, snippet => snippet.tags.indexOf('thumbnail') !== -1);
+    let thumbnail = result.snippets.find(snippet => snippet.tags.indexOf('thumbnail') !== -1);
 
     return thumbnail.href;
   };
 
   templates['vimeo.com_thumb_url'] = result => {
-    let thumbnail = _.find(result.snippets, snippet => snippet.tags.indexOf('thumbnail') !== -1);
+    let thumbnail = result.snippets.find(snippet => snippet.tags.indexOf('thumbnail') !== -1);
 
     return thumbnail.href.replace(/_[0-9]+\.jpg$/, '_200.jpg');
   };
 
   templates['youtube.com_thumb_url'] = result => {
-    let thumbnail = _.find(result.snippets, snippet => snippet.tags.indexOf('thumbnail') !== -1);
+    let thumbnail = result.snippets.find(snippet => snippet.tags.indexOf('thumbnail') !== -1);
 
     return thumbnail.href.replace('hqdefault.jpg', 'mqdefault.jpg');
   };

@@ -332,7 +332,7 @@ function check_media(media_id, checked) {
     pageState.selection_ids.push(media_id);
 
   } else if (!checked && pageState.selection_ids.indexOf(media_id) !== -1) {
-    pageState.selection_ids = _.without(pageState.selection_ids, media_id);
+    pageState.selection_ids = pageState.selection_ids.filter(x => x !== media_id);
   }
 }
 

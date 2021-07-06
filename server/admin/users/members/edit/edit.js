@@ -136,6 +136,6 @@ module.exports = function (N, apiPath) {
   // Sort fields based on priority
   //
   N.wire.after(apiPath, function sort_fields(env) {
-    env.res.fields = _.sortBy(env.res.fields, _.property('priority'));
+    env.res.fields = env.res.fields.sort((a, b) => a.priority - b.priority);
   });
 };

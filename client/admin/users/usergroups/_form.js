@@ -184,7 +184,7 @@ function UserGroup(form, data) {
   //
   this.settings     = _(form.setting_schemas)
                           .map((schema, name) => {
-                            let overriden = _.has(settings, name);
+                            let overriden = Object.prototype.hasOwnProperty.call(settings, name);
 
                             return new Setting(form, name, schema, {
                               group:     this,
@@ -236,7 +236,7 @@ UserGroup.prototype.isDescendantOf = function isDescendantOf(group) {
 UserGroup.prototype.markClean = function markClean() {
   this.name.markClean();
   this.parentId.markClean();
-  _.invokeMap(this.settings, 'markClean');
+  this.settings.forEach(setting => setting.markClean());
 };
 
 // Returns data suitable for the server.
@@ -286,13 +286,13 @@ function Form(page_data) {
     this.groupsById[group.id] = group;
   }, this);
 
-  this.isNewGroup = !_.has(page_data, 'current_group_id');
+  this.isNewGroup = !Object.prototype.hasOwnProperty.call(page_data, 'current_group_id');
 
   // Create or find the group to edit by the user.
   if (this.isNewGroup) {
     this.currentGroup = new UserGroup(this);
   } else {
-    this.currentGroup = _.find(this.groups, { id: page_data.current_group_id });
+    this.currentGroup = this.groups.find(g => g.id === page_data.current_group_id);
   }
 
   // Select groups suitable for 'inherits' list.

@@ -80,7 +80,8 @@ module.exports = function (N) {
       // filter out infraction texts
       let content_info = _.mapValues(info_env.info, infraction => _.pick(infraction, [ 'url', 'title' ]));
 
-      _.set(env.res, 'blocks.infractions', {
+      env.res.blocks = env.res.blocks || {};
+      env.res.blocks.infractions = {
         list: infractions,
         settings: {
           users_mod_can_add_infractions_profile: can_add_infractions,
@@ -88,7 +89,7 @@ module.exports = function (N) {
           can_delete_infractions
         },
         content_info
-      });
+      };
     }
 
     env.res.settings = env.res.settings || {};

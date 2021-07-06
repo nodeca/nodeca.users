@@ -3,15 +3,13 @@
 
 'use strict';
 
-const _ = require('lodash');
-
 
 module.exports = function (N, apiPath) {
 
   // Try to find auth data using `email_or_nick` as an email.
   //
   N.wire.before(apiPath, { priority: -5 }, async function find_authprovider_by_email(env) {
-    if (!_.isEmpty(env.params.pass)) return;
+    if (env.params.pass) return;
     if (env.data.user && env.data.authProvider_email) return;
 
     let authProvider = await N.models.users.AuthProvider.findOne()
@@ -36,7 +34,7 @@ module.exports = function (N, apiPath) {
   // Try to find auth data using `email_or_nick` as a nick.
   //
   N.wire.before(apiPath, { priority: -5 }, async function find_authprovider_by_nick(env) {
-    if (!_.isEmpty(env.params.pass)) return;
+    if (env.params.pass) return;
     if (env.data.user && env.data.authProvider_email) return;
 
     let user = await N.models.users.User.findOne()
@@ -63,7 +61,7 @@ module.exports = function (N, apiPath) {
   // Create authlink if it doesn't exist
   //
   N.wire.before(apiPath, { priority: -5 }, async function create_email_authlink(env) {
-    if (!_.isEmpty(env.params.pass)) return;
+    if (env.params.pass) return;
     if (env.data.user && env.data.authProvider_email) return;
 
     let user = await N.models.users.User.findOne()
@@ -92,7 +90,7 @@ module.exports = function (N, apiPath) {
   // If password is empty, send an email with a one-time link to log in
   //
   N.wire.before(apiPath, { priority: -5 }, async function create_otp_email_token(env) {
-    if (!_.isEmpty(env.params.pass)) return;
+    if (env.params.pass) return;
 
     if (!env.data.user || !env.data.authProvider_email) return;
 
