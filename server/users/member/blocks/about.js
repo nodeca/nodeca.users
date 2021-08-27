@@ -39,22 +39,6 @@ module.exports = function (N) {
       priority: 10
     });
 
-    let birthday = env.data.user.about?.birthday;
-
-    if (birthday && show_contacts) {
-      let now = new Date();
-      let age = now.getFullYear() - birthday.getFullYear();
-
-      if (now.getMonth() < birthday.getMonth()) age--;
-      if (now.getMonth() === birthday.getMonth() && now.getDate() < birthday.getDate()) age--;
-
-      env.res.blocks.about.list.push({
-        name:     'age',
-        value:    Math.max(age, 0),
-        priority: 20
-      });
-    }
-
     if (show_contacts && env.data.user.location || own_page) {
       env.res.blocks.about.list.push({
         name:     'location',

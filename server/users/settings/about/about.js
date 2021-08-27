@@ -41,20 +41,12 @@ module.exports = function (N, apiPath) {
     env.res.about = [];
 
     env.res.about.push({
-      name:     'birthday',
-      value:    about.birthday && !isNaN(about.birthday) ?
-                about.birthday.toISOString().slice(0, 10) :
-                null,
-      priority: 10
-    });
-
-    env.res.about.push({
       name:     'location',
       value:    env.data.user.location ? {
         location: env.data.user.location,
         name:     (await N.models.core.Location.info([ env.data.user.location ], env.user_info.locale))[0]
       } : null,
-      priority: 20
+      priority: 10
     });
 
     if (N.config.users?.about) {

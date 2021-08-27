@@ -19,7 +19,6 @@ module.exports = function (N, apiPath) {
     nick:       { type: 'string' },
     usergroups: { type: 'array', items: { format: 'mongo' }, uniqueItems: true },
     email:      { type: 'string' },
-    birthday:   { type: 'string', pattern: '^(\\d{4}-\\d{2}-\\d{2})?$' },
     hb:         { type: 'string' }
   };
 
@@ -52,19 +51,6 @@ module.exports = function (N, apiPath) {
   //
   N.wire.before(apiPath, async function prepare_user(env) {
     env.data.user.markModified('about');
-
-    if (typeof env.params.birthday !== 'undefined') {
-      if (env.params.birthday) {
-        let date = new Date(env.params.birthday);
-
-        if (!isNaN(date)) {
-          env.data.user.about = env.data.user.about || {};
-          env.data.user.about.birthday = date;
-        }
-      } else {
-        delete env.data.user.about?.birthday;
-      }
-    }
 
     // process custom fields
     if (N.config.users?.about) {
@@ -153,7 +139,7 @@ module.exports = function (N, apiPath) {
       let new_value_str;
 
       // compare stringified values to account for
-      // Arrays (usergroups) and Dates (birthday)
+      // Arrays (usergroups)
       if (JSON.stringify(old_value || '') === JSON.stringify(new_value || '')) {
         continue;
       }
@@ -171,14 +157,6 @@ module.exports = function (N, apiPath) {
 
         old_value_str = old_value.map(id => usergroups_by_id[id]?.short_name).join(', ');
         new_value_str = new_value.map(id => usergroups_by_id[id]?.short_name).join(', ');
-      }
-
-      // format date for birthday
-      if (Object.prototype.toString.call(old_value) === '[object Date]') {
-        old_value_str = old_value.toISOString().split('T')[0];
-      }
-      if (Object.prototype.toString.call(new_value) === '[object Date]') {
-        new_value_str = new_value.toISOString().split('T')[0];
       }
 
       // format booleans (hellbanned)

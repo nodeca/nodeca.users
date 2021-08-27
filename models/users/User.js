@@ -187,7 +187,6 @@ module.exports = function (N, collectionName) {
     'nick',
     'usergroups',
     'email',
-    'about.birthday',
     'hb'
   ];
 

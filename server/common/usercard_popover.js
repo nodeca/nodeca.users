@@ -125,18 +125,6 @@ module.exports = function (N, apiPath) {
       env.res.user.avatar_id = null;
     }
 
-    let birthday = env.data.user.about?.birthday;
-
-    if (birthday && show_contacts) {
-      let now = new Date();
-      let age = now.getFullYear() - birthday.getFullYear();
-
-      if (now.getMonth() < birthday.getMonth()) age--;
-      if (now.getMonth() === birthday.getMonth() && now.getDate() < birthday.getDate()) age--;
-
-      env.res.age = Math.max(age, 0);
-    }
-
     if (env.data.user.location && show_contacts) {
       env.res.location      = env.data.user.location;
       env.res.location_name = (await N.models.core.Location.info([ env.data.user.location ], env.user_info.locale))[0];

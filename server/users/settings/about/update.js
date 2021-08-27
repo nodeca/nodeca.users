@@ -9,8 +9,6 @@ module.exports = function (N, apiPath) {
 
   let validate_params = {};
 
-  validate_params.birthday = { type: [ 'string', 'null' ] };
-
   if (N.config.users?.about) {
     for (let name of Object.keys(N.config.users.about)) {
       validate_params[name] = { type: [ 'string', 'null' ] };
@@ -57,26 +55,6 @@ module.exports = function (N, apiPath) {
     // object "setting_name" => { value, readonly },
     // used to update form on the client after save
     env.res.fields      = env.res.fields || {};
-
-    if (env.params.birthday) {
-      let birthday_is_valid = false;
-
-      if (env.params.birthday.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        let date = new Date(env.params.birthday);
-
-        if (!isNaN(date)) {
-          let year = date.getFullYear();
-
-          if (year >= 1900 && year <= new Date().getFullYear()) {
-            env.data.user.about.birthday = date;
-            env.res.fields.birthday = { value: date.toISOString().slice(0, 10) };
-            birthday_is_valid = true;
-          }
-        }
-      }
-
-      if (!birthday_is_valid) env.data.errors.birthday = true;
-    }
 
     if (N.config.users?.about) {
       for (let name of Object.keys(N.config.users.about)) {

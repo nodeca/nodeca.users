@@ -71,14 +71,6 @@ module.exports = function (N, apiPath) {
       priority: 30
     });
 
-    env.res.fields.push({
-      name:     'birthday',
-      value:    about.birthday && !isNaN(about.birthday) ?
-                about.birthday.toISOString().slice(0, 10) :
-                null,
-      priority: 40
-    });
-
     if (N.config.users?.about) {
       for (let name of Object.keys(N.config.users.about)) {
         env.res.fields.push({
