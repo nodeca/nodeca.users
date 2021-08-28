@@ -40,7 +40,7 @@ const resize_outline = require('nodeca.users/lib/resize_outline');
 let File;
 
 // Limit amount of threads used for each image
-sharp.concurrency(1);
+// sharp.concurrency(1);
 
 
 // Create preview for image
