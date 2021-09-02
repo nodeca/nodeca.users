@@ -1,7 +1,15 @@
-label.col-form-label.col-3=self.t(self.name)
+- var is_member_of = {};
+- self.value.forEach(function (u) { is_member_of[u] = true; });
+.col-3
+  label.col-form-label=self.t(self.name)
+  .form-text
+    for usergroup in self.values
+      if is_member_of[usergroup.value]
+        .user-edit-usergroup-label
+          a(
+            href=self.link_to('admin.users.members.search') + '?usergroup=' + usergroup.value
+          )= usergroup.name
 .col-4.control-value
   select.user-edit-usergroup-select.form-control(multiple, name=self.name)
-    - var is_member_of = {};
-    - self.value.forEach(function (u) { is_member_of[u] = true; });
     each usergroup in self.values
       option(value=usergroup.value, selected=is_member_of[usergroup.value])= usergroup.name

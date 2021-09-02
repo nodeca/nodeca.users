@@ -14,7 +14,8 @@ N.wire.once('navigate.done:' + module.apiPath, function init_handlers() {
     let data = Object.assign({ user_hid: form.$this.data('user-hid') }, form.fields);
 
     return N.io.rpc('admin.users.members.edit.update', data)
-      .then(() => N.wire.emit('notify.info', t('saved')));
+      .then(() => N.wire.emit('notify.info', t('saved')))
+      .then(() => N.wire.emit('navigate.reload'));
   });
 
 

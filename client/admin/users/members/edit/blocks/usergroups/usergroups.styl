@@ -1,9 +1,15 @@
-.user-edit-usergroup-select__btn
-  text-align right
+@import "nodeca.core/client/admin/core/_variables"
 
-  & > .multiselect-selected-text
-    float left
-    max-width 90%
-    overflow hidden
-    text-align left
-    text-overflow ellipsis
+
+.user-edit-usergroup-label
+  display inline
+  color $gray-600
+
+  & > a
+    color inherit
+
+  &:after
+    content: ', '
+
+  &:last-child:after
+    content: ''
