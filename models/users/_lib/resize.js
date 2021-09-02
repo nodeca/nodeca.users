@@ -37,8 +37,6 @@ const image_traverse = require('image-blob-reduce/lib/image_traverse.js');
 const resize_outline = require('nodeca.users/lib/resize_outline');
 
 
-let File;
-
 // Limit amount of threads used for each image
 // sharp.concurrency(1);
 
@@ -215,7 +213,7 @@ async function saveImages(previews, options) {
       }
     }
 
-    await File.put(Buffer.from(buffer), params);
+    await options.store.put(Buffer.from(buffer), params);
   }
 
   return origId;
@@ -223,8 +221,6 @@ async function saveImages(previews, options) {
 
 
 module.exports = async function (src, options) {
-  File = options.store;
-
   let previews = {};
 
   //
