@@ -1,7 +1,7 @@
 <!-- ko with: about.#{self.name} -->
 label.form-label.user-settings-about-field__label=self.t('location')
 .mb-3
-  a.form-control-plaintext(
+  a.user-settings-about-field__location.form-control-plaintext(
     href=self.link_to('users.settings.location')
     data-on-click='users.settings.about:location_edit'
   )
