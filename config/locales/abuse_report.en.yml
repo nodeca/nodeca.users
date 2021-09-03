@@ -7,9 +7,9 @@ i18n:
         messages:
 
           - |
-            It's inappropriate.
-            This post contains content that a reasonable person would consider offensive, abusive, or a violation of our community guidelines.
+            It's inappropriate
+            This post contains content that a reasonable person would consider offensive, abusive, or a violation of our rules.
 
           - |
-            It's spam.
-            This post is an advertisement. It is not useful or relevant to the current topic, but promotional in nature.
+            It's advertisement/spam
+            I think this is an advertisement or spam. Please, check it out.
