@@ -32,30 +32,21 @@
         title=self.t('mark_read')
       )
 
-    ul.nav.nav-tabs-underlined(role='tablist')
-      - var i = 0;
-      each tab in self.tabs
-        li.user-subscriptions-tab.nav-item(role='presentation')
-          a.nav-link(
-            href=('#' + tab.block_name)
-            aria-controls='forum-topics'
-            role='tab'
+    ul.content-tabs.nav
+      each tab, idx in self.tabs
+        li.content-tabs-item
+          a.content-tabs-link(
+            class=(idx === 0) ? 'active' : ''
             data-bs-toggle='tab'
-            class=(i === 0) ? 'active' : ''
+            href=('#' + tab.block_name)
           )
-            =self.t('@users.subscriptions.' + tab.block_name)
-            | 
-            span.user-subscriptions-tab__badge.text-muted(
-              data-count=tab.items.length
-              class='user-subscriptions-tab__badge-' + tab.block_name
-            )
-        - i++;
+            = self.t('@users.subscriptions.' + tab.block_name)
+            span.content-tabs-counter= tab.items.length
 
     .tab-content
-      - i = 0;
-      each tab in self.tabs
+      each tab, idx in self.tabs
         .user-subscriptions-tab-pane.tab-pane(role='tabpanel'
-          class=(i === 0) ? 'active' : ''
+          class=(idx === 0) ? 'active' : ''
           data-count=tab.items.length
           data-block-name=tab.block_name
           id=tab.block_name
@@ -64,4 +55,3 @@
             each item in tab.items
               !=self.partial('@users.subscriptions.blocks.' + tab.block_name, { item: item, block_name: tab.block_name })
           .user-subscriptions-tab-pane__empty=self.t('no_subscriptions')
-        - i++;

@@ -21,15 +21,15 @@ article#content.users-activity-root(
         = self.t('title')
 
     .users-activity
-      .users-activity__nav.nav.nav-tabs-underlined
+      ul.content-tabs.users-activity__nav
         each tab in self.tabs
-          a.nav-link(
-            href=tab.link
-            class=(self.type === tab.type ? 'active' : '')
-          )
-            = self.t('@users.activity.menu.' + tab.type)
-            span.users-activity__tab-counter(title=tab.count)
-              = '(' + tab.count + ')'
+          li.content-tabs-item
+            a.content-tabs-link(
+              href=tab.link
+              class=(self.type === tab.type ? 'active' : '')
+            )
+              = self.t('@users.activity.menu.' + tab.type)
+              span.content-tabs-counter= tab.count
 
       if self.results && self.results.length
         .users-activity__loading-prev.nojs-hide(

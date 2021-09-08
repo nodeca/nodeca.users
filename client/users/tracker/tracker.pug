@@ -21,16 +21,15 @@
         title=self.t('mark_read')
       )
 
-    ul.nav.nav-tabs-underlined(role='tablist')
+    ul.content-tabs
       each tab in self.tabs
-        li.user-tracker-tab.nav-item(role='presentation')
-          a.nav-link(
+        li.content-tabs-item
+          a.content-tabs-link(
             href=self.link_to('users.tracker', { $query: { type: tab.type } })
             class=(self.type === tab.type ? 'active' : '')
           )
             = self.t('@users.tracker.menu.' + tab.type)
-            span.user-tracker__tab-counter(title=tab.count)
-              = '(' + tab.count + ')'
+            span.content-tabs-counter= tab.count
 
     if self.items.length === 0
       .user-tracker__no-items=self.t('nothing_new')
