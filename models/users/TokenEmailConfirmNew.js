@@ -13,7 +13,7 @@ const Mongoose    = require('mongoose');
 const Schema      = Mongoose.Schema;
 const createToken = require('nodeca.core/lib/app/random_token');
 
-const TOKEN_EXPIRE_TIMEOUT    = 15 * 60; // 15 minutes in seconds.
+const TOKEN_EXPIRE_TIMEOUT    = 30 * 60; // 30 minutes in seconds
 
 function createDecimalToken() {
   // convert to decimal because it's easier for user to type, get last 30
