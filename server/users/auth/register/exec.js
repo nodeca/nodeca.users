@@ -137,7 +137,7 @@ module.exports = function (N, apiPath) {
 
     // Skip if some other fields are incorrect in order to not change
     // captcha words and not annoy the user by forcing him to retype.
-    if (Object.keys(env.data.errors)) return;
+    if (Object.keys(env.data.errors).length) return;
 
     let privateKey = N.config.options.recaptcha.private_key,
         clientIp   = env.req.ip,

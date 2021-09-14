@@ -210,7 +210,7 @@ module.exports = function (N, apiPath) {
     let dlg_update_data = {
       exists: true, // force dialog to re-appear if it was deleted
       cache: {
-        last_user: message_data.user,
+        last_user: env.user_info.user_id,
         last_ts: message_data.ts,
         preview: env.data.preview
       }
@@ -240,7 +240,7 @@ module.exports = function (N, apiPath) {
 
       own_dialog.cache.unread       = false;
       own_dialog.cache.last_message = own_msg._id;
-      own_dialog.cache.is_reply     = String(own_msg.user) === String(message_data.user);
+      own_dialog.cache.is_reply     = true;
 
       models_to_save = models_to_save.concat([ own_dialog, own_msg ]);
       saved_msg = own_msg;
@@ -278,7 +278,7 @@ module.exports = function (N, apiPath) {
 
       opponent_dialog.unread             = true;
       opponent_dialog.cache.last_message = opponent_msg._id;
-      opponent_dialog.cache.is_reply     = String(opponent_msg.user) === String(message_data.user);
+      opponent_dialog.cache.is_reply     = false;
 
       models_to_save = models_to_save.concat([ opponent_dialog, opponent_msg ]);
 

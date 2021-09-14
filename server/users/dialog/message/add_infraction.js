@@ -65,7 +65,8 @@ module.exports = function (N, apiPath) {
 
     if (!can_add_infractions_dialogs) throw N.io.FORBIDDEN;
 
-    let user_info = await userInfo(N, env.data.message.user);
+    let message = env.data.message;
+    let user_info = await userInfo(N, message.incoming ? message.with : message.user);
     let params = {
       user_id: user_info.user_id,
       usergroup_ids: user_info.usergroups
@@ -98,9 +99,10 @@ module.exports = function (N, apiPath) {
       reason = env.t(`@users.infractions.types.${env.params.type}`);
     }
 
+    let message = env.data.message;
     let infraction = new N.models.users.Infraction({
       from: env.user_info.user_id,
-      for: env.data.message.user,
+      for: message.incoming ? message.with : message.user,
       type: env.params.type,
       reason,
       points: env.params.points,
