@@ -4,7 +4,6 @@
 'use strict';
 
 
-const _        = require('lodash');
 const ObjectId = require('mongoose').Types.ObjectId;
 const userInfo = require('nodeca.users/lib/user_info');
 
@@ -139,13 +138,6 @@ module.exports = function (N, apiPath) {
       user_info: to
     });
 
-    let preview_data = await N.parser.md2preview({
-      text,
-      limit: 500,
-      link2text: true
-    });
-
-
     // Prepare message and dialog data
     //
     let message_data = {
@@ -158,20 +150,11 @@ module.exports = function (N, apiPath) {
       import_users: parse_result.import_users
     };
 
-    let dlg_update_data = {
-      exists: true, // force dialog to re-appear if it was deleted
-      cache: {
-        last_user: bot._id,
-        last_ts: message_data.ts,
-        preview: preview_data.preview
-      }
-    };
-
     // Find opponent's dialog, create if doesn't exist
     //
     let opponent_dialog = await N.models.users.Dialog.findOne({
       user: infraction.for,
-      to:   bot._id
+      with: bot._id
     });
 
     if (!opponent_dialog) {
@@ -181,8 +164,6 @@ module.exports = function (N, apiPath) {
       });
     }
 
-    _.merge(opponent_dialog, dlg_update_data);
-
     let opponent_msg = new N.models.users.DlgMessage(Object.assign({
       parent: opponent_dialog._id,
       user: infraction.for,
@@ -190,17 +171,16 @@ module.exports = function (N, apiPath) {
       incoming: true
     }, message_data));
 
-    opponent_dialog.unread             = true;
+    // params should be passed separately and will be converted by hooks to params_ref
+    opponent_msg.params = message_data.params;
+
+    opponent_dialog.unread = true;
+    // cache will be generated in updateSummary later, this is only here to stop race conditions
     opponent_dialog.cache.last_message = opponent_msg._id;
-    opponent_dialog.cache.is_reply     = false;
 
-
-    // Save dialogs and messages
-    //
-    await Promise.all([
-      opponent_dialog.save(),
-      opponent_msg.save()
-    ]);
+    await opponent_msg.save();
+    await opponent_dialog.save();
+    await N.models.users.Dialog.updateSummary(opponent_dialog._id);
 
     // Notify user
     //

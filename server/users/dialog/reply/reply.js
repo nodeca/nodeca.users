@@ -3,7 +3,6 @@
 'use strict';
 
 
-const _        = require('lodash');
 const $        = require('nodeca.core/lib/parser/cheequery');
 const ObjectId = require('mongoose').Types.ObjectId;
 
@@ -144,19 +143,6 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Parse user input to preview
-  //
-  N.wire.after(apiPath, async function parse_to_preview(env) {
-    let preview_data = await N.parser.md2preview({
-      text: env.params.txt,
-      limit: 250,
-      link2text: true
-    });
-
-    env.data.preview = preview_data.preview;
-  });
-
-
   // Limit an amount of images in the message
   //
   N.wire.after(apiPath, async function check_images_count(env) {
@@ -207,16 +193,6 @@ module.exports = function (N, apiPath) {
       import_users: env.data.parse_result.import_users
     };
 
-    let dlg_update_data = {
-      exists: true, // force dialog to re-appear if it was deleted
-      cache: {
-        last_user: env.user_info.user_id,
-        last_ts: message_data.ts,
-        preview: env.data.preview
-      }
-    };
-
-    let models_to_save = [];
     let saved_msg;
 
 
@@ -229,8 +205,6 @@ module.exports = function (N, apiPath) {
       //
       let own_dialog = env.data.dialog;
 
-      _.merge(own_dialog, dlg_update_data);
-
       let own_msg = new N.models.users.DlgMessage(Object.assign({
         parent: own_dialog._id,
         user: env.user_info.user_id,
@@ -238,11 +212,17 @@ module.exports = function (N, apiPath) {
         incoming: false
       }, message_data));
 
-      own_dialog.cache.unread       = false;
-      own_dialog.cache.last_message = own_msg._id;
-      own_dialog.cache.is_reply     = true;
+      // params should be passed separately and will be converted by hooks to params_ref
+      own_msg.params = message_data.params;
 
-      models_to_save = models_to_save.concat([ own_dialog, own_msg ]);
+      own_dialog.unread = false;
+      // cache will be generated in updateSummary later, this is only here to stop race conditions
+      own_dialog.cache.last_message = own_msg._id;
+
+      await own_msg.save();
+      await own_dialog.save();
+      await N.models.users.Dialog.updateSummary(own_dialog._id);
+
       saved_msg = own_msg;
     }
 
@@ -267,8 +247,6 @@ module.exports = function (N, apiPath) {
         });
       }
 
-      _.merge(opponent_dialog, dlg_update_data);
-
       let opponent_msg = new N.models.users.DlgMessage(Object.assign({
         parent: opponent_dialog._id,
         user: env.data.to._id,
@@ -276,11 +254,16 @@ module.exports = function (N, apiPath) {
         incoming: true
       }, message_data));
 
-      opponent_dialog.unread             = true;
-      opponent_dialog.cache.last_message = opponent_msg._id;
-      opponent_dialog.cache.is_reply     = false;
+      // params should be passed separately and will be converted by hooks to params_ref
+      opponent_msg.params = message_data.params;
 
-      models_to_save = models_to_save.concat([ opponent_dialog, opponent_msg ]);
+      opponent_dialog.unread = true;
+      // cache will be generated in updateSummary later, this is only here to stop race conditions
+      opponent_dialog.cache.last_message = opponent_msg._id;
+
+      await opponent_msg.save();
+      await opponent_dialog.save();
+      await N.models.users.Dialog.updateSummary(opponent_dialog._id);
 
       let dialogs_notify = await N.settings.get('dialogs_notify', { user_id: opponent_dialog.user });
 
@@ -296,11 +279,6 @@ module.exports = function (N, apiPath) {
       // user sends message to himself
       if (!saved_msg) saved_msg = opponent_msg;
     }
-
-
-    // Save models
-    //
-    await Promise.all(models_to_save.map(m => m.save()));
 
 
     // Fill response

@@ -33,11 +33,11 @@ module.exports = function (N, apiPath) {
   // Remove dialog and messages
   //
   N.wire.on(apiPath, async function remove_dialog_and_messages(env) {
-    // Remove dialog
-    await N.models.users.Dialog.updateOne({ _id: env.data.dialog._id }, { exists: false });
-
     // Remove messages
     await N.models.users.DlgMessage.updateMany({ parent: env.data.dialog._id }, { exists: false });
+
+    // Remove dialog
+    await N.models.users.Dialog.updateSummary(env.data.dialog._id);
   });
 
 
