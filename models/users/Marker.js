@@ -357,9 +357,15 @@ module.exports = function (N, collectionName) {
       max = posInfo[contentIds.indexOf(String(item.contentId))]?.max ?? -1;
       result[item.contentId].position = posInfo[contentIds.indexOf(String(item.contentId))]?.current ?? -1;
 
-      if (max === -1 || item.lastPostTs < cuts[item.categoryId]) {
+      if (item.lastPostTs < cuts[item.categoryId]) {
+        // if last post is old, mark all topic as unread
         result[item.contentId].next = -1;
+      } else if (max === -1) {
+        // marker doesn't exist in redis, but the last post is recent,
+        // set next unread to 1 because we don't know what post is actually last
+        result[item.contentId].next = 1;
       } else if (item.lastPostNumber > max) {
+        // marker exists, post is recent, so we know next position
         result[item.contentId].next = +max + 1;
       }
     }
