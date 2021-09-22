@@ -2,21 +2,22 @@
 
 .user-tracker-item
   display flex
-  margin-bottom 1.5rem
+  align-items center
+  padding .5rem 0
 
 .user-tracker-item__content
-  flex 1 1 auto
-  align-self center
-
-.user-tracker-item__controls
-  flex 0 0 30%
-  text-align right
+  flex 1 1 0%
+  padding .125rem 0 .125rem .875rem
+  position relative
+  width auto
+  // for ellipsis in second line on narrow screens
+  min-width 0
 
 .user-tracker-item__title
-  //font-family $font-family-sans-serif-wide
   position relative
   font-weight normal
   font-size $font-size-base
+  //font-family $font-family-sans-serif-wide
   line-height 1.3
   margin-top 0
   margin-bottom 0
@@ -24,21 +25,48 @@
 .user-tracker-item__title-link
   color $body-color
 
-.user-tracker-item__updated
-  color $body-color-secondary
-  font-size $font-size-xs
-
-.user-tracker-item__desc
+.user-tracker-item__microstat
   color $body-color-secondary
   font-size $font-size-xs
   shortable()
 
-a.user-tracker-item__desc-link
-  color inherit
-
-.user-tracker-item__author
+.user-tracker-item__microstat-category
   color $body-color-secondary
-  font-size $font-size-xs
+  margin-right .5em
+
+.user-tracker-item__microstat-author
+  color $body-color-secondary
+  &::before
+    content '·'
+    display inline-block
+    margin-right .5em
+
+.user-tracker-item__microstat-time
+  color $body-color-secondary
+  &::before
+    content ','
+    margin-right .5em
+    display inline-block
+
+// Enabled only for small screens
+.user-tracker-item__overlay
+  position absolute
+  top 0
+  left 0
+  width 100%
+  height 100%
+  z-index 10
+
+// Second column
+.user-tracker-item__stat
+  flex 0 0 0%
+  min-width 6rem
+  font-size $font-size-sm
+  color $body-color-secondary + 30%
+  text-align right
+
+.user-tracker-item__stat-link
+  color $body-color-secondary + 30%
 
 .user-tracker__filter
   margin-bottom 2rem
