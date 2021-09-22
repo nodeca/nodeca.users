@@ -7,7 +7,7 @@
 
 .user-tracker-item__content
   flex 1 1 0%
-  padding .125rem 0 .125rem .875rem
+  padding .125rem 0
   position relative
   width auto
   // for ellipsis in second line on narrow screens
@@ -32,18 +32,18 @@
 
 .user-tracker-item__microstat-category
   color $body-color-secondary
-  margin-right .5em
+  &::after
+    content '·'
+    margin 0 .5rem
+    // inline-block is required to not show underline on hover
+    display inline-block
 
 .user-tracker-item__microstat-author
   color $body-color-secondary
-  &::before
-    content '·'
-    display inline-block
-    margin-right .5em
 
 .user-tracker-item__microstat-time
   color $body-color-secondary
-  &::before
+  &::after
     content ','
     margin-right .5em
     display inline-block
@@ -61,12 +61,17 @@
 .user-tracker-item__stat
   flex 0 0 0%
   min-width 6rem
-  font-size $font-size-sm
+  //font-size $font-size-sm
   color $body-color-secondary + 30%
   text-align right
 
 .user-tracker-item__stat-link
   color $body-color-secondary + 30%
+
+.user-tracker .content-tabs
+  // compensate padding for 1st element,
+  // real value should be 2rem (minus .5rem+.125rem)
+  margin-bottom 1.375rem
 
 .user-tracker__filter
   margin-bottom 2rem
@@ -80,7 +85,8 @@
     min-width 2.5rem
 
 .user-tracker__no-items
-  margin-top 1.5rem
+  // compensate padding for 1st element, .5rem+.125rem
+  padding-top .625rem
 
 .user-tracker__loading-next
   padding 2rem
