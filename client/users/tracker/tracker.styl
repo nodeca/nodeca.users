@@ -29,24 +29,35 @@
   color $body-color-secondary
   font-size $font-size-xs
   shortable()
+  & > a
+    color inherit
 
-.user-tracker-item__microstat-category
-  color $body-color-secondary
-  &::after
+.user-tracker-item__microstat-author
+.user-tracker-item__microstat-time
+  // middle dot after category in "category · author" or "category · time, author" on smaller screens
+  &::before
     content '·'
-    margin 0 .5rem
+    margin 0 .5em 0 .5em
     // inline-block is required to not show underline on hover
     display inline-block
 
-.user-tracker-item__microstat-author
-  color $body-color-secondary
-
 .user-tracker-item__microstat-time
-  color $body-color-secondary
-  &::after
-    content ','
-    margin-right .5em
-    display inline-block
+  display none
+.user-tracker-item__stat-time
+  display inline
+
+@media (max-width: $grid-breakpoints.sm - 1)
+  .user-tracker-item__microstat-time
+    display inline
+  .user-tracker-item__stat-time
+    display none
+
+  .user-tracker-item__microstat-author
+    // comma between time and author in "category · time, author" on smaller screens
+    &::before
+      content ','
+      margin 0 .5em 0 0
+      display inline-block
 
 // Enabled only for small screens
 .user-tracker-item__overlay
