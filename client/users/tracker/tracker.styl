@@ -79,6 +79,19 @@
 .user-tracker-item__stat-link
   color $body-color-secondary + 30%
 
+.user-tracker-item__new-marker
+  display none
+  color $brand-success
+  font-size $font-size-xs
+  margin-left .75em
+  vertical-align top
+
+.user-tracker-item__m-new
+  .user-tracker-item__unread-marker
+    background-color $brand-primary
+  .user-tracker-item__new-marker
+    display inline-block
+
 .user-tracker .content-tabs
   // compensate padding for 1st element,
   // real value should be 2rem (minus .5rem+.125rem)
