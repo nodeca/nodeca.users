@@ -1,43 +1,90 @@
 @import "nodeca.core/client/common/_variables"
 
-.user-subscriptions-list
-  padding 0
-
 .user-subscriptions-item
   display flex
-  margin-bottom 1.5rem
+  align-items center
+  padding .5rem 0
 
 .user-subscriptions-item__content
-  flex 1 1 auto
-  align-self center
+  flex 1 1 0%
+  padding .125rem 0 .125rem .875rem
+  position relative
+  width auto
+  // for ellipsis in second line on narrow screens
+  min-width 0
 
-.user-subscriptions-item__controls
-  align-self center
-  white-space nowrap
-  margin-left .5rem
+.user-subscriptions-item__m-no-markers .user-subscriptions-item__content
+  padding-left 0
 
 .user-subscriptions-item__title
-  //font-family $font-family-sans-serif-wide
   position relative
   font-weight normal
   font-size $font-size-base
+  //font-family $font-family-sans-serif-wide
   line-height 1.3
   margin-top 0
   margin-bottom 0
 
-.user-subscriptions-item__btn-delete
-  margin-left 10px
-
 .user-subscriptions-item__title-link
   color $body-color
 
-.user-subscriptions-item__desc
+.user-subscriptions-item__microstat
   color $body-color-secondary
   font-size $font-size-xs
   shortable()
+  & > a
+    color inherit
 
-.user-subscriptions-item__desc-link
-  color inherit
+// Enabled only for small screens
+.user-subscriptions-item__overlay
+  position absolute
+  top 0
+  left 0
+  width 100%
+  height 100%
+  z-index 10
+
+// Second column
+.user-subscriptions-item__stat
+  flex 0 0 0%
+  min-width 6rem
+  //font-size $font-size-sm
+  color $body-color-secondary + 30%
+  text-align right
+
+.user-subscriptions-item__btn-delete
+  margin-left 10px
+
+.user-subscriptions-item__unread-marker
+  position absolute
+  left 0
+  top 0
+  bottom 0
+  width .125rem
+  border-radius 0.125rem
+  background-color $decorator-aside-color
+
+.user-subscriptions-item__new-marker
+  display none
+  color $brand-success
+  font-size $font-size-xs
+  margin-left .75em
+  vertical-align top
+
+.user-subscriptions-item__m-unread
+  .user-subscriptions-item__unread-marker
+    background-color $brand-primary
+
+.user-subscriptions-item__m-new
+  .user-subscriptions-item__unread-marker
+    background-color $brand-primary
+  .user-subscriptions-item__new-marker
+    display inline-block
+
+.user-subscriptions-root .content-tabs
+  // compensate padding for 1st element,
+  // real value should be 2rem (minus .5rem+.125rem)
+  margin-bottom 1.375rem
 
 .user-subscriptions-tab-pane__empty
   display none
