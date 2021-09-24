@@ -134,21 +134,15 @@ $default-margin = 4rem
   position absolute
   // adjustment for _content margin, can't put menu in
   //_content itself because it should be on top of prev/next
-  right $default-margin + .5rem
+  right $default-margin + 1rem
   left auto
-  bottom .5rem
+  bottom 1rem
 
-.user-media__control-item.btn-link
-.user-media__control-item > .btn-link
-  color $body-color-secondary + 20%
-  text-shadow 0 0 1px ($body-color-secondary - 60%)
+.user-media__control-item > .btn
+  color white
+  background-color rgba(0, 0, 0, 0.3)
   &:hover
-    color $body-color-secondary + 40%
-
-.user-media__m-binary
-  .user-media__control-item.btn-link
-  .user-media__control-item > .btn-link
-    text-shadow none
+    background-color rgba(0, 0, 0, 0.4)
 
 
 ////////////////////////////////////////////////////////////////////////////////
