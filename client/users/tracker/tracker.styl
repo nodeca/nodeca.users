@@ -90,6 +90,20 @@
   .user-tracker-item__new-marker
     display inline-block
 
+.user-tracker__separator
+  padding .5rem 0
+  align-items baseline
+  font-size $font-size-xs
+  color $body-color-secondary
+  display flex
+  gap .75rem
+
+  &::before, &::after
+    border-top 1px solid $decorator-color
+    padding-bottom .25em
+    flex 1 1 auto
+    content ''
+
 .user-tracker .content-tabs
   // compensate padding for 1st element,
   // real value should be 2rem (minus .5rem+.125rem)

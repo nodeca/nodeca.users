@@ -36,7 +36,7 @@
 
     else
       .user-tracker-items
-        != self.partial('@users.tracker.items')
+        != self.partial('@users.tracker.blocks.' + self.type)
 
       .user-tracker__loading-next.nojs-hide(
         class=(!self.next ? 'd-none' : '')

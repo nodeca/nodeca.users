@@ -20,9 +20,9 @@ function load(start, direction) {
     start
   }).then(res => {
     return {
-      $html: $(N.runtime.render('users.tracker.items', res)),
+      $html: $(N.runtime.render(`users.tracker.blocks.${pageState.type}`, res)),
       locals: res,
-      reached_end: res.reached_end
+      reached_end: res.next === null
     };
   });
 }
@@ -31,10 +31,7 @@ function load(start, direction) {
 N.wire.on('navigate.done:' + module.apiPath, function nav_tracker_tab_activate() {
   $('.navbar').find('[data-api-path="users.tracker"]').addClass('show');
 
-  pageState.type               = N.runtime.page_data.tracker_type;
-  pageState.reached_end        = !N.runtime.page_data.tracker_next;
-  pageState.next_loading_start = 0;
-  pageState.bottom_marker      = N.runtime.page_data.tracker_next;
+  pageState.type = N.runtime.page_data.tracker_type;
 
   let navbar_height = parseInt($('body').css('margin-top'), 10) + parseInt($('body').css('padding-top'), 10);
 
