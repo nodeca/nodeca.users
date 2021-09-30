@@ -31,7 +31,7 @@
           legend= self.t('active_sessions')
 
           each session in self.active_sessions
-            .mb-3.user-settings-account__session
+            .user-settings-account__session
               if !session.current
                 .user-settings-account__logout
                   button.user-settings-account__logout-btn.btn.btn-link.icon.icon-x(
@@ -56,7 +56,7 @@
           legend= self.t('closed_sessions')
 
           each session in self.closed_sessions
-            .user-settings-account__session.mb-3
+            .user-settings-account__session
               .user-settings-account__ts!= self.timetag(session.last_ts, 'relative_full')
               .user-settings-account__device(title=session.user_agent)= session.device
               .user-settings-account__ip= session.ip
