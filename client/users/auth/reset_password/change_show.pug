@@ -30,6 +30,6 @@
                 // ko if: error && typeof error() === 'string'
                 .invalid-feedback(data-bind='text: error')
                 // /ko
-                small.form-text.text-muted= self.t('password_help')
+                .form-text= self.t('password_help')
 
               button.btn.btn-primary(type='submit')= self.t('ok')

@@ -49,7 +49,7 @@ if (self.email)
               // ko if: error && typeof error() === 'string'
               .invalid-feedback(data-bind='text: error')
               // /ko
-              small.form-text.text-muted= self.t('pass_help')
+              .form-text= self.t('pass_help')
             // /ko
 
 

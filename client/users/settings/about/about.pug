@@ -29,7 +29,7 @@
             input.form-control(type='text', data-bind='value: about.' + name + '.value, valueUpdate: "keyup", disable: about.' + name + '.readonly, css: { "is-invalid": about.' + name + '.hasError }')
 
           <!-- ko if: about.#{name}.help -->
-          small.form-text.text-muted(data-bind='text: about.' + name + '.help')
+          .form-text(data-bind='text: about.' + name + '.help')
           <!-- /ko -->
 
       .mt-4

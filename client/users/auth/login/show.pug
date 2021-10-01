@@ -24,7 +24,7 @@
             if self.oauth && Object.keys(self.oauth).length
               .mb-3
                 != self.partial('@common.blocks.oauth_buttons')
-                small.form-text.text-muted
+                .form-text
                   =self.t('oauth_info')
 
             .mb-3
@@ -44,7 +44,7 @@
                 type='password'
                 placeholder=self.t('password_desc')
               )
-              small.form-text.text-muted= self.t('password_help')
+              .form-text= self.t('password_help')
 
             // ko with: recaptcha_response_field
             != self.partial('@common.blocks.recaptcha')

@@ -13,12 +13,12 @@
             name='media_url'
             tabindex='1'
             placeholder=self.t('input_url_desc'))
-          small.form-text.text-muted= self.t('input_url_help')
-            | 
+          .form-text= self.t('input_url_help')
+            |
             each provider, index in self.providers
               a(href=provider.home target='_blank')= provider.name
               if (self.providers.length - 1 !== index)
-                |, 
+                |,
         .modal-footer
           button.btn.btn-secondary(type='button' tabindex='2' data-bs-dismiss='modal')= self.t('cancel')
           button.btn.btn-primary(type='submit' tabindex='3')= self.t('add')
