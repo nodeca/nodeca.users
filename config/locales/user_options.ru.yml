@@ -8,7 +8,7 @@ i18n:
         content: Контент
 
       setting_names:
-        default_subscription_mode: Режим подписки по умолчанию
+        default_subscription_mode: 'Авто-подписка поcле публикации:'
         default_subscription_mode__help: Обычная - уведомления в трекере; срочная - обновления в трекере и уведомления по email.
         dialogs_notify: Уведомлять по email, если вам кто-то напишет
         dialogs_hide_answered: Скрыть отвеченные диалоги
