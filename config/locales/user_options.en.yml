@@ -9,11 +9,14 @@ i18n:
 
       setting_names:
         default_subscription_mode: Default subscription mode
-        dialogs_notify: Send me an email when someone messages me
+        default_subscription_mode__help: Normal - see updates in tracker; urgent - see updates in tracker and receive emails.
+        dialogs_notify: Notify by email when someone messages you
         dialogs_hide_answered: Hide answered dialogs
         hide_heavy_content: Hide heavy traffic content (images, videos, etc.)
+        reply_notify: Notify by email when someone replies to your post
 
       setting_values:
         default_subscription_mode:
-          WATCHING: Watching
-          TRACKING: Tracking
+          WATCHING: Urgent
+          TRACKING: Normal
+          NORMAL: No subscription

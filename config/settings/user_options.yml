@@ -7,6 +7,7 @@ setting_schemas:
       values:
         - WATCHING
         - TRACKING
+        - NORMAL
       default: TRACKING
 
     dialogs_notify:
@@ -25,3 +26,9 @@ setting_schemas:
       category_key: content
       type: boolean
       default: false
+
+    reply_notify:
+      priority: 40
+      category_key: content
+      type: boolean
+      default: true
