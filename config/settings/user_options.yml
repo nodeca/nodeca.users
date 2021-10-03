@@ -21,14 +21,14 @@ setting_schemas:
       type: boolean
       default: false
 
-    hide_heavy_content:
+    reply_notify:
       priority: 30
       category_key: content
       type: boolean
-      default: false
+      default: true
 
-    reply_notify:
+    hide_heavy_content:
       priority: 40
       category_key: content
       type: boolean
-      default: true
+      default: false
