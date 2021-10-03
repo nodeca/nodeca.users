@@ -14,6 +14,8 @@ i18n:
         dialogs_hide_answered: Hide answered dialogs
         hide_heavy_content: Hide heavy traffic content (images, videos, etc.)
         reply_notify: Notify by email when someone replies to your post
+        layout_max_width: Max page width (pixels)
+        layout_max_width__help: Enter number from 940, if you wish wider page layout on big displays.
 
       setting_values:
         default_subscription_mode:
