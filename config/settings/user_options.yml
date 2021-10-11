@@ -33,8 +33,9 @@ setting_schemas:
       type: boolean
       default: false
 
-    #layout_max_width:
-    #  priority: 50
-    #  category_key: content
-    #  type: number
-    #  default: 940
+    layout_max_width:
+      priority: 50
+      category_key: content
+      type: number
+      default: 940
+      min: 940

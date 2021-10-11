@@ -11,6 +11,8 @@ function Setting(name, schema, value) {
   this.name = N.runtime.t('users.setting_names.' + name);
   this.help = N.runtime.t.exists(tHelp) ? N.runtime.t(tHelp) : '';
   this.type = schema.type;
+  this.min = schema.min;
+  this.max = schema.max;
 
   this._value = value ?? schema.default;
 
@@ -81,7 +83,11 @@ Form.prototype.submit = function submit() {
   let data = { settings: {} };
 
   this.settings.forEach(setting => {
-    data.settings[setting.settingName] = setting.value();
+    if (setting.type === 'number') {
+      data.settings[setting.settingName] = Number(setting.value());
+    } else {
+      data.settings[setting.settingName] = setting.value();
+    }
   });
 
   N.io.rpc('users.settings.general.update', data).then(() => {

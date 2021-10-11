@@ -53,6 +53,15 @@ module.exports = function (N, apiPath) {
           if (typeof value !== 'number') {
             valid = false;
           }
+
+          if (schema[key].min && value < schema[key].min) {
+            valid = false;
+          }
+
+          if (schema[key].max && value > schema[key].max) {
+            valid = false;
+          }
+
           break;
 
         default:

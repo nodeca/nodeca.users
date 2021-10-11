@@ -35,7 +35,7 @@
 
           // ko if: type === 'number'
           label.form-label(data-bind='text: name')
-          input.form-control(type='number' data-bind='value: value, valueUpdate: "keyup"')
+          input.form-control(type='number' data-bind='value: value, valueUpdate: "keyup", attr: { min: min, max: max }')
           // /ko
 
           // ko if: type === 'boolean'
