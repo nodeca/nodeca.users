@@ -189,7 +189,6 @@ module.exports = function (N, apiPath) {
     if (dialogs_notify) {
       await N.wire.emit('internal:users.notify', {
         src:  opponent_dialog._id,
-        to:   opponent_dialog.user,
         type: 'USERS_MESSAGE'
       });
     }

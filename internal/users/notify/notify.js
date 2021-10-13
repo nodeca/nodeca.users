@@ -4,16 +4,14 @@
 // params:
 //
 // - src (ObjectId) - content _id
-// - to (ObjectId|[ObjectId]) - recipient id, could be array
+// - ignore ([ObjectId]) - list of recipient ids we shouldn't send this to
 // - type (String) - notification type
 //
 'use strict';
 
 
 module.exports = function (N, apiPath) {
-  N.wire.on(apiPath, async function notification_add(params) {
-    let taskData = Object.assign({}, params, { to: Array.isArray(params.to) ? params.to : [ params.to ] });
-
+  N.wire.on(apiPath, async function notification_add(taskData) {
     // Cancel previous task if exists (reset delay for send)
     await N.queue.cancel(`notify_${taskData.type}_${taskData.src}`);
     // Add new task with delay
