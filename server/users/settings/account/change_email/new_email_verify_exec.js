@@ -52,12 +52,16 @@ module.exports = function (N, apiPath) {
   // Change email
   //
   N.wire.on(apiPath, async function change_email(env) {
+    env.data.old_email = env.data.user.email;
+    env.data.user.email = env.data.token.new_email;
+
+    await env.data.user.save();
+
     // disable all email authproviders
     // (authprovider for new email will be created on next login)
-    await N.models.users.AuthProvider.updateOne(
+    await N.models.users.AuthProvider.updateMany(
       { user: env.data.user._id, type: 'email' },
-      { $set: { exists: false } },
-      { multi: true }
+      { $set: { exists: false } }
     );
 
     // replace email in plain authprovider
@@ -71,11 +75,6 @@ module.exports = function (N, apiPath) {
       authProvider.email = env.data.user.email;
       await authProvider.save();
     }
-
-    env.data.old_email = env.data.user.email;
-    env.data.user.email = env.data.token.new_email;
-
-    await env.data.user.save();
   });
 
 

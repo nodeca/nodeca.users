@@ -102,10 +102,9 @@ module.exports = function (N, apiPath) {
     if (env.data.user.isModified('email')) {
       // disable all email authproviders
       // (authprovider for new email will be created on next login)
-      await N.models.users.AuthProvider.updateOne(
+      await N.models.users.AuthProvider.updateMany(
         { user: env.data.user._id, type: 'email' },
-        { $set: { exists: false } },
-        { multi: true }
+        { $set: { exists: false } }
       );
 
       // replace email in plain authprovider
