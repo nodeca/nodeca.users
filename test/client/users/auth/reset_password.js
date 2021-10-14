@@ -129,7 +129,7 @@ describe('Reset password', function () {
     assert(email_body.indexOf(login) !== -1);
 
     let authProvider = await TEST.N.models.users.AuthProvider.findOne({
-      email,
+      email_lc: email.toLowerCase(),
       type: 'plain',
       exists: true
     });

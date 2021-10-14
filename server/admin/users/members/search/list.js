@@ -62,7 +62,7 @@ module.exports = function (N, apiPath) {
     }
 
     if (search_params.email) {
-      search_query.email = new RegExp('^' + _.escapeRegExp(search_params.email), 'i');
+      search_query.email_lc = new RegExp('^' + _.escapeRegExp(search_params.email.toLowerCase()));
     }
 
     if (search_params.usergroup) {

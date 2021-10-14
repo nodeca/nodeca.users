@@ -24,6 +24,7 @@ module.exports = function (N, collectionName) {
     nick_normalized_lc : String,
 
     email          : String,
+    email_lc       : String,
     usergroups     : [ Schema.Types.ObjectId ],
     joined_ts      : { type: Date, default: Date.now },
     joined_ip      : String,
@@ -80,8 +81,8 @@ module.exports = function (N, collectionName) {
   // Search by registration date
   User.index({ joined_ts: 1 });
 
-  // Find user by email (login by email)
-  User.index({ email: 1 });
+  // Find user by email (password recovery)
+  User.index({ email_lc: 1 });
 
   // For searching by custom fields
   if (N.config.users?.about) {
@@ -231,6 +232,10 @@ module.exports = function (N, collectionName) {
       //
       this.nick_normalized    = unhomoglyph(this.nick);
       this.nick_normalized_lc = this.nick.toLowerCase();
+    }
+
+    if (this.isModified('email')) {
+      this.email_lc = this.email.toLowerCase();
     }
   });
 

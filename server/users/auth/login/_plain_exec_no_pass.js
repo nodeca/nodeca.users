@@ -13,7 +13,7 @@ module.exports = function (N, apiPath) {
     if (env.data.user && env.data.authProvider_email) return;
 
     let authProvider = await N.models.users.AuthProvider.findOne()
-                                 .where('email').equals(env.params.email_or_nick)
+                                 .where('email_lc').equals(env.params.email_or_nick.toLowerCase())
                                  .where('type').equals('email')
                                  .where('exists').equals(true)
                                  .lean(true);

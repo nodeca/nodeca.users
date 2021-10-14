@@ -35,6 +35,9 @@ module.exports = function (N, collectionName) {
     // registration
     email_normalized: String,
 
+    // lowercased version of the email
+    email_lc:         String,
+
     // For oauth providers only, external user id
     provider_user_id: String,
 
@@ -70,7 +73,10 @@ module.exports = function (N, collectionName) {
   AuthProvider.index({ provider_user_id: 1, exists: 1 });
 
   // find similar emails
-  AuthProvider.index({ email: 1 });
+  AuthProvider.index({ email_normalized: 1, exists: 1 });
+
+  // find email to log in with
+  AuthProvider.index({ email_lc: 1, exists: 1 });
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -154,6 +160,7 @@ module.exports = function (N, collectionName) {
   AuthProvider.pre('save', function () {
     if (this.isModified('email')) {
       this.email_normalized = normalize_email(this.email);
+      this.email_lc         = this.email.toLowerCase();
     }
   });
 

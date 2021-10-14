@@ -81,7 +81,7 @@ module.exports = function (N, apiPath) {
 
     let authProvider = await N.models.users.AuthProvider
                             .findOne({
-                              email: env.params.email_or_nick,
+                              email_lc: env.params.email_or_nick.toLowerCase(),
                               type: 'plain',
                               exists: true
                             });

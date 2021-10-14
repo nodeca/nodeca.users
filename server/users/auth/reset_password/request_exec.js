@@ -47,7 +47,7 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, async function fetch_user(env) {
 
     let user = await N.models.users.User
-                              .findOne({ email: env.params.email })
+                              .findOne({ email_lc: env.params.email.toLowerCase() })
                               .lean(true);
 
     if (!user) {
