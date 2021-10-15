@@ -24,7 +24,6 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
     code:           true,
     emoji:          true,
     emphasis:       true,
-    heading:        true,
     hr:             true,
     image:          true,
     link:           true,

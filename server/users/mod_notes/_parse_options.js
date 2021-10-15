@@ -5,7 +5,6 @@ module.exports = {
   code:           true,
   emoji:          true,
   emphasis:       true,
-  heading:        true,
   hr:             true,
   image:          true,
   link:           true,
