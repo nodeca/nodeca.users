@@ -4,7 +4,7 @@
 'use strict';
 
 
-const stat        = require('util').promisify(require('fs').stat);
+const { stat }    = require('fs/promises');
 const extname     = require('path').extname;
 const Mongoose    = require('mongoose');
 const Schema      = Mongoose.Schema;

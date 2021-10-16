@@ -29,7 +29,7 @@
 'use strict';
 
 const _              = require('lodash');
-const readFile       = require('util').promisify(require('fs').readFile);
+const { readFile }   = require('fs/promises');
 const mime           = require('mime-types').lookup;
 const Mongoose       = require('mongoose');
 const sharp          = require('sharp');
