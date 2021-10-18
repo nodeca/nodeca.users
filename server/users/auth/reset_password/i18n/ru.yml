@@ -5,6 +5,7 @@ ru-RU:
   request_exec:
     err_captcha_wrong: Проверка CAPTCHA не прошла, попробуйте ещё раз.
     err_email_unknown: Неизвестный email адрес.
+    err_bad_email: Неверный email адрес.
 
     email_subject: '#{project_name}: подтверждение смены пароля.'
     email_text: |

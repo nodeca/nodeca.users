@@ -5,6 +5,7 @@ en-US:
   request_exec:
     err_captcha_wrong: CAPTCHA verification failed, try again.
     err_email_unknown: Unknown email address.
+    err_bad_email: Invalid email address.
 
     email_subject: '#{project_name}: password change confirmation.'
     email_text: |

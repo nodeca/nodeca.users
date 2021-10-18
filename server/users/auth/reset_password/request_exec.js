@@ -5,6 +5,7 @@
 
 
 const recaptcha = require('nodeca.core/lib/app/recaptcha');
+const email_regex = require('email-regex');
 
 
 module.exports = function (N, apiPath) {
@@ -18,6 +19,18 @@ module.exports = function (N, apiPath) {
   // Don't limit logged-in users to change pass. Because
   // user can forget password, but still have cookies to remember it.
   //
+
+
+  // Simple syntax check
+  //
+  N.wire.before(apiPath, async function check_email(env) {
+    if (!email_regex({ exact: true }).test(env.params.email)) {
+      throw {
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('err_bad_email')
+      };
+    }
+  });
 
 
   // check captcha
