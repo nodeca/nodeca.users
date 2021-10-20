@@ -71,10 +71,15 @@ module.exports = function (N, apiPath) {
     let tabs = [];
 
     for (let [ block_name, tab_config ] of Object.entries(N.config.users?.subscriptions || {})) {
+      let subscription_types = new Set(
+        (Array.isArray(tab_config.to_type) ? tab_config.to_type : [ tab_config.to_type ])
+          .map(x => N.shared.content_type[x])
+      );
+
       tabs.push(Object.assign({
         block_name,
         priority: 10,
-        items: env.data.subscriptions.filter(s => s.to_type === N.shared.content_type[tab_config.to_type])
+        items: env.data.subscriptions.filter(s => subscription_types.has(s.to_type))
       }, tab_config));
     }
 
