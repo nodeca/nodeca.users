@@ -6,6 +6,12 @@ en-US:
 
     err_captcha_wrong: CAPTCHA verification failed, try again.
 
+  by_email_request:
+    err_login_failed:
+      Can't login. Check that your email/nick is correct.
+
+    err_captcha_wrong: CAPTCHA verification failed, try again.
+
     email_subject: '#{project_name}: link for logging in.'
     email_text: |
       This message was sent because of log in attempt from IP #{ip}

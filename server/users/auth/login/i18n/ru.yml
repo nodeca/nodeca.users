@@ -6,6 +6,12 @@ ru-RU:
 
     err_captcha_wrong: Проверка CAPTCHA не прошла, попробуйте ещё раз.
 
+  by_email_request:
+    err_login_failed:
+      Не получилось войти. Проверьте, что ваш email/ник верны.
+
+    err_captcha_wrong: Проверка CAPTCHA не прошла, попробуйте ещё раз.
+
     email_subject: '#{project_name}: ссылка для входа.'
     email_text: |
       Это сообщение отправлено из-за попытки входа с IP #{ip}

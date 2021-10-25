@@ -68,9 +68,6 @@ module.exports = function (N, apiPath) {
   });
 
 
-  require('./_plain_exec_no_pass')(N, apiPath);
-
-
   // Try to find auth data using `email_or_nick` as an email.
   //
   N.wire.on(apiPath, async function find_authprovider_by_email(env) {
@@ -147,7 +144,8 @@ module.exports = function (N, apiPath) {
     if (!env.data.authProvider) {
       throw {
         code:    N.io.CLIENT_ERROR,
-        message: env.t('err_login_failed')
+        message: env.t('err_login_failed'),
+        wrong_password: true
       };
     }
 

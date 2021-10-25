@@ -49,9 +49,27 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   // Form submit
   //
   N.wire.on('users.auth.login.plain_exec', function login(form) {
-    let loginParams = form.fields;
+    return Promise.resolve()
+      .then(() => {
+        if (!form.fields.pass) throw { code: N.io.CLIENT_ERROR, message: 'no password', wrong_password: true };
 
-    return N.io.rpc('users.auth.login.plain_exec', loginParams)
+        return N.io.rpc('users.auth.login.plain_exec', {
+          email_or_nick: form.fields.email_or_nick,
+          pass: form.fields.pass,
+          'g-recaptcha-response': form.fields['g-recaptcha-response'],
+          redirect_id: form.fields.redirect_id
+        });
+      })
+      .catch(err => {
+        // re-throw all errors except for "wrong password" ones (don't send email request on wrong recaptcha)
+        if (err.code !== N.io.CLIENT_ERROR || !err.wrong_password) throw err;
+
+        return N.io.rpc('users.auth.login.by_email_request', {
+          email_or_nick: form.fields.email_or_nick,
+          'g-recaptcha-response': form.fields['g-recaptcha-response'],
+          redirect_id: form.fields.redirect_id
+        });
+      })
       .then(function (res) {
         let route = N.router.match(res.redirect_url);
 
