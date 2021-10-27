@@ -65,6 +65,9 @@ module.exports = function (N, apiPath) {
         message: env.t('err_captcha_wrong')
       };
     }
+
+    // allow to do plain login and subsequent email login using the same captcha
+    await N.redis.setex('captcha_login_bypass:' + env.params.email_or_nick + ':' + response, 30, '');
   });
 
 

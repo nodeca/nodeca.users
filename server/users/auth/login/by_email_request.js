@@ -49,6 +49,11 @@ module.exports = function (N, apiPath) {
         clientIp   = env.req.ip,
         response   = env.params['g-recaptcha-response'];
 
+    // allow to do plain login and subsequent email login using the same captcha
+    if (await N.redis.del('captcha_login_bypass:' + env.params.email_or_nick + ':' + response)) {
+      return;
+    }
+
     if (!response) {
       throw {
         code:    N.io.CLIENT_ERROR,
