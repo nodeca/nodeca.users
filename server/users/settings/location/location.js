@@ -11,15 +11,12 @@ module.exports = function (N, apiPath) {
   // Check permissions
   //
   N.wire.before(apiPath, async function check_permissions(env) {
-    if (!env.user_info.is_member) {
-      throw N.io.FORBIDDEN;
-    }
+    await N.wire.emit('internal:users.force_login_guest', env);
+    // if (!env.user_info.is_member) throw N.io.FORBIDDEN;
 
     let can_edit_profile = await env.extras.settings.fetch('can_edit_profile');
 
-    if (!can_edit_profile) {
-      throw N.io.FORBIDDEN;
-    }
+    if (!can_edit_profile) throw N.io.FORBIDDEN;
   });
 
 

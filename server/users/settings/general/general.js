@@ -12,10 +12,9 @@ module.exports = function (N, apiPath) {
 
   // Check permissions
   //
-  N.wire.before(apiPath, function check_permissions(env) {
-    if (!env.user_info.is_member) {
-      return N.io.FORBIDDEN;
-    }
+  N.wire.before(apiPath, async function check_permissions(env) {
+    await N.wire.emit('internal:users.force_login_guest', env);
+    // if (!env.user_info.is_member) return N.io.FORBIDDEN;
   });
 
 
