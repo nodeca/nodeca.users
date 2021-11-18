@@ -17,7 +17,7 @@ function replace_thumbs(selector) {
 
     $container.replaceWith(N.runtime.render(module.apiPath + '.thumb', {
       apiPath: module.apiPath,
-      orig: $container.data('nd-orig'),
+      orig: $container.data('nd-image-orig'),
       placeholder: container.outerHTML,
       width: $container.find('.thumb__image').attr('width'),
       height: $container.find('.thumb__image').attr('height')
@@ -37,7 +37,7 @@ function replace_attachments(selector) {
 
     $container.replaceWith(N.runtime.render(module.apiPath + '.attach', {
       apiPath: module.apiPath,
-      orig: $container.data('nd-orig'),
+      orig: $container.data('nd-image-orig'),
       placeholder: container.outerHTML,
       image_style: $container.attr('style'),
       spacer_style: $container.find('.attach__spacer').attr('style')
@@ -58,7 +58,7 @@ function replace_images(selector) {
 
     $container.replaceWith(N.runtime.render(module.apiPath + '.image', {
       apiPath: module.apiPath,
-      orig: $container.data('nd-orig'),
+      orig: $container.data('nd-image-orig'),
       placeholder: container.outerHTML,
       image_style: $container.attr('style'),
       spacer_style: $container.find('.image__spacer').attr('style')
@@ -74,7 +74,7 @@ function replace_images(selector) {
 
     $container.replaceWith(N.runtime.render(module.apiPath + '.image', {
       apiPath: module.apiPath,
-      orig: $container.data('nd-orig'),
+      orig: $container.data('nd-image-orig'),
       placeholder: container.outerHTML
     }));
   });
@@ -91,7 +91,7 @@ function replace_videos(selector) {
     if (typeof $container.data('heavy-content-placeholder') !== 'undefined') return;
 
     $container.replaceWith(N.runtime.render(module.apiPath + '.video', {
-      orig: $container.data('nd-orig')
+      orig: $container.data('nd-image-orig')
     }));
   });
 }
