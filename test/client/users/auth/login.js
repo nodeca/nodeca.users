@@ -32,8 +32,8 @@ describe('Login', function () {
   });
 
 
-  it('should redirect to member page if auth page opened by direct url', function (done) {
-    TEST.browser
+  it('should redirect to member page if auth page opened by direct url', async () => {
+    await TEST.browser
       .do.auth()
       .do.open(TEST.N.router.linkTo('users.auth.login.show'))
       .do.fill('form[data-on-submit="users.auth.login.plain_exec"]', {
@@ -43,13 +43,12 @@ describe('Login', function () {
       .do.click('form[data-on-submit="users.auth.login.plain_exec"] button[type="submit"]')
       .do.wait('.user-member-page')
       .test.url(TEST.N.router.linkTo('users.member', { user_hid: user.hid }))
-      .close()
-      .run(done);
+      .close();
   });
 
 
-  it('should redirect to previous page', function (done) {
-    TEST.browser
+  it('should redirect to previous page', async () => {
+    await TEST.browser
       .do.auth()
       .do.open(TEST.N.router.linkTo('users.albums_root', { user_hid: user.hid }))
       .do.click('li[data-api-path="users.auth.login"] a')
@@ -61,13 +60,12 @@ describe('Login', function () {
       .do.click('form[data-on-submit="users.auth.login.plain_exec"] button[type="submit"]')
       .do.wait('.user-albumlist')
       .test.url(TEST.N.router.linkTo('users.albums_root', { user_hid: user.hid }))
-      .close()
-      .run(done);
+      .close();
   });
 
 
-  it('should follow by redirect id', function (done) {
-    TEST.browser
+  it('should follow by redirect id', async () => {
+    await TEST.browser
       .do.auth()
       .do.open(TEST.N.router.linkTo('users.tracker'))
       .do.wait('form[data-on-submit="users.auth.login.plain_exec"]')
@@ -78,7 +76,6 @@ describe('Login', function () {
       .do.click('form[data-on-submit="users.auth.login.plain_exec"] button[type="submit"]')
       .do.wait('.user-tracker')
       .test.url(TEST.N.router.linkTo('users.tracker'))
-      .close()
-      .run(done);
+      .close();
   });
 });

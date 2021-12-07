@@ -5,11 +5,11 @@
 
 
 describe('ACP edit user group', function () {
-  it('should save changes', function () {
+  it('should save changes', async () => {
     let user;
     let adminGroupId;
 
-    return TEST.browser
+    await TEST.browser
       .do.auth('admin_users_usergroups_edit', usr => {
         user = usr;
       })
@@ -32,7 +32,6 @@ describe('ACP edit user group', function () {
       .do.click('#setting_can_see_deleted_users')
       .do.click('button.btn-primary[type="submit"]')
       .do.wait('.notification-info')
-      .close()
-      .run(true);
+      .close();
   });
 });

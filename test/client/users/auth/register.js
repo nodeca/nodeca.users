@@ -30,7 +30,7 @@ describe('Register', function () {
     smtp.listen(2525, done);
   });
 
-  it('should send confirmation link via email', async function () {
+  it('should send confirmation link via email', async () => {
     let login    = randomBytes(10).toString('hex');
     let email    = login + '@example.com';
     let pass     = randomBytes(10).toString('hex') + 'Abc123';
@@ -52,8 +52,7 @@ describe('Register', function () {
         nick: login
       })
       .do.click('form[data-on-submit="users.auth.register.exec"] button[type="submit"]')
-      .close()
-      .run();
+      .close();
 
     let email_body = await get_email;
     let route = TEST.N.router.match(/http:\/\/localhost:3005\/[^\s]+/.exec(email_body)[0]);
@@ -69,7 +68,7 @@ describe('Register', function () {
   });
 
 
-  it('should authorize via confirmation link', async function () {
+  it('should authorize via confirmation link', async () => {
     let login = randomBytes(10).toString('hex');
     let pass  = randomBytes(10).toString('hex') + 'Abc123';
     let token;
@@ -102,8 +101,7 @@ describe('Register', function () {
         secret_key: token.secret_key
       }))
       .test.url(TEST.N.router.linkTo('users.auth.register.activate_done'))
-      .close()
-      .run();
+      .close();
   });
 
 

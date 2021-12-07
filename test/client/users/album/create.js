@@ -3,11 +3,11 @@
 'use strict';
 
 describe('Albums create dialog', function () {
-  it('should create new album', function (done) {
+  it('should create new album', async () => {
     var user;
     var paramsStack = [];
 
-    TEST.browser
+    await TEST.browser
       // Authorize
       .do.auth('users_album_create', function (usr) {
         user = usr;
@@ -57,8 +57,6 @@ describe('Albums create dialog', function () {
       // Check that album created
       .test.text('.user-albumlist li:last-child .thumb-caption__line:first-child', 'new test album!')
 
-      .close()
-      // Run test
-      .run(done);
+      .close();
   });
 });

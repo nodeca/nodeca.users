@@ -16,7 +16,7 @@ describe('Reset password', function () {
   let on_message;
 
 
-  before(async function () {
+  before(async () => {
     user = new TEST.N.models.users.User({
       nick: login,
       email
@@ -55,7 +55,7 @@ describe('Reset password', function () {
   });
 
 
-  it('should send email with password reset link', async function () {
+  it('should send email with password reset link', async () => {
     let get_email = new Promise(resolve => {
       on_message = (session, data) => {
         resolve(data.replace(/\=\r\n/g, ''));
@@ -70,8 +70,7 @@ describe('Reset password', function () {
         email
       })
       .do.click('form[data-on-submit="users.auth.reset_password.request_exec"] button[type="submit"]')
-      .close()
-      .run();
+      .close();
 
     let email_body = await get_email;
     let route = TEST.N.router.match(/http:\/\/localhost:3005\/[^\s]+/.exec(email_body)[0]);
@@ -86,7 +85,7 @@ describe('Reset password', function () {
   });
 
 
-  it('should send email after password reset', async function () {
+  it('should send email after password reset', async () => {
     let token;
     let get_email = new Promise(resolve => {
       on_message = (session, data) => {
@@ -121,8 +120,7 @@ describe('Reset password', function () {
         password: new_password
       })
       .do.click('form[data-on-submit="users.auth.reset_password.change_exec"] button[type="submit"]')
-      .close()
-      .run();
+      .close();
 
     let email_body = await get_email;
 
