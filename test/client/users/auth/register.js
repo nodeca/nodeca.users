@@ -76,24 +76,16 @@ describe('Register', function () {
     await TEST.browser
       // Request any page just to get session
       .do.open(() => TEST.N.router.linkTo('users.auth.login.show'))
-      .get.cookies((cookies, callback) => {
+      .get.cookies(async cookies => {
         let sid = cookies.find(c => c.name === 'sid');
 
-        TEST.N.models.users.TokenActivationEmail.create({
+        token = await TEST.N.models.users.TokenActivationEmail.create({
           session_id: sid.value,
           reg_info: {
             pass_hash: password.hash(pass),
             email:     login + '@example.com',
             nick:      login
           }
-        }, (err, t) => {
-          if (err) {
-            callback(err);
-            return;
-          }
-
-          token = t;
-          callback();
         });
       })
       // Confirm account

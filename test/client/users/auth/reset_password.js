@@ -96,20 +96,12 @@ describe('Reset password', function () {
     await TEST.browser
       // Request any page just to get session
       .do.open(() => TEST.N.router.linkTo('users.auth.login.show'))
-      .get.cookies((cookies, callback) => {
+      .get.cookies(async cookies => {
         let sid = cookies.find(c => c.name === 'sid');
 
-        TEST.N.models.users.TokenResetPassword.create({
+        token = await TEST.N.models.users.TokenResetPassword.create({
           user: user._id,
           session_id: sid.value
-        }, (err, t) => {
-          if (err) {
-            callback(err);
-            return;
-          }
-
-          token = t;
-          callback();
         });
       })
       // Change password
