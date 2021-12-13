@@ -5,4 +5,5 @@ ru-RU:
     no_subscriptions: Подписок нет
     tracker: Новoе
     subscriptions: Ваши подписки
-    mark_read: Пометить всё как прочитанное
+    mark_tab_read: Пометить текущую вкладку прочитанной
+    mark_all_read: Пометить всё как прочитанное

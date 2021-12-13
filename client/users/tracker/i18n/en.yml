@@ -2,4 +2,5 @@ en-US:
   nothing_new: Nothing new
   tracker: New
   subscriptions: Your subscriptions
-  mark_read: Mark all read
+  mark_tab_read: Mark current tab read
+  mark_all_read: Mark all read

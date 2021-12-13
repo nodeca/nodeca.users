@@ -10,14 +10,14 @@ i18n:
       setting_names:
         default_subscription_mode: 'Auto-subscribe after posting:'
         default_subscription_mode__help: Normal - see updates in tracker; urgent - see updates in tracker and receive emails.
-        highlight_all_unread: Highlight all unread topics
-        highlight_all_unread__help: By default, only subscribed topics with new posts are highlighted.
         dialogs_notify: Notify by email when someone messages you
         dialogs_hide_answered: Hide answered dialogs
         hide_heavy_content: Hide heavy traffic content (images, videos, etc.)
         reply_notify: Notify by email when someone replies to your post
         layout_max_width: Max page width (pixels)
         layout_max_width__help: Enter number from 940, if you wish wider page layout on big displays.
+        highlight_all_unread: Highlight all unread topics and sections
+        highlight_all_unread__help: By default, only subscribed topics with new posts are highlighted.
 
       setting_values:
         default_subscription_mode:
