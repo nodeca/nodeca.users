@@ -10,12 +10,6 @@ setting_schemas:
         - NORMAL
       default: TRACKING
 
-    highlight_all_unread:
-      priority: 20
-      category_key: subscriptions
-      type: boolean
-      default: false
-
     dialogs_notify:
       priority: 20
       category_key: dialogs
@@ -45,3 +39,9 @@ setting_schemas:
       type: number
       default: 940
       min: 940
+
+    highlight_all_unread:
+      priority: 60
+      category_key: content
+      type: boolean
+      default: false

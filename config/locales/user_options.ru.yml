@@ -10,14 +10,14 @@ i18n:
       setting_names:
         default_subscription_mode: 'Авто-подписка поcле публикации:'
         default_subscription_mode__help: Обычная - уведомления в трекере; срочная - обновления в трекере и уведомления по email.
-        highlight_all_unread: Выделять все непрочитанные темы
-        highlight_all_unread__help: По умолчанию подсвечиваются только подписанные темы с новыми сообщениями.
         dialogs_notify: Уведомлять по email, если вам кто-то напишет
         dialogs_hide_answered: Скрыть отвеченные диалоги
         hide_heavy_content: Скрыть тяжёлый контент (картинки, видео и т.п.)
         reply_notify: Уведомлять по email, если кто-то ответит на ваше сообщение
         layout_max_width: Максимальная ширина страницы (в пикселях)
         layout_max_width__help: Введите число от 940, если хотите более широкие страницы на больших дисплеях.
+        highlight_all_unread: Выделять все непрочитанные темы и разделы
+        highlight_all_unread__help: По умолчанию подсвечиваются только подписанные темы с новыми сообщениями.
 
       setting_values:
         default_subscription_mode:
