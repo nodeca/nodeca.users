@@ -10,6 +10,8 @@ i18n:
       setting_names:
         default_subscription_mode: 'Авто-подписка поcле публикации:'
         default_subscription_mode__help: Обычная - уведомления в трекере; срочная - обновления в трекере и уведомления по email.
+        highlight_all_unread: Выделять все непрочитанные темы
+        highlight_all_unread__help: По умолчанию подсвечиваются только подписанные темы с новыми сообщениями.
         dialogs_notify: Уведомлять по email, если вам кто-то напишет
         dialogs_hide_answered: Скрыть отвеченные диалоги
         hide_heavy_content: Скрыть тяжёлый контент (картинки, видео и т.п.)

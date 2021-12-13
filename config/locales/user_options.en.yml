@@ -10,6 +10,8 @@ i18n:
       setting_names:
         default_subscription_mode: 'Auto-subscribe after posting:'
         default_subscription_mode__help: Normal - see updates in tracker; urgent - see updates in tracker and receive emails.
+        highlight_all_unread: Highlight all unread topics
+        highlight_all_unread__help: By default, only subscribed topics with new posts are highlighted.
         dialogs_notify: Notify by email when someone messages you
         dialogs_hide_answered: Hide answered dialogs
         hide_heavy_content: Hide heavy traffic content (images, videos, etc.)
