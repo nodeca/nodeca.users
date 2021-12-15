@@ -91,7 +91,7 @@ function replace_videos(selector) {
     if (typeof $container.data('heavy-content-placeholder') !== 'undefined') return;
 
     $container.replaceWith(N.runtime.render(module.apiPath + '.video', {
-      orig: $container.data('nd-image-orig')
+      orig: $container.data('nd-link-orig')
     }));
   });
 }
