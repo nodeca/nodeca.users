@@ -12,9 +12,9 @@
 // - `marker_pos_updates`                (zset) - last update info for `marker_pos:*`
 // - `marker_cut:<user_id>:<section_id>` (key)  - contain timestamp of read cut
 // - `marker_cut_updates`                (zset) - last update info for `marker_cut:*`
-// - `marker_global_cut:<user_id>        (key)  - contain timestamp of minimal read cut for all content
+// - `marker_type_cut:<user_id>:<type>`  (key)  - contain timestamp of minimal read cut for all content
 //                                                (used as a way to mark everything as read)
-// - `marker_global_cut_updates`         (zset) - last update info for `marker_global_cut:*`
+// - `marker_type_cut_updates`           (zset) - last update info for `marker_type_cut:*`
 //
 // GC logic:
 //
@@ -67,7 +67,7 @@ module.exports = function (N, collectionName) {
     }
 
     if (updatedCut !== currentCut) {
-      await Marker.markAll(userId, categoryId, updatedCut);
+      await Marker.markByCategory(userId, categoryId, updatedCut);
     }
   };
 
@@ -104,7 +104,7 @@ module.exports = function (N, collectionName) {
       return;
     }
 
-    let res = await Marker.cuts(userId, [ categoryId ]);
+    let res = await Marker.cuts(userId, [ categoryId ], type);
 
     // Don't mark old content
     if (contentId.getTimestamp() < res[categoryId]) return;
@@ -119,13 +119,13 @@ module.exports = function (N, collectionName) {
   };
 
 
-  // Mark all topics before now as read
+  // Mark all topics in a specific category before now as read
   //
   // - userId (ObjectId)
-  // - categoryId (ObjectId) - optional, mark everything as read if undefined
+  // - categoryId (ObjectId)
   // - ts (Number) - optional, cut off timestamp, `Date.now()` by default
   //
-  Marker.markAll = async function (userId, categoryId, ts) {
+  Marker.markByCategory = async function (userId, categoryId, ts) {
     if (!userId || String(userId) === '000000000000000000000000') return;
 
     let now = Date.now();
@@ -135,13 +135,29 @@ module.exports = function (N, collectionName) {
     // If `ts` bigger than now plus one hour or more - stop here
     if (ts > 1000 * 60 * 60 + now) return;
 
-    if (categoryId) {
-      await N.redis.zadd('marker_cut_updates', now, userId + ':' + categoryId);
-      await N.redis.set('marker_cut:' + userId + ':' + categoryId, ts);
-    } else {
-      await N.redis.zadd('marker_global_cut_updates', now, userId);
-      await N.redis.set('marker_global_cut:' + userId, ts);
-    }
+    await N.redis.zadd('marker_cut_updates', now, userId + ':' + categoryId);
+    await N.redis.set('marker_cut:' + userId + ':' + categoryId, ts);
+  };
+
+
+  // Mark all topics of a specific kind (content type) before now as read
+  //
+  // - userId (ObjectId)
+  // - type (String)
+  // - ts (Number) - optional, cut off timestamp, `Date.now()` by default
+  //
+  Marker.markByType = async function (userId, type, ts) {
+    if (!userId || String(userId) === '000000000000000000000000') return;
+
+    let now = Date.now();
+
+    if (!ts) ts = now;
+
+    // If `ts` bigger than now plus one hour or more - stop here
+    if (ts > 1000 * 60 * 60 + now) return;
+
+    await N.redis.zadd('marker_type_cut_updates', now, userId + ':' + type);
+    await N.redis.set('marker_type_cut:' + userId + ':' + type, ts);
   };
 
 
@@ -226,7 +242,7 @@ module.exports = function (N, collectionName) {
 
     if (!maxUpdated) return;
 
-    let res = await Marker.cuts(userId, [ categoryId ]);
+    let res = await Marker.cuts(userId, [ categoryId ], type);
 
     await Marker.gc(type, userId, categoryId, res[categoryId]);
   };
@@ -236,10 +252,11 @@ module.exports = function (N, collectionName) {
   //
   // - userId (ObjectId)
   // - categoriesIds ([ObjectId])
+  // - type (String)
   //
   // returns (Hash) - key is `categoryId` value is number
   //
-  Marker.cuts = async function (userId, categoriesIds) {
+  Marker.cuts = async function (userId, categoriesIds, type) {
     if (categoriesIds.length === 0) {
       return [];
     }
@@ -257,15 +274,15 @@ module.exports = function (N, collectionName) {
 
     let cutKeys = categoriesIds.map(id => 'marker_cut:' + userId + ':' + id);
 
-    let [ globalCut, ...cuts ] = await N.redis.mget(
-      [ 'marker_global_cut:' + userId ].concat(cutKeys)
+    let [ typeCut, ...cuts ] = await N.redis.mget(
+      [ 'marker_type_cut:' + userId + ':' + type ].concat(cutKeys)
     );
 
     let defaultCut = Date.now() - (content_read_marks_expire * 24 * 60 * 60 * 1000);
     let result = {};
 
     categoriesIds.forEach((id, i) => {
-      result[id] = Math.max(+cuts[i] || defaultCut, globalCut || 0);
+      result[id] = Math.max(+cuts[i] || defaultCut, typeCut || 0);
     });
 
     return result;
@@ -280,6 +297,7 @@ module.exports = function (N, collectionName) {
   //   - contentId (ObjectId)
   //   - lastPostNumber (Number) - last post number in thread (post hid)
   //   - lastPostTs (Number)
+  // - type (String)
   //
   // returns (Hash) - key is `contentId` value is object
   //
@@ -287,7 +305,7 @@ module.exports = function (N, collectionName) {
   // - next (Number) - hid of first unread post in topic or `-1` if not set
   // - position (Number) - last read post position or `-1` if not set
   //
-  Marker.info = async function (userId, contentInfo) {
+  Marker.info = async function (userId, contentInfo, type) {
     let result = {};
 
     for (let item of contentInfo) {
@@ -299,7 +317,7 @@ module.exports = function (N, collectionName) {
     }
 
     // Fetch cuts
-    let cuts = await Marker.cuts(userId, contentInfo.map(x => x.categoryId));
+    let cuts = await Marker.cuts(userId, contentInfo.map(x => x.categoryId), type);
 
     // Set `isNew` flag by cut
     for (let item of contentInfo) {
@@ -412,17 +430,17 @@ module.exports = function (N, collectionName) {
     await cutQuery.exec();
 
 
-    // Cleanup global cut markers
+    // Cleanup type cut markers
     //
-    let globalCutItems = await N.redis.zrangebyscore('marker_global_cut_updates', '-inf', lastTs);
-    let globalCutQuery = N.redis.multi();
+    let typeCutItems = await N.redis.zrangebyscore('marker_type_cut_updates', '-inf', lastTs);
+    let typeCutQuery = N.redis.multi();
 
-    globalCutItems.forEach(item => {
-      globalCutQuery.del('marker_global_cut:' + item);
-      globalCutQuery.zrem('marker_global_cut_updates', item);
+    typeCutItems.forEach(item => {
+      typeCutQuery.del('marker_type_cut:' + item);
+      typeCutQuery.zrem('marker_type_cut_updates', item);
     });
 
-    await globalCutQuery.exec();
+    await typeCutQuery.exec();
 
 
     // Cleanup read markers

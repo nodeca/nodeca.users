@@ -1,3 +1,5 @@
+- self.add_raw_data('mark_cut_ts', self.mark_cut_ts)
+
 -  self.icon = function(type) {
 -   var types = '$$ JSON.stringify(N.models.users.Subscription.types) $$'
 -
@@ -28,12 +30,13 @@
       a.btn.btn-outline-success(href=self.link_to('users.subscriptions.index'))= self.t('subscriptions')
       button.btn.btn-outline-secondary.btn-square.icon.icon-check-single(
         type='button'
-        data-on-click='users.tracker:mark_read'
+        data-on-click='users.subscriptions:mark_tab_read'
         title=self.t('mark_tab_read')
       )
       button.btn.btn-outline-secondary.btn-square.icon.icon-check(
         type='button'
-        data-on-click='users.tracker:mark_read'
+        data-on-click='users.subscriptions:mark_all_read'
+        data-marker-types= self.tabs.filter(function (tab) { return self.type === tab.type; }).map(function (tab) { return tab.marker_type; }).flat()
         title=self.t('mark_all_read')
       )
 
@@ -54,6 +57,7 @@
           class=(idx === 0) ? 'active' : ''
           data-count=tab.items.length
           data-block-name=tab.block_name
+          data-marker-types= [ tab.marker_type ].flat()
           id=tab.block_name
         )
           .user-subscriptions-list

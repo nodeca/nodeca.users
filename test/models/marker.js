@@ -65,12 +65,12 @@ describe('Marker', function () {
   });
 
 
-  it('.markAll() should update cut', async function () {
+  it('.markByCategory() should update cut', async function () {
     let uid = new ObjectId();
     let sid = new ObjectId();
     let now = Date.now();
 
-    await Marker.markAll(uid, sid);
+    await Marker.markByCategory(uid, sid);
 
     let res = await redis.get('marker_cut:' + uid + ':' + sid);
 
@@ -145,7 +145,7 @@ describe('Marker', function () {
         { categoryId: sid1, contentId: cid2, lastPostNumber: 1 },
         { categoryId: sid1, contentId: cid3, lastPostNumber: 1 },
         { categoryId: sid2, contentId: cid4, lastPostNumber: 1 }
-      ]);
+      ], 'test');
 
       assert.ok(res[cid1].isNew);
       assert.ok(!res[cid2].isNew);
@@ -175,7 +175,7 @@ describe('Marker', function () {
         { categoryId: sid, contentId: cid1, lastPostNumber: 11, lastPostTs: now },
         { categoryId: sid, contentId: cid2, lastPostNumber: 77, lastPostTs: now },
         { categoryId: sid, contentId: cid3, lastPostNumber: 77, lastPostTs: now - expire - 1000 }
-      ]);
+      ], 'test');
 
       assert.equal(res[cid1].next, -1);
       assert.equal(res[cid1].position, 7);

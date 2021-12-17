@@ -60,5 +60,8 @@ module.exports = function (N, apiPath) {
     env.res.type  = type;
     env.res.items = fetch_env.items;
     env.res.next  = fetch_env.next;
+
+    // last time this list was updated on the client, this is required for "mark all" button
+    env.res.mark_cut_ts = Date.now();
   });
 };

@@ -95,8 +95,12 @@ module.exports = function (N, apiPath) {
 
     env.res.tabs = tab_types.map(type => ({
       type,
+      marker_type: menu[type].marker_type,
       count: counts[type]
     }));
+
+    // last time this list was updated on the client, this is required for "mark all" button
+    env.res.mark_cut_ts = Date.now();
   });
 
 

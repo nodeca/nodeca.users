@@ -87,4 +87,20 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         }
       });
   });
+
+
+  N.wire.on('users.subscriptions:mark_all_read', function mark_all_read(data) {
+    let marker_types = Array.from(new Set(data.$this.data('marker-types')));
+
+    return N.io.rpc('users.tracker.mark_read', { marker_types, ts: N.runtime.page_data.mark_cut_ts })
+               .then(() => N.wire.emit('navigate.reload'));
+  });
+
+
+  N.wire.on('users.subscriptions:mark_tab_read', function mark_tab_read() {
+    let marker_types = Array.from(new Set($('.user-subscriptions-tab-pane.active').data('marker-types')));
+
+    return N.io.rpc('users.tracker.mark_read', { marker_types, ts: N.runtime.page_data.mark_cut_ts })
+               .then(() => N.wire.emit('navigate.reload'));
+  });
 });

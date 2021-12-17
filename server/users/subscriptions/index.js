@@ -86,6 +86,9 @@ module.exports = function (N, apiPath) {
     tabs = _.sortBy(tabs, 'priority');
 
     env.res.tabs = tabs;
+
+    // last time this list was updated on the client, this is required for "mark all" button
+    env.res.mark_cut_ts = Date.now();
   });
 
 

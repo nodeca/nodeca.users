@@ -1,6 +1,7 @@
 - self.users = self.users || {};
 - self.add_raw_data('tracker_type', self.type)
 - self.add_raw_data('reached_end', self.reached_end)
+- self.add_raw_data('mark_cut_ts', self.mark_cut_ts)
 
 #content.user-tracker
   != self.partial('@common.blocks.navbar.logo_apps')
@@ -17,12 +18,14 @@
       a.btn.btn-outline-secondary(href=self.link_to('users.subscriptions.index'))= self.t('subscriptions')
       button.btn.btn-outline-secondary.btn-square.icon.icon-check-single(
         type='button'
-        data-on-click='users.tracker:mark_read'
+        data-on-click='users.tracker:mark_tab_read'
+        data-marker-types= self.tabs.filter(function (tab) { return self.type === tab.type; }).map(function (tab) { return tab.marker_type; }).flat()
         title=self.t('mark_tab_read')
       )
       button.btn.btn-outline-secondary.btn-square.icon.icon-check(
         type='button'
-        data-on-click='users.tracker:mark_read'
+        data-on-click='users.tracker:mark_all_read'
+        data-marker-types= self.tabs.map(function (tab) { return tab.marker_type; }).flat()
         title=self.t('mark_all_read')
       )
 
