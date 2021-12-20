@@ -18,14 +18,12 @@
       a.btn.btn-outline-secondary(href=self.link_to('users.subscriptions'))= self.t('subscriptions')
       button.btn.btn-outline-secondary.btn-square.icon.icon-check-single(
         type='button'
-        data-on-click='users.tracker:mark_tab_read'
-        data-marker-types= self.tabs.filter(function (tab) { return self.type === tab.type; }).map(function (tab) { return tab.marker_type; }).flat()
+        data-on-click='users.tracker.' + self.type + ':mark_tab_read'
         title=self.t('mark_tab_read')
       )
       button.btn.btn-outline-secondary.btn-square.icon.icon-check(
         type='button'
         data-on-click='users.tracker:mark_all_read'
-        data-marker-types= self.tabs.map(function (tab) { return tab.marker_type; }).flat()
         title=self.t('mark_all_read')
       )
 
