@@ -22,7 +22,7 @@ users:
         to: users.bookmarks
         priority: 10
       #subscriptions:
-      #  to: users.subscriptions.index
+      #  to: users.subscriptions
       #  priority: 20
       dialogs:
         to: users.dialogs_root

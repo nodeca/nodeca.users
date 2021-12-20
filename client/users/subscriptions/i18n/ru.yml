@@ -1,9 +1,8 @@
 ru-RU:
-  index:
-    title: Подписки
-    delete_confirmation: Вы уверены, что хотите отменить эту подписку?
-    no_subscriptions: Подписок нет
-    tracker: Новoе
-    subscriptions: Ваши подписки
-    mark_tab_read: Пометить текущую вкладку прочитанной
-    mark_all_read: Пометить всё как прочитанное
+  title: Подписки
+  delete_confirmation: Вы уверены, что хотите отменить эту подписку?
+  no_subscriptions: Подписок нет
+  tracker: Новoе
+  subscriptions: Ваши подписки
+  mark_tab_read: Пометить текущую вкладку прочитанной
+  mark_all_read: Пометить всё как прочитанное

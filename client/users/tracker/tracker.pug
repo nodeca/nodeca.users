@@ -15,7 +15,7 @@
 
     .user-tracker__filter
       a.btn.btn-outline-success(href=self.link_to('users.tracker'))= self.t('tracker')
-      a.btn.btn-outline-secondary(href=self.link_to('users.subscriptions.index'))= self.t('subscriptions')
+      a.btn.btn-outline-secondary(href=self.link_to('users.subscriptions'))= self.t('subscriptions')
       button.btn.btn-outline-secondary.btn-square.icon.icon-check-single(
         type='button'
         data-on-click='users.tracker:mark_tab_read'

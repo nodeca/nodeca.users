@@ -8,7 +8,15 @@ const _ = require('lodash');
 
 module.exports = function (N, apiPath) {
 
-  N.validate(apiPath, {});
+  N.validate(apiPath, {
+    $query: {
+      type: 'object',
+      required: false,
+      properties: {
+        type: { type: 'string' }
+      }
+    }
+  });
 
 
   // Check permissions
@@ -44,17 +52,52 @@ module.exports = function (N, apiPath) {
   });
 
 
-  // Fetch subscribed items subcall
+  // Fetch tracked items
   //
-  N.wire.on(apiPath, function fetch_subscribed_items_subcall(env) {
-    return N.wire.emit('internal:users.subscriptions.fetch', env);
+  N.wire.on(apiPath, async function fetch_items(env) {
+    let menu = N.config.users?.subscriptions || {};
+    let tab_types = Object.keys(menu)
+                          .sort((a, b) => (menu[a].priority ?? 100) - (menu[b].priority ?? 100));
+
+    let type = env.params.$query?.type || tab_types[0];
+
+    // validate tab type
+    if (tab_types.indexOf(type) === -1) {
+      throw N.io.BAD_REQUEST;
+    }
+
+    env.res.tabs = tab_types.map(type => {
+      let subscription_types = new Set(
+        [ menu[type].to_type ].flat().map(x => N.shared.content_type[x])
+      );
+
+      return {
+        type,
+        marker_type: menu[type].marker_type,
+        count: env.data.subscriptions.filter(s => subscription_types.has(s.to_type)).length
+      };
+    });
+
+    let subscription_types = new Set(
+      [ menu[type].to_type ].flat().map(x => N.shared.content_type[x])
+    );
+
+    env.data.subscriptions = env.data.subscriptions.filter(s => subscription_types.has(s.to_type));
+
+    await N.wire.emit('internal:users.subscriptions.fetch', env);
+
+    env.res.items = env.data.subscriptions;
+    env.res.type = type;
+
+    // last time this list was updated on the client, this is required for "mark all" button
+    env.res.mark_cut_ts = Date.now();
   });
 
 
   // Delete missed subscriptions
   //
   N.wire.after(apiPath, async function remove_missed_subscriptions(env) {
-    if (!env.data.missed_subscriptions || !env.data.missed_subscriptions.length) return;
+    if (!env.data.missed_subscriptions?.length) return;
 
     // Exclude from fetched
     env.data.subscriptions = _.difference(env.data.subscriptions, env.data.missed_subscriptions);
@@ -62,33 +105,6 @@ module.exports = function (N, apiPath) {
     // Remove from database
     await N.models.users.Subscription.deleteMany()
               .where('_id').in(env.data.missed_subscriptions.map(x => x._id));
-  });
-
-
-  // Fill tabs
-  //
-  N.wire.after(apiPath, function fill_tabs(env) {
-    let tabs = [];
-
-    for (let [ block_name, tab_config ] of Object.entries(N.config.users?.subscriptions || {})) {
-      let subscription_types = new Set(
-        (Array.isArray(tab_config.to_type) ? tab_config.to_type : [ tab_config.to_type ])
-          .map(x => N.shared.content_type[x])
-      );
-
-      tabs.push(Object.assign({
-        block_name,
-        priority: 10,
-        items: env.data.subscriptions.filter(s => subscription_types.has(s.to_type))
-      }, tab_config));
-    }
-
-    tabs = _.sortBy(tabs, 'priority');
-
-    env.res.tabs = tabs;
-
-    // last time this list was updated on the client, this is required for "mark all" button
-    env.res.mark_cut_ts = Date.now();
   });
 
 

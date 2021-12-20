@@ -1,9 +1,8 @@
 en-US:
-  index:
-    title: Subscriptions
-    delete_confirmation: Are you sure you wish to cancel this subscription?
-    no_subscriptions: No subscriptions
-    tracker: New
-    subscriptions: Your subscriptions
-    mark_tab_read: Mark current tab read
-    mark_all_read: Mark all read
+  title: Subscriptions
+  delete_confirmation: Are you sure you wish to cancel this subscription?
+  no_subscriptions: No subscriptions
+  tracker: New
+  subscriptions: Your subscriptions
+  mark_tab_read: Mark current tab read
+  mark_all_read: Mark all read

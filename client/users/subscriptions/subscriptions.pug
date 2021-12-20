@@ -27,39 +27,33 @@
 
     .user-tracker__filter
       a.btn.btn-outline-secondary(href=self.link_to('users.tracker'))= self.t('tracker')
-      a.btn.btn-outline-success(href=self.link_to('users.subscriptions.index'))= self.t('subscriptions')
+      a.btn.btn-outline-success(href=self.link_to('users.subscriptions'))= self.t('subscriptions')
       button.btn.btn-outline-secondary.btn-square.icon.icon-check-single(
         type='button'
         data-on-click='users.subscriptions:mark_tab_read'
+        data-marker-types= self.tabs.filter(function (tab) { return self.type === tab.type; }).map(function (tab) { return tab.marker_type; }).flat()
         title=self.t('mark_tab_read')
       )
       button.btn.btn-outline-secondary.btn-square.icon.icon-check(
         type='button'
         data-on-click='users.subscriptions:mark_all_read'
-        data-marker-types= self.tabs.filter(function (tab) { return self.type === tab.type; }).map(function (tab) { return tab.marker_type; }).flat()
+        data-marker-types= self.tabs.map(function (tab) { return tab.marker_type; }).flat()
         title=self.t('mark_all_read')
       )
 
-    ul.content-tabs.nav
-      each tab, idx in self.tabs
+    ul.content-tabs
+      each tab in self.tabs
         li.content-tabs-item
           a.content-tabs-link(
-            class=(idx === 0) ? 'active' : ''
-            data-bs-toggle='tab'
-            href=('#' + tab.block_name)
+            href=self.link_to('users.subscriptions', { $query: { type: tab.type } })
+            class=(self.type === tab.type ? 'active' : '')
           )
-            = self.t('@users.subscriptions.' + tab.block_name)
-            span.content-tabs-counter= tab.items.length
+            = self.t('@users.subscriptions.' + tab.type)
+            span.content-tabs-counter= tab.count
 
-    .tab-content
-      each tab, idx in self.tabs
-        .user-subscriptions-tab-pane.tab-pane(role='tabpanel'
-          class=(idx === 0) ? 'active' : ''
-          data-count=tab.items.length
-          data-block-name=tab.block_name
-          data-marker-types= [ tab.marker_type ].flat()
-          id=tab.block_name
-        )
-          .user-subscriptions-list
-            !=self.partial('@users.subscriptions.blocks.' + tab.block_name, { items: tab.items, block_name: tab.block_name })
-          .user-subscriptions-tab-pane__empty=self.t('no_subscriptions')
+    if self.items.length === 0
+      .user-subscriptions__no-items=self.t('no_subscriptions')
+
+    else
+      .user-subscriptions-list
+        != self.partial('@users.subscriptions.blocks.' + self.type, { block_name: self.type })

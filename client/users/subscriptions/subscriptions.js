@@ -6,37 +6,33 @@ const types = '$$ JSON.stringify(N.models.users.Subscription.types) $$';
 
 N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
-  // Update count badge and modifiers
-  //
-  function update_tabs() {
-    $('.user-subscriptions-tab-pane').each(() => {
-      let $tab_pane = $(this);
-      let count = $tab_pane.find('.user-subscriptions-list > li').length;
 
-      $('.user-subscriptions-tab__badge-' + $tab_pane.data('block-name')).attr('data-count', count);
-      $tab_pane.attr('data-count', count);
-    });
+  function update_tab_count() {
+    let count = $('.user-subscriptions-item').length;
+
+    $('.content-tabs-link.active > .content-tabs-counter').text(count);
   }
 
 
   /////////////////////////////////////////////////////////////////////////////
   // Delete subscription
   //
-  N.wire.before('users.subscriptions:delete', function delete_subscription_confirm() {
+  N.wire.before(module.apiPath + ':delete', function delete_subscription_confirm() {
     return N.wire.emit('common.blocks.confirm', t('delete_confirmation'));
   });
 
-  N.wire.on('users.subscriptions:delete', function delete_subscription(data) {
+  N.wire.on(module.apiPath + ':delete', function delete_subscription(data) {
     let subscription = data.$this.data('subscription');
 
-    return N.io.rpc('users.subscriptions.destroy', { subscription_id: subscription._id }).then(function () {
+    return N.io.rpc(module.apiPath + '.destroy', { subscription_id: subscription._id }).then(function () {
+      // animate item removal
       let $item = data.$this.closest('.user-subscriptions-item');
 
       $item
         .fadeTo('fast', 0)
         .slideUp('fast', function () {
           $item.remove();
-          update_tabs();
+          update_tab_count();
         });
     });
   });
@@ -45,14 +41,14 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   /////////////////////////////////////////////////////////////////////////////
   // Update subscription
   //
-  N.wire.on('users.subscriptions:update', function update_subscription(data) {
+  N.wire.on(module.apiPath + ':update', function update_subscription(data) {
     let subscription = data.$this.data('subscription');
     let block_name = data.$this.data('block-name');
     let params = { subscription: subscription.type };
 
     return Promise.resolve()
-      .then(() => N.wire.emit('users.subscriptions.blocks.' + block_name + '.update_dlg', params))
-      .then(() => N.io.rpc('users.subscriptions.update', {
+      .then(() => N.wire.emit(module.apiPath + '.blocks.' + block_name + '.update_dlg', params))
+      .then(() => N.io.rpc(module.apiPath + '.update', {
         subscription_id: subscription._id,
         type: params.subscription
       }))
@@ -70,13 +66,14 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
             data.$this.addClass('icon-track-tracking');
             break;
           case types.NORMAL:
-            var $item = data.$this.closest('.user-subscriptions-item');
+            // animate item removal
+            let $item = data.$this.closest('.user-subscriptions-item');
 
             $item
               .fadeTo('fast', 0)
               .slideUp('fast', function () {
                 $item.remove();
-                update_tabs();
+                update_tab_count();
               });
 
             data.$this.addClass('icon-track-normal');
@@ -89,7 +86,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   });
 
 
-  N.wire.on('users.subscriptions:mark_all_read', function mark_all_read(data) {
+  N.wire.on(module.apiPath + ':mark_all_read', function mark_all_read(data) {
     let marker_types = Array.from(new Set(data.$this.data('marker-types')));
 
     return N.io.rpc('users.tracker.mark_read', { marker_types, ts: N.runtime.page_data.mark_cut_ts })
@@ -97,8 +94,8 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   });
 
 
-  N.wire.on('users.subscriptions:mark_tab_read', function mark_tab_read() {
-    let marker_types = Array.from(new Set($('.user-subscriptions-tab-pane.active').data('marker-types')));
+  N.wire.on(module.apiPath + ':mark_tab_read', function mark_tab_read(data) {
+    let marker_types = Array.from(new Set(data.$this.data('marker-types')));
 
     return N.io.rpc('users.tracker.mark_read', { marker_types, ts: N.runtime.page_data.mark_cut_ts })
                .then(() => N.wire.emit('navigate.reload'));
