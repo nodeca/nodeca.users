@@ -39,15 +39,17 @@ module.exports = function (N, collectionName) {
 
   // Recalculate category cut
   //
-  // - type (String) - content type
   // - userId (ObjectId)
+  // - contentId (ObjectId) - id of the topic that triggered gc (used to skip gc at the start of the topic)
   // - categoryId (ObjectId)
+  // - type (String) - content type
+  // - max (Number) - last read post in topic that triggered gc (used to skip gc at the start of the topic)
   // - currentCut (Number)
   //
-  Marker.gc = async function (type, userId, categoryId, currentCut) {
+  Marker.gc = async function (userId, contentId, categoryId, type, max, currentCut) {
     if (!gcHandlers[type]) return;
 
-    let contentInfo = await gcHandlers[type](userId, categoryId, currentCut);
+    let contentInfo = await gcHandlers[type](userId, contentId, categoryId, max, currentCut);
 
     if (!contentInfo.length) return;
 
@@ -92,7 +94,7 @@ module.exports = function (N, collectionName) {
   };
 
 
-  // Mark content as read
+  // Mark content as read (remove isNew flag from it), mark first post as read
   //
   // - userId (ObjectId)
   // - contentId (ObjectId)
@@ -114,8 +116,10 @@ module.exports = function (N, collectionName) {
       N.redis.zadd('marker_marks:' + userId, +contentId.getTimestamp(), String(contentId))
     ]);
 
-    // TODO: consider executing gc randomly with ~10% probablility
-    await Marker.gc(type, userId, categoryId, res[categoryId]);
+    // Mark first post as read if marker does not exist
+    if (!(await N.redis.hexists('marker_pos:' + userId, String(contentId)))) {
+      await Marker.setPos(userId, contentId, categoryId, type, 1, 1);
+    }
   };
 
 
@@ -205,12 +209,12 @@ module.exports = function (N, collectionName) {
   //
   // - userId (ObjectId)
   // - contentId (ObjectId)
-  // - position (Number) - post number in thread (post hid)
-  // - max (Number) - last read post in thread
   // - categoryId (ObjectId)
   // - type (String) - content type
+  // - position (Number) - post number in thread (post hid)
+  // - max (Number) - last read post in thread
   //
-  Marker.setPos = async function (userId, contentId, position, max, categoryId, type) {
+  Marker.setPos = async function (userId, contentId, categoryId, type, position, max) {
     if (!userId || String(userId) === '000000000000000000000000') {
       return;
     }
@@ -244,7 +248,7 @@ module.exports = function (N, collectionName) {
 
     let res = await Marker.cuts(userId, [ categoryId ], type);
 
-    await Marker.gc(type, userId, categoryId, res[categoryId]);
+    await Marker.gc(userId, contentId, categoryId, type, max, res[categoryId]);
   };
 
 

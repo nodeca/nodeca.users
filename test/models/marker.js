@@ -88,8 +88,8 @@ describe('Marker', function () {
     let cat = new ObjectId();
     let now = Date.now();
 
-    await Marker.setPos(uid, cid, 6, 6, cat, 'test');
-    await Marker.setPos(uid, cid, 2, 1, cat, 'test');
+    await Marker.setPos(uid, cid, cat, 'test', 6, 6);
+    await Marker.setPos(uid, cid, cat, 'test', 2, 1);
 
     let res = await redis.zscore('marker_pos_updates', uid + ':' + cid);
 
@@ -115,7 +115,7 @@ describe('Marker', function () {
 
     await query.exec();
 
-    await Marker.setPos(uid, 'qqq', 6, 6, cat, 'test');
+    await Marker.setPos(uid, 'qqq', cat, 'test', 6, 6);
 
     let cnt = await redis.hlen('marker_pos:' + uid);
 
@@ -164,12 +164,12 @@ describe('Marker', function () {
       let cid2 = randObjectIdByTimestamp(now);
       let cid3 = randObjectIdByTimestamp(now);
 
-      await Marker.setPos(uid, cid1, 11, 11, cat, 'test');
-      await Marker.setPos(uid, cid1, 7, 7, cat, 'test');
-      await Marker.setPos(uid, cid2, 3, 3, cat, 'test');
-      await Marker.setPos(uid, cid2, 35, 35, cat, 'test');
-      await Marker.setPos(uid, cid3, 3, 3, cat, 'test');
-      await Marker.setPos(uid, cid3, 35, 35, cat, 'test');
+      await Marker.setPos(uid, cid1, cat, 'test', 11, 11);
+      await Marker.setPos(uid, cid1, cat, 'test', 7, 7);
+      await Marker.setPos(uid, cid2, cat, 'test', 3, 3);
+      await Marker.setPos(uid, cid2, cat, 'test', 35, 35);
+      await Marker.setPos(uid, cid3, cat, 'test', 3, 3);
+      await Marker.setPos(uid, cid3, cat, 'test', 35, 35);
 
       let res = await Marker.info(uid, [
         { categoryId: sid, contentId: cid1, lastPostNumber: 11, lastPostTs: now },
