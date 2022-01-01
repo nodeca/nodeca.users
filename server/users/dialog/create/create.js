@@ -196,6 +196,10 @@ module.exports = function (N, apiPath) {
 
     let saved_msg;
 
+    // these fields are required for market replies
+    env.data.dialogs = [];
+    env.data.messages = [];
+
 
     // Create own message and update dialog
     //
@@ -235,6 +239,9 @@ module.exports = function (N, apiPath) {
       await N.models.users.Dialog.updateSummary(own_dialog._id);
 
       saved_msg = own_msg;
+
+      env.data.dialogs.push(own_dialog);
+      env.data.messages.push(own_msg);
     }
 
 
@@ -289,6 +296,9 @@ module.exports = function (N, apiPath) {
 
       // user sends message to himself
       if (!saved_msg) saved_msg = opponent_msg;
+
+      env.data.dialogs.push(opponent_dialog);
+      env.data.messages.push(opponent_msg);
     }
 
 
