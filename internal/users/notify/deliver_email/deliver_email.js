@@ -47,6 +47,7 @@ module.exports = function (N) {
 
           helpers.t = (phrase, params) => N.i18n.t(locale, phrase, params);
           helpers.t.exists = phrase => N.i18n.hasPhrase(locale, phrase);
+          helpers.asset_body = path => N.assets.asset_body(path);
 
           let data = {
             to: emails[user_id],
