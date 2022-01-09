@@ -9,7 +9,7 @@ select.media-select-dlg__albums.form-control.form-select(data-on-change='users.b
   button.btn.btn-secondary(
     data-on-click='users.blocks.media_select_dlg:create_album'
   )= self.t('create_album')
-  | 
+  |
   //- Should 'click' file input in context of current action
   button.btn.btn-secondary(
     onClick='document.getElementById("media-select-dlg__files").click()'
@@ -19,7 +19,7 @@ select.media-select-dlg__albums.form-control.form-select(data-on-change='users.b
   input#media-select-dlg__files(
     name='files[]'
     type='file'
-    style='position: absolute; left: -2000px'
+    style='position: absolute; left: -10000px'
     multiple
     data-on-change='users.blocks.media_select_dlg:upload'
   )
