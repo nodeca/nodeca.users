@@ -1,3 +1,5 @@
 ru-RU:
   subject: '#{project_name}: сообщение от #{user}'
   reply: Ответ
+  visit: Перейти
+  unsubscribe: Отписаться

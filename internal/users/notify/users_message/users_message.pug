@@ -1,2 +1,13 @@
-.email__message-html!=self.message_html
-a.email__message-link(href=self.link)=self.t('reply')
+doctype html
+html
+  head
+    meta(http-equiv='Content-Type' content='text/html; charset=utf-8')
+    style.
+      !{self.asset_body('nodeca.users/internal/users/notify/deliver_email/deliver_email.styl')}
+  body
+    .email-text
+      .email__post-html!=self.post_html
+
+    .email-footer
+      a.email-footer-btn(href=self.url)=self.t('visit')
+      a.email-footer-btn(href=self.unsubscribe)=self.t('unsubscribe')

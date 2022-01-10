@@ -46,6 +46,7 @@ module.exports = function (N) {
 
     helpers.t = (phrase, params) => N.i18n.t(locale, phrase, params);
     helpers.t.exists = phrase => N.i18n.hasPhrase(locale, phrase);
+    helpers.asset_body = path => N.assets.asset_body(path);
 
     let subject = N.i18n.t(locale, 'users.notify.users_message.subject', {
       project_name: general_project_name,
@@ -57,10 +58,12 @@ module.exports = function (N) {
       message_id: message._id
     });
 
-    let text = render(N, 'users.notify.users_message', { message_html: message.html, link: url }, helpers);
+    let text = render(N, 'users.notify.users_message', {
+      message_html: message.html,
+      url,
+      unsubscribe: N.router.linkTo('users.dialogs_root.unsubscribe.index')
+    }, helpers);
 
-    let unsubscribe = N.router.linkTo('users.dialogs_root.unsubscribe.index');
-
-    local_env.messages[to.user_id] = { subject, text, url, unsubscribe };
+    local_env.messages[to.user_id] = { subject, text };
   });
 };

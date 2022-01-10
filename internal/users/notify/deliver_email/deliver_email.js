@@ -5,6 +5,7 @@
 
 const user_info = require('nodeca.users/lib/user_info');
 const render    = require('nodeca.core/lib/system/render/common');
+const juice     = require('juice');
 
 
 module.exports = function (N) {
@@ -52,7 +53,7 @@ module.exports = function (N) {
           let data = {
             to: emails[user_id],
             subject: local_env.messages[user_id].subject,
-            html: render(N, 'users.notify.deliver_email', local_env.messages[user_id], helpers)
+            html: juice(render(N, 'users.notify.deliver_email', local_env.messages[user_id], helpers))
           };
 
           return N.mailer.send(data)

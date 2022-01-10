@@ -1,3 +1,5 @@
 en-US:
   subject: '#{project_name}: message from #{user}'
   reply: Reply
+  visit: Visit
+  unsubscribe: Unsubscribe
