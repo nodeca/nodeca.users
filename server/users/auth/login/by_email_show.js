@@ -5,7 +5,16 @@
 
 
 module.exports = function (N, apiPath) {
-  N.validate(apiPath, {});
+  N.validate(apiPath, {
+    $query: {
+      type: 'object',
+      properties: {
+        wrongpass: { const: '' }
+      },
+      required: false,
+      additionalProperties: false
+    }
+  });
 
   // Kick logged-in members
   //
@@ -16,5 +25,6 @@ module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, function login_by_email_show(env) {
     env.res.head.title = env.t('title');
+    env.res.wrongpass = typeof env.params.$query?.wrongpass !== 'undefined';
   });
 };

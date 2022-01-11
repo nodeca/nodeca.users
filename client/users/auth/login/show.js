@@ -90,7 +90,12 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
       })
       .catch(err => {
         if (err.code === N.io.REDIRECT) {
-          return N.wire.emit('navigate.to', err.head.Location);
+          let loc = err.head.Location;
+
+          if (form.fields.pass && N.router.match(loc)?.meta.methods.get === 'users.auth.login.by_email_show') {
+            loc += '?wrongpass';
+          }
+          return N.wire.emit('navigate.to', loc);
         }
 
         // Force captcha on every attempt.

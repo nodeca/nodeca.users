@@ -13,5 +13,6 @@ en-US:
 
   by_email_show:
     title: Login
+    wrong_pass: Password didn't match, let's log in via email. Then you can change password in profile settings.
     message: "We've sent you email with login link. Click on it or enter the code here:"
     submit: Login

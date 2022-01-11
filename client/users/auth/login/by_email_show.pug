@@ -2,6 +2,10 @@
   != self.partial('@common.blocks.navbar.logo_apps')
 
   .layout__container.container-fluid.space-top
+    if self.wrongpass
+      .alert.alert-warning
+        != self.t('wrong_pass')
+
     .row
       .col-md-6.col-sm-8.m-auto
         .card
