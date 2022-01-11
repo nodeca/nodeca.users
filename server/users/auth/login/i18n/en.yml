@@ -1,14 +1,19 @@
 en-US:
   plain_exec:
-    err_login_failed:
-      Can't login. Check that your email/nick and password are correct, and try
-      again. Or use link below to reset your password.
+    err_email_not_found:
+      Unable to find user with this email. Please check that email is entered correctly.
+
+    err_nick_not_found:
+      Unable to find user with this nick. Please check that nick is entered correctly, or try to use email instead.
 
     err_captcha_wrong: CAPTCHA verification failed, try again.
 
   by_email_request:
-    err_login_failed:
-      Can't login. Check that your email/nick is correct.
+    err_email_not_found:
+      Unable to find user with this email. Please check that email is entered correctly.
+
+    err_nick_not_found:
+      Unable to find user with this nick. Please check that nick is entered correctly, or try to use email instead.
 
     err_captcha_wrong: CAPTCHA verification failed, try again.
 

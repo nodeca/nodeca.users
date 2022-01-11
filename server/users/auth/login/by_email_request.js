@@ -32,7 +32,7 @@ module.exports = function (N, apiPath) {
     if (!env.params.email_or_nick) {
       throw {
         code:    N.io.CLIENT_ERROR,
-        message: env.t('err_login_failed')
+        message: env.t('err_nick_not_found')
       };
     }
   });
@@ -195,7 +195,9 @@ module.exports = function (N, apiPath) {
     if (!env.data.authProvider) {
       throw {
         code:    N.io.CLIENT_ERROR,
-        message: env.t('err_login_failed')
+        message: env.params.email_or_nick.includes('@') ?
+                 env.t('err_email_not_found') :
+                 env.t('err_nick_not_found')
       };
     }
 
