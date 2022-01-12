@@ -65,7 +65,7 @@ module.exports = function (N, collectionName) {
       { upsert: true }
     );
 
-    N.live.emit(`private.member.${user}.unread_dialogs`, true);
+    N.live.emit(`private.member.${user}.unread_dialogs`, { unread: true });
   };
 
 
@@ -86,7 +86,7 @@ module.exports = function (N, collectionName) {
       { upsert: true }
     );
 
-    N.live.emit(`private.member.${user}.unread_dialogs`, false);
+    N.live.emit(`private.member.${user}.unread_dialogs`, { unread: false });
   };
 
 
