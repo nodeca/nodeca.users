@@ -59,7 +59,7 @@ module.exports = function (N) {
     });
 
     let text = render(N, 'users.notify.users_message', {
-      message_html: message.html,
+      post_html: message.html,
       url,
       unsubscribe: N.router.linkTo('users.dialogs_root.unsubscribe.index')
     }, helpers);
