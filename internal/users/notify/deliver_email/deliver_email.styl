@@ -9,10 +9,25 @@ $container-width = 100%
 //$brand-primary = #34495e
 $content-bg-color = $white
 $link-hover-color = darken($link-color, 20%)
+
 $font-size = 14px
-$footer-font-size = 12px
+$font-size-sm = 12px
+
 $font-size-mobile = 16px
-$footer-font-size-mobile = 14px
+$font-size-sm-mobile = 14px
+
+hidden()
+  color transparent
+  display none
+  height 0
+  max-height 0
+  max-width 0
+  opacity 0
+  overflow hidden
+  mso-hide all
+  visibility hidden
+  width 0
+
 
 img
   border none
@@ -98,12 +113,12 @@ table
   span
   a
     color $gray-500
-    font-size $footer-font-size
+    font-size $font-size-sm
     //text-align center
 
   .unsubscribe
   .content-block
-    font-size $footer-font-size
+    font-size $font-size-sm
 
 
 // TYPOGRAPHY
@@ -212,39 +227,60 @@ a
   margin-bottom 0
 
 .preheader
-  color transparent
-  display none
-  height 0
-  max-height 0
-  max-width 0
-  opacity 0
-  overflow hidden
-  mso-hide all
-  visibility hidden
-  width 0
+  hidden()
+
+// HR + fallback to table
 
 hr
   border 0
   border-bottom 1px solid $gray-200
-  margin 20px 0
+  margin 15px 0
 
 hr.hr-after-button
-  margin: 5px 0 15px
+  margin: 7px 0 15px
   border-bottom 1px solid $gray-300
 
 table.hr
   width 100%
-  margin-top 20px
-  padding-bottom 20px
+  margin-top 15px
+  padding-bottom 15px
   & > tr > td
     font-size 1px
     line-height 1px
     background-color $gray-200
 
 table.hr.hr-after-button
-  margin-top 5px
+  margin-top 7px
   & > tr > td
     background-color $gray-300
+
+// Quote + spoiler
+
+.quote
+  margin 0 16px 16px // reset defaults
+  background-color $quote-bg-color
+  border-radius 0 2px 2px 0
+  color $quote-color
+  border 1px solid $quote-border-color
+  border-left 2px solid $quote-decorator-color
+  padding 8px 16px 0
+
+.quote__title
+  font-size $font-size-sm
+  padding .5rem 0
+
+.quote__controls
+.quote__author-avatar
+  hidden()
+
+.quote__author
+  font-size $font-size-sm
+  font-style italic
+
+.quote__content
+  .link
+    color $link-color + 10%
+
 
 // RESPONSIVE AND MOBILE FRIENDLY STYLES
 
@@ -292,9 +328,15 @@ table.hr.hr-after-button
     .footer
       .unsubscribe
       .content-block
-        font-size $footer-font-size-mobile !important
+        font-size $font-size-sm-mobile !important
         & a
-          font-size $footer-font-size-mobile !important
+          font-size $font-size-sm-mobile !important
+
+    .quote__title
+    .quote__author
+    .quote__author-name
+      font-size $font-size-sm-mobile !important
+
 
 // PRESERVE THESE STYLES IN THE HEAD
 
