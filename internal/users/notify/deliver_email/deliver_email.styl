@@ -127,7 +127,7 @@ h1
 h2
 h3
 h4
-  color #000000
+  color $body-color
   font-family sans-serif
   font-weight 400
   line-height 1.4
@@ -254,7 +254,7 @@ table.hr.hr-after-button
   & > tr > td
     background-color $gray-300
 
-// Quote + spoiler
+// Quote / spoiler / code
 
 .quote
   margin 0 16px 16px // reset defaults
@@ -281,6 +281,54 @@ table.hr.hr-after-button
   .link
     color $link-color + 10%
 
+.spoiler
+  border 1px solid $quote-border-color
+  border-left 2px solid $quote-decorator-color
+  margin-bottom 16px
+
+.spoiler__title
+  background-color $quote-bg-color
+  font-size $font-size-sm
+  font-weight bold
+  padding .5rem 16px
+
+.spoiler__content
+  padding 16px 16px 0
+
+.spoiler__icon-collapse
+.spoiler__icon-expand
+  hidden()
+
+pre
+code
+  font-size $font-size
+  font-family "Courier New", monospace
+  direction ltr
+  unicode-bidi bidi-override
+
+code
+  color #d63384
+  word-wrap break-word
+
+pre
+  //display block
+  margin-top: 0;
+  margin-bottom: 16px;
+  //overflow: auto;
+
+pre code
+  color $body-color
+  word-break normal
+
+@import "highlight.js/styles/github.css"
+
+// Rollback padding to one defined in twbs
+.hljs
+  padding 9.5px
+  background-color $quote-bg-color
+  border-radius 2px
+  border 1px solid $quote-border-color
+
 
 // RESPONSIVE AND MOBILE FRIENDLY STYLES
 
@@ -296,6 +344,8 @@ table.hr.hr-after-button
     td,
     span,
     a
+    pre
+    code
       font-size $font-size-mobile !important
 
     .wrapper,
@@ -335,6 +385,7 @@ table.hr.hr-after-button
     .quote__title
     .quote__author
     .quote__author-name
+    .spoiler__title
       font-size $font-size-sm-mobile !important
 
 
