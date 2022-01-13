@@ -1,13 +1,42 @@
 doctype html
 html
   head
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
     meta(http-equiv='Content-Type' content='text/html; charset=utf-8')
     style.
       !{self.asset_body('nodeca.users/internal/users/notify/deliver_email/deliver_email.styl')}
   body
-    .email-text
-      .email__post-html!=self.post_html
+    table.body(role='presentation' border='0' cellpadding='0' cellspacing='0')
+      tr
+        td.body-side-space &nbsp;
+        td.container
+          .content
+            table.main(role='presentation')
+              tr
+                td.wrapper
+                  table(role='presentation' border='0' cellpadding='0' cellspacing='0')
+                    tr
+                      td
 
-    .email-footer
-      a.email-footer-btn(href=self.url)=self.t('visit')
-      a.email-footer-btn(href=self.unsubscribe)=self.t('unsubscribe')
+                        table.btn.btn-primary(role='presentation' border='0' cellpadding='0' cellspacing='0')
+                          tbody
+                            tr
+                              td(align='left')
+                                table(role='presentation' border='0' cellpadding='0' cellspacing='0')
+                                  tbody
+                                    tr
+                                      td
+                                        a(href=self.url target="_blank")=self.t('visit')
+
+                        table.hr.hr-after-button(role='presentation' border='0' cellpadding='0' cellspacing='0'): tr: td &nbsp;
+
+                        !=self.post_html
+
+            .footer
+              table(role='presentation' border='0' cellpadding='0' cellspacing='0')
+                tr
+                  td.content-block
+                    span.unsubscribe
+                      a(href=self.unsubscribe target='_blank')=self.t('unsubscribe')
+
+        td.body-side-space &nbsp;
