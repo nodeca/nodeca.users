@@ -1,0 +1,13 @@
+ru-RU:
+  select_files: Добавить файлы
+
+  dropdown:
+    edit: Редактировать альбом
+    add_medialink: Добавить видео
+    delete: Удалить альбом
+
+    many_header: "С #{count} ((файлом|файлами|файлами)):"
+    many_select: Выделить несколько
+    many_unselect: Снять выделение
+    many_move: Переместить
+    many_delete: Удалить

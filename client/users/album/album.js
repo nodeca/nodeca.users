@@ -310,14 +310,22 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 //
 
 function update_toolbar() {
-  $('.user-album-root__toolbar-controls')
-    .replaceWith(N.runtime.render(module.apiPath + '.blocks.toolbar_controls', {
-      album:               N.runtime.page_data.album,
-      user_hid:            N.runtime.page_data.user_hid,
-      medialink_providers: N.runtime.page_data.medialink_providers,
-      selection_ids:       pageState.selection_ids,
-      selection_started:   pageState.selection_started
-    }));
+  // Need to re-render reply button and dropdown here
+  let templateParams = {
+    album:               N.runtime.page_data.album,
+    user_hid:            N.runtime.page_data.user_hid,
+    medialink_providers: N.runtime.page_data.medialink_providers,
+    selection_ids:       pageState.selection_ids,
+    selection_started:   pageState.selection_started
+  };
+
+  // render dropdown in menu
+  //$('.page-actions__dropdown').replaceWith(
+  //  N.runtime.render(module.apiPath + '.blocks.page_actions.dropdown', templateParams));
+
+  // render buttons+dropdown in page head
+  $('.page-actions').replaceWith(
+    N.runtime.render(module.apiPath + '.blocks.page_actions', templateParams));
 }
 
 // Check or uncheck media

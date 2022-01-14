@@ -8,7 +8,7 @@
     var navbar_args = {
       title:    self.t('title', { nick: (self.users[self.dialog.with] || {}).name || '' }),
       level_up: self.link_to('users.dialogs_root', { user_hid: self.runtime.user_hid, dialog_id: self.dialog._id }),
-      toolbar:  'users.dialog.blocks.toolbar_controls',
+      toolbar:  'users.dialog.blocks.page_actions.dropdown',
       progress: {
         link_top:    self.link_to('users.dialog', { dialog_id: self.dialog._id, message_id: self.first_message_id }),
         link_bottom: self.link_to('users.dialog', { dialog_id: self.dialog._id, message_id: self.last_message_id }),
@@ -29,7 +29,7 @@
 
     header.page-head
       .float-end
-        != self.partial('@users.dialog.blocks.toolbar_controls')
+        != self.partial('@users.dialog.blocks.page_actions')
       h1.page-head__title(itemprop='name')
         = (self.users[self.dialog.with] || {}).name || ''
 

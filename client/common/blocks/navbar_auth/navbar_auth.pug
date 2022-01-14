@@ -35,7 +35,7 @@ if self.runtime.is_member
       )= self.t('logout')
 else
   //- data-api-path used to highlight curent navigation
-  li.nav-item(data-api-path='users.auth.login')
+  li.nav-item.navbar-auth__guest-login(data-api-path='users.auth.login')
     a.nav-link.icon.icon-login.navbar-guest(
       href=self.link_to('users.auth.login.show')
       title=self.t('login')

@@ -1,0 +1,22 @@
+- self.add_raw_data('album', self.album)
+- self.add_raw_data('user_hid', self.user_hid)
+- self.add_raw_data('medialink_providers', self.medialink_providers)
+
+- var own_page = (self.runtime.user_hid === self.user_hid)
+
+.page-actions
+  //- Hidden
+  input#user-album-upload__files(
+    name='files[]'
+    type='file'
+    style='position: absolute; left: -10000px'
+    multiple
+  )
+
+  //- Should 'click' file input in context of current action
+  if own_page && self.album
+    button.btn.btn-secondary(
+      onClick='document.getElementById("user-album-upload__files").click()'
+    )= self.t('select_files')
+
+  != self.partial('dropdown')

@@ -1,0 +1,13 @@
+en-US:
+  select_files: Add files
+
+  dropdown:
+    edit: Edit album
+    add_medialink: Add video
+    delete: Delete album
+
+    many_header: "With #{count} ((file|files)):"
+    many_select: Select multiple
+    many_unselect: Clear selection
+    many_move: Move
+    many_delete: Delete

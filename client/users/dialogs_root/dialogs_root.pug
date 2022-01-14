@@ -12,7 +12,7 @@
     var navbar_args = {
       title:    self.t('title'),
       level_up: self.link_to('users.member', { user_hid: self.user_hid }),
-      toolbar:  'users.dialogs_root.blocks.toolbar_controls',
+      toolbar:  'users.dialogs_root.blocks.page_actions',
       progress: {
         link_top:    self.link_to('users.dialogs_root', { user_hid: self.user_hid }),
         link_bottom: self.link_to('users.dialogs_root', { user_hid: self.user_hid, dialog_id: self.last_dialog_id }),
@@ -33,7 +33,7 @@
 
     header.page-head
       .float-end
-        != self.partial('@users.dialogs_root.blocks.toolbar_controls')
+        != self.partial('@users.dialogs_root.blocks.page_actions')
       h1.page-head__title(itemprop='name')= self.t('title')
       .dialog-list-filter(itemprop='description')
         .form-check
