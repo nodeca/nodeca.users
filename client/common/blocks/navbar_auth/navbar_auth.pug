@@ -2,7 +2,7 @@ if self.runtime.is_member
 
   - var menu_rnd_id = 'rnd' + self.get_label_uid()
 
-  li.nav-item.dropdown.navbar-auth__dropdown
+  .nav-item.dropdown.navbar-auth__dropdown
     a.nav-link.dropdown-toggle.navbar-auth__dropdown-toggle(
       href='#'
       id=menu_rnd_id
@@ -35,7 +35,7 @@ if self.runtime.is_member
       )= self.t('logout')
 else
   //- data-api-path used to highlight curent navigation
-  li.nav-item.navbar-auth__guest-login(data-api-path='users.auth.login')
+  .nav-item.navbar-auth__guest-login(data-api-path='users.auth.login')
     a.nav-link.icon.icon-login.navbar-guest(
       href=self.link_to('users.auth.login.show')
       title=self.t('login')
