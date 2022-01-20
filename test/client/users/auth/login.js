@@ -51,7 +51,7 @@ describe('Login', function () {
     await TEST.browser
       .do.auth()
       .do.open(TEST.N.router.linkTo('users.albums_root', { user_hid: user.hid }))
-      .do.click('li[data-api-path="users.auth.login"] a')
+      .do.click('[data-api-path="users.auth.login"] a')
       .do.wait('form[data-on-submit="users.auth.login.plain_exec"]')
       .do.fill('form[data-on-submit="users.auth.login.plain_exec"]', {
         email_or_nick: login,
