@@ -1,6 +1,10 @@
 #content.user-settings-ignore-root
-  - var navbar_args = { level_up: self.link_to('users.member', { user_hid: self.runtime.user_hid }) };
-  != self.partial('@common.blocks.navbar.levelup_apps', navbar_args)
+  -
+    const navbar_base = {
+      level_up: self.link_to('users.member', { user_hid: self.runtime.user_hid })
+    };
+
+  != self.partial('@common.blocks.navbar.levelup_apps', navbar_base)
 
   nav.breadcrumbs-container
     .layout__container.container-fluid

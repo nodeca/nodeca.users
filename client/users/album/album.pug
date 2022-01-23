@@ -2,8 +2,12 @@
 - self.add_raw_data('profile_tab', own_page)
 
 #content.user-album-root(class=self.media.length === 0 ? 'no-files' : '')
-  - var navbar_args = { level_up: self.link_to('users.albums_root', { user_hid: self.user_hid }) };
-  != self.partial('@common.blocks.navbar.levelup_apps', navbar_args)
+  -
+    const navbar_base = {
+      level_up: self.link_to('users.albums_root', { user_hid: self.user_hid })
+    };
+
+  != self.partial('@common.blocks.navbar.levelup_apps', navbar_base)
 
   nav.breadcrumbs-container
     .layout__container.container-fluid

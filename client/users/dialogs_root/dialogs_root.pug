@@ -9,10 +9,8 @@
 
 #content
   -
-    var navbar_args = {
-      title:    self.t('title'),
+    const navbar_base = {
       level_up: self.link_to('users.member', { user_hid: self.user_hid }),
-      extra_buttons: 'users.dialogs_root.blocks.page_actions',
       progress: {
         link_top:    self.link_to('users.dialogs_root', { user_hid: self.user_hid }),
         link_bottom: self.link_to('users.dialogs_root', { user_hid: self.user_hid, dialog_id: self.last_dialog_id }),
@@ -21,8 +19,15 @@
       }
     };
 
-  != self.partial('@common.blocks.navbar.levelup_progress_apps', navbar_args)
-  != self.partial('@common.blocks.navbar.alt_levelup_progress_title', navbar_args)
+    const navbar_primary = {};
+
+    const navbar_alt = {
+      title: self.t('title'),
+      extra_buttons: 'users.dialogs_root.blocks.page_actions'
+    };
+
+  != self.partial('@common.blocks.navbar.levelup_progress_apps', { ...navbar_base, ...navbar_primary })
+  != self.partial('@common.blocks.navbar.alt_levelup_progress_title', { ...navbar_base, ...navbar_alt })
 
   nav.breadcrumbs-container
     .layout__container.container-fluid

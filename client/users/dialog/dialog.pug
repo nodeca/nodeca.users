@@ -5,10 +5,8 @@
 
 #content
   -
-    var navbar_args = {
-      title:    self.t('title', { nick: (self.users[self.dialog.with] || {}).name || '' }),
+    const navbar_base = {
       level_up: self.link_to('users.dialogs_root', { user_hid: self.runtime.user_hid, dialog_id: self.dialog._id }),
-      extra_buttons: 'users.dialog.blocks.page_actions.dropdown',
       progress: {
         link_top:    self.link_to('users.dialog', { dialog_id: self.dialog._id, message_id: self.first_message_id }),
         link_bottom: self.link_to('users.dialog', { dialog_id: self.dialog._id, message_id: self.last_message_id }),
@@ -17,8 +15,15 @@
       }
     };
 
-  != self.partial('@common.blocks.navbar.levelup_progress_apps', navbar_args)
-  != self.partial('@common.blocks.navbar.alt_levelup_progress_title', navbar_args)
+    const navbar_primary = {};
+
+    const navbar_alt = {
+      title: self.t('title', { nick: (self.users[self.dialog.with] || {}).name || '' }),
+      extra_buttons: 'users.dialog.blocks.page_actions.dropdown'
+    };
+
+  != self.partial('@common.blocks.navbar.levelup_progress_apps', { ...navbar_base, ...navbar_primary })
+  != self.partial('@common.blocks.navbar.alt_levelup_progress_title', { ...navbar_base, ...navbar_alt })
 
   nav.breadcrumbs-container
     .layout__container.container-fluid

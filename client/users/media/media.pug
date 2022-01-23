@@ -3,8 +3,12 @@
 - self.add_raw_data('profile_tab', own_page)
 
 #content.user-media-root(class=self.media.type & mTypes.MASK_DELETED ? 'deleted' : '')
-  - var navbar_args = { level_up: self.link_to('users.album', { user_hid: self.user_hid, album_id: self.media.album }) };
-  != self.partial('@common.blocks.navbar.levelup_apps', navbar_args)
+  -
+    const navbar_base = {
+      level_up: self.link_to('users.album', { user_hid: self.user_hid, album_id: self.media.album })
+    };
+
+  != self.partial('@common.blocks.navbar.levelup_apps', navbar_base)
 
   nav.breadcrumbs-container
     .layout__container.container-fluid
