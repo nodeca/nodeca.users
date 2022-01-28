@@ -9,7 +9,6 @@ en-US:
     password_help: If you leave password empty, we will email you a link you can use to log in
     enter: Login
     forgot: forgot password?
-    oauth_info: Log in via
 
   by_email_show:
     title: Login

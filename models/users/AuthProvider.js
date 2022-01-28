@@ -38,9 +38,6 @@ module.exports = function (N, collectionName) {
     // lowercased version of the email
     email_lc:         String,
 
-    // For oauth providers only, external user id
-    provider_user_id: String,
-
     // true if active, false when deleted
     exists:           { type: Boolean, default: true },
 
@@ -68,9 +65,6 @@ module.exports = function (N, collectionName) {
 
   // - plain login
   AuthProvider.index({ user: 1, type: 1, exists: 1 });
-
-  // used in login via oauth
-  AuthProvider.index({ provider_user_id: 1, exists: 1 });
 
   // find similar emails
   AuthProvider.index({ email_normalized: 1, exists: 1 });

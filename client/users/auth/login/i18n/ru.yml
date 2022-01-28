@@ -9,7 +9,6 @@ ru-RU:
     password_help: Если вы оставите пароль пустым, мы пришлём вам на email ссылку для входа
     enter: Вход
     forgot: забыли пароль?
-    oauth_info: Зайти через
 
   by_email_show:
     title: Вход

@@ -59,19 +59,4 @@ module.exports = function (N, apiPath) {
     env.res.head.title  = env.t('title');
     env.res.redirect_id = env.params.redirect_id;
   });
-
-
-  // Fill oauth providers
-  //
-  N.wire.after(apiPath, function fill_head_and_breadcrumbs(env) {
-    let oauth = {};
-    let providers = N.config.oauth || {};
-
-    for (let [ name, provider ] of Object.entries(providers)) {
-      oauth[name] = provider.client;
-    }
-
-    env.res.blocks = env.res.blocks || {};
-    env.res.blocks.oauth = oauth;
-  });
 };

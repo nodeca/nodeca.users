@@ -79,15 +79,6 @@ module.exports = function (N, apiPath) {
       env.data.token = null;
       return;
     }
-
-    if (token.oauth_info) {
-      if (await N.models.users.AuthProvider.similarEmailExists(token.oauth_info.email)) {
-        // Need to terminate chain without 500 error.
-        // If email(s) occupied - kill fetched token as invalid.
-        env.data.token = null;
-        return;
-      }
-    }
   });
 
 
@@ -100,14 +91,10 @@ module.exports = function (N, apiPath) {
     if (!token) return;
 
     env.data.reg_info = token.reg_info;
-    env.data.oauth_info = token.oauth_info; // -> oauth_info
 
     await N.wire.emit('internal:users.user_create', env);
 
     // authProvider info is needed to create AuthSession
-    //
-    // TODO: when we will have oauth registration, it should select link based on
-    //       env.data.oauth_info
     //
     env.data.authProvider = await N.models.users.AuthProvider.findOne({ user: env.data.user._id });
 

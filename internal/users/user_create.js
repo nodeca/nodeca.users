@@ -5,8 +5,6 @@
 //     nick
 //     email
 //     pass_hash
-//   oauth_info:
-//     ... # If oauth used, the same hash as AuthProvider schema
 //
 'use strict';
 
@@ -43,27 +41,6 @@ module.exports = function (N, apiPath) {
 
     try {
       await authProvider.setPassHash(env.data.reg_info.pass_hash);
-      await authProvider.save();
-    } catch (__) {
-      await N.models.users.User.deleteOne({ _id: user._id });
-      await N.models.users.AuthProvider.deleteMany({ user: user._id });
-    }
-  });
-
-
-  // Create oauth provider record, if data filled
-  //
-  N.wire.after(apiPath, async function create_oauth_provider(env) {
-    if (!env.data.oauth_info) return;
-
-    let user = env.data.user;
-    let authProvider = new N.models.users.AuthProvider(env.data.oauth_info);
-
-    authProvider.user    = user._id;
-    authProvider.ip      = env.req.ip;
-    authProvider.last_ip = env.req.ip;
-
-    try {
       await authProvider.save();
     } catch (__) {
       await N.models.users.User.deleteOne({ _id: user._id });

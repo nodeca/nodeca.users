@@ -21,12 +21,6 @@
             if self.redirect_id
               input(type='hidden', name='redirect_id', value=self.redirect_id)
 
-            if self.oauth && Object.keys(self.oauth).length
-              .mb-3
-                != self.partial('@common.blocks.oauth_buttons')
-                .form-text
-                  =self.t('oauth_info')
-
             .mb-3
               label.form-label(for='login_email_or_nick')= self.t('email')
               input.form-control(

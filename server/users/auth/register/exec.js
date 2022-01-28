@@ -5,7 +5,6 @@
 'use strict';
 
 
-const _           = require('lodash');
 const validator   = require('is-my-json-valid');
 const email_regex = require('email-regex');
 const url         = require('url');
@@ -81,14 +80,6 @@ module.exports = function (N, apiPath) {
     if (await N.models.users.AuthProvider.similarEmailExists(env.params.email)) {
       env.data.errors.email = env.t('err_busy_email');
       return;
-    }
-
-    // If we use oauth for registration, provider email should be unique too.
-    if (env.session.oauth?.info) {
-      if (await N.models.users.AuthProvider.similarEmailExists(env.session.oauth.info.email)) {
-        env.data.errors.email = env.t('err_busy_email');
-        return;
-      }
     }
   });
 
@@ -169,14 +160,6 @@ module.exports = function (N, apiPath) {
 
     // If global setting disables validation - skip next checks.
     if (!validate_email) return;
-
-    // If oauth login info exists, skip validation for trusted provider,
-    // when user's email === privider's email
-    let oainfo = env.session.oauth?.info;
-
-    if (oainfo && N.config.oauth[oainfo.type].trusted && env.params.email === oainfo.email) {
-      env.data.validate_email = false;
-    }
   });
 
 
@@ -189,9 +172,6 @@ module.exports = function (N, apiPath) {
     await N.wire.emit('internal:users.user_create', env);
 
     // authProvider info is needed to create AuthSession
-    //
-    // TODO: when we will have oauth registration, it should select link based on
-    //       env.data.oauth_info
     //
     env.data.authProvider = await N.models.users.AuthProvider.findOne({ user: env.data.user._id });
 
@@ -206,8 +186,7 @@ module.exports = function (N, apiPath) {
   async function send_activation(env) {
     let token = await N.models.users.TokenActivationEmail.create({
       session_id: env.session_id,
-      reg_info:   env.data.reg_info,
-      oauth_info: env.data.oauth_info
+      reg_info:   env.data.reg_info
     });
 
     env.res.redirect_url = N.router.linkTo('users.auth.register.activate_show');
@@ -244,12 +223,6 @@ module.exports = function (N, apiPath) {
       email:     env.params.email,
       pass_hash: await password.hash(env.params.pass)
     };
-
-    env.data.oauth_info = env.session.oauth?.info;
-
-    // Stupid attempt to cleanup session. It should be safe to skip it,
-    // because session is deleted on user login.
-    env.session = _.omit(env.session, [ 'oauth' ]);
 
     if (env.data.validate_email) {
       await send_activation(env);

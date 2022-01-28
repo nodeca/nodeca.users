@@ -9,7 +9,6 @@ en-US:
       with both digits and letters, or a passphrase with multiple words.
     nick: Nickname
     nick_desc: How to show you on the site
-    oauth_info: If you wish, link account with your profile for fast login
 
     login: Login
     register: Register

@@ -16,11 +16,6 @@ if (self.email)
             a(href=self.link_to('users.auth.login.show'))= self.t('login')
 
           form.card-body(data-on-submit='users.auth.register.exec')
-            if self.oauth && Object.keys(self.oauth).length
-              .mb-3
-                != self.partial('@common.blocks.oauth_buttons')
-                small.text-muted
-                  =self.t('oauth_info')
             // ko with: email
             .mb-3
               label.form-label(for='register_email')= self.t('email')

@@ -1,5 +1,0 @@
-en-US:
-  error_show:
-    err_email_occupied:
-      This email is already used, and can't be used for registration.
-      You can login and attach this provider from your account settings.
