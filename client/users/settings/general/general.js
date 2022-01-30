@@ -101,7 +101,7 @@ Form.prototype.submit = function submit() {
     // announce setting change to all tabs
     this.settings.forEach(setting => {
       if (setting.settingName === 'hide_heavy_content' && setting.modified()) {
-        N.live.emit('local.users.settings.hide_heavy_content.change', data.settings.hide_heavy_content);
+        N.broadcast.send('local.users.settings.hide_heavy_content.change', data.settings.hide_heavy_content);
       }
     });
   }).catch(err => N.wire.emit('error', err));

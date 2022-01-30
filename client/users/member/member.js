@@ -62,7 +62,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
       $('.member-head').addClass('member-head__m-avatar-exists');
 
       // Update avatar in navbar
-      N.live.emit('local.users.avatar.change', data.avatar_id, true);
+      N.broadcast.send('local.users.avatar.change', data.avatar_id, true);
     });
   });
 
@@ -84,7 +84,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
       $('.member-head').removeClass('member-head__m-avatar-exists');
 
       // Update avatar in navbar
-      return N.live.emit('local.users.avatar.change', null, true);
+      N.broadcast.send('local.users.avatar.change', null, true);
     });
   });
 

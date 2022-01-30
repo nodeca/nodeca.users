@@ -107,7 +107,7 @@ N.wire.once('navigate.done', function hide_heavy_content_init(data) {
 
 
   // sync setting when user changes it from another tab
-  N.live.on('local.users.settings.hide_heavy_content.change', function toggle_heavy_content(value) {
+  N.broadcast.on('local.users.settings.hide_heavy_content.change', function toggle_heavy_content(value) {
     N.runtime.settings.hide_heavy_content = value;
   });
 

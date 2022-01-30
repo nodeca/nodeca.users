@@ -8,7 +8,7 @@ N.wire.once('navigate.done', function page_setup() {
 
   // Reload page on `local.users.auth` message after delay
   //
-  N.live.on('local.users.auth', function logout_reload() {
+  N.broadcast.on('local.users.auth', function logout_reload() {
     // Automatically reload after 2 sec
     setTimeout(function () {
       window.location.reload();
@@ -25,7 +25,7 @@ N.wire.on('navigate.done', function reload_other_tabs() {
 
     // check that cookie was successfully reset, just in case
     if (String(document.cookie).indexOf('reload_tabs=1') === -1) {
-      N.live.emit('local.users.auth');
+      N.broadcast.send('local.users.auth');
     }
   }
 });

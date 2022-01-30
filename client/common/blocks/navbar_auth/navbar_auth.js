@@ -5,7 +5,7 @@ N.wire.once('navigate.done', function page_setup() {
 
   // Update avatar in navbar
   //
-  N.live.on('local.users.avatar.change', function update_avatar(avatarId) {
+  N.broadcast.on('local.users.avatar.change', function update_avatar(avatarId) {
     N.runtime.user_avatar = avatarId;
 
     var $img = $('.navbar-auth__avatar');
