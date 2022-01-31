@@ -36,11 +36,6 @@ module.exports = function (N, apiPath) {
 
   N.wire.on(apiPath, async function user_internal_login(env) {
 
-    // delete old session (don't wait until complete)
-    if (env.session_id) {
-      N.redis.del('sess:' + env.session_id);
-    }
-
     let authSession = new N.models.users.AuthSession({
       user:         env.data.user._id,
       ip:           env.req.ip,

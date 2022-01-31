@@ -19,22 +19,22 @@ module.exports = function (N) {
       }
 
       // Fetch session ID from token record
-      let session_id = await N.redis.get('token_live:' + data.message.token);
+      let session_id = await N.redis.get(`token_live:to_sid:${data.message.token}`);
 
-      // Fetch session
-      let authSession = await N.models.users.AuthSession.findOne()
+      // Check authentication if possible
+      if (session_id) {
+        let authSession = await N.models.users.AuthSession.findOne()
                                   .where('session_id').equals(session_id)
                                   .select('_id user')
                                   .lean(true);
-
-      // If token not found
-      if (!authSession) {
-        data.__user_info__ = null;
-        return data.__user_info__;
+        if (authSession) {
+          data.__user_info__ = await userInfo(N, authSession.user);
+          return data.__user_info__;
+        }
       }
 
-      data.__user_info__ = await userInfo(N, authSession.user);
-
+      // If token not found or user not logged in
+      data.__user_info__ = null;
       return data.__user_info__;
     };
   });
