@@ -4,6 +4,7 @@
 const assert      = require('assert');
 const randomBytes = require('crypto').randomBytes;
 const SMTPServer  = require('smtp-server').SMTPServer;
+const mailParser  = require('mailparser').simpleParser;
 
 
 describe('Reset password', function () {
@@ -43,7 +44,7 @@ describe('Reset password', function () {
 
         stream.on('data', d => { data += d; });
         stream.on('end', () => {
-          on_message(session, data);
+          on_message(mailParser(data));
           callback();
         });
       }
@@ -57,9 +58,7 @@ describe('Reset password', function () {
 
   it('should send email with password reset link', async () => {
     let get_email = new Promise(resolve => {
-      on_message = (session, data) => {
-        resolve(data.replace(/\=\r\n/g, ''));
-      };
+      on_message = data => resolve(data);
     });
 
     await TEST.browser
@@ -70,10 +69,11 @@ describe('Reset password', function () {
         email
       })
       .do.click('form[data-on-submit="users.auth.reset_password.request_exec"] button[type="submit"]')
+      .wait(1000)
       .close();
 
-    let email_body = await get_email;
-    let route = TEST.N.router.match(/http:\/\/localhost:3005\/[^\s]+/.exec(email_body)[0]);
+    let email_text = (await get_email).text;
+    let route = TEST.N.router.match(/https?:\/\/localhost:\d+\/[a-zA-Z0-9\/]+/.exec(email_text)[0]);
 
     assert.equal(route.meta.methods.get, 'users.auth.reset_password.change_show');
 
@@ -88,9 +88,7 @@ describe('Reset password', function () {
   it('should send email after password reset', async () => {
     let token;
     let get_email = new Promise(resolve => {
-      on_message = (session, data) => {
-        resolve(data.replace(/\=\r\n/g, ''));
-      };
+      on_message = data => resolve(data);
     });
 
     await TEST.browser
@@ -112,11 +110,12 @@ describe('Reset password', function () {
         password: new_password
       })
       .do.click('form[data-on-submit="users.auth.reset_password.change_exec"] button[type="submit"]')
+      .wait(1000)
       .close();
 
-    let email_body = await get_email;
+    let email_text = (await get_email).text;
 
-    assert(email_body.indexOf(login) !== -1);
+    assert(email_text.indexOf(login) !== -1);
 
     let authProvider = await TEST.N.models.users.AuthProvider.findOne({
       email_lc: email.toLowerCase(),

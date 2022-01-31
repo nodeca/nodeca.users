@@ -4,6 +4,7 @@
 const assert      = require('assert');
 const randomBytes = require('crypto').randomBytes;
 const SMTPServer  = require('smtp-server').SMTPServer;
+const mailParser  = require('mailparser').simpleParser;
 const password    = require('nodeca.users/models/users/_lib/password');
 
 
@@ -21,7 +22,7 @@ describe('Register', function () {
 
         stream.on('data', d => { data += d; });
         stream.on('end', () => {
-          on_message(session, data);
+          on_message(mailParser(data));
           callback();
         });
       }
@@ -36,9 +37,7 @@ describe('Register', function () {
     let pass     = randomBytes(10).toString('hex') + 'Abc123';
 
     let get_email = new Promise(resolve => {
-      on_message = (session, data) => {
-        resolve(data.replace(/\=\r\n/g, ''));
-      };
+      on_message = data => resolve(data);
     });
 
     await TEST.browser
@@ -54,8 +53,9 @@ describe('Register', function () {
       .do.click('form[data-on-submit="users.auth.register.exec"] button[type="submit"]')
       .close();
 
-    let email_body = await get_email;
-    let route = TEST.N.router.match(/http:\/\/localhost:3005\/[^\s]+/.exec(email_body)[0]);
+    let email_text = (await get_email).text;
+    let route = TEST.N.router.match(/https?:\/\/localhost:\d+\/[a-zA-Z0-9\/]+/.exec(email_text)[0]);
+
 
     assert.equal(route.meta.methods.get, 'users.auth.register.activate_exec');
 
