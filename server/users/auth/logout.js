@@ -10,14 +10,7 @@ module.exports = function (N, apiPath) {
   N.validate(apiPath, {});
 
   N.wire.on(apiPath, async function logout(env) {
-    if (!env.session_id) return;
-
     await archive_session(N, env.session_id, N.models.users.AuthSessionLog.logout_types.LOGOUT);
-
-    // If there are no errors, we can finally set session to null,
-    // so core could reset user cookie
-    //
-    env.session = null;
 
     // force all other tabs to reload
     env.extras.setCookie('reload_tabs', 1, { httpOnly: false });
