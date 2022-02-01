@@ -3,14 +3,14 @@
 'use strict';
 
 
-const bag         = require('bagjs')({ prefix: 'nodeca' });
+const bkv         = require('bkv').shared();
 const identicon   = require('nodeca.users/lib/identicon');
 const avatarWidth = '$$ JSON.stringify(N.config.users.avatars.resize.orig.width) $$';
 
 
 // Store/restore blocks collapse state
 //
-N.wire.on('navigate.done:' + module.apiPath, function store_blocks_state(data) {
+N.wire.on('navigate.done:' + module.apiPath, async function store_blocks_state(data) {
   let key = [
     'blocks_collapsed',
     N.runtime.user_hid,
@@ -25,28 +25,24 @@ N.wire.on('navigate.done:' + module.apiPath, function store_blocks_state(data) {
     .on('shown.bs.collapse', event => {
       collapsedBlocks = collapsedBlocks.filter(x => x !== $(event.target).attr('id'));
 
-      bag.set(key, collapsedBlocks).catch(() => {}); // Suppress storage errors
+      bkv.set(key, collapsedBlocks);
     })
     .on('hidden.bs.collapse', function (event) {
       collapsedBlocks.push($(event.target).attr('id'));
 
-      bag.set(key, collapsedBlocks).catch(() => {}); // Suppress storage errors
+      bkv.set(key, collapsedBlocks);
     });
 
   // Restore previous state
-  return bag.get(key)
-    .then(data => {
-      collapsedBlocks = data || [];
+  collapsedBlocks = await bkv.get(key, []);
 
-      collapsedBlocks.forEach(function (blockID) {
-        $('#' + blockID)
-          .removeClass('show')
-          .parent()
-          .find('.member-block__header-collapser')
-          .addClass('collapsed');
-      });
-    })
-    .catch(() => {}); // Suppress storage errors
+  collapsedBlocks.forEach(blockID => {
+    $(`#${blockID}`)
+      .removeClass('show')
+      .parent()
+      .find('.member-block__header-collapser')
+      .addClass('collapsed');
+  });
 });
 
 
