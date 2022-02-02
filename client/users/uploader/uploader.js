@@ -30,7 +30,7 @@ let aborted;
 // Needed to check is confirmation dialog visible
 let closeConfirmation;
 let uploadedFiles;
-let requests;
+let abortable = [];
 let image_blob_reduce;
 
 
@@ -129,11 +129,10 @@ function startUpload(data) {
 
           $progressInfo.find('.progress-bar').width(progress + '%');
         }
-      }
+      },
+      cancel: abortable
     }
   );
-
-  requests.push(request);
 
   return request
     .then(res => {
@@ -159,12 +158,7 @@ function startUpload(data) {
 }
 
 function abort() {
-  if (requests) {
-    requests.forEach(function (request) {
-      request.cancel();
-    });
-  }
-
+  abortable.forEach(abort_fn => abort_fn());
   aborted = true;
 }
 
@@ -231,7 +225,7 @@ N.wire.before(module.apiPath + ':add', function init_upload_dialog() {
   closeConfirmation = false;
   aborted = false;
   uploadedFiles = [];
-  requests = [];
+  abortable = [];
 
   $uploadDialog = $(N.runtime.render('users.uploader'));
   $('body').append($uploadDialog);
@@ -282,7 +276,7 @@ N.wire.on(module.apiPath + ':add', function add_files(data) {
     data.uploaded = uploadedFiles.sort((a, b) => new Date(b.ts) - new Date(a.ts));
 
     uploadedFiles = null;
-    requests = null;
+    abortable = null;
 
     return new Promise(resolve => {
       // Uploader dialog already hidden by confirmation dialog
