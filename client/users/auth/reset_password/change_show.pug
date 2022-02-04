@@ -16,7 +16,15 @@
               = self.head.title
 
             form.card-body(data-on-submit='users.auth.reset_password.change_exec')
-              input(type='hidden' name='secret_key' value=self.secret_key)
+              input(
+                type='hidden'
+                name='secret_key'
+                autocapitalize='off'
+                autocorrect='off'
+                autocomplete='off'
+                spellcheck='false'
+                value=self.secret_key
+              )
 
               .mb-3
                 label.form-label(for='password')= self.t('password')

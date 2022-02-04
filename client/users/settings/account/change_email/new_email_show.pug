@@ -12,7 +12,15 @@
         .col-md-6.col-sm-8.m-auto
           .card
             form.card-body(data-on-submit='users.settings.account.change_email.new_email_show:submit')
-              input(type='hidden', name='secret_key', value=self.secret_key)
+              input(
+                type='hidden'
+                name='secret_key'
+                autocapitalize='off'
+                autocorrect='off'
+                autocomplete='off'
+                spellcheck='false'
+                value=self.secret_key
+              )
 
               .mb-3
                 label.form-label(for='change_email_new')= self.t('email')
