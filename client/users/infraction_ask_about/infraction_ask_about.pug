@@ -25,7 +25,7 @@
       .mb-3
         textarea.form-control.contact-form-textarea(
           name='message'
-          data-bind='value: value, css: { "is-invalid": error }'
+          data-bind='textInput: value, autoResize: value, css: { "is-invalid": error }'
         )
       // /ko
 
