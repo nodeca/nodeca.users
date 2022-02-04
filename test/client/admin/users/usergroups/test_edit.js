@@ -1,9 +1,6 @@
 'use strict';
 
 
-/*global $*/
-
-
 describe('ACP edit user group', function () {
   it('should save changes', async () => {
     let user;

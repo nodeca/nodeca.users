@@ -1,5 +1,3 @@
-/*global document,window,$*/
-
 'use strict';
 
 describe('Albums create dialog', function () {

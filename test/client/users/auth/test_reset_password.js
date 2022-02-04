@@ -69,7 +69,7 @@ describe('Reset password', function () {
         email
       })
       .do.click('form[data-on-submit="users.auth.reset_password.request_exec"] button[type="submit"]')
-      .wait(1000)
+      .wait('#secret_key')
       .close();
 
     let email_text = (await get_email).text;
@@ -110,7 +110,7 @@ describe('Reset password', function () {
         password: new_password
       })
       .do.click('form[data-on-submit="users.auth.reset_password.change_exec"] button[type="submit"]')
-      .wait(1000)
+      .wait(() => /auth\/reset\/done/.test(window.location.href))
       .close();
 
     let email_text = (await get_email).text;
