@@ -1,24 +1,97 @@
 'use strict';
 
+
+const bkv = require('bkv');
+
+
 class MarkerManager {
-  constructor(user_id = 0) {
-    if (!user_id) return;
+  constructor(user_hid = 0) {
+    if (!user_hid) return;
 
-    this.bkv = require('bkv').create({ prefix: `markers_user${user_id}` });
+    this.bkv = bkv.create({ prefix: `markers_user${user_hid}` });
+    this.flush_promise = null;
+    this.flush_timer = null;
+    this.flush_timer_ts = 0;
   }
 
-  set(pos, max, content_id, category_id, type) {
+  set(content_id, category_id, type, position, max) {
     if (!this.bkv) return Promise.resolve();
 
-    return this.bkv.set(
-      content_id,
-      { pos, max, content_id, category_id, type },
-      7 * 24 * 3600 // Expire after 7 days
-    );
+    Promise.resolve()
+      .then(() => this.bkv.get(content_id))
+      .then(data => {
+        if (data && max < data.max) max = data.max;
+      })
+      .then(() => this.bkv.set(
+        content_id,
+        { content_id, category_id, type, position, max },
+        7 * 24 * 3600 // Expire after 7 days
+      ))
+      .then(() => this.flushAfter(3000))
+      .catch(err => N.wire.emit('error', err));
   }
 
-  flush(/*delay = 0*/) {
+  flush() {
     if (!this.bkv) return Promise.resolve();
+
+    if (this.flush_timer) {
+      clearTimeout(this.flush_timer);
+      this.flush_timer = null;
+      this.flush_timer_ts = 0;
+    }
+
+    if (this.flush_promise) {
+      this.flush_promise = this.flush_promise.then(() => this.flush());
+      return this.flush_promise;
+    }
+
+    let data = [];
+
+    this.flush_promise = Promise.resolve()
+      .then(() => this.bkv.getAll())
+      .then(new_data => {
+        data = new_data;
+        if (!data.length) return;
+        return N.io.rpc('users.marker_set_pos', data.map(d => d.value));
+      })
+      .then(() => {
+        if (!data.length) return;
+        return this.bkv.getAll();
+      })
+      .then(new_data => {
+        if (!data.length) return;
+        let keys_to_remove = [];
+
+        for (let { key, value } of data) {
+          let new_value = new_data.find(d => d.key === key)?.value;
+
+          if (JSON.stringify(value) === JSON.stringify(new_value)) {
+            keys_to_remove.push(key);
+          }
+        }
+
+        return this.bkv.remove(keys_to_remove);
+      })
+      .catch(err => N.wire.emit('error', err))
+      .then(() => {
+        this.flush_promise = null;
+        return data.length;
+      });
+
+    return this.flush_promise;
+  }
+
+  flushAfter(delay) {
+    if (!this.bkv) return Promise.resolve();
+    if (this.flush_timer_ts > 0 && this.flush_timer_ts < Date.now() + delay) return Promise.resolve();
+
+    clearTimeout(this.flush_timer);
+    this.flush_timer_ts = Date.now() + delay;
+    this.flush_timer = setTimeout(() => {
+      this.flush_timer = null;
+      this.flush_timer_ts = 0;
+      this.flush();
+    }, delay);
   }
 }
 
@@ -40,12 +113,12 @@ N.wire.once('navigate.done', { priority: -991 }, () => {
     // If event caused by tab switch => prefer hidden tab to save markers.
     // If event caused by tab close => new tab will continue after 1 sec
     if (document.hidden) N.markers.flush();
-    else N.markers.flush(1000);
+    else N.markers.flushAfter(1000);
   });
 
   //
   // Now try to flush markers and reload render_first_page() data
-  // if markers were nor empty
+  // if markers were not empty
   //
 
   return N.markers.flush().then(flushed_count => {
