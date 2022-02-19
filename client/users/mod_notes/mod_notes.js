@@ -22,7 +22,7 @@ N.wire.on(module.apiPath + ':edit', function show_editor(data) {
 
   let $editor = N.MDEdit.show({
     // Don't use drafts when edit
-    draftKey: note_id ? null : [ 'mod_notes', N.runtime.user_hid, user_hid ].join('_'),
+    draftKey: note_id ? null : `mod_notes_${N.runtime.user_hid}_${user_hid}`,
     text: orig_text,
     toolbar: 'usernote',
     parseOptions: parse_options

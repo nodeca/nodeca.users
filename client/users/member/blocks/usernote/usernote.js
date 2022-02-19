@@ -52,7 +52,7 @@ N.wire.once('navigate.done:users.member', function init_usernotes() {
     let orig_version = data.$this.data('version');
 
     let $editor = N.MDEdit.show({
-      draftKey: [ 'usernote', N.runtime.user_hid, user_hid, orig_version ].join('_'),
+      draftKey: `usernote_${N.runtime.user_hid}_${user_hid}_${orig_version}`,
       text: orig_text,
       toolbar: 'usernote',
       parseOptions

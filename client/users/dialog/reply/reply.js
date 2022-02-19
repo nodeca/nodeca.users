@@ -43,7 +43,7 @@ N.wire.before(module.apiPath + ':begin', function fetch_options() {
 //
 N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
   let $editor = N.MDEdit.show({
-    draftKey: [ 'dialog_reply', N.runtime.user_hid, data.dialog_id ].join('_')
+    draftKey: `dialog_reply_${N.runtime.user_hid}_${data.dialog_id}`
   });
 
   updateOptions();
