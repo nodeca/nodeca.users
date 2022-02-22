@@ -90,6 +90,11 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
     return N.io.rpc('users.auth.register.exec', form.fields)
       .then(res => {
+        if (N.router.match(res.redirect_url)?.meta.methods.get !== 'users.auth.register.activate_show') {
+          // reload all other tabs if user registered and no confirmation was required
+          N.broadcast.send('local.users.auth');
+        }
+
         // Full page reload, because environment changed
         window.location = res.redirect_url;
       })

@@ -44,6 +44,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
 
     return N.io.rpc('users.auth.reset_password.change_exec', data.fields)
       .then(() => {
+        // reload all other tabs if user automatically logged in after password reset
+        N.broadcast.send('local.users.auth');
+
         // Reload the page in order to apply auto login.
         window.location = N.router.linkTo('users.auth.reset_password.change_done_show');
       })

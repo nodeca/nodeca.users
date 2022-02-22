@@ -45,6 +45,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
     return N.io.rpc('users.auth.login.by_email_exec', data.fields)
       .catch(err => {
         if (err.code === N.io.REDIRECT) {
+          // reload all other tabs if user logged in using email+code
+          N.broadcast.send('local.users.auth');
+
           window.location = err.head.Location;
           return;
         }

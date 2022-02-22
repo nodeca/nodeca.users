@@ -47,6 +47,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         view.error(t('err_invalid_token'));
       }, err => {
         if (err.code === N.io.REDIRECT) {
+          // reload all other tabs if user confirmed registration (and was logged in automatically)
+          N.broadcast.send('local.users.auth');
+
           window.location = err.head.Location;
           return;
         }

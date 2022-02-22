@@ -71,6 +71,9 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
         });
       })
       .then(function (res) {
+        // reload all other tabs if user logged in using password
+        N.broadcast.send('local.users.auth');
+
         let route = N.router.match(res.redirect_url);
 
         if (!route) {
