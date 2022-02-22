@@ -12,6 +12,10 @@ en-US:
     no: No
     mod_note_text: 'Profile change made by [#{admin_nick}](#{admin_link}):'
 
+    err_invalid_nick: This nick is invalid
+    err_busy_nick: This nick is already used
+    err_busy_email: This email is already used
+
   delete_account:
     mod_note_text_delete: 'Account deleted by [#{admin_nick}](#{admin_link}).'
     mod_note_text_undelete: 'Account restored by [#{admin_nick}](#{admin_link}).'

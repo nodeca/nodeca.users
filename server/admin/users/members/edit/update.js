@@ -47,6 +47,39 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Check nick formatting and uniqueness
+  //
+  N.wire.before(apiPath, async function check_nick(env) {
+    if (typeof env.params.nick !== 'undefined' && env.params.nick !== env.data.user.nick) {
+      if (!N.models.users.User.validateNick(env.params.nick)) {
+        throw {
+          code: N.io.CLIENT_ERROR,
+          message: env.t('err_invalid_nick')
+        };
+      } else if (await N.models.users.User.similarExists(env.params.nick)) {
+        throw {
+          code: N.io.CLIENT_ERROR,
+          message: env.t('err_busy_nick')
+        };
+      }
+    }
+  });
+
+
+  // Check email uniqueness
+  //
+  N.wire.before(apiPath, async function check_email(env) {
+    if (typeof env.params.email !== 'undefined' && env.params.email !== env.data.user.email) {
+      if (await N.models.users.AuthProvider.similarEmailExists(env.params.email)) {
+        throw {
+          code: N.io.CLIENT_ERROR,
+          message: env.t('err_busy_email')
+        };
+      }
+    }
+  });
+
+
   // Normalize form data, build user model to save
   //
   N.wire.before(apiPath, async function prepare_user(env) {
