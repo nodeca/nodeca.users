@@ -5,7 +5,7 @@
 // Mark announces as dismissed
 //
 N.wire.on(module.apiPath + ':hide', function hide_announce(data) {
-  return N.io.rpc('users.announces.hide', {
+  return N.io.rpc('common.announces_hide', {
     announceid: data.$this.data('announce-id')
   }).catch(() => {
     // At this point of time the alert is already closed by bootstrap.

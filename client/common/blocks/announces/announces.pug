@@ -8,7 +8,7 @@ each announce in self.announces || []
       button.btn-close(
         data-bs-dismiss='alert'
         aria-label='close'
-        data-on-click='users.blocks.announces:hide'
+        data-on-click='common.blocks.announces:hide'
         data-announce-id=announce.id
       )
     != self.t('@common.announces.' + announce.id)
