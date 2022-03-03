@@ -112,7 +112,9 @@ N.wire.once('navigate.done', function init_usercard_click() {
       ref: data.$this.data('ref')
     };
 
-    return N.wire.emit('users.dialog.create:begin', params)
+    return Promise.resolve()
+      .then(() => N.loader.loadAssets('users'))
+      .then(() => N.wire.emit('users.dialog.create:begin', params))
       .then(() => {
         if (popover_shown) {
           $('#ucard-popover').remove();
