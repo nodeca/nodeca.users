@@ -210,7 +210,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_init() {
     let params = { message_id };
 
     return Promise.resolve()
-      .then(() => N.wire.emit('users.blocks.add_infraction_dlg', params))
+      .then(() => N.wire.emit('common.blocks.add_infraction_dlg', params))
       .then(() => N.io.rpc('users.dialog.message.add_infraction', params))
       .then(() => N.io.rpc('users.dialog.list.by_ids', {
         dialog_id: pageState.dialog_id,

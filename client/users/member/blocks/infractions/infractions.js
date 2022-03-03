@@ -24,7 +24,7 @@ N.wire.once('navigate.done:users.member', function init_infractions() {
     let params = { user_id: data.$this.data('user-id') };
 
     return Promise.resolve()
-      .then(() => N.wire.emit('users.blocks.add_infraction_dlg', params))
+      .then(() => N.wire.emit('common.blocks.add_infraction_dlg', params))
       .then(() => N.io.rpc('users.member.blocks.infractions.create', params))
       .then(() => N.wire.emit('notify.info', t('infraction_added')))
       .then(() => N.wire.emit('navigate.reload'));
