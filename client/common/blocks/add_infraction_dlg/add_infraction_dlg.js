@@ -152,27 +152,30 @@ N.wire.once(module.apiPath, function init_handlers() {
 // Init dialog
 //
 N.wire.on(module.apiPath, function show_add_infraction_dlg(options) {
-  params = options;
-  $dialog = $(N.runtime.render(module.apiPath, Object.assign({ apiPath: module.apiPath, categories }, params)));
+  return Promise.resolve()
+    // load infraction texts located in users module
+    .then(() => N.loader.loadAssets('users'))
+    .then(() => new Promise((resolve, reject) => {
+      params = options;
+      $dialog = $(N.runtime.render(module.apiPath, Object.assign({ apiPath: module.apiPath, categories }, params)));
 
-  $('body').append($dialog);
+      $('body').append($dialog);
 
-  return new Promise((resolve, reject) => {
-    $dialog
-      .on('shown.bs.modal', () => {
-        $dialog.find('.btn-secondary').focus();
-      })
-      .on('hidden.bs.modal', () => {
-        // When dialog closes - remove it from body and free resources
-        $dialog.remove();
-        $dialog = null;
-        params = null;
+      $dialog
+        .on('shown.bs.modal', () => {
+          $dialog.find('.btn-secondary').focus();
+        })
+        .on('hidden.bs.modal', () => {
+          // When dialog closes - remove it from body and free resources
+          $dialog.remove();
+          $dialog = null;
+          params = null;
 
-        if (result) resolve();
-        else reject('CANCELED');
+          if (result) resolve();
+          else reject('CANCELED');
 
-        result = null;
-      })
-      .modal('show');
-  });
+          result = null;
+        })
+        .modal('show');
+    }));
 });
