@@ -5,7 +5,7 @@
 #content.user-media-root(class=self.media.type & mTypes.MASK_DELETED ? 'deleted' : '')
   -
     const navbar_base = {
-      level_up: self.link_to('users.album', { user_hid: self.user_hid, album_id: self.media.album })
+      level_up: self.link_to('users.album', { user_hid: self.user_hid, album_id: self.media.album, media_id: self.media.media_id })
     };
 
   != self.partial('@common.blocks.navbar.levelup_apps', navbar_base)
