@@ -27,8 +27,14 @@ module.exports = function (N, collectionName) {
 
   let TokenLoginByEmail = new Schema({
     secret_key:   { type: String, default: createDecimalToken },
-    create_ts:    { type: Date,   default: Date.now, expires: TOKEN_EXPIRE_TIMEOUT },
-    session_id:   { type: String },
+    // short code is used if user opens email link on another device,
+    // so we already have enough level of confidence that login is legitimate
+    short_code:   String,
+    // time when code was generated (code has shorter timeout)
+    open_link_ts: Date,
+    attempts:     { type: Number, default: 0 },
+    create_ts:    { type: Date, default: Date.now, expires: TOKEN_EXPIRE_TIMEOUT },
+    session_id:   String,
     user:         Schema.Types.ObjectId,
     authprovider: Schema.Types.ObjectId,
     redirect_id:  Schema.Types.ObjectId

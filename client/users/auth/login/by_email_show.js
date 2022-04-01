@@ -41,8 +41,12 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   // Form submit
   //
   N.wire.on(module.apiPath + ':submit', function submit_code(data) {
+    if (!data.fields.code) {
+      view.error(null);
+      return;
+    }
 
-    return N.io.rpc('users.auth.login.by_email_exec', data.fields)
+    return N.io.rpc('users.auth.login.by_email_code', data.fields)
       .catch(err => {
         if (err.code === N.io.REDIRECT) {
           // reload all other tabs if user logged in using email+code

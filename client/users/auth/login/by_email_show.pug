@@ -11,11 +11,11 @@
         .card
           form.card-body(data-on-submit='users.auth.login.by_email_show:submit')
             .mb-3
-              label.form-label(for='secret_key')= self.t('message')
+              label.form-label(for='secret_key_or_code')= self.t('message')
               input.form-control(
-                id='secret_key'
+                id='secret_key_or_code'
                 type='number'
-                name='secret_key'
+                name='code'
                 autocapitalize='off'
                 autocorrect='off'
                 autocomplete='off'

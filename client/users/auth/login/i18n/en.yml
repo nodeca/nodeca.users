@@ -15,3 +15,9 @@ en-US:
     wrong_pass: Password didn't match, let's log in via email. Then you can change password in profile settings.
     message: "We've sent you email with login link. Click on it or enter the code here:"
     submit: Login
+
+  by_email_exec:
+    enter_code_header: |
+      Looks like you opened this link in a different browser.
+      Enter the following code on the same page where you were trying to log in:
+    enter_code_footer: Don't tell this code to anyone.

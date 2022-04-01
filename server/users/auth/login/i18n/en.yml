@@ -32,5 +32,11 @@ en-US:
       If you did not try to log in or changed your mind,
       just ignore this letter.
 
+  by_email_code:
+    err_invalid_token: Token expired, try to log in again.
+    err_invalid_code: Code is invalid, try again.
+    err_expired_code: Code is expired, try to log in again.
+    err_too_many_attempts: Too many attempts, try to log in again.
+
   by_email_exec:
-    err_invalid_token: Invalid security token.
+    err_invalid_token: Token expired, try to log in again.

@@ -158,6 +158,9 @@ module.exports = function (N, apiPath) {
     // user already verified by other hooks, nothing left to do
     if (env.data.authProvider) return;
 
+    // remove any existing tokens for this session
+    await N.models.users.TokenLoginByEmail.deleteMany({ session_id: env.session_id });
+
     let token = await N.models.users.TokenLoginByEmail.create({
       user:         env.data.user._id,
       session_id:   env.session_id,

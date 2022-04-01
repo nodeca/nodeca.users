@@ -1,39 +1,61 @@
 // Execute login using one-time token sent by email after user
 // tries to log in using an empty password.
 //
-// This is the page showed when user clicks a link in their email
+// This is RPC query executed when user types code into input
 //
 
 'use strict';
 
 
-const crypto = require('crypto');
-
-
-function get_short_code(length = 6) {
-  return (crypto.randomBytes(4).readUInt32BE(0) + 10 ** (length + 1)).toString(10).slice(-length);
-}
-
-
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
-    secret_key: { type: 'string', required: true }
+    // either secret_key or short_code
+    code: { type: 'string', required: true, minLength: 1 }
   });
 
 
   // Check token
   //
   N.wire.before(apiPath, async function check_token(env) {
-    if (env.res.error) return;
+    let token = await N.models.users.TokenLoginByEmail.findOneAndUpdate(
+      { session_id: env.session_id },
+      { $inc: { attempts: 1 } },
+      { new: true }
+    ).lean(true).exec();
 
-    let token = await N.models.users.TokenLoginByEmail.findOne()
-                          .where('secret_key').equals(env.params.secret_key)
-                          .lean(true)
-                          .exec();
+    if (!token || !env.session_id) {
+      throw {
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('err_invalid_token')
+      };
+    }
 
-    if (!token) {
-      env.res.error = env.t('err_invalid_token');
-      return;
+    if (token.attempts > 3) {
+      throw {
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('err_too_many_attempts')
+      };
+    }
+
+    let code_correct = false;
+
+    if (token.secret_key && token.secret_key === env.params.code) code_correct = true;
+    if (token.short_code && token.short_code === env.params.code) {
+      if (Math.abs(Date.now() - token.open_link_ts) < 5 * 60 * 1000) {
+        code_correct = true;
+      } else {
+        throw {
+          code:    N.io.CLIENT_ERROR,
+          message: env.t('err_expired_code')
+        };
+      }
+    }
+
+    if (!code_correct) {
+      throw {
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('err_invalid_code')
+      };
     }
 
     env.data.token = token;
@@ -43,15 +65,16 @@ module.exports = function (N, apiPath) {
   // Search for user
   //
   N.wire.before(apiPath, async function fetch_user(env) {
-    if (env.res.error) return;
-
     let token = env.data.token;
 
     env.data.user = await N.models.users.User.findById(token.user).exec();
 
     if (!env.data.user) {
-      env.res.error = env.t('err_invalid_token');
-      return;
+      throw {
+        code:         N.io.CLIENT_ERROR,
+        message:      env.t('err_invalid_token'),
+        bad_password: false
+      };
     }
   });
 
@@ -59,8 +82,6 @@ module.exports = function (N, apiPath) {
   // Fetch authprovider
   //
   N.wire.on(apiPath, async function get_authprovider(env) {
-    if (env.res.error) return;
-
     let authProvider = await N.models.users.AuthProvider.findOne()
                              .where('_id').equals(env.data.token.authprovider)
                              .where('exists').equals(true)
@@ -70,8 +91,10 @@ module.exports = function (N, apiPath) {
     if (!authProvider) {
       // can happen if authprovider becomes disabled after user requests otp,
       // e.g. regular login with a password using vb authprovider
-      env.res.error = env.t('err_invalid_token');
-      return;
+      throw {
+        code:    N.io.CLIENT_ERROR,
+        message: env.t('err_invalid_token')
+      };
     }
 
     // keep it for logging in later on
@@ -82,11 +105,6 @@ module.exports = function (N, apiPath) {
   // Log user in
   //
   N.wire.after(apiPath, async function login(env) {
-    if (env.res.error) return;
-
-    // only log in from the same device
-    if (!env.session_id || env.session_id !== env.data.token.session_id) return;
-
     // Remove current and all other login tokens for this user
     await N.models.users.TokenLoginByEmail.deleteMany({ user: env.data.user._id });
 
@@ -101,28 +119,5 @@ module.exports = function (N, apiPath) {
         Location: env.data.redirect_url
       }
     };
-  });
-
-
-  // Generate code to log in from a different browser
-  //
-  N.wire.after(apiPath, async function generate_short_code(env) {
-    if (env.res.error) return;
-
-    if (env.data.token.short_code) {
-      // user opens email link in two different browsers, show code generated in first one
-      env.res.short_code = env.data.token.short_code;
-      return;
-    }
-
-    env.res.short_code = get_short_code();
-
-    await N.models.users.TokenLoginByEmail.updateOne(
-      { _id: env.data.token._id },
-      { $set: {
-        short_code: env.res.short_code,
-        open_link_ts: new Date()
-      } }
-    );
   });
 };
