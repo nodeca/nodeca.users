@@ -39,4 +39,5 @@ en-US:
     err_too_many_attempts: Too many attempts, try to log in again.
 
   by_email_exec:
+    title: Login by email
     err_invalid_token: Token expired, try to log in again.

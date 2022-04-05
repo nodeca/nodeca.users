@@ -27,6 +27,7 @@ en-US:
 
   change_show:
     title: Change password
+    err_invalid_token: Token expired, try to change password again.
 
   change_exec:
     err_expired_token: Security token expired.
@@ -42,6 +43,12 @@ en-US:
         - Time: #{time}
         - IP: #{ip}
     mod_note_text: Password changed by user.
+
+  change_code:
+    err_invalid_token: Token expired, try to log in again.
+    err_invalid_code: Code is invalid, try again.
+    err_expired_code: Code is expired, try to log in again.
+    err_too_many_attempts: Too many attempts, try to log in again.
 
   change_done_show:
     title: Change password

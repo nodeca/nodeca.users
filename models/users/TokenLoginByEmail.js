@@ -33,7 +33,7 @@ module.exports = function (N, collectionName) {
     // time when code was generated (code has shorter timeout)
     open_link_ts: Date,
     attempts:     { type: Number, default: 0 },
-    create_ts:    { type: Date, default: Date.now, expires: TOKEN_EXPIRE_TIMEOUT },
+    create_ts:    { type: Date,   default: Date.now, expires: TOKEN_EXPIRE_TIMEOUT },
     session_id:   String,
     user:         Schema.Types.ObjectId,
     authprovider: Schema.Types.ObjectId,

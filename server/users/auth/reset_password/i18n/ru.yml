@@ -27,6 +27,7 @@ ru-RU:
 
   change_show:
     title: Смена пароля
+    err_invalid_token: Токен просрочен, попробуйте сменить пароль ещё раз.
 
   change_exec:
     err_expired_token: Токен безопасности истёк.
@@ -42,6 +43,12 @@ ru-RU:
         - Время: #{time}
         - IP: #{ip}
     mod_note_text: Пароль изменён пользователем.
+
+  change_code:
+    err_invalid_token: Токен просрочен, попробуйте залогиниться ещё раз.
+    err_invalid_code: Код неверен, попробуйте ещё раз.
+    err_expired_code: Код просрочен, попробуйте залогиниться ещё раз.
+    err_too_many_attempts: Количество попыток превышено, попробуйте залогиниться ещё раз.
 
   change_done_show:
     title: Смена пароля

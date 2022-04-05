@@ -39,4 +39,5 @@ ru-RU:
     err_too_many_attempts: Количество попыток превышено, попробуйте залогиниться ещё раз.
 
   by_email_exec:
+    title: Вход по email
     err_invalid_token: Токен просрочен, попробуйте залогиниться ещё раз.

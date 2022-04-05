@@ -2,14 +2,18 @@
   != self.partial('@common.blocks.navbar.logo_apps')
 
   .layout__container.container-fluid.space-top
-    unless self.valid_token
-      .row
-        .col-md-6.col-sm-8.m-auto
-          .card.card-body.text-danger
-            = self.t('err_invalid_token')
-    else
-      .row
-        .col-md-6.col-sm-8.m-auto
+    .row
+      .col-md-6.col-sm-8.m-auto
+        if self.error
+          .card.card-body.text-danger= self.error
+
+        else if self.short_code
+          .card.card-body
+            .mb-3= self.t('enter_code_header')
+            .mb-3.fs-5.fw-bold= self.short_code
+            div= self.t('enter_code_footer')
+
+        else
           .card
 
             h1.card-header.h3

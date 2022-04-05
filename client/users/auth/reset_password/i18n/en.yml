@@ -7,11 +7,13 @@ en-US:
 
   request_done_show:
     message: 'You should receive email with a link to change password. Click on it or enter the code here:'
-    err_invalid_token: Invalid security token.
     submit: ok
 
   change_show:
-    err_invalid_token: Invalid security token.
+    enter_code_header: |
+      Looks like you opened this link in a different browser.
+      Enter the following code on the same page where you were trying to change password:
+    enter_code_footer: Don't tell this code to anyone.
 
     password: New password
     password_desc: New password

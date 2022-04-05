@@ -41,7 +41,7 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   // Form submit
   //
   N.wire.on(module.apiPath + ':submit', function submit_code(data) {
-    if (!data.fields.code) {
+    if (!data.fields.secret_key_or_code) {
       view.error(null);
       return;
     }

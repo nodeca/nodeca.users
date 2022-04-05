@@ -77,6 +77,9 @@ module.exports = function (N, apiPath) {
   // Create token & send email
   //
   N.wire.on(apiPath, async function create_reset_confirmation(env) {
+    // remove any existing tokens for this session
+    await N.models.users.TokenResetPassword.deleteMany({ session_id: env.session_id });
+
     let token = await N.models.users.TokenResetPassword.create({
       user:       env.data.user._id,
       session_id: env.session_id

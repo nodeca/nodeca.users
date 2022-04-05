@@ -26,8 +26,14 @@ module.exports = function (N, collectionName) {
 
   let TokenResetPassword = new Schema({
     secret_key:   { type: String, default: createDecimalToken },
+    // short code is used if user opens email link on another device,
+    // so we already have enough level of confidence that login is legitimate
+    short_code:   String,
+    // time when code was generated (code has shorter timeout)
+    open_link_ts: Date,
+    attempts:     { type: Number, default: 0 },
     create_ts:    { type: Date,   default: Date.now, expires: TOKEN_EXPIRE_TIMEOUT },
-    session_id:   { type: String },
+    session_id:   String,
     user:         Schema.Types.ObjectId
   }, {
     versionKey : false

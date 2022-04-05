@@ -10,7 +10,7 @@
 module.exports = function (N, apiPath) {
   N.validate(apiPath, {
     // either secret_key or short_code
-    code: { type: 'string', required: true, minLength: 1 }
+    secret_key_or_code: { type: 'string', required: true, minLength: 1 }
   });
 
 
@@ -39,8 +39,8 @@ module.exports = function (N, apiPath) {
 
     let code_correct = false;
 
-    if (token.secret_key && token.secret_key === env.params.code) code_correct = true;
-    if (token.short_code && token.short_code === env.params.code) {
+    if (token.secret_key && token.secret_key === env.params.secret_key_or_code) code_correct = true;
+    if (token.short_code && token.short_code === env.params.secret_key_or_code) {
       if (Math.abs(Date.now() - token.open_link_ts) < 5 * 60 * 1000) {
         code_correct = true;
       } else {
