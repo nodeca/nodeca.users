@@ -1,7 +1,7 @@
 // Execute login using one-time token sent by email after user
 // tries to log in using an empty password.
 //
-// This is the page showed when user clicks a link in their email
+// This is the page shown when user clicks a link in their email
 //
 
 'use strict';

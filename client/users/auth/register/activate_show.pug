@@ -7,11 +7,11 @@
         .card
           form.card-body(data-on-submit='users.auth.register.activate_show:submit')
             .mb-3
-              label.form-label(for='secret_key')= self.t('message')
+              label.form-label(for='secret_key_or_code')= self.t('message')
               input.form-control(
-                id='secret_key'
+                id='secret_key_or_code'
                 type='number'
-                name='secret_key'
+                name='secret_key_or_code'
                 autocapitalize='off'
                 autocorrect='off'
                 autocomplete='off'

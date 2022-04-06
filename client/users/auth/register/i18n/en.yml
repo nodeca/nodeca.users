@@ -16,11 +16,13 @@ en-US:
   activate_show:
     message:
       'You need to activate your account. Please follow the link in activation email or enter the code here:'
-    err_invalid_token: Invalid security token.
     submit: ok
 
   activate_exec:
-    err_invalid_token: Invalid security token.
+    enter_code_header: |
+      Looks like you opened this link in a different browser.
+      Enter the following code on the same page where you were trying to change password:
+    enter_code_footer: Don't tell this code to anyone.
 
   activate_done:
     success: Account is activated.

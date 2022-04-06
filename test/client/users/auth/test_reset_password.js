@@ -69,7 +69,7 @@ describe('Reset password', function () {
         email
       })
       .do.click('form[data-on-submit="users.auth.reset_password.request_exec"] button[type="submit"]')
-      .wait('#secret_key')
+      .wait('#secret_key_or_code')
       .close();
 
     let email_text = (await get_email).text;

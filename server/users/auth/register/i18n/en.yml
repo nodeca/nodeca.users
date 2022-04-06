@@ -31,8 +31,15 @@ en-US:
   activate_show:
     title: Registration
 
+  activate_code:
+    err_invalid_token: Token expired, try to register again.
+    err_invalid_code: Code is invalid, try again.
+    err_expired_code: Code is expired, try to register again.
+    err_too_many_attempts: Too many attempts, try to register again.
+
   activate_exec:
     title: Registration
+    err_invalid_token: Token expired, try to register again.
 
   activate_done:
     title: Registration

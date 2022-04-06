@@ -51,7 +51,7 @@ describe('Register', function () {
         nick: login
       })
       .do.click('form[data-on-submit="users.auth.register.exec"] button[type="submit"]')
-      .wait('#secret_key')
+      .wait('#secret_key_or_code')
       .close();
 
     let email_text = (await get_email).text;

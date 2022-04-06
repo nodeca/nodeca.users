@@ -184,6 +184,9 @@ module.exports = function (N, apiPath) {
   // If the user have to confirm email, create token and send it by email.
   //
   async function send_activation(env) {
+        // remove any existing tokens for this session
+    await N.models.users.TokenActivationEmail.deleteMany({ session_id: env.session_id });
+
     let token = await N.models.users.TokenActivationEmail.create({
       session_id: env.session_id,
       reg_info:   env.data.reg_info

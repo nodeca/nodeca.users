@@ -41,11 +41,13 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   // Form submit
   //
   N.wire.on(module.apiPath + ':submit', function submit_code(data) {
+    if (!data.fields.secret_key_or_code) {
+      view.error(null);
+      return;
+    }
 
-    return N.io.rpc('users.auth.register.activate_exec', data.fields)
-      .then(() => {
-        view.error(t('err_invalid_token'));
-      }, err => {
+    return N.io.rpc('users.auth.register.activate_code', data.fields)
+      .catch(err => {
         if (err.code === N.io.REDIRECT) {
           // reload all other tabs if user confirmed registration (and was logged in automatically)
           N.broadcast.send('local.users.auth');
