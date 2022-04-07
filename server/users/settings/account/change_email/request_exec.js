@@ -31,6 +31,9 @@ module.exports = function (N, apiPath) {
   N.wire.before(apiPath, { priority: -5 }, async function create_otp_email_token(env) {
     if (env.params.pass) return;
 
+    // remove any existing tokens for this session
+    await N.models.users.TokenEmailConfirm.deleteMany({ session_id: env.session_id });
+
     let token = await N.models.users.TokenEmailConfirm.create({
       session_id: env.session_id,
       user:       env.data.user._id
@@ -73,6 +76,9 @@ module.exports = function (N, apiPath) {
         message: env.t('err_wrong_password')
       };
     }
+
+    // remove any existing tokens for this session
+    await N.models.users.TokenEmailConfirm.deleteMany({ session_id: env.session_id });
 
     let token = await N.models.users.TokenEmailConfirm.create({
       session_id: env.session_id,

@@ -27,9 +27,10 @@ ru-RU:
 
   new_email_show:
     title: Смена email
+    err_invalid_token: Токен просрочен, попробуйте сменить email ещё раз.
 
   new_email_exec:
-    err_invalid_token: Неверный токен безопасности
+    err_invalid_token: Токен просрочен, попробуйте сменить email ещё раз.
     err_bad_email: Неверный email адрес
 
     email_subject: '#{project_name}: подтверждение email.'
@@ -47,10 +48,36 @@ ru-RU:
       Если вы не запрашивали смену email или передумали,
       просто проигнорируйте это письмо.
 
+  new_email_code:
+    err_invalid_token: Токен просрочен, попробуйте сменить email ещё раз.
+    err_invalid_code: Код неверен, попробуйте ещё раз.
+    err_expired_code: Код просрочен, попробуйте сменить email ещё раз.
+    err_too_many_attempts: Количество попыток превышено, попробуйте сменить email ещё раз.
+
   new_email_verify:
     title: Смена email
 
+  new_email_verify_code:
+    err_invalid_token: Токен просрочен, попробуйте сменить email ещё раз.
+    err_invalid_code: Код неверен, попробуйте ещё раз.
+    err_expired_code: Код просрочен, попробуйте сменить email ещё раз.
+    err_too_many_attempts: Количество попыток превышено, попробуйте сменить email ещё раз.
+
+    email_subject: '#{project_name}: email изменён.'
+    email_text: |
+      md:
+        Email для аккаунта #{nick} на #{project_name} был изменён.
+
+        - Время: #{time}
+        - IP: #{ip}
+
+    mod_note_text: |
+      Email изменён пользователем:
+
+      #{old_email} → #{new_email}
+
   new_email_verify_exec:
+    title: Смена email
     err_invalid_token: Неверный токен безопасности
 
     email_subject: '#{project_name}: email изменён.'

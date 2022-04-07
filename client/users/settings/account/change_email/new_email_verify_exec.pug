@@ -1,0 +1,13 @@
+#content
+  != self.partial('@common.blocks.navbar.logo_apps')
+
+  .layout__container.container-fluid.space-top
+    .row
+      .col-md-6.col-sm-8.m-auto
+        .card.card-body
+          if self.error
+            =self.error
+          else
+            .mb-3= self.t('enter_code_header')
+            .mb-3.fs-5.fw-bold= self.short_code
+            div= self.t('enter_code_footer')

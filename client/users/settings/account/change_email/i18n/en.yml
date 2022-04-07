@@ -7,7 +7,6 @@ en-US:
 
   request_verify:
     message: 'You should receive email with a link to change email. Click on it or enter the code here:'
-    err_invalid_token: Invalid security token
     submit: ok
 
   new_email_show:
@@ -15,12 +14,20 @@ en-US:
     email_desc: Email
     email_help: Confirmation will be sent to your new email
     submit: ok
-    err_invalid_token: Invalid security token
+    enter_code_header: |
+      Looks like you opened this link in a different browser.
+      Enter the following code on the same page where you were trying to change email:
+    enter_code_footer: Don't tell this code to anyone.
 
   new_email_verify:
     message: 'You should receive email with a link to confirm email. Click on it or enter the code here:'
-    err_invalid_token: Invalid security token
     submit: ok
+
+  new_email_verify_exec:
+    enter_code_header: |
+      Looks like you opened this link in a different browser.
+      Enter the following code on the same page where you were trying to log in:
+    enter_code_footer: Don't tell this code to anyone.
 
   new_email_done:
     message: Your email was changed.

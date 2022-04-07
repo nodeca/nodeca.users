@@ -17,6 +17,13 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Create default response (with failing state)
+  //
+  N.wire.before(apiPath, function prepare_response(env) {
+    env.res.head.title = env.t('title');
+  });
+
+
   // Check token
   //
   N.wire.before(apiPath, async function check_token(env) {
@@ -39,8 +46,6 @@ module.exports = function (N, apiPath) {
   // Generate code from a different browser
   //
   N.wire.on(apiPath, async function generate_short_code(env) {
-    env.res.head.title = env.t('title');
-
     if (env.res.error) return;
 
     if (env.session_id && env.session_id === env.data.token.session_id) {

@@ -21,6 +21,13 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Create default response (with failing state)
+  //
+  N.wire.before(apiPath, function prepare_response(env) {
+    env.res.head.title = env.t('title');
+  });
+
+
   // Check token
   //
   N.wire.before(apiPath, async function check_token(env) {
@@ -115,7 +122,6 @@ module.exports = function (N, apiPath) {
       return;
     }
 
-    env.res.head.title = env.t('title');
     env.res.short_code = get_short_code();
 
     await N.models.users.TokenLoginByEmail.updateOne(

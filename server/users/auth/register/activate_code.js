@@ -30,7 +30,7 @@ module.exports = function (N, apiPath) {
       { new: true }
     ).lean(true).exec();
 
-    if (!token || !env.session_id) {
+    if (!token || !env.session_id || String(token.user) !== String(env.user_info.user_id)) {
       throw {
         code:    N.io.CLIENT_ERROR,
         message: env.t('err_invalid_token')

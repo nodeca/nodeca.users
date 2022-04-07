@@ -7,7 +7,6 @@ ru-RU:
 
   request_verify:
     message: 'Вы должны получить письмо со ссылкой для смены email. Нажмите на неё или введите полученный код сюда:'
-    err_invalid_token: Неверный токен безопасности
     submit: ok
 
   new_email_show:
@@ -15,12 +14,20 @@ ru-RU:
     email_desc: Email
     email_help: Подтверждение будет отправлено на новый email
     submit: ok
-    err_invalid_token: Неверный токен безопасности
+    enter_code_header: |
+      Похоже, вы открыли ссылку в другом браузере.
+      Введите следующий код на той странице, где вы пытались сменить email:
+    enter_code_footer: Не сообщайте никому этот код.
 
   new_email_verify:
     message: 'Вы должны получить письмо со ссылкой для подтверждения нового email. Нажмите на неё или введите полученный код сюда:'
-    err_invalid_token: Неверный токен безопасности
     submit: ok
+
+  new_email_verify_exec:
+    enter_code_header: |
+      Похоже, вы открыли ссылку в другом браузере.
+      Введите следующий код на той странице, где вы пытались войти:
+    enter_code_footer: Не сообщайте никому этот код.
 
   new_email_done:
     message: Ваш email изменён.

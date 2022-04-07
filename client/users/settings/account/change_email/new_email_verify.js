@@ -41,8 +41,12 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   // Form submit
   //
   N.wire.on(module.apiPath + ':submit', function submit_code(data) {
+    if (!data.fields.secret_key_or_code) {
+      view.error(null);
+      return;
+    }
 
-    return N.io.rpc('users.settings.account.change_email.new_email_verify_exec', data.fields)
+    return N.io.rpc('users.settings.account.change_email.new_email_verify_code', data.fields)
       .catch(err => {
         if (err.code === N.io.REDIRECT) {
           window.location = err.head.Location;

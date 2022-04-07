@@ -1,6 +1,6 @@
+// Enter new email, send token there to confirm it
 // RPC method that verifies key or code entered by user
 //
-
 
 'use strict';
 
@@ -12,10 +12,19 @@ module.exports = function (N, apiPath) {
   });
 
 
+  // Check permissions
+  //
+  N.wire.before(apiPath, function check_permissions(env) {
+    if (!env.user_info.is_member) {
+      return N.io.FORBIDDEN;
+    }
+  });
+
+
   // Check token
   //
   N.wire.on(apiPath, async function check_token(env) {
-    let token = await N.models.users.TokenResetPassword.findOneAndUpdate(
+    let token = await N.models.users.TokenEmailConfirm.findOneAndUpdate(
       { session_id: env.session_id },
       { $inc: { attempts: 1 } },
       { new: true }
@@ -59,7 +68,9 @@ module.exports = function (N, apiPath) {
     throw {
       code: N.io.REDIRECT,
       head: {
-        Location: N.router.linkTo('users.auth.reset_password.change_show', { secret_key: token.secret_key })
+        Location: N.router.linkTo('users.settings.account.change_email.new_email_show', {
+          secret_key: token.secret_key
+        })
       }
     };
   });

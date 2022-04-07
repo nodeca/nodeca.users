@@ -65,6 +65,9 @@ module.exports = function (N, apiPath) {
   // Send confirmation to the new email
   //
   N.wire.on(apiPath, async function confirm_new_email(env) {
+    // remove any existing tokens for this session
+    await N.models.users.TokenEmailConfirmNew.deleteMany({ session_id: env.session_id });
+
     let token = await N.models.users.TokenEmailConfirmNew.create({
       session_id: env.session_id,
       user:       env.data.user._id,

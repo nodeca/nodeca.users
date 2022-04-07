@@ -41,19 +41,18 @@ N.wire.once('navigate.done:' + module.apiPath, function page_once() {
   // Form submit
   //
   N.wire.on(module.apiPath + ':submit', function submit_code(data) {
+    if (!data.fields.secret_key_or_code) {
+      view.error(null);
+      return;
+    }
 
-    return N.io.rpc('users.settings.account.change_email.new_email_show', data.fields)
-      .then(res => {
-        if (!res.valid_token) {
-          view.error(t('err_invalid_token'));
+    return N.io.rpc('users.settings.account.change_email.new_email_code', data.fields)
+      .catch(err => {
+        if (err.code === N.io.REDIRECT) {
+          window.location = err.head.Location;
           return;
         }
 
-        return N.wire.emit('navigate.to', {
-          apiPath: 'users.settings.account.change_email.new_email_show',
-          params: data.fields
-        });
-      }, err => {
         // Non client error will be processed with default error handler
         if (err.code !== N.io.CLIENT_ERROR) throw err;
 
