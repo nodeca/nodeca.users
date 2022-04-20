@@ -59,10 +59,10 @@ module.exports = function (N, apiPath) {
     let tab_types = Object.keys(menu)
                           .sort((a, b) => (menu[a].priority ?? 100) - (menu[b].priority ?? 100));
 
-    let type = env.params.$query?.type || tab_types[0];
+    let type = env.params.$query?.type;
 
     // validate tab type
-    if (tab_types.indexOf(type) === -1) {
+    if (type && tab_types.indexOf(type) === -1) {
       throw N.io.BAD_REQUEST;
     }
 
@@ -77,6 +77,13 @@ module.exports = function (N, apiPath) {
         count: env.data.subscriptions.filter(s => subscription_types.has(s.to_type)).length
       };
     });
+
+    if (!type) {
+      // if `tab` is not selected:
+      //  - find first non-empty tab
+      //  - if all tabs are empty, pick the first one
+      type = Object.values(env.res.tabs).find(x => x.count > 0)?.type || tab_types[0];
+    }
 
     let subscription_types = new Set(
       [ menu[type].to_type ].flat().map(x => N.shared.content_type[x])

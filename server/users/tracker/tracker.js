@@ -48,10 +48,10 @@ module.exports = function (N, apiPath) {
     let tab_types = Object.keys(menu)
                           .sort((a, b) => (menu[a].priority ?? 100) - (menu[b].priority ?? 100));
 
-    let type = env.params.$query?.type || tab_types[0];
+    let type = env.params.$query?.type;
 
     // validate tab type
-    if (tab_types.indexOf(type) === -1) {
+    if (type && tab_types.indexOf(type) === -1) {
       throw N.io.BAD_REQUEST;
     }
 
@@ -63,19 +63,8 @@ module.exports = function (N, apiPath) {
       }
     };
 
-    await N.wire.emit('internal:users.tracker.fetch.' + type, fetch_env);
-
-    env.data.users = (env.data.users || []).concat(fetch_env.users);
-    env.res = Object.assign(env.res, fetch_env.res);
-    env.res.type        = type;
-    env.res.items       = fetch_env.items;
-    env.res.reached_end = !fetch_env.next;
-
     // calculate result counts for other tabs
     let counts = {};
-
-    // set result count for current tab
-    counts[type] = fetch_env.count;
 
     let other_tabs = tab_types.filter(x => x !== type);
 
@@ -92,6 +81,24 @@ module.exports = function (N, apiPath) {
 
       counts[type] = sub_env.count;
     }));
+
+    if (!type) {
+      // if `tab` is not selected:
+      //  - find first non-empty tab
+      //  - if all tabs are empty, pick the first one
+      type = Object.entries(counts).find(x => x[1] > 0)?.[0] || tab_types[0];
+    }
+
+    await N.wire.emit('internal:users.tracker.fetch.' + type, fetch_env);
+
+    env.data.users = (env.data.users || []).concat(fetch_env.users);
+    env.res = Object.assign(env.res, fetch_env.res);
+    env.res.type        = type;
+    env.res.items       = fetch_env.items;
+    env.res.reached_end = !fetch_env.next;
+
+    // set result count for current tab
+    counts[type] = fetch_env.count;
 
     env.res.tabs = tab_types.map(type => ({
       type,
