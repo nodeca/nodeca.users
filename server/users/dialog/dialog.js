@@ -113,7 +113,7 @@ module.exports = function (N, apiPath) {
   N.wire.after(apiPath, async function mark_read(env) {
     let result = await N.models.users.Dialog.updateOne({ _id: env.data.dialog._id }, { unread: false });
 
-    env.data.unread_modified = (result.nModified !== 0);
+    env.data.unread_modified = (result.modifiedCount !== 0);
   });
 
 
