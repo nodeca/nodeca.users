@@ -86,7 +86,7 @@ module.exports = function (N, apiPath) {
       // if `tab` is not selected:
       //  - find first non-empty tab
       //  - if all tabs are empty, pick the first one
-      type = Object.entries(counts).find(x => x[1] > 0)?.[0] || tab_types[0];
+      type = tab_types.map(x => [ x, counts[x] ]).find(x => x[1] > 0)?.[0] || tab_types[0];
     }
 
     await N.wire.emit('internal:users.tracker.fetch.' + type, fetch_env);
