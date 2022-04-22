@@ -29,7 +29,7 @@ module.exports = function (N, apiPath) {
           .select('hid last_active_ts')
           .sort('hid')
           .lean(true)
-          .stream(),
+          .cursor(),
 
       user_stream,
       () => {}
