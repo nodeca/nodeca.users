@@ -22,7 +22,7 @@
               - var imageUrl = self.link_to('core.gridfs', { bucket: album.cover_id + '_sm' })
               img.thumb__image(src=imageUrl)
             else
-              .thumb__content No cover
+              .thumb__content= self.t('empty')
             .thumb-caption
               .thumb-caption__line= album.title
               .thumb-caption__line.thumb-caption__m-secondary

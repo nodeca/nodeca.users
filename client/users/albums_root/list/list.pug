@@ -1,5 +1,11 @@
+- var own_page = (self.runtime.user_hid === self.user_hid)
+
 each album in self.albums
-  li.user-albumlist__item.thumb-grid__item(data-on-dragdrop='users.albums_root.list:dragdrop', data-album-id=album._id, data-user-hid=self.user_hid)
+  li.user-albumlist__item.thumb-grid__item(
+    data-on-dragdrop=own_page ? 'users.albums_root.list:dragdrop' : null
+    data-album-id=album._id
+    data-user-hid=self.user_hid
+  )
     .thumb-grid__item-inner
       - var albumLink = self.link_to('users.album', { 'user_hid': self.user_hid, 'album_id': album._id });
       - var albumTitle = !album.default ? album.title : self.t('default_name')

@@ -34,5 +34,6 @@
     ul.user-albumlist.thumb-grid.thumb-grid__m-fluid
       != self.partial('@users.albums_root.list')
 
-    p.text-muted.text-center.d-none.d-md-block.icon.icon-info.icon-space-after
-      = self.t('drag_tip')
+    if own_page
+      p.text-muted.text-center.d-none.d-md-block.icon.icon-info.icon-space-after
+        = self.t('drag_tip')
