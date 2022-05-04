@@ -83,20 +83,12 @@ gridSpaceTightXs = 10px //round(gridSpace / downScaleXs)
   display inline-block
   padding 0 (gridSpace / 2)
   margin 0 0 gridSpace
-  border-radius 3px
+  .thumb
+    transition transform .2s ease
   &.active
   &.selected
-    .thumb:after
-      content ''
-      position absolute
-      top (-1 * selectionWidth)
-      left (-1 * selectionWidth)
-      right (-1 * selectionWidth)
-      bottom (-1 * selectionWidth)
-      border selectionWidth dotted $body-color !important
-      border-radius 3px
     .thumb
-      opacity .5 !important
+      transform scale(0.9)
 
 .thumb-grid__m-sm
   &.thumb-grid
@@ -369,6 +361,8 @@ gridFluidItemCornerRadius_2 = 2px;
   position relative
   width 100%
   max-width 100%
+  background-color $brand-primary
+  border-radius cornerRadius
   &:before
     display block
     content ''
@@ -386,6 +380,7 @@ gridFluidItemCornerRadius_2 = 2px;
     width unset !important
     height unset !important
     max-width 100%
+    max-height 100%
 
 @media (max-width: 800px - 1)
   .thumb-grid.thumb-grid__m-fluid
