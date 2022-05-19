@@ -11,7 +11,8 @@ function updateOptions() {
     link_to_title:   options.user_settings.no_mlinks         ? false : options.parse_options.link_to_title,
     link_to_snippet: options.user_settings.no_mlinks         ? false : options.parse_options.link_to_snippet,
     quote_collapse:  options.user_settings.no_quote_collapse ? false : options.parse_options.quote_collapse,
-    emoji:           options.user_settings.no_emojis         ? false : options.parse_options.emoji
+    emoji:           options.user_settings.no_emojis         ? false : options.parse_options.emoji,
+    breaks:          options.user_settings.breaks            ? true  : options.parse_options.breaks
   }));
 }
 
@@ -30,9 +31,10 @@ N.wire.before(module.apiPath + ':begin', function fetch_options() {
     options = {
       parse_options: opt.parse_options,
       user_settings: {
-        no_mlinks: false,
-        no_emojis: false,
-        no_quote_collapse: false
+        no_mlinks:         false,
+        no_emojis:         false,
+        no_quote_collapse: false,
+        breaks:            false
       }
     };
   });
@@ -65,7 +67,8 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
         txt:                      N.MDEdit.text(),
         option_no_mlinks:         options.user_settings.no_mlinks,
         option_no_emojis:         options.user_settings.no_emojis,
-        option_no_quote_collapse: options.user_settings.no_quote_collapse
+        option_no_quote_collapse: options.user_settings.no_quote_collapse,
+        option_breaks:            options.user_settings.breaks
       };
 
       N.io.rpc('users.dialog.reply', params).then(res => {
