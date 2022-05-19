@@ -45,3 +45,23 @@ setting_schemas:
       category_key: content
       type: boolean
       default: false
+
+    option_no_mlinks:
+      hidden: true
+      type: boolean
+      default: false
+
+    option_no_emojis:
+      hidden: true
+      type: boolean
+      default: false
+
+    option_no_quote_collapse:
+      hidden: true
+      type: boolean
+      default: false
+
+    option_breaks:
+      hidden: true
+      type: boolean
+      default: false

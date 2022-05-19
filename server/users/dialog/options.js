@@ -24,5 +24,19 @@ module.exports = function (N, apiPath) {
       { usergroup_ids: env.user_info.usergroups },
       { alias: true }
     );
+
+    let settings = await env.extras.settings.fetch([
+      'option_no_mlinks',
+      'option_no_emojis',
+      'option_no_quote_collapse',
+      'option_breaks'
+    ]);
+
+    env.res.user_settings = {
+      no_mlinks:         settings.option_no_mlinks,
+      no_emojis:         settings.option_no_emojis,
+      no_quote_collapse: settings.option_no_quote_collapse,
+      breaks:            settings.option_breaks
+    };
   });
 };

@@ -31,10 +31,10 @@ N.wire.before(module.apiPath + ':begin', function fetch_options() {
     options = {
       parse_options: opt.parse_options,
       user_settings: {
-        no_mlinks:         false,
-        no_emojis:         false,
-        no_quote_collapse: false,
-        breaks:            false
+        no_mlinks:         opt.user_settings.no_mlinks,
+        no_emojis:         opt.user_settings.no_emojis,
+        no_quote_collapse: opt.user_settings.no_quote_collapse,
+        breaks:            opt.user_settings.breaks
       }
     };
   });
@@ -94,5 +94,7 @@ N.wire.on(module.apiPath + ':begin', function create_dialog(data) {
 // Open options dialog
 //
 N.wire.on(module.apiPath + ':options', function show_options_dlg() {
-  return N.wire.emit('common.blocks.editor_options_dlg', options.user_settings).then(updateOptions);
+  return N.wire.emit('common.blocks.editor_options_dlg', options.user_settings)
+    .then(updateOptions)
+    .then(() => N.io.rpc('users.set_md_options', options.user_settings));
 });
