@@ -2,4 +2,5 @@ ru-RU:
   subject: '#{project_name}: сообщение от #{user}'
   reply: Ответ
   visit: Перейти
+  reply_notice: Это сообщение сгенерировано автоматически. Пожалуйста, не отвечайте на него.
   unsubscribe: Отписаться

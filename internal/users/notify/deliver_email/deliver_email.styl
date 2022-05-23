@@ -98,13 +98,15 @@ table
   // Bottom border reduced, to compensate margin of <p> in content
   padding 20px 20px 5px
 
-.content-block
-  padding-bottom 10px
+.reply-notice
   padding-top 10px
+  padding-bottom 5px
+
+.unsubscribe
+  padding-bottom 10px
 
 .footer
   clear both
-  //margin-top 10px
   text-align center
   width 100%
 
@@ -116,8 +118,8 @@ table
     font-size $font-size-sm
     //text-align center
 
+  .reply-notice
   .unsubscribe
-  .content-block
     font-size $font-size-sm
 
 
@@ -376,10 +378,10 @@ pre code
       width auto !important
 
     .footer
+      .reply-notice
       .unsubscribe
-      .content-block
         font-size $font-size-sm-mobile !important
-        & a
+        a
           font-size $font-size-sm-mobile !important
 
     .quote__title

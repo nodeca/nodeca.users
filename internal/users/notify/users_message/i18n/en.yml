@@ -2,4 +2,5 @@ en-US:
   subject: '#{project_name}: message from #{user}'
   reply: Reply
   visit: Visit
+  reply_notice: This message is generated automatically. Please, don't reply to it.
   unsubscribe: Unsubscribe
