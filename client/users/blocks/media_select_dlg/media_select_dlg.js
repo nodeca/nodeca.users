@@ -206,7 +206,7 @@ N.wire.once('users.blocks.media_select_dlg', function init_event_handlers() {
 
     } else {
       $listItem.removeClass('selected');
-      options.selected = options.selected.filter(mediaInfo => mediaInfo.media_id === id);
+      options.selected = options.selected.filter(mediaInfo => mediaInfo.media_id !== id);
     }
   });
 
