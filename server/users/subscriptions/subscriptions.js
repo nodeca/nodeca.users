@@ -66,35 +66,55 @@ module.exports = function (N, apiPath) {
       throw N.io.BAD_REQUEST;
     }
 
-    env.res.tabs = tab_types.map(type => {
-      let subscription_types = new Set(
-        [ menu[type].to_type ].flat().map(x => N.shared.content_type[x])
-      );
+    let fetch_env = {
+      params: {
+        user_info: env.user_info,
+        subscriptions: env.data.subscriptions,
+        count_only: false
+      }
+    };
 
-      return {
-        type,
-        marker_type: menu[type].marker_type,
-        count: env.data.subscriptions.filter(s => subscription_types.has(s.to_type)).length
+    // calculate result counts for other tabs
+    let counts = {};
+
+    let other_tabs = tab_types.filter(x => x !== type);
+
+    await Promise.all(other_tabs.map(async type => {
+      let sub_env = {
+        params: {
+          user_info: env.user_info,
+          subscriptions: env.data.subscriptions,
+          count_only: true
+        }
       };
-    });
+
+      await N.wire.emit('internal:users.subscriptions.fetch.' + type, sub_env);
+
+      counts[type] = sub_env.count;
+    }));
 
     if (!type) {
       // if `tab` is not selected:
       //  - find first non-empty tab
       //  - if all tabs are empty, pick the first one
-      type = Object.values(env.res.tabs).find(x => x.count > 0)?.type || tab_types[0];
+      type = tab_types.map(x => [ x, counts[x] ]).find(x => x[1] > 0)?.[0] || tab_types[0];
     }
 
-    let subscription_types = new Set(
-      [ menu[type].to_type ].flat().map(x => N.shared.content_type[x])
-    );
+    await N.wire.emit('internal:users.subscriptions.fetch.' + type, fetch_env);
 
-    env.data.subscriptions = env.data.subscriptions.filter(s => subscription_types.has(s.to_type));
+    env.data.users = (env.data.users || []).concat(fetch_env.users);
+    env.res = Object.assign(env.res, fetch_env.res);
+    env.res.type        = type;
+    env.res.items       = fetch_env.items || [];
 
-    await N.wire.emit('internal:users.subscriptions.fetch', env);
+    // set result count for current tab
+    counts[type] = fetch_env.count;
 
-    env.res.items = env.data.subscriptions;
-    env.res.type = type;
+    env.res.tabs = tab_types.map(type => ({
+      type,
+      marker_type: menu[type].marker_type,
+      count: counts[type]
+    }));
 
     // last time this list was updated on the client, this is required for "mark all" button
     env.res.mark_cut_ts = Date.now();
