@@ -1,3 +1,6 @@
+each html in self.announces_raw || []
+  != html
+
 each announce in self.announces || []
   - var can_hide = !!announce.hide_days
 
