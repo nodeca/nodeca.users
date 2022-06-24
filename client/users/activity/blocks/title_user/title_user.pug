@@ -1,0 +1,6 @@
+if self.user.hid
+  a.users-activity-title-user(href=self.link_to('users.member', { user_hid: self.user.hid }))
+    img.users-activity-title-user__avatar(alt=self.user.name)&attributes(self.avatar(self.user, 'sm'))
+    = self.user.name
+else
+  .users-activity-title-user.av-anon

@@ -92,7 +92,10 @@ module.exports = function (N, apiPath) {
     env.res.results        = sub_env.results;
     env.res.reached_top    = sub_env.reached_top;
     env.res.reached_bottom = sub_env.reached_bottom;
+    env.res.pagination     = sub_env.pagination;
+    env.res.last_item_id   = sub_env.last_item_id;
 
     env.data.users = (env.data.users || []).concat(sub_env.users);
+    env.data.users.push(env.data.user._id);
   });
 };

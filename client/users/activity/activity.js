@@ -24,11 +24,16 @@ function load(start, direction) {
     before:        direction === 'top' ? N.runtime.page_data.items_per_page : 0,
     after:         direction === 'bottom' ? N.runtime.page_data.items_per_page : 0
   }).then(function (res) {
-    return {
-      $html: $(N.runtime.render('users.activity.blocks.' + pageState.type, res)),
-      locals: res,
-      reached_end: direction === 'top' ? res.reached_top : res.reached_bottom
-    };
+    return N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
+      max: res.pagination.total
+    }).then(() => {
+      return {
+        $html: $(N.runtime.render('users.activity.blocks.' + pageState.type, res)),
+        locals: res,
+        offset: res.pagination.chunk_offset,
+        reached_end: direction === 'top' ? res.reached_top : res.reached_bottom
+      };
+    });
   }).catch(err => {
     // User deleted, refreshing the page so user can see the error
     if (err.code === N.io.NOT_FOUND) return N.wire.emit('navigate.reload');
@@ -67,6 +72,10 @@ function on_list_scroll(item, index, item_offset) {
           .catch(err => N.wire.emit('error', err));
   }, 500);
 
+  N.wire.emit('common.blocks.navbar.blocks.page_progress:update', {
+    current: index + 1 // `+1` because offset is zero based
+  }).catch(err => N.wire.emit('error', err));
+
   update_url(item, index, item_offset);
 }
 
@@ -75,8 +84,10 @@ function on_list_scroll(item, index, item_offset) {
 // init on page load
 //
 N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
-  pageState.hid                = $('.users-activity-root').data('user-hid');
-  pageState.type               = $('.users-activity-root').data('type');
+  let pagination = N.runtime.page_data.pagination;
+
+  pageState.hid  = $('.users-activity-root').data('user-hid');
+  pageState.type = $('.users-activity-root').data('type');
 
   let navbar_height = parseInt($('body').css('margin-top'), 10) + parseInt($('body').css('padding-top'), 10);
 
@@ -129,7 +140,10 @@ N.wire.on('navigate.done:' + module.apiPath, function page_setup(data) {
     load,
     reached_top:                 typeof $('.users-activity-root').data('reached-top') !== 'undefined',
     reached_bottom:              typeof $('.users-activity-root').data('reached-bottom') !== 'undefined',
+    index_offset:                pagination.chunk_offset,
     navbar_height,
+    // whenever there are more than 600 topics, cut off-screen topics down to 400
+    need_gc:                     count => (count > 600 ? count - 400 : 0),
     on_list_scroll
   });
 });
@@ -142,4 +156,45 @@ N.wire.on('navigate.exit:' + module.apiPath, function page_teardown() {
   if (update_url) update_url.cancel();
 
   pageState = {};
+});
+
+
+N.wire.once('navigate.done:' + module.apiPath, function page_once() {
+
+  // User presses "home" button
+  //
+  N.wire.on(module.apiPath + ':nav_to_start', function navigate_to_start() {
+    // if the first topic is already loaded, scroll to the top
+    if (scrollable_list.reached_top) {
+      $window.scrollTop(0);
+      return;
+    }
+
+    return N.wire.emit('navigate.to', {
+      apiPath: 'users.activity',
+      params: {
+        user_hid:  pageState.hid,
+        type:      pageState.type
+      }
+    });
+  });
+
+
+  // User presses "end" button
+  //
+  N.wire.on(module.apiPath + ':nav_to_end', function navigate_to_end() {
+    if (scrollable_list.reached_bottom) {
+      $window.scrollTop($(document).height());
+      return;
+    }
+
+    return N.wire.emit('navigate.to', {
+      apiPath: 'users.activity',
+      params: {
+        user_hid:  pageState.hid,
+        type:      pageState.type,
+        start:     $('.users-activity-root').data('last-item-id')
+      }
+    });
+  });
 });

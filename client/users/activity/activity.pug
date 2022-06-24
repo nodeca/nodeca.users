@@ -1,17 +1,43 @@
 - self.add_raw_data('items_per_page', self.items_per_page)
+- self.add_raw_data('pagination',     self.pagination)
 
 article#content.users-activity-root(
+  data-keymap= {
+    'home': 'users.activity:nav_to_start',
+    'end':  'users.activity:nav_to_end'
+  }
   data-user-hid=       self.user_hid
   data-type=           self.type
   data-reached-top=    self.reached_top
   data-reached-bottom= self.reached_bottom
+  data-last-item-id=   self.last_item_id
 )
   -
     const navbar_base = {
-      level_up: self.link_to('users.member', { user_hid: self.user_hid })
+      level_up: self.link_to('users.member', { user_hid: self.user_hid }),
+      progress: {
+        link_top:    self.link_to('users.activity', {
+          user_hid:  self.user_hid,
+          type:      self.type
+        }),
+        link_bottom: self.link_to('users.activity', {
+          user_hid:  self.user_hid,
+          type:      self.type,
+          start:     self.last_item_id
+        }),
+        current:     self.pagination.chunk_offset,
+        total:       self.pagination.total
+      }
     };
 
-  != self.partial('@common.blocks.navbar.levelup_apps', navbar_base)
+    const navbar_primary = {};
+
+    const navbar_alt = {
+      title_html: self.partial('blocks.title_user', { user: self.users[self.user_id] })
+    };
+
+  != self.partial('@common.blocks.navbar.levelup_progress_apps', { ...navbar_base, ...navbar_primary })
+  != self.partial('@common.blocks.navbar.alt_levelup_progress_title', { ...navbar_base, ...navbar_alt })
 
   nav.breadcrumbs-container
     .layout__container.container-fluid

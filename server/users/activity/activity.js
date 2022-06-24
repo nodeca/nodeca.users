@@ -66,8 +66,9 @@ module.exports = function (N, apiPath) {
       counts[type] = sub_env.count || 0;
     }));
 
-    env.res.type = env.data.type;
+    env.res.type          = env.data.type;
     env.res.user_hid      = env.data.user.hid;
+    env.res.user_id       = env.data.user._id;
     env.res.content_types = content_types;
 
     env.res.tabs = content_types.map(type => ({
@@ -108,9 +109,12 @@ module.exports = function (N, apiPath) {
     env.res.results        = sub_env.results;
     env.res.reached_top    = sub_env.reached_top;
     env.res.reached_bottom = sub_env.reached_bottom;
-
+    env.res.pagination     = sub_env.pagination;
+    env.res.last_item_id   = sub_env.last_item_id;
     env.res.items_per_page = ITEMS_PER_PAGE;
+
     env.data.users = (env.data.users || []).concat(sub_env.users);
+    env.data.users.push(env.data.user._id);
   });
 
 
