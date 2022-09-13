@@ -107,6 +107,12 @@ module.exports = function (N, apiPath) {
     env.res.type        = type;
     env.res.items       = fetch_env.items || [];
 
+    // get missed subscriptions (unsubscribe from those later)
+    env.data.missed_subscriptions = fetch_env.missed_subscriptions;
+
+    // filter out missed subscriptions from results
+    env.res.items = _.difference(env.res.items, env.data.missed_subscriptions);
+
     // set result count for current tab
     counts[type] = fetch_env.count;
 
@@ -125,9 +131,6 @@ module.exports = function (N, apiPath) {
   //
   N.wire.after(apiPath, async function remove_missed_subscriptions(env) {
     if (!env.data.missed_subscriptions?.length) return;
-
-    // Exclude from fetched
-    env.data.subscriptions = _.difference(env.data.subscriptions, env.data.missed_subscriptions);
 
     // Remove from database
     await N.models.users.Subscription.deleteMany()
